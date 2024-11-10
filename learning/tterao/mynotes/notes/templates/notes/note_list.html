@@ -9,13 +9,18 @@
 </head>
 
 <body>
-  <h1>notes</h1>
-  <ul>
-    {% for note in object_list %}
-    <li>{{ note.title }}</li>
-    <li>{{ note.context }}</li>
-    {% endfor %}
-  </ul>
+  <div>
+    <form method="get" action="{% url 'note_add' %}">
+      <button type="submit">+</button>
+      <form />
+      <h1>notes</h1>
+      <ul>
+        {% for note in object_list %}
+        <li>{{ note.title }}</li>
+        <li>{{ note.context }}</li>
+        {% endfor %}
+      </ul>
+  </div>
 </body>
 
 </html>
