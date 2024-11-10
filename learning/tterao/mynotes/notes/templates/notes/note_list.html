@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>note list</title>
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <h1>notes</h1>
+  <ul>
+    {% for note in object_list %}
+    <li>{{ note.title }}</li>
+    <li>{{ note.context }}</li>
+    {% endfor %}
+  </ul>
+</body>
+
+</html>
