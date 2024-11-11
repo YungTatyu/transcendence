@@ -22,8 +22,8 @@ from notes.views import NoteListView, NoteCreateView, NoteUpdateView, NoteDelete
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", NoteListView.as_view(), name="home"),
-    path("notes", NoteListView.as_view(), name="note_list"),
-    path("notes/add", NoteCreateView.as_view(), name="note_add"),
-    path("notes/<int:pk>/edit", NoteUpdateView.as_view(), name="note_edit"),
-    path("notes/<int:pk>/delete", NoteDeleteView.as_view(), name="note_delete"),
+    path("notes/", NoteListView.as_view(), name="note_list"),
+    path("notes/add/", NoteCreateView.as_view(), name="note_add"),
+    path("notes/<int:pk>/edit/", NoteUpdateView.as_view(), name="note_edit"),
+    path("notes/<int:pk>/delete/", NoteDeleteView.as_view(), name="note_delete"),
 ]
