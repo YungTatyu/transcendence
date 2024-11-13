@@ -5,8 +5,6 @@ from django.http import JsonResponse
 from django.conf import settings
 
 AUTH_SERVER_PUBLIC_KEY_URL = "http://auth:8000/api/public-key/"
-response = requests.get(AUTH_SERVER_PUBLIC_KEY_URL)
-PUBLIC_KEY = response.json().get("public_key")
 
 def jwt_required(func):
     @wraps(func)
@@ -22,6 +20,8 @@ def jwt_required(func):
         token = parts[1]
 
         try:
+            response = requests.get(AUTH_SERVER_PUBLIC_KEY_URL)
+            PUBLIC_KEY = response.json().get("public_key")
             decoded_token = jwt.decode(token, PUBLIC_KEY, algorithms=["RS256"])
             request.user_id = decoded_token["user_id"]
             return func(request, *args, **kwargs)
