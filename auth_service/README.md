@@ -25,7 +25,16 @@ openssl rsa -pubout -in private.pem -out public.pem
     "username": "your_username",
     "password": "your_password"
   }'
-{"access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzEzMzYyNDYsImlhdCI6MTczMTMzMjY0Nn0.A7OE5ddnd2AtS7SirakfNLX_m3eML-hc0BKm3Np4HjINlhdugTB0Q5YjjvkS2ca-FNeqxe9ABWYadoA51SzR7ADWGHqSXrfciPdK9x2xCDIXyfNFIDa248381oxN1ulJa-W74I1obbhx5rRth4PRe6iqKrptB232nqBgoBdRMQ2Ufo2Au6Zst-RRVpKf5_psanUQtdtShG9x2czRqbgsBhynXTnratEEKAnHsxQEvEHdvQis0PZzCAPyR7Xbr8rcpyWdQwebUIEvG8fwm6HMZkB2j0TyzDuyu5BpHEMmlQiWfqOD4151CdKWsW5qTFBGTstBqIwZp8eSGAo2JPfaNg"}%
+
+response
+{"access_token": "<JWT TOKEN>"}%
 
 ## 公開鍵の取得
 curl -X GET http://127.0.0.1:8000/api/public-key/
+
+## JWTで保護されたエンドポイントへのアクセス
+
+curl -X GET http://127.0.0.1:8001/api/secure/ \
+  -H "Authorization: Bearer <JWT TOKEN>"
+
+  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzE0MDg0MDgsImlhdCI6MTczMTQwNDgwOH0.IeWdG3TTmbxFjP1DNnSkN2vidkIxO04WDDE8eu2dOciQwV5pQSZzzCzQyACXC-yRa6ZebK7CW-r983iElHwe1iTO45bQnjcKs5C2SRsw9gF5O9Txk-sZMcPyD8cHzGJFbizaYbCU_RinzJkZwYzjU_w5X2rdVxNJbtSBmGiwTCl0lnrn6olHWCYn-G3NNoUWEkEgT11FbQeT_PSGUjdZxeKNVQJR9WgwETvx1-vgxka4xduROCMsjgmvGPyfigMIyA9DFZZZpcWkNEeMASBezSvYQ-BfdXn-3jkNC7ekVVPYaSFXTUuy833x5BowOFlr6vF3ViUhpy7UyYi7z2-nHA
