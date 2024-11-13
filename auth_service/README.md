@@ -36,5 +36,3 @@ curl -X GET http://127.0.0.1:8000/api/public-key/
 
 curl -X GET http://127.0.0.1:8001/api/secure/ \
   -H "Authorization: Bearer <JWT TOKEN>"
-
-  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzE0MDg0MDgsImlhdCI6MTczMTQwNDgwOH0.IeWdG3TTmbxFjP1DNnSkN2vidkIxO04WDDE8eu2dOciQwV5pQSZzzCzQyACXC-yRa6ZebK7CW-r983iElHwe1iTO45bQnjcKs5C2SRsw9gF5O9Txk-sZMcPyD8cHzGJFbizaYbCU_RinzJkZwYzjU_w5X2rdVxNJbtSBmGiwTCl0lnrn6olHWCYn-G3NNoUWEkEgT11FbQeT_PSGUjdZxeKNVQJR9WgwETvx1-vgxka4xduROCMsjgmvGPyfigMIyA9DFZZZpcWkNEeMASBezSvYQ-BfdXn-3jkNC7ekVVPYaSFXTUuy833x5BowOFlr6vF3ViUhpy7UyYi7z2-nHA

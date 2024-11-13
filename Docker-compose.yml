@@ -1,0 +1,22 @@
+version: '3'
+services:
+  auth:
+    build: ./auth_service
+    ports:
+      - "8000:8000"
+    networks:
+      - app_network
+
+  sample1:
+    build: ./sample_api_service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - auth
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
