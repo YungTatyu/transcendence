@@ -57,13 +57,6 @@ JWT_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'auth_app/keys/private.pem')
 JWT_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'auth_app/keys/public.pem')
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
 }
 
 CSRF_COOKIE_SECURE = False
