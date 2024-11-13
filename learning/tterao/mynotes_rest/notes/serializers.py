@@ -7,8 +7,18 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = "__all__"
 
+    def create(self, validated_data):
+        user = User(username=validated_data["username"])
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
+
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = "__all__"
+
+    def create(self, validated_data):
+        note = Note(title=validated_data["title"], content=validated_data["content"])
+        note.save()

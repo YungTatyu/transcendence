@@ -26,6 +26,11 @@ router.register(r"notes", views.NoteViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include(router.urls)),
+    path("", views.NoteListView.as_view(), name="note_list"),
+    path("notes/", views.NoteListView.as_view(), name="note_list"),
+    path("notes/create/", views.NoteCreateView.as_view(), name="note_create"),
+    path("notes/delete/<int:pk>/", views.NoteDestroyView.as_view(), name="note_delete"),
+    path("users/create/", views.UserCreateView.as_view(), name="user_create"),
+    path("notes/delete/<int:pk>/", views.UserDestroyView.as_view(), name="user_delete"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]

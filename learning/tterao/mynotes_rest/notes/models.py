@@ -2,6 +2,19 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
+# id
+# password
+# last_login
+# is_superuser
+# username
+# first_name
+# last_name
+# email
+# is_staff
+# is_active
+# date_joined
+# groups
+# user_permissions
 class User(AbstractUser):
     pass
 
