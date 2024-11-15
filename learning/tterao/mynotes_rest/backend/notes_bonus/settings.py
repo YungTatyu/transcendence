@@ -54,7 +54,10 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # すべてのオリジンからのリクエストを許可する場合
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8080",
+    "http://localhost:8080",
+]
 
 ROOT_URLCONF = "notes_bonus.urls"
 
