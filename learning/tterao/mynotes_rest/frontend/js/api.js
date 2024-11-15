@@ -3,7 +3,7 @@
   * @params endpoint: string - The API endpoint to fetch data from.
   * @returns {Promise<object|null>} - A promise that resolves to the JSON response or null if an error occurred.
   */
-async function fetchData(endpoint) {
+export async function fetchData(endpoint) {
   try {
     const response = await fetch(endpoint)
     if (!response.ok) {
@@ -23,7 +23,7 @@ async function fetchData(endpoint) {
   * @params data: object - The payload to be sent in the POST request.
   * @returns {Promise<object|null>} - A promise that resolves to the JSON response or null if an error occurred.
   */
-async function postData(endpoint, data) {
+export async function postData(endpoint, data) {
 
   const option = {
     method: "POST",
@@ -52,7 +52,7 @@ async function postData(endpoint, data) {
   * @params endpoint: string - The API endpoint to fetch data from.
   * @returns {Promise<object|null>} - A promise that resolves to the JSON response or null if an error occurred.
   */
-async function deleteData(endpoint) {
+export async function deleteData(endpoint) {
 
   const option = {
     method: "DELETE",
