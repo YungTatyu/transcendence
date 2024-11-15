@@ -1,22 +1,55 @@
 import { fetchData } from "./api.js";
+import { fetchUsers } from "./users.js";
+
+function transformTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+
+  const diffInSeconds = Math.floor((now - date) / 1000); // 経過時間（秒単位）
+  const diffInMinutes = Math.floor(diffInSeconds / 60); // 経過時間（分単位）
+  const diffInHours = Math.floor(diffInMinutes / 60); // 経過時間（時間単位）
+  const diffInDays = Math.floor(diffInHours / 24); // 経過時間（日単位）
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // 月（0始まりなので1を足す）
+  const day = date.getDate();
+
+
+  // 経過時間に基づく表示
+  let timeText;
+  if (diffInSeconds < 60) {
+    timeText = `${diffInSeconds}秒前`;
+  } else if (diffInMinutes < 60) {
+    timeText = `${diffInMinutes}分前`;
+  } else if (diffInHours < 24) {
+    timeText = `${diffInHours}時間前`;
+  } else if (diffInDays < 31) {
+    timeText = `${diffInDays}日前`;
+  } else {
+    timeText = `${year}年${month}月${day}日`;
+  }
+  return timeText;
+}
 
 async function renderNoteList() {
 
-  const data = await fetchData("http://127.0.0.1:8000/")
-  if (data === null) {
+  const [notes_data, users] = await Promise.all([
+    fetchData("http://127.0.0.1:8000/"),
+    fetchUsers()
+  ]);
+  if (notes_data === null) {
     console.error("Failed to fetch notes.");
     return
   }
-  const notes = data.results
-  console.log("notes=", notes)
+  const notes = notes_data.results
   const noteContainer = document.querySelector(".js-note-container");
   notes.forEach(note => {
     const noteEle = document.createElement("section")
     noteEle.className = `js-note border p-3 mb-1 data-id=${note.id}`
     noteEle.innerHTML = `
         <div class="note-header d-flex">
-          <div class="author pe-1">${note.author}</div>
-          <div class="post-time">${note.created_at}</div>
+          <div class="author pe-1">${users[note.author].username}</div>
+          <div class="post-time">${transformTime(note.created_at)}</div>
 
           <div class="note-actions ms-auto p-2 d-flex gap-2">
             <form method="get">
