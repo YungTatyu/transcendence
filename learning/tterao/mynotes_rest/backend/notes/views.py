@@ -20,6 +20,11 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 class UserCreateView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
