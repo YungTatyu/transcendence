@@ -20,20 +20,22 @@
   <div class="container d-flex align-items-center justify-content-center vh-100">
     <div class="card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
       <h3 class="text-center mb-4">ログイン</h3>
-      <form>
+      <form class="js-login-form">
         <div class="mb-3">
           <label for="username" class="form-label">ユーザー名</label>
-          <input type="text" class="form-control" id="username" placeholder="ユーザー名を入力">
+          <input type="text" class="form-control js-login-username" placeholder="ユーザー名を入力" required>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">パスワード</label>
-          <input type="password" class="form-control" id="password" placeholder="パスワードを入力">
+          <input type="password" class="form-control js-login-password" placeholder="パスワードを入力" required>
         </div>
         <button type="submit" class="btn btn-primary w-100 mb-3">ログイン</button>
-        <button type="button" class="btn btn-outline-secondary w-100">アカウント作成</button>
+        <a href="user_create.html" type="button" class="btn btn-outline-secondary w-100">アカウント作成</a>
       </form>
     </div>
   </div>
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/login.js"></script>
 </body>
 
 </html>
