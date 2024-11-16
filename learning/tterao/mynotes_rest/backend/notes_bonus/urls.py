@@ -33,5 +33,7 @@ urlpatterns = [
     path("users/", views.UserListView.as_view(), name="user_list"),
     path("users/create/", views.UserCreateView.as_view(), name="user_create"),
     path("users/delete/<int:pk>/", views.UserDestroyView.as_view(), name="user_delete"),
+    path("users/login/", views.CustomAuthToken.as_view(), name="user_login"),
+    path("users/logout/", views.LogoutView.as_view(), name="user_logout"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
