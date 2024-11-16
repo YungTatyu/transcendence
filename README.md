@@ -56,3 +56,7 @@ curl -X GET http://127.0.0.1:8001/api/secure/ \
 {"message": "Authenticated", "user_id": 1}
 ```
 
+### DBコンテナ内のデータベースへの接続
+```
+docker exec -it auth_db psql -U auth_user -d auth_db
+```

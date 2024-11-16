@@ -6,6 +6,14 @@ services:
       - "8000:8000"
     networks:
       - app_network
+    depends_on:
+      - auth_db
+    environment:
+      - DJANGO_DB_NAME=auth_db
+      - DJANGO_DB_USER=auth_user
+      - DJANGO_DB_PASSWORD=auth_password
+      - DJANGO_DB_HOST=auth_db
+      - DJANGO_DB_PORT=5432
 
   auth_db:
     image: postgres:15
@@ -25,8 +33,15 @@ services:
       - "8001:8001"
     depends_on:
       - auth
+      - sample1_db
     networks:
       - app_network
+    environment:
+      - DJANGO_DB_NAME=sample1_db
+      - DJANGO_DB_USER=sample1_user
+      - DJANGO_DB_PASSWORD=sample1_password
+      - DJANGO_DB_HOST=sample1_db
+      - DJANGO_DB_PORT=5432
 
   sample1_db:
     image: postgres:15
