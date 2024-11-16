@@ -7,6 +7,18 @@ services:
     networks:
       - app_network
 
+  auth_db:
+    image: postgres:15
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
+    networks:
+      - app_network
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
   sample1:
     build: ./sample_api_service
     ports:
@@ -16,7 +28,22 @@ services:
     networks:
       - app_network
 
+  sample1_db:
+    image: postgres:15
+    container_name: sample1_db
+    environment:
+      POSTGRES_USER: sample1_user
+      POSTGRES_PASSWORD: sample1_password
+      POSTGRES_DB: sample1_db
+    networks:
+      - app_network
+    volumes:
+      - sample1_db_data:/var/lib/postgresql/data
+
 networks:
   app_network:
     driver: bridge
 
+volumes:
+  auth_db_data:
+  sample1_db_data:
