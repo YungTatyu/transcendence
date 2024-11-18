@@ -82,7 +82,7 @@ class NoteDestroyView(DestroyAPIView):
 
 class UserLoginView(APIView):
     """
-    Custom login view to authenticate users and provide tokens manually.
+    Custom login view to authenticate users and provide tokens.
     """
 
     permission_classes = [AllowAny]
@@ -91,23 +91,14 @@ class UserLoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        if not username or not password:
-            return Response(
-                {"detail": "Username and password are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # Authenticate user
+        user = authenticate(username=username, password=password)
 
-        # Find user by username
-        print(f"username={username}, password={password}")
-        user = User.objects.get(username=username)
-
-        # Verify the password manually
-        if not check_password(password, user.password):
+        if user is None:
             return Response(
                 {"detail": "Invalid credentials. Please try again."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
         # Generate or get the token for the user
         token, created = Token.objects.get_or_create(user=user)
 
@@ -120,100 +111,6 @@ class UserLoginView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
-
-# class UserLoginView(APIView):
-#     """
-#     Custom login view to authenticate users and provide tokens.
-#     """
-#
-#     permission_classes = [AllowAny]
-#
-#     def post(self, request, *args, **kwargs):
-#         username = request.data.get("username")
-#         password = request.data.get("password")
-#
-#         print(f"username={username}, password={password}")
-#         # Authenticate user
-#         user = authenticate(request, username=username, password=password)
-#
-#         if user is None:
-#             return Response(
-#                 {"detail": "Invalid credentials. Please try again."},
-#                 status=status.HTTP_401_UNAUTHORIZED,
-#             )
-#         # Generate or get the token for the user
-#         token, created = Token.objects.get_or_create(user=user)
-#
-#         # Return the token and user information
-#         return Response(
-#             {
-#                 "token": token.key,
-#                 "id": user.id,
-#                 "username": user.username,
-#             },
-#             status=status.HTTP_200_OK,
-#         )
-
-
-# class CustomAuthToken(ObtainAuthToken):
-#     permission_classes = [AllowAny]
-#
-#     def post(self, request, *args, **kwargs):
-#         print(f"post")
-#         serializer = self.serializer_class(
-#             data=request.data, context={"request": request}
-#         )
-#         print(f"is valid")
-#         try:
-#             serializer.is_valid(raise_exception=True)
-#         except Exception as e:
-#             print(f"{e}")
-#         # serializer.is_valid(raise_exception=True)
-#         print(f"valid data")
-#         user = serializer.validated_data["user"]
-#         print(f"user: {user}")
-#         token, created = Token.objects.get_or_create(user=user)
-#         return Response(
-#             {
-#                 "token": token.key,
-#                 "user_id": user.id,
-#                 "username": user.username,
-#             }
-#         )
-
-
-# class CustomAuthToken(APIView):
-#     permission_classes = [AllowAny]
-#
-#     def post(self, request, *args, **kwargs):
-#         username = request.data.get("username")
-#         password = request.data.get("password")
-#
-#         if not username or not password:
-#             return Response(
-#                 {"detail": "Username and password are required"}, status=400
-#             )
-#
-#         print(f"username: {username} password: {password}")
-#         user = authenticate(username=username, password=password)
-#
-#         print(f"user: {user}")
-#         if user is None:
-#             return Response(
-#                 {"detail": "Unable to log in with provided credentials."}, status=401
-#             )
-#
-#         token, created = Token.objects.get_or_create(user=user)
-#         print(f"Token created: {created}, Token: {token.key}")
-#         return Response(
-#             {
-#                 "token": token.key,
-#                 "user_id": user.id,
-#                 "username": user.username,
-#             }
-#         )
-#
 
 
 class LogoutView(APIView):
