@@ -11,7 +11,11 @@ async function login(event) {
     alert("ログインに失敗しました。");
     return
   }
+
   console.log("login res=", res)
+  localStorage.setItem('token', res.token);
+  localStorage.setItem('userId', res.id);
+  localStorage.setItem('username', res.username);
   window.location.href = "index.html"; // ログイン後のページ
 }
 

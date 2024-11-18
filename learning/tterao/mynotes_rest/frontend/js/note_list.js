@@ -1,6 +1,11 @@
 import { fetchData } from "./api.js";
 import { fetchUsers } from "./users.js";
 
+const LOGIN_TOKEN = localStorage.getItem("token")
+const LOGIN_USER_ID = localStorage.getItem("userId")
+const LOGIN_USER_NAME = localStorage.getItem("username")
+
+
 function transformTime(dateString) {
   const date = new Date(dateString);
   const now = new Date();
@@ -31,6 +36,33 @@ function transformTime(dateString) {
   return timeText;
 }
 
+function renderHeader() {
+  const headerEle = document.querySelector(".js-index-header")
+  const navEle = document.createElement("nav")
+  console.log(LOGIN_TOKEN, LOGIN_USER_ID, LOGIN_USER_NAME)
+  navEle.innerHTML = `
+        <div class="d-flex">
+          <div class="h3">
+            <h3>notes</h3>
+          </div>
+          <div class="auth-buttons ms-auto">
+            ${LOGIN_USER_ID === null ? `
+            <a href="login.html" class="btn btn-primary">ログイン</a>` : `
+            <a href="new_note.html" class="btn btn-primary btn-lg">
+              new note
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-plus-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+              </svg>
+            </a>`}
+          </div>
+        </div>`
+  headerEle.appendChild(navEle)
+
+}
+
 async function renderNoteList() {
 
   const [notes_data, users] = await Promise.all([
@@ -51,6 +83,7 @@ async function renderNoteList() {
           <div class="author pe-1">${users[note.author].username}</div>
           <div class="post-time">${transformTime(note.created_at)}</div>
 
+          ${LOGIN_USER_ID === note.author.toString() ? `
           <div class="js-note-actions ms-auto p-2 d-flex gap-2">
             <form method="get">
               <button type="submit" class="btn btn-outline-warning btn-sm">
@@ -74,7 +107,8 @@ async function renderNoteList() {
                 </svg>
               </button>
             </form>
-          </div>
+          </div> ` : ''}
+
         </div>
         <h5 class="note-title">${note.title}</h5>
         <p class="note-content">${note.content}</p>
@@ -83,4 +117,5 @@ async function renderNoteList() {
   });
 }
 
+renderHeader()
 renderNoteList()
