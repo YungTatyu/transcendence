@@ -28,6 +28,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.NoteListView.as_view(), name="note_list"),
     path("notes/", views.NoteListView.as_view(), name="note_list"),
+    path("notes/<int:id>/", views.NoteDetailView.as_view(), name="note_detail"),
     path("notes/create/", views.NoteCreateView.as_view(), name="note_create"),
     path("notes/delete/<int:pk>/", views.NoteDestroyView.as_view(), name="note_delete"),
     path("users/", views.UserListView.as_view(), name="user_list"),

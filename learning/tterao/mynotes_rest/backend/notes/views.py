@@ -14,6 +14,7 @@ from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
     DestroyAPIView,
+    RetrieveAPIView,
     UpdateAPIView,
 )
 
@@ -60,9 +61,16 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 
 class NoteListView(ListAPIView):
-    queryset = Note.objects.all()
+    queryset = Note.objects.all().order_by("created_at")
+    serializer_class = NoteSerializer
     serializer_class = NoteSerializer
     permission_classes = [AllowAny]
+
+
+class NoteDetailView(RetrieveAPIView):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+    lookup_field = "id"
 
 
 class NoteCreateView(CreateAPIView):

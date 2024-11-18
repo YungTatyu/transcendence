@@ -1,3 +1,6 @@
+const LOGIN_TOKEN = localStorage.getItem("token")
+
+
 /**
   * @brief Calls an API using GET method and returns the response as JSON.
   * @params endpoint: string - The API endpoint to fetch data from.
@@ -5,6 +8,13 @@
   */
 export async function fetchData(endpoint) {
   try {
+    const option = LOGIN_TOKEN !== null ? {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${LOGIN_TOKEN}`
+      },
+      mode: 'cors'
+    } : {}
     const response = await fetch(endpoint)
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -30,6 +40,7 @@ export async function postData(endpoint, data) {
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${LOGIN_TOKEN}`
     }
   }
 
@@ -58,6 +69,7 @@ export async function deleteData(endpoint) {
     method: "DELETE",
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${LOGIN_TOKEN}`
     }
   }
 
