@@ -41,8 +41,10 @@ export async function postData(endpoint, data = {}, method = "POST") {
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token ${LOGIN_TOKEN}`
     }
+  }
+  if (LOGIN_TOKEN !== null) {
+    option.headers['Authorization'] = `Token ${LOGIN_TOKEN}`;
   }
 
   try {
@@ -73,8 +75,10 @@ export async function deleteData(endpoint) {
     method: "DELETE",
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Token ${LOGIN_TOKEN}`
     },
+  }
+  if (LOGIN_TOKEN !== null) {
+    option.headers['Authorization'] = `Token ${LOGIN_TOKEN}`;
   }
 
   try {
