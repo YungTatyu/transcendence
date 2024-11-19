@@ -1,4 +1,4 @@
-import { fetchData } from "./api.js";
+import { fetchData, deleteData } from "./api.js";
 import { fetchUsers } from "./users.js";
 
 const LOGIN_TOKEN = localStorage.getItem("token")
@@ -77,7 +77,7 @@ async function renderNoteList() {
   const noteContainer = document.querySelector(".js-note-container");
   notes.forEach(note => {
     const noteEle = document.createElement("section")
-    noteEle.className = `js-note border p-3 mb-1 data-id=${note.id}`
+    noteEle.className = `js-note border p-3 mb-1`
     noteEle.innerHTML = `
         <div class="note-header d-flex">
           <div class="author pe-1">${users[note.author].username}</div>
@@ -94,7 +94,7 @@ async function renderNoteList() {
                   d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
               </svg>
             </a>
-            <form method="post">
+            <form class="js-note-delete" data-note-id=${note.id}>
               <button type="submit" class="btn btn-outline-danger btn-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash"
                   viewBox="0 0 16 16">
@@ -112,8 +112,35 @@ async function renderNoteList() {
         <p class="note-content">${note.content}</p>
     `
     noteContainer.appendChild(noteEle)
+    const deleteForm = noteEle.querySelector(".js-note-delete");
+    if (deleteForm === null) {
+      return
+    }
+    deleteForm.addEventListener("submit", (event) => deleteNote(deleteForm, event));
   });
 }
 
-renderHeader()
-renderNoteList()
+async function deleteNote(form, event) {
+  event.preventDefault()
+  console.log("form", form)
+  if (!confirm("本当にこのノートを削除しますか？")) {
+    return
+  }
+  const noteId = form.getAttribute("data-note-id")
+  const res = await deleteData(`http://127.0.0.1:8000/notes/delete/${noteId}/`)
+  if (res === null) {
+    alert("noteの削除に失敗しました")
+    return
+  }
+  console.log("delete res=", res)
+  const el = form.closest(".js-note")
+  el.remove()
+}
+
+function renderPage() {
+  renderHeader()
+  renderNoteList()
+}
+
+renderPage()
+

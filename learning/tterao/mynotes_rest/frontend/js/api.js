@@ -50,6 +50,9 @@ export async function postData(endpoint, data, method = "POST") {
     if (!response.ok) {
       throw new Error(`Response status:  ${response.status}`);
     }
+    if (response.status === 204) {
+      return {};  // 空のオブジェクトを返す（エラーではないがコンテンツなしの場合）
+    }
     const json = await response.json();
     return json
   } catch (error) {
@@ -71,13 +74,16 @@ export async function deleteData(endpoint) {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Token ${LOGIN_TOKEN}`
-    }
+    },
   }
 
   try {
     const response = await fetch(endpoint, option)
     if (!response.ok) {
       throw new Error(`Response status:  ${response.status}`);
+    }
+    if (response.status === 204) {
+      return {};  // 空のオブジェクトを返す（エラーではないがコンテンツなしの場合）
     }
     const json = await response.json();
     return json
