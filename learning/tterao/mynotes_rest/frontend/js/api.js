@@ -34,7 +34,7 @@ export async function fetchData(endpoint) {
   * @params method: POST|PUT 
   * @returns {Promise<object|null>} - A promise that resolves to the JSON response or null if an error occurred.
   */
-export async function postData(endpoint, data, method = "POST") {
+export async function postData(endpoint, data = {}, method = "POST") {
 
   const option = {
     method: method,

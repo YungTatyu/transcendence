@@ -1,9 +1,12 @@
-import { fetchData, deleteData } from "./api.js";
+import { fetchData, deleteData, postData } from "./api.js";
 import { fetchUsers } from "./users.js";
 
-const LOGIN_TOKEN = localStorage.getItem("token")
-const LOGIN_USER_ID = localStorage.getItem("userId")
-const LOGIN_USER_NAME = localStorage.getItem("username")
+const TOKEN = "token"
+const USER_ID = "userId"
+const USER_NAME = "username"
+const LOGIN_TOKEN = localStorage.getItem(TOKEN)
+const LOGIN_USER_ID = localStorage.getItem(USER_ID)
+const LOGIN_USER_NAME = localStorage.getItem(USER_NAME)
 
 
 function transformTime(dateString) {
@@ -36,6 +39,22 @@ function transformTime(dateString) {
   return timeText;
 }
 
+async function logout(event) {
+  event.preventDefault()
+  if (!confirm(`${LOGIN_USER_NAME}をログアウトしますか？`)) {
+    return
+  }
+  const response = await postData("http://127.0.0.1:8000/users/logout/")
+  if (response === null) {
+    alert("logout失敗しました")
+    return
+  }
+  localStorage.removeItem(TOKEN)
+  localStorage.removeItem(USER_ID)
+  localStorage.removeItem(USER_NAME)
+  window.location.href = 'login.html';
+}
+
 function renderHeader() {
   const headerEle = document.querySelector(".js-index-header")
   const navEle = document.createElement("nav")
@@ -48,6 +67,12 @@ function renderHeader() {
           <div class="auth-buttons ms-auto">
             ${LOGIN_USER_ID === null ? `
             <a href="login.html" class="btn btn-primary">ログイン</a>` : `
+            <button type="button" class="btn btn-danger js-logout">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+              </svg>
+            </button>
             <a href="note.html" class="btn btn-primary btn-lg">
               new note
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -60,7 +85,11 @@ function renderHeader() {
           </div>
         </div>`
   headerEle.appendChild(navEle)
-
+  const logoutEl = navEle.querySelector(".js-logout")
+  if (logoutEl === null) {
+    return
+  }
+  logoutEl.addEventListener("click", logout)
 }
 
 async function renderNoteList() {

@@ -147,5 +147,8 @@ class LogoutView(APIView):
     lookup_field = "id"
 
     def post(self, request):
-        request.auth.delete()  # トークン削除
+        # 現在の認証トークンを取得
+        token = request.auth
+        if token:
+            token.delete()
         return Response({"detail": "Logged out successfully."}, status=204)
