@@ -18,7 +18,13 @@ class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
         fields = "__all__"
+        read_only_fields = ["id", "created_at", "updated_at", "author"]
 
     def create(self, validated_data):
-        note = Note(title=validated_data["title"], content=validated_data["content"])
+        user = self.context["request"].user
+        note = Note(
+            title=validated_data["title"],
+            content=validated_data["content"],
+            author=user,
+        )
         note.save()

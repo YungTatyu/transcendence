@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate
 from rest_framework import permissions, viewsets, status
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -26,7 +27,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
 
 
 class UserListView(ListAPIView):
@@ -43,7 +46,9 @@ class UserCreateView(CreateAPIView):
 class UserDestroyView(DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
 
     def get_queryset(self):
         # リクエストユーザー自身のみ削除可能にする場合
@@ -57,12 +62,13 @@ class NoteViewSet(viewsets.ModelViewSet):
 
     queryset = Note.objects.all().order_by("created_at")
     serializer_class = NoteSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
 
 
 class NoteListView(ListAPIView):
     queryset = Note.objects.all().order_by("created_at")
-    serializer_class = NoteSerializer
     serializer_class = NoteSerializer
     permission_classes = [AllowAny]
 
@@ -78,10 +84,24 @@ class NoteCreateView(CreateAPIView):
     serializer_class = NoteSerializer
 
 
+class NoteUpdateView(UpdateAPIView):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+    def get_queryset(self):
+        # 自分のノートのみ更新可能にする
+        return self.queryset.filter(author=self.request.user)
+
+
 class NoteDestroyView(DestroyAPIView):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
 
     def get_queryset(self):
         # リクエストユーザー自身のみ削除可能にする場合
@@ -122,7 +142,9 @@ class UserLoginView(APIView):
 
 
 class LogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    lookup_field = "id"
 
     def post(self, request):
         request.auth.delete()  # トークン削除

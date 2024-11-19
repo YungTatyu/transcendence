@@ -11,7 +11,7 @@ export async function fetchData(endpoint) {
     const option = LOGIN_TOKEN !== null ? {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${LOGIN_TOKEN}`
+        'Authorization': `Token ${LOGIN_TOKEN}`
       },
       mode: 'cors'
     } : {}
@@ -31,16 +31,17 @@ export async function fetchData(endpoint) {
   * @brief Calls an API using POST method and returns the response as JSON.
   * @params endpoint: string - The API endpoint to fetch data from.
   * @params data: object - The payload to be sent in the POST request.
+  * @params method: POST|PUT 
   * @returns {Promise<object|null>} - A promise that resolves to the JSON response or null if an error occurred.
   */
-export async function postData(endpoint, data) {
+export async function postData(endpoint, data, method = "POST") {
 
   const option = {
-    method: "POST",
+    method: method,
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${LOGIN_TOKEN}`
+      'Authorization': `Token ${LOGIN_TOKEN}`
     }
   }
 
@@ -69,7 +70,7 @@ export async function deleteData(endpoint) {
     method: "DELETE",
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${LOGIN_TOKEN}`
+      'Authorization': `Token ${LOGIN_TOKEN}`
     }
   }
 
