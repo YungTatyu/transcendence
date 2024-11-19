@@ -14,6 +14,15 @@ async function renderNoteValue() {
   content.value = note.content
 }
 
+function handleResponse(res) {
+  if (res === null) {
+    alert("ノートの保存に失敗しました。");
+    return
+  }
+  console.log(res)
+  window.location.href = "index.html";
+}
+
 async function save(event) {
   event.preventDefault()
   const title = document.querySelector(".js-form-title").value
@@ -23,16 +32,12 @@ async function save(event) {
     content: content,
   }
   if (urlParams.size === 0) {
-    postData("http://127.0.0.1:8000/notes/create/", option)
+    const res = await postData("http://127.0.0.1:8000/notes/create/", option)
+    handleResponse(res)
     return
   }
   const res = await postData(`http://127.0.0.1:8000/notes/update/${noteId}/`, option, "PUT")
-  if (res === null) {
-    alert("ノートの保存に失敗しました。");
-    return
-  }
-  console.log(res)
-  window.location.href = "index.html";
+  handleResponse(res)
 }
 
 renderNoteValue()

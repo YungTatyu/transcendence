@@ -28,3 +28,4 @@ class NoteSerializer(serializers.ModelSerializer):
             author=user,
         )
         note.save()
+        return note
