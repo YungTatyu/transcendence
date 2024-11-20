@@ -103,6 +103,7 @@ class NoteDetailView(RetrieveAPIView):
 class NoteCreateView(CreateAPIView):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class NoteUpdateView(UpdateAPIView):
