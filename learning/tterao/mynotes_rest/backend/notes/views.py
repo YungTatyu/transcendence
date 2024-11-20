@@ -68,7 +68,7 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 
 class NoteListView(ListAPIView):
-    queryset = Note.objects.all().order_by("created_at")
+    queryset = Note.objects.all().order_by("-created_at")
     serializer_class = NoteSerializer
     permission_classes = [AllowAny]
 
