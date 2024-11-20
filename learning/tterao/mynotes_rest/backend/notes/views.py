@@ -41,6 +41,27 @@ class UserListView(ListAPIView):
 class UserCreateView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        # ユーザーを作成
+        self.user = serializer.save()
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+
+        # トークンを発行
+        token, created = Token.objects.get_or_create(user=self.user)
+
+        # トークンとユーザー情報を返す
+        return Response(
+            {
+                "token": token.key,
+                "id": self.user.id,
+                "username": self.user.username,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class UserDestroyView(DestroyAPIView):
