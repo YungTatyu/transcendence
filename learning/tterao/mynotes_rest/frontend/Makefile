@@ -4,4 +4,7 @@ all: build
 build:
 	http-server 
 
-.Phony: all, build
+test:
+	npm test
+
+.PHONY: all build test

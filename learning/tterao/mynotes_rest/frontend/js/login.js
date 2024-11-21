@@ -1,6 +1,6 @@
 import { postData } from "./api.js";
 
-async function login(event) {
+export async function login(event) {
 
   event.preventDefault(); // フォームのデフォルト動作を防ぐ
 
