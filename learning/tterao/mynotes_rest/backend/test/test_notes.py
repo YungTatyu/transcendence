@@ -66,6 +66,16 @@ class NoteEditTest(APITestCase):
         response = self.client.put(self.update_url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_update_note_failure_only_title(self):
+        data = {"title": "update title"}
+        response = self.client.put(self.update_url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_note_failure_only_content(self):
+        data = {"content": "update content"}
+        response = self.client.put(self.update_url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_update_note_failure_unauthenticated(self):
         self.client.credentials()
         data = {"title": "update title", "content": "update content"}
