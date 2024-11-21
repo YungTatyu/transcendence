@@ -1,19 +1,62 @@
-<!-- chat/templates/chat/index.html -->
+<!-- <!DOCTYPE html> -->
+<!-- <html> -->
+<!-- <head> -->
+<!--     <meta charset="utf-8"/> -->
+<!--     <title>Chat Rooms</title> -->
+<!-- </head> -->
+<!-- <body> -->
+<!--     <input id="room-name-input" type="text" size="100"><br> -->
+<!--     <input id="room-name-submit" type="button" value="Enter"> -->
+<!-- 	<script> -->
+<!--         document.querySelector('#room-name-input').focus(); -->
+<!--         document.querySelector('#room-name-input').onkeyup = function(e) { -->
+<!--             if (e.key === 'Enter') {  // enter, return -->
+<!--                 document.querySelector('#room-name-submit').click(); -->
+<!--             } -->
+<!--         }; -->
+
+<!--         document.querySelector('#room-name-submit').onclick = function(e) { -->
+<!--             var roomName = document.querySelector('#room-name-input').value; -->
+<!--             window.location.pathname = '/chat/' + roomName + '/'; -->
+<!--         }; -->
+<!--     </script> -->
+<!-- </body> -->
+<!-- </html> -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Rooms</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    What chat room would you like to enter?<br>
-    <input id="room-name-input" type="text" size="100"><br>
-    <input id="room-name-submit" type="button" value="Enter">
+<body class="bg-light">
 
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card p-4 shadow-lg" style="max-width: 500px; width: 100%;">
+            <h2 class="text-center mb-4">Enter Chat Room</h2>
+
+            <!-- ルーム名入力フォーム -->
+            <div class="mb-3">
+                <label for="room-name-input" class="form-label">Room Name</label>
+                <input id="room-name-input" type="text" class="form-control" placeholder="Enter room name">
+            </div>
+
+            <!-- ルーム名送信ボタン -->
+            <div class="d-grid gap-2">
+                <input id="room-name-submit" type="button" class="btn btn-primary" value="Enter">
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         document.querySelector('#room-name-input').focus();
         document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.key === 'Enter') {  // enter, return
+            if (e.key === 'Enter') {  // Enterキーを押すとボタンがクリックされる
                 document.querySelector('#room-name-submit').click();
             }
         };
@@ -23,5 +66,6 @@
             window.location.pathname = '/chat/' + roomName + '/';
         };
     </script>
+
 </body>
 </html>
