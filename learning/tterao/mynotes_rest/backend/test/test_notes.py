@@ -41,6 +41,48 @@ class NoteCreateTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class NoteEditTest(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
+
+        # ノート作成用URLの取得
+        self.create_url = reverse("note_create")  # URL名でリバース解決
+
+        self.note_data = {"title": "Test Note", "content": "This is a test note."}
+        response = self.client.post(self.create_url, self.note_data)
+        self.note_id = response.data["id"]  # 作成されたノートのIDを取得
+
+        self.update_url = reverse(
+            "note_update", kwargs={"id": self.note_id}
+        )  # URL名とkwargsでリバース解決
+
+    def test_update_note_success(self):
+        data = {"title": "update title", "content": "update content"}
+        response = self.client.put(self.update_url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_note_failure_unauthenticated(self):
+        self.client.credentials()
+        data = {"title": "update title", "content": "update content"}
+        response = self.client.put(self.update_url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_note_failure_empty_title(self):
+        data = {"title": "", "content": "update content"}
+        response = self.client.put(self.update_url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_note_failure_empty_title(self):
+        data = {"title": "title", "content": ""}
+        response = self.client.put(self.update_url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 class NoteDeleteTest(APITestCase):
     def setUp(self):
         User = get_user_model()
