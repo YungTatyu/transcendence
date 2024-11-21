@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+  api1:
+    container_name: api1
+    build:
+      context: ./
+    image: api1
+    ports:
+      - "8000:8000"
+    tty: true
+    stdin_open: true
+    networks: 
+      - api1-redis
+    depends_on:
+      - redis
+
+  redis:
+    container_name: redis
+    image: redis:7
+    networks:
+      - api1-redis
+
+networks:
+  api1-redis:
+    driver: bridge
