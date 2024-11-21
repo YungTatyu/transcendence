@@ -3,7 +3,7 @@ import { fetchData, postData } from "./api.js";
 const urlParams = new URLSearchParams(window.location.search);
 const noteId = urlParams.get('noteId');
 
-async function renderNoteValue() {
+export async function renderNoteValue() {
   if (urlParams.size === 0) {
     return
   }
@@ -14,7 +14,7 @@ async function renderNoteValue() {
   content.value = note.content
 }
 
-function handleResponse(res) {
+export function handleResponse(res) {
   if (res === null) {
     alert("ノートの保存に失敗しました。");
     return
@@ -23,7 +23,7 @@ function handleResponse(res) {
   window.location.href = "index.html";
 }
 
-async function save(event) {
+export async function save(event) {
   event.preventDefault()
   const title = document.querySelector(".js-form-title").value
   const content = document.querySelector(".js-form-content").value
