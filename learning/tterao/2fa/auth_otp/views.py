@@ -12,16 +12,19 @@ from .serializers import (
 )
 
 import pyotp
-import datetime
 
 SECRET_KEY = "secret_key"
 OTP = "otp"
+INTERVAL_TIME = 60
 
 
-def generate_otp():
-    secret_key = pyotp.random_base32()
-    tocp = pyotp.TOTP(secret_key)
-    otp = tocp.now()
+def generate_totp(secret_key):
+    return pyotp.TOTP(secret_key, interval=INTERVAL_TIME)
+
+
+def generate_otp(secret_key=pyotp.random_base32()):
+    totp = generate_totp(secret_key)
+    otp = totp.now()
     return {SECRET_KEY: secret_key, OTP: otp}
 
 
@@ -29,7 +32,7 @@ def send_otp_mail(to, otp):
     send_mail(
         "otp",
         "ワンタイムパスワードは以下です。\n"
-        "5分以内にパスワードを入力してください。\n"
+        "1分以内にパスワードを入力してください。\n"
         f"パスワード：{otp}\n",
         DEFAULT_FROM_EMAIL,
         [to],
@@ -89,8 +92,30 @@ def otp_verify(request):
             status=404,
         )
 
-    totp = pyotp.TOTP(user_2fa.otp_secret)
+    totp = generate_totp(user_2fa.otp_secret)
     if not totp.verify(otp):
         return JsonResponse({"error": "Invalid OTP."}, status=400)
     user_2fa.delete()
     return JsonResponse({"message": "OTP verified successfully."}, status=201)
+
+
+@api_view(["POST"])
+def otp_regenerate(request):
+    username = request.data.get("username")
+    if not username:
+        return JsonResponse(
+            {"error": "Both 'username' and 'otp' fields are required."},
+            status=400,
+        )
+    try:
+        user_2fa = UserTwoFactorSetup.objects.get(username=username)
+    except UserTwoFactorSetup.DoesNotExist:
+        return JsonResponse(
+            {"error": "User not found or not enrolled in 2FA."},
+            status=404,
+        )
+
+    #  otpを再発行
+    otp = generate_otp(user_2fa.otp_secret)
+    send_otp_mail(user_2fa.email, otp[OTP])
+    return JsonResponse({"message": "OTP regenerated."}, status=201)
