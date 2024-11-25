@@ -95,10 +95,22 @@ def otp_verify(request):
     totp = generate_totp(user_2fa.otp_secret)
     if not totp.verify(otp):
         return JsonResponse({"error": "Invalid OTP."}, status=400)
+
+    email = user_2fa.email
+    password = user_2fa.password
+    user = User(
+        username=username,
+        password=password,
+        email=email,
+    )
+    user.save()
+
     user_2fa.delete()
     return JsonResponse({"message": "OTP verified successfully."}, status=201)
 
 
+# resend top
+# if top is expired, regenerate top
 @api_view(["POST"])
 def otp_resend(request):
     username = request.data.get("username")

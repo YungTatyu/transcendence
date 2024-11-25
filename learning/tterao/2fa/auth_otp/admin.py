@@ -1,3 +1,4 @@
 from django.contrib import admin
+from .models import User, UserTwoFactorSetup, UserTwoFactorVerification
 
-# Register your models here.
+admin.register(User, UserTwoFactorSetup, UserTwoFactorVerification)(admin.ModelAdmin)
