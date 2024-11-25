@@ -8,7 +8,7 @@ main() {
     -d "{
       \"username\": \"${username}\"
     }" \
-    http://localhost:8000/auth/otp/regenerate/
+    http://localhost:8000/auth/otp/resend/
 
 }
 

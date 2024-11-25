@@ -100,7 +100,7 @@ def otp_verify(request):
 
 
 @api_view(["POST"])
-def otp_regenerate(request):
+def otp_resend(request):
     username = request.data.get("username")
     if not username:
         return JsonResponse(
