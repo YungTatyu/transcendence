@@ -120,8 +120,11 @@ def otp_verify(request):
     )
     user.save()
 
+    tokens = generate_tokens_for_user(user)
     user_2fa.delete()
-    response = JsonResponse({"message": "OTP verified successfully."}, status=201)
+    response = JsonResponse(
+        {"message": "OTP verified successfully."} | tokens, status=201
+    )
     response.delete_cookie("username")
     return response
 
