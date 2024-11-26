@@ -1,10 +1,13 @@
+from http.client import HTTPResponse
+from django.http import HttpResponseNotFound
 from django.shortcuts import HttpResponse, render
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import JsonResponse, status
+from rest_framework.exceptions import JsonResponse, bad_request, status
 from .models import User, UserTwoFactorSetup, UserTwoFactorVerification
 from django.core.mail import send_mail
 from tfa.settings import DEFAULT_FROM_EMAIL
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
 from .serializers import (
     UserSerializer,
     UserTwoFactorSetupSerializer,
@@ -108,7 +111,9 @@ def otp_verify(request):
     user.save()
 
     user_2fa.delete()
-    return JsonResponse({"message": "OTP verified successfully."}, status=201)
+    response = JsonResponse({"message": "OTP verified successfully."}, status=201)
+    response.delete_cookie("username")
+    return response
 
 
 # resend top
@@ -135,4 +140,89 @@ def otp_resend(request):
     user_2fa.save()
 
     send_otp_mail(user_2fa.email, otps[OTP])
+    return JsonResponse({"message": "OTP regenerated."}, status=201)
+
+
+@api_view(["POST"])
+def login(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    if not username or not password:
+        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(username=username, password=password)
+    if user is None:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    if UserTwoFactorVerification.objects.filter(user=user).exists():
+        return HttpResponse(
+            "User with this username already in otp phase.",
+            status=status.HTTP_409_CONFLICT,
+        )
+
+    otps = generate_otp()
+    tfa_user = UserTwoFactorVerification(
+        user=user,
+        otp_secret=otps[SECRET_KEY],
+    )
+    tfa_user.save()
+
+    send_otp_mail(user.email, otps[OTP])
+    response = HttpResponse("OTP generated.", status=status.HTTP_201_CREATED)
+    response.set_cookie("username", username)
+    return response
+
+
+@api_view(["POST"])
+def login_otp_verify(request):
+    username = request.COOKIES.get("username")
+    otp = request.data.get("otp")
+    if not username or not otp:
+        return JsonResponse(
+            {"error": "Both 'username' and 'otp' fields are required."},
+            status=400,
+        )
+
+    try:
+        user = User.objects.get(username=username)
+        tfa_user = UserTwoFactorVerification.objects.get(user=user)
+    except UserTwoFactorVerification.DoesNotExist:
+        return JsonResponse(
+            {"error": "User not found or not enrolled in 2FA."},
+            status=404,
+        )
+
+    totp = generate_totp(tfa_user.otp_secret)
+    if not totp.verify(otp):
+        return JsonResponse({"error": "Invalid OTP."}, status=400)
+
+    tfa_user.delete()
+    response = JsonResponse({"message": "OTP verified successfully."}, status=200)
+    response.delete_cookie("username")
+    return response
+
+
+@api_view(["POST"])
+def login_otp_resend(request):
+    username = request.data.get("username")
+    if not username:
+        return JsonResponse(
+            {"error": "Both 'username' and 'otp' fields are required."},
+            status=400,
+        )
+    try:
+        user = User.objects.get(username=username)
+        user_2fa = UserTwoFactorVerification.objects.get(user=user)
+    except UserTwoFactorVerification.DoesNotExist:
+        return JsonResponse(
+            {"error": "User not found or not enrolled in 2FA."},
+            status=404,
+        )
+
+    #  otpを再発行
+    otps = generate_otp()
+    user_2fa.otp_secret = otps[SECRET_KEY]
+    user_2fa.save()
+
+    send_otp_mail(user.email, otps[OTP])
     return JsonResponse({"message": "OTP regenerated."}, status=201)
