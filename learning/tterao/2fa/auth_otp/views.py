@@ -71,12 +71,14 @@ def otp_generate(request):
     )
     signup_user.save()
     send_otp_mail(email, otps[OTP])
-    return HttpResponse("OTP sent successfully", status=status.HTTP_201_CREATED)
+    response = HttpResponse("OTP sent successfully", status=status.HTTP_201_CREATED)
+    response.set_cookie("username", username)
+    return response
 
 
 @api_view(["POST"])
 def otp_verify(request):
-    username = request.data.get("username")
+    username = request.COOKIES.get("username")
     otp = request.data.get("otp")
     if not username or not otp:
         return JsonResponse(
