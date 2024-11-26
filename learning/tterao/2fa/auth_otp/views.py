@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from tfa.settings import DEFAULT_FROM_EMAIL
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
     UserSerializer,
     UserTwoFactorSetupSerializer,
@@ -19,6 +20,15 @@ import pyotp
 SECRET_KEY = "secret_key"
 OTP = "otp"
 INTERVAL_TIME = 60
+
+
+def generate_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+    }
 
 
 def generate_totp(secret_key):
@@ -197,7 +207,10 @@ def login_otp_verify(request):
         return JsonResponse({"error": "Invalid OTP."}, status=400)
 
     tfa_user.delete()
-    response = JsonResponse({"message": "OTP verified successfully."}, status=200)
+    tokens = generate_tokens_for_user(user)
+    response = JsonResponse(
+        {"message": "OTP verified successfully."} | tokens, status=200
+    )
     response.delete_cookie("username")
     return response
 
