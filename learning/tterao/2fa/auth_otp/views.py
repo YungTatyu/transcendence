@@ -130,6 +130,9 @@ def otp_resend(request):
         )
 
     #  otpを再発行
-    otp = generate_otp(user_2fa.otp_secret)
-    send_otp_mail(user_2fa.email, otp[OTP])
+    otps = generate_otp()
+    user_2fa.otp_secret = otps[SECRET_KEY]
+    user_2fa.save()
+
+    send_otp_mail(user_2fa.email, otps[OTP])
     return JsonResponse({"message": "OTP regenerated."}, status=201)
