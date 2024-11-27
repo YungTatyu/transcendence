@@ -57,19 +57,22 @@ def send_otp_mail(to, otp):
 def otp_generate(request):
     serializer = UserTwoFactorSetupSerializer(data=request.data)
     if not serializer.is_valid():
-        return HttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+        )
     username = request.data.get("username")
     password = request.data.get("password")
     email = request.data.get("email")
 
     if User.objects.filter(username=username).exists():
-        return HttpResponse(
-            "User with this username already exists.", status=status.HTTP_409_CONFLICT
+        return JsonResponse(
+            {"error": "Both 'username' and 'otp' fields are required."},
+            status=status.HTTP_409_CONFLICT,
         )
 
     if UserTwoFactorSetup.objects.filter(username=username).exists():
-        return HttpResponse(
-            "User with this username already in signup phase.",
+        return JsonResponse(
+            {"error:" "User with this username already in signup phase."},
             status=status.HTTP_409_CONFLICT,
         )
 
@@ -84,7 +87,9 @@ def otp_generate(request):
     )
     signup_user.save()
     send_otp_mail(email, otps[OTP])
-    response = HttpResponse("OTP sent successfully", status=status.HTTP_201_CREATED)
+    response = JsonResponse(
+        {"message": "OTP sent successfully"}, status=status.HTTP_201_CREATED
+    )
     response.set_cookie("username", username)
     return response
 
@@ -122,9 +127,7 @@ def otp_verify(request):
 
     tokens = generate_tokens_for_user(user)
     user_2fa.delete()
-    response = JsonResponse(
-        {"message": "OTP verified successfully."} | tokens, status=201
-    )
+    response = JsonResponse(tokens, status=201)
     response.delete_cookie("username")
     return response
 
@@ -161,15 +164,18 @@ def login(request):
     username = request.data.get("username")
     password = request.data.get("password")
     if not username or not password:
-        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"error": "Both 'username' and 'password' fields are required."},
+            status=400,
+        )
 
     user = authenticate(username=username, password=password)
     if user is None:
         return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
     if UserTwoFactorVerification.objects.filter(user=user).exists():
-        return HttpResponse(
-            "User with this username already in otp phase.",
+        return JsonResponse(
+            {"error": "User with this username already in otp phase."},
             status=status.HTTP_409_CONFLICT,
         )
 
@@ -181,7 +187,9 @@ def login(request):
     tfa_user.save()
 
     send_otp_mail(user.email, otps[OTP])
-    response = HttpResponse("OTP generated.", status=status.HTTP_201_CREATED)
+    response = JsonResponse(
+        {"message": "OTP generated."}, status=status.HTTP_201_CREATED
+    )
     response.set_cookie("username", username)
     return response
 
@@ -211,9 +219,7 @@ def login_otp_verify(request):
 
     tfa_user.delete()
     tokens = generate_tokens_for_user(user)
-    response = JsonResponse(
-        {"message": "OTP verified successfully."} | tokens, status=200
-    )
+    response = JsonResponse(tokens, status=200)
     response.delete_cookie("username")
     return response
 
