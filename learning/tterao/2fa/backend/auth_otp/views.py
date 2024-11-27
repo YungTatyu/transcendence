@@ -226,10 +226,10 @@ def login_otp_verify(request):
 
 @api_view(["POST"])
 def login_otp_resend(request):
-    username = request.data.get("username")
+    username = request.COOKIES.get("username")
     if not username:
         return JsonResponse(
-            {"error": "Both 'username' and 'otp' fields are required."},
+            {"error": "'username' fields are required."},
             status=400,
         )
     try:
