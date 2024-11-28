@@ -1,3 +1,4 @@
+import { BACKEND_BASE_URL } from "../constants.js";
 import { showPage } from "../showpage.js";
 import { resendOtp } from "./resend_otp.js";
 
