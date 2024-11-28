@@ -4,7 +4,7 @@ main() {
   local username=${1:?err}
   local password=${2:?err}
 
-  curl -X POST \
+  curl -i -X POST \
     -H "Content-Type: application/json" \
     -d "{
       \"username\": \"${username}\",

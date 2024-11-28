@@ -6,9 +6,9 @@ main() {
 
   curl -X POST \
     -H "Content-Type: application/json" \
-    -b "username=${username}" \
     -d "{
-      \"otp\": \"${otp}\"
+      \"otp\": \"${otp}\",
+      \"username\": \"${username}\"
     }" \
     http://localhost:8000/auth/login/otp/verify/
 

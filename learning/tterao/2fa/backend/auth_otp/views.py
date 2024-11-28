@@ -96,7 +96,7 @@ def otp_generate(request):
 
 @api_view(["POST"])
 def otp_verify(request):
-    username = request.COOKIES.get("username")
+    username = request.data.get("username")
     otp = request.data.get("otp")
     if not username or not otp:
         return JsonResponse(
@@ -190,13 +190,14 @@ def login(request):
     response = JsonResponse(
         {"message": "OTP generated."}, status=status.HTTP_201_CREATED
     )
+    request.session["username"] = username
     response.set_cookie("username", username)
     return response
 
 
 @api_view(["POST"])
 def login_otp_verify(request):
-    username = request.COOKIES.get("username")
+    username = request.data.get("username")
     otp = request.data.get("otp")
     if not username or not otp:
         return JsonResponse(
@@ -226,7 +227,7 @@ def login_otp_verify(request):
 
 @api_view(["POST"])
 def login_otp_resend(request):
-    username = request.COOKIES.get("username")
+    username = request.data.get("username")
     if not username:
         return JsonResponse(
             {"error": "'username' fields are required."},
