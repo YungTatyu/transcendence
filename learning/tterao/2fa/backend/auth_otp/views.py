@@ -1,6 +1,3 @@
-from http.client import HTTPResponse
-from django.http import HttpResponseNotFound
-from django.shortcuts import HttpResponse, render
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import JsonResponse, bad_request, status
 from .models import User, UserTwoFactorSetup, UserTwoFactorVerification
@@ -8,7 +5,9 @@ from django.core.mail import send_mail
 from tfa.settings import DEFAULT_FROM_EMAIL
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import (
     UserSerializer,
     UserTwoFactorSetupSerializer,
@@ -171,7 +170,9 @@ def login(request):
 
     user = authenticate(username=username, password=password)
     if user is None:
-        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse(
+            {"error": "invalid username or password."}, status=status.HTTP_404_NOT_FOUND
+        )
 
     if UserTwoFactorVerification.objects.filter(user=user).exists():
         return JsonResponse(
@@ -249,3 +250,13 @@ def login_otp_resend(request):
 
     send_otp_mail(user.email, otps[OTP])
     return JsonResponse({"message": "OTP regenerated."}, status=201)
+
+
+@api_view(["POST"])
+def logout(request):
+    user, token = JWTAuthentication.authenticate(request)
+    if user is None:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    token = RefreshToken(token)
+    token.blacklist()
+    return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
