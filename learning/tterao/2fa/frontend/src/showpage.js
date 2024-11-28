@@ -1,9 +1,11 @@
 import { addLoginEvent } from "./login/login.js";
 import { addVerifyOtpEvent } from "./login/otp.js";
+import { addSignupEvent } from "./signup/signup.js";
 
 const pageEvents = {
   login: addLoginEvent,
   otp: addVerifyOtpEvent,
+  signup: addSignupEvent,
 }
 
 export function showPage(pageName) {
@@ -17,5 +19,4 @@ export function showPage(pageName) {
 
 document.addEventListener("DOMContentLoaded", () => {
   showPage("login");
-  // showPage("otp");
 });

@@ -1,21 +1,22 @@
 import { BACKEND_BASE_URL } from "../constants.js";
 import { showPage } from '../showpage.js'
 
-export async function login(event) {
+export async function signup(event) {
   event.preventDefault()
   const username = event.target.username.value
   const password = event.target.password.value
-  const response = await fetch(`${BACKEND_BASE_URL}/auth/login/otp/generate/`, {
+  const email = event.target.email.value
+  const response = await fetch(`${BACKEND_BASE_URL}/auth/otp/generate/`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username: username, password: password })
+    body: JSON.stringify({ username: username, password: password, email: email })
   })
   const json = await response.json()
   console.log(json)
   if (!response.ok) {
-    alert(json.error || "login failed.")
+    alert(json.error || "signup failed.")
     return false
   }
   localStorage.setItem('username', username)
@@ -23,7 +24,7 @@ export async function login(event) {
   return true
 }
 
-export function addLoginEvent() {
-  document.querySelector(".login-form").addEventListener("submit", login)
-  document.getElementById("go-to-signup").addEventListener("click", () => showPage("signup"))
+export function addSignupEvent() {
+  document.querySelector(".signup-form").addEventListener("submit", signup)
+  document.getElementById("go-to-login").addEventListener("click", () => showPage("login"))
 }
