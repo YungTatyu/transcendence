@@ -19,6 +19,7 @@ export async function logout(event) {
     alert(json.error || "logout failed.")
     return false
   }
+  localStorage.removeItem("authtoken")
   showPage("login")
   return true
 }

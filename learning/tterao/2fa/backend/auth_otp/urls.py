@@ -7,6 +7,7 @@ from .views import (
     login,
     login_otp_verify,
     login_otp_resend,
+    refresh_token,
 )
 
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path("login/otp/verify/", login_otp_verify),
     path("login/otp/resend/", login_otp_resend),
     path("logout/", logout),
+    path("token/refresh/", refresh_token),
 ]

@@ -1,3 +1,4 @@
+from weakref import ref
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import JsonResponse, bad_request, status
 from .models import User, UserTwoFactorSetup, UserTwoFactorVerification
@@ -272,3 +273,27 @@ def logout(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
     return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def refresh_token(request):
+    refresh_token = request.data.get("refresh")
+    if refresh_token is None:
+        Response(
+            {"message": "refresh token is required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    try:
+        refresh = RefreshToken(refresh_token)
+        access_token = str(refresh.access_token)
+        return Response(
+            {
+                "refresh": refresh_token,
+                "access": access_token,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+    except TokenError as e:
+        return Response(
+            {"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED
+        )
