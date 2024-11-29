@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    logout,
     otp_generate,
     otp_verify,
     otp_resend,
@@ -17,4 +18,5 @@ urlpatterns = [
     path("login/otp/generate/", login),
     path("login/otp/verify/", login_otp_verify),
     path("login/otp/resend/", login_otp_resend),
+    path("logout/", logout),
 ]

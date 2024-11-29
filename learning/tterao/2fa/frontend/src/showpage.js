@@ -1,11 +1,14 @@
+import { decodeJwt } from "./jwt.js";
 import { addLoginEvent } from "./login/login.js";
 import { addVerifyOtpEvent } from "./login/otp.js";
+import { addLogoutEvent } from "./logout/logout.js";
 import { addSignupEvent } from "./signup/signup.js";
 
 const pageEvents = {
   login: addLoginEvent,
   otp: addVerifyOtpEvent,
   signup: addSignupEvent,
+  home: addLogoutEvent,
 }
 
 export function showPage(pageName) {
@@ -18,5 +21,11 @@ export function showPage(pageName) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  showPage("login");
+  const token = localStorage.getItem("authtoken")
+  if (token === null) {
+    showPage("login");
+    return
+  }
+  console.log(decodeJwt(JSON.parse(token).access))
+  showPage("home")
 });

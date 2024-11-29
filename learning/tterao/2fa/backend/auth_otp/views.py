@@ -254,9 +254,21 @@ def login_otp_resend(request):
 
 @api_view(["POST"])
 def logout(request):
-    user, token = JWTAuthentication.authenticate(request)
+    jwt_auth = JWTAuthentication()
+    user, token = jwt_auth.authenticate(request)
     if user is None:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    token = RefreshToken(token)
-    token.blacklist()
+    refresh_token = request.data.get("refresh")
+    if refresh_token is None:
+        return Response(
+            {"error": "Refresh token not provided"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    try:
+        token_obj = RefreshToken(refresh_token)
+        token_obj.blacklist()
+    except Exception as e:
+        return Response(
+            {"error": "Failed to blacklist token", "details": str(e)},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
