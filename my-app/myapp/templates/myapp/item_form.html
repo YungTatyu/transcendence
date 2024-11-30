@@ -1,0 +1,7 @@
+<h1>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Item</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+<a href="{% url 'item_list' %}">Cancel</a>
