@@ -4,4 +4,7 @@ all: build
 build:
 	python manage.py runserver 
 
-.Phony: all, build
+test:
+	./manage.py test test/
+
+.PHONY: all build test
