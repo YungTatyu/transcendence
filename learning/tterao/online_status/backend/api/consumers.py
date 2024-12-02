@@ -6,10 +6,11 @@ from channels.db import database_sync_to_async
 
 class UserStatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("accept")
         self.accept()
 
     async def disconnect(self, close_code):
-        pass
+        print("disconnect")
 
     async def receive(self, text_data):
         user = self.user
@@ -17,4 +18,4 @@ class UserStatusConsumer(AsyncWebsocketConsumer):
         await login(self.scope, user)
         # save the session (if the session backend does not access the db you can use `sync_to_async`)
         await database_sync_to_async(self.scope["session"].save)()
-        await self.send(text_data=json.dumps({"message": "message"}))
+        await self.send(text_data=json.dumps({"message": "send message"}))

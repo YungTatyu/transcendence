@@ -72,7 +72,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "online_status.wsgi.application"
 
-ASGI_APPLICATION = "api.asgi.application"
+ASGI_APPLICATION = "online_status.asgi.application"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
