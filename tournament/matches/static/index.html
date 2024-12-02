@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jQuery Bracket トーナメント表</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bracket/0.11.1/jquery.bracket.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bracket/0.11.1/jquery.bracket.min.js"></script>
+  <link rel="stylesheet" href="/static/tournament.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2>トーナメント作成</h2>
+
+    <form id="tournamentForm">
+      <div id="playersContainer">
+        <div class="form-group">
+          <label for="player1">プレーヤー1:</label>
+          <input type="text" class="form-control" id="player1" name="player1">
+        </div>
+        <div class="form-group">
+          <label for="player2">プレーヤー2:</label>
+          <input type="text" class="form-control" id="player2" name="player2">
+        </div>
+        <!-- 最大8人分のフォームを生成 -->
+        <div class="form-group">
+          <label for="player3">プレーヤー3:</label>
+          <input type="text" class="form-control" id="player3" name="player3">
+        </div>
+        <div class="form-group">
+          <label for="player4">プレーヤー4:</label>
+          <input type="text" class="form-control" id="player4" name="player4">
+        </div>
+        <div class="form-group">
+          <label for="player5">プレーヤー5:</label>
+          <input type="text" class="form-control" id="player5" name="player5">
+        </div>
+        <div class="form-group">
+          <label for="player6">プレーヤー6:</label>
+          <input type="text" class="form-control" id="player6" name="player6">
+        </div>
+        <div class="form-group">
+          <label for="player7">プレーヤー7:</label>
+          <input type="text" class="form-control" id="player7" name="player7">
+        </div>
+        <div class="form-group">
+          <label for="player8">プレーヤー8:</label>
+          <input type="text" class="form-control" id="player8" name="player8">
+        </div>
+      </div>
+
+      <!-- オーナーユーザー名 -->
+      <div class="form-group">
+        <label for="ownerUser">オーナーユーザー:</label>
+        <input type="text" class="form-control" id="ownerUser" name="ownerUser">
+      </div>
+
+      <button type="submit" class="btn btn-primary">トーナメント作成</button>
+    </form>
+  </div>
+
+  <h1 style="text-align: center;">トーナメント表</h1>
+  <div id="bracket"></div>
+  <script src="/static/generate_tournament_data.js"></script>
+  <script src="/static/create_tournament.js"></script>
+</body>
+</html>
