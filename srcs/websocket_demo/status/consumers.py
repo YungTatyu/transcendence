@@ -1,50 +1,46 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-# アクティブユーザー数を管理する変数
-active_users = 0
+# ユーザーステータスを管理する辞書
+user_status = {}
 
-class ActiveUserConsumer(AsyncWebsocketConsumer):
+class StatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        global active_users
-
         await self.accept()
-
-        active_users += 1
-
         await self.channel_layer.group_add(
-            "active_users",
+            "status_group",
             self.channel_name
-        )
-
-        await self.channel_layer.group_send(
-            "active_users",
-            {
-                "type": "update_user_count",
-                "count": active_users,
-            }
         )
 
     async def disconnect(self, close_code):
-        global active_users
-        active_users -= 1
+        for username, status in user_status.items():
+            if status["channel_name"] == self.channel_name:
+                del user_status[username]
+                await self.notify_status_update()
+                break
 
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        username = data.get("username")
+        action = data.get("action")
+
+        if username and action == "online":
+            user_status[username] = {
+                "status": "Online",
+                "channel_name": self.channel_name,
+            }
+            await self.notify_status_update()
+
+    async def notify_status_update(self):
         await self.channel_layer.group_send(
-            "active_users",
+            "status_group",
             {
-                "type": "update_user_count",
-                "count": active_users,
+                "type": "update_status",
+                "user_status": user_status,
             }
         )
 
-        await self.channel_layer.group_discard(
-            "active_users",
-            self.channel_name
-        )
-
-    async def update_user_count(self, event):
-        # クライアントにユーザー数を送信
-        count = event["count"]
+    async def update_status(self, event):
         await self.send(text_data=json.dumps({
-            "count": count
+            "user_status": event["user_status"]
         }))

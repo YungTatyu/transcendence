@@ -3,44 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Active User Count</title>
+    <title>User Status</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 50px;
         }
-        #user-count {
-            font-size: 2em;
-            color: #333;
+        #status-display {
+            margin-top: 20px;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
-    <h1>Real-Time Active Users</h1>
-    <div id="user-count">Active Users: 0</div>
-
+	<div id="switch"></div>
     <script>
-        const userCountElement = document.getElementById("user-count");
-        const activeUsersSocket = new WebSocket(
-            `wss://${window.location.host}/ws/active_users/`
-        );
+        const switchDisplay = document.getElementById("switch");
 
-        activeUsersSocket.onmessage = function (event) {
+        // WebSocketの接続を開始
+        const socket = new WebSocket(`wss://${window.location.host}/ws/status/`);
+
+        // 現在の画面をレンダリングする関数
+        function renderRoute(path) {
+            if (path === "/status/online/") {
+                // 「Go Online」画面のレンダリング
+                switchDisplay.innerHTML = "<p>You are now online!</p>";
+            } else {
+                // デフォルトの画面
+                switchDisplay.innerHTML = `
+                    <h1>Set Your Status</h1>
+                    <input type="text" id="username" placeholder="Enter your name">
+                    <button id="set-online">Go Online</button>
+                `;
+
+                // 新しい要素のイベントリスナーを設定
+                const usernameInput = document.getElementById("username");
+                const setOnlineButton = document.getElementById("set-online");
+
+                setOnlineButton.addEventListener("click", function () {
+                    const username = usernameInput.value.trim();
+                    if (username) {
+                        // WebSocketを通じてステータスを送信
+                        socket.send(
+                            JSON.stringify({
+                                username: username,
+                                action: "online",
+                            })
+                        );
+
+                        // URLを /status/online/ に変更し、画面を更新
+                        history.pushState(null, null, "/status/online/");
+                        renderRoute("/status/online/");
+                    }
+                });
+            }
+        }
+
+        // 「戻る」「進む」ボタンが押されたとき
+        window.addEventListener("popstate", () => {
+            renderRoute(location.pathname);
+        });
+
+        // 初期画面のレンダリング
+        renderRoute(location.pathname);
+
+        // サーバーからのメッセージを受け取ったとき
+        socket.onmessage = function (event) {
             const data = JSON.parse(event.data);
-            userCountElement.textContent = `Active Users: ${data.count}`;
-        };
+            const userStatus = data.user_status;
 
-        activeUsersSocket.onopen = function () {
-            console.log("WebSocket connection established.");
-        };
-
-        activeUsersSocket.onclose = function () {
-            console.log("WebSocket connection closed.");
-        };
-
-        activeUsersSocket.onerror = function (error) {
-            console.error("WebSocket error:", error);
+            // ステータスを表示
+            switchDisplay.innerHTML = "";
+            for (const [username, info] of Object.entries(userStatus)) {
+                const status = info.status;
+                switchDisplay.innerHTML += `<p>${username}: ${status}</p>`;
+            }
         };
     </script>
 </body>
