@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active User Count</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #user-count {
+            font-size: 2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Active Users</h1>
+    <div id="user-count">Active Users: 0</div>
+
+    <script>
+        const userCountElement = document.getElementById("user-count");
+        const activeUsersSocket = new WebSocket(
+            `wss://${window.location.host}/ws/active_users/`
+        );
+
+        activeUsersSocket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            userCountElement.textContent = `Active Users: ${data.count}`;
+        };
+
+        activeUsersSocket.onopen = function () {
+            console.log("WebSocket connection established.");
+        };
+
+        activeUsersSocket.onclose = function () {
+            console.log("WebSocket connection closed.");
+        };
+
+        activeUsersSocket.onerror = function (error) {
+            console.error("WebSocket error:", error);
+        };
+    </script>
+</body>
+</html>

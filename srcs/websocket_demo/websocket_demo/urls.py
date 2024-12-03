@@ -19,7 +19,9 @@ from django.urls import include, path
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('', lambda _: redirect('/chat/')),
-    path("chat/", include("chat.urls")),
+    path('', lambda _: redirect('/status/')),
+    path("status/", include("status.urls")),
     path('admin/', admin.site.urls),
+    # path('', lambda _: redirect('/chat/')),
+    # path("chat/", include("chat.urls")),
 ]
