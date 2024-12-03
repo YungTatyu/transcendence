@@ -19,6 +19,7 @@ export async function loginEvent(event) {
   }
   localStorage.setItem(ACCESS_TOKEN, json.access)
   localStorage.setItem(REFRESH_TOKEN, json.refresh)
+  window.location.pathname = '/';
   return true
 }
 
