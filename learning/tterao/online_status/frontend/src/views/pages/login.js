@@ -17,8 +17,8 @@ export async function loginEvent(event) {
     alert(json.error || "login failed.")
     return false
   }
-  localStorage.setItem(ACCESS_TOKEN, json.access)
-  localStorage.setItem(REFRESH_TOKEN, json.refresh)
+  localStorage.setItem(ACCESS_TOKEN, String(json.access))
+  localStorage.setItem(REFRESH_TOKEN, String(json.refresh))
   window.location.pathname = '/';
   return true
 }
