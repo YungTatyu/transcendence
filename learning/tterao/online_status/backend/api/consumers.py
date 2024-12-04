@@ -21,10 +21,7 @@ class UserStatusConsumer(AsyncWebsocketConsumer):
         await self.increment_connection_count()
 
         # 全ユーザーの状態を送信
-        all_statuses = await self.get_all_user_statuses()
-        await self.send(
-            text_data=json.dumps({"type": "all_statuses", "statuses": all_statuses})
-        )
+        await self.notify_all_statuses()
 
         # グループに参加
         await self.channel_layer.group_add("user_status_group", self.channel_name)
@@ -35,6 +32,7 @@ class UserStatusConsumer(AsyncWebsocketConsumer):
 
         # グループから削除
         await self.channel_layer.group_discard("user_status_group", self.channel_name)
+        await self.notify_all_statuses()
 
     async def receive(self, text_data):
         # クライアントからのリクエストを処理（必要に応じて）
@@ -76,6 +74,12 @@ class UserStatusConsumer(AsyncWebsocketConsumer):
         """全ユーザーのアクティブ状態を取得"""
         keys = cache.keys("user_status_*")
         return {key.replace("user_status_", ""): cache.get(key) for key in keys}
+
+    async def notify_all_statuses(self):
+        all_statuses = await self.get_all_user_statuses()
+        await self.send(
+            text_data=json.dumps({"type": "all_statuses", "statuses": all_statuses})
+        )
 
     def notify_status_change(self, status):
         """ステータス変更を通知"""
