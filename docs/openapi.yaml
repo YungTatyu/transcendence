@@ -65,6 +65,8 @@ paths:
                     avator_path:
                       type: string
                       description: "User avator path."
+
+    # TODO: /auth/generate/signup　とかぶっているけどどちらがいい？
     post:
       summary: "Create a new user"
       description: "Register a new user with the provided information."
@@ -146,6 +148,16 @@ paths:
                     type: string
         "404":
           description: "User not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error type."
+                    example: "User not found."
+
     put:
       summary: "Update user information"
       description: "Update an existing user's information by ID."
@@ -175,10 +187,44 @@ paths:
       responses:
         "200":
           description: "User updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "The ID of the updated user."
+                    example: 123
+                  username:
+                    type: string
+                    description: "The updated username of the user."
+                    example: "updated_username"
+                  email:
+                    type: string
+                    description: "The updated email address of the user."
+                    example: "updated_email@example.com"
         "401":
-          description: "User authentication failed."
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
         "404":
           description: "User not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error type."
+                    example: "User not found."
       security:
         - bearerAuth: []
 
@@ -195,10 +241,28 @@ paths:
       responses:
         "204":
           description: "User deleted successfully."
+          content: {}
         "401":
-          description: "User authentication failed."
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
         "404":
           description: "User not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error type."
+                    example: "User not found."
       security:
         - bearerAuth: []
 
