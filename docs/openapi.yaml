@@ -177,6 +177,161 @@ paths:
       security:
         - bearerAuth: []
 
+  /auth/generate/signup:
+    post:
+      description: "Register a new user and generate an OTP for verification."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "The desired username for the new account."
+                email:
+                  type: string
+                  description: "The user's email address."
+                password:
+                  type: string
+                  description: "The desired password for the new account."
+              required:
+                - username
+                - email
+                - password
+      responses:
+        "202":
+          description: "OTP generation accepted, processing asynchronously."
+        "400":
+          description: "Invalid input data."
+
+  /auth/generate/login:
+    post:
+      summary: "Log in an existing user"
+      description: "Authenticate the user and generate JWT tokens."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "The username for the login user."
+                password:
+                  type: string
+                  description: "The password of the user."
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: "Login successful, JWT tokens issued."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: "The access token."
+                  refresh:
+                    type: string
+                    description: "The refresh token."
+        "401":
+          description: "Invalid username or password."
+
+  /auth/token/refresh:
+    post:
+      summary: "Refresh access token"
+      description: "Generate a new access token using a valid refresh token."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+                  description: "The refresh token."
+              required:
+                - refresh
+      responses:
+        "200":
+          description: "New access token generated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: "The new access token."
+                  refresh:
+                    type: string
+                    description: "The new refresh token (if updated)."
+        "401":
+          description: "Invalid or expired refresh token."
+      security:
+        - bearerAuth: []
+
+  /auth/otp/verify/signup:
+    post:
+      summary: "Verify OTP during signup"
+      description: "Verify the OTP sent during the signup process."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "The username for the login user."
+                otp:
+                  type: string
+                  description: "The OTP sent to the user."
+              required:
+                - username
+                - otp
+      responses:
+        "200":
+          description: "OTP successfully verified, user account activated."
+        "400":
+          description: "Invalid OTP or email."
+
+  /auth/otp/verify/login:
+    post:
+      summary: "Verify OTP during login"
+      description: "Verify the OTP sent during the login process."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "Username for the login user."
+                otp:
+                  type: string
+                  description: "The OTP sent to the user."
+              required:
+                - username
+                - otp
+      responses:
+        "200":
+          description: "OTP successfully verified, login completed."
+        "400":
+          description: "Invalid OTP or username."
+        "401":
+          description: "User authentication failed."
+
 components:
   securitySchemes:
     bearerAuth:
