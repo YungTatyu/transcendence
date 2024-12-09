@@ -1,0 +1,33 @@
+openapi: 3.0.0
+info:
+  title: LoginUserList API
+  version: 1.0.0
+  description: ft_transcendence内のユーザーのログイン情報を管理するAPI
+
+servers:
+  - url: https://login_user_list.42.fr
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /login_user_list/ws/:
+    get:
+      summary: リアルタイムにユーザーがログインしているかを表示するためのWebSocket
+      security:
+        - BearerAuth: []
+      operationId: loginUserList
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Bat Request
+        '500':
+          description: Internal Server Error
