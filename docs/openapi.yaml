@@ -1,0 +1,185 @@
+openapi: 3.0.3
+
+info: 
+  title: transcendence API
+  description: |
+    Transcendence API provides a comprehensive platform for managing a multiplayer ping-pong game service. This includes user authentication, game management, and social features.
+
+    ## Services
+    ### 1. Authentication Service
+    - OTP-based authentication.
+    - JWT issuance, validation, and refresh.
+
+    ### 2. User Management Service
+    - Create, update, and manage user profiles.
+    - Manage user settings and preferences.
+
+    ### 3. Ping-Pong Game Management Service
+    - Real-time game matchmaking and management.
+    - Game history tracking.
+
+    ### 4. Tournament Management Service
+    - Create and manage tournaments.
+    - Track tournament results and rankings.
+
+    ### 5. Friend Management Service
+    - Add and remove friends.
+    - Manage friend requests and relationships.
+
+    ### 6. Active User List Service
+    - Display a list of currently active (logged-in) users.
+    - Track active sessions across devices.
+  version: 1.0.0
+
+servers:
+  - url: https://auth.transcendence.com
+    description: Authentication service
+  - url: https://matchmaking.transcendence.com
+    description: Matchmaking service
+  - url: https://score.transcendence.com
+    description: Score management service
+  - url: https://profile.transcendence.com
+    description: User profile service
+
+paths:
+  /users:
+    get:
+      summary: "Get users info"
+      description: "Retrieve a list of all users."
+      responses:
+        "200":
+          description: "A list of users."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "User ID."
+                    username:
+                      type: string
+                      description: "Username."
+                    avator_path:
+                      type: string
+                      description: "User avator path."
+    post:
+      summary: "Create a new user"
+      description: "Register a new user with the provided information."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "Username for the new user."
+                email:
+                  type: string
+                  description: "Email address for the new user."
+                password:
+                  type: string
+                  description: "Password for the new user."
+              required:
+                - username
+                - email
+                - password
+      responses:
+        "202":
+          description: "OTP generation accepted, processing asynchronously."
+        "400":
+          description: "Invalid input data."
+
+  /users/{user_id}:
+    get:
+      summary: "Get user by ID"
+      description: "Retrieve detailed information about a specific user by ID."
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: "ID of the user to retrieve."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "User details."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                  username:
+                    type: string
+                  avator_path:
+                    type: string
+        "404":
+          description: "User not found."
+    put:
+      summary: "Update user information"
+      description: "Update an existing user's information by ID."
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: "ID of the user to update."
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "Updated username."
+                email:
+                  type: string
+                  description: "Updated email address."
+              required:
+                - username
+                - email
+      responses:
+        "200":
+          description: "User updated successfully."
+        "401":
+          description: "User authentication failed."
+        "404":
+          description: "User not found."
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: "Delete user"
+      description: "Delete a user by ID."
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: "ID of the user to delete."
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "User deleted successfully."
+        "401":
+          description: "User authentication failed."
+        "404":
+          description: "User not found."
+      security:
+        - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
