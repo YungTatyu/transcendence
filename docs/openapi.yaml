@@ -66,10 +66,12 @@ paths:
                       type: string
                       description: "User avator path."
 
-    # TODO: /auth/generate/signup　とかぶっているけどどちらがいい？
+    # TODO: jwtの認証はユーザー管理サービスでできる？
     post:
       summary: "Create a new user"
       description: "Register a new user with the provided information."
+      security:
+        - bearerAuth: []  
       requestBody:
         required: true
         content:
@@ -80,34 +82,24 @@ paths:
                 username:
                   type: string
                   description: "Username for the new user."
-                email:
-                  type: string
-                  description: "Email address for the new user."
-                password:
-                  type: string
-                  description: "Password for the new user."
               required:
                 - username
-                - email
-                - password
       responses:
-        "200":
-          description: "OTP generated successfully."
-          headers:
-            Set-Cookie:
-              description: "Set the username in the cookie for OTP verification."
-              schema:
-                type: string
-                example: "username=johndoe; HttpOnly; Secure; Path=/; Max-Age=300"
+        "201":
+          description: "User created successfully."
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  qr_code:
+                  user_id:
                     type: string
-                    description: "A Base64 encoded string representing the QR code for OTP."
-                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."
+                    description: "The unique identifier for the created user."
+                    example: "12345"
+                  username:
+                    type: string
+                    description: "The username of the created user."
+                    example: "johndoe"
         "400":
           description: "Invalid input data."
           content:
@@ -118,9 +110,31 @@ paths:
                   error:
                     type: string
                     description: "A brief error message explaining the issue."
-                    example: "Invalid email format."
+                    example: "Email format is invalid."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+        "409":
+          description: "Conflict - User already exists."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating a conflict."
+                    example: "A user with this email already exists."
 
-
+  # TODO: emailとかpasswordの情報はどうする？
   /users/{user_id}:
     get:
       summary: "Get user by ID"
@@ -161,6 +175,8 @@ paths:
     put:
       summary: "Update user information"
       description: "Update an existing user's information by ID."
+      security:
+        - bearerAuth: []  
       parameters:
         - name: user_id
           in: path
@@ -225,12 +241,12 @@ paths:
                     type: string
                     description: "Error type."
                     example: "User not found."
-      security:
-        - bearerAuth: []
 
     delete:
       summary: "Delete user"
       description: "Delete a user by ID."
+      security:
+        - bearerAuth: []
       parameters:
         - name: user_id
           in: path
@@ -263,8 +279,6 @@ paths:
                     type: string
                     description: "Error type."
                     example: "User not found."
-      security:
-        - bearerAuth: []
 
   /auth/generate/signup:
     post:
@@ -372,6 +386,8 @@ paths:
     post:
       summary: "Refresh access token"
       description: "Generate a new access token using a valid refresh token."
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -408,8 +424,6 @@ paths:
                   error:
                     type: string
                     description: "Error message indicating the invalid or expired refresh token."
-      security:
-        - bearerAuth: []
 
   /auth/otp/verify/signup:
     post:
