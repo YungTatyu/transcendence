@@ -38,10 +38,13 @@ paths:
                 "qr": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...（省略）...5ErkJggg=="
         '400':
           description: 一次認証に必要なデータでエラー
+        '409':
+          description: nameまはたmailがすでに使用されている
           content:
-            applicaaation/json:
+            application/json:
               example:
-                "message": "name or mailがすでに使用されています"
+                "error_message": "メールアドレスが重複している"
+
   /auth/sign-in/verify-otp/:
     post:
       summary: アカウント新規作成(二次認証)
@@ -81,8 +84,6 @@ paths:
     get:
       summary: JSON Web Key Set (JWKS)を取得
       operationId: getJsonWebKeySet
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: JWKSを取得
@@ -108,12 +109,12 @@ paths:
               ]
         '500':
           description: 公開鍵配信が正常に動作していない
+      security:
+        - BearerAuth: []
   /auth/password/:
     put:
       summary: パスワードを更新する
       operationId: updatePassword
-      security:
-        - BearerAuth: []
       requestBody:
         description: 新しいパスワード
         required: true
@@ -126,12 +127,12 @@ paths:
           description: No Content
         '400':
           description: パスワードがおかしい
+      security:
+        - BearerAuth: []
   /auth/mail/:
     put:
       summary: メールアドレスを更新
       operationId: updateMail
-      security:
-        - BearerAuth: []
       requestBody:
         description: 新しいパスワード
         required: true
@@ -146,3 +147,5 @@ paths:
           description: メールアドレスがおかしい
         '409':
           description: メールアドレスがすでに使用されている
+      security:
+        - BearerAuth: []

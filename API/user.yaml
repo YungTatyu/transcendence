@@ -37,13 +37,13 @@ paths:
   /users/{user_id}/:
     get:
       summary: 特定のuser_idを持つユーザー情報を取得
+      operationId: findUser
       parameters:
         - name: user_id
           in: path
           required: true
           schema:
             type: integer
-      operationId: findUser
       responses:
         '200':
           description: Found User
@@ -92,13 +92,13 @@ paths:
   /users/avatar/{user_id}/:
     get:
       summary: 特定のユーザーのプロフィール画像の取得
+      operationId: getAvatar
       parameters:
         - name: user_id
           in: path
           required: true
           schema:
             type: integer
-      operationId: getAvatar
       responses:
         '200':
           description: User avatar found

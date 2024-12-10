@@ -5,7 +5,7 @@ info:
   description: ft_transcendence内のユーザーのログイン情報を管理するAPI
 
 servers:
-  - url: https://login_user_list.42.fr
+  - url: https://login-user-list.42.fr
 
 components:
   securitySchemes:
