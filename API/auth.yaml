@@ -1,0 +1,157 @@
+openapi: 3.0.0
+info:
+  title: Authentication API
+  version: 1.0.0
+  description: ft_transcendence内の認証機能のAPI
+
+servers:
+  - url: https://auth.42.fr
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /auth/sign-in/:
+    post:
+      summary: アカウント新規作成(一次認証)
+      operationId: signIn
+      requestBody:
+        description: 一次認証に必要なデータ
+        required: true
+        content:
+          application/json:
+            example:
+              "name": "NEW"
+              "mail": "abc@gmail.com"
+              "password": "password"
+      responses:
+        '200':
+          description: 引き続き二次認証を行ってください
+          content:
+            application/json:
+              example:
+                "user_name": "NEW"
+                "qr": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...（省略）...5ErkJggg=="
+        '400':
+          description: 一次認証に必要なデータでエラー
+          content:
+            applicaaation/json:
+              example:
+                "message": "name or mailがすでに使用されています"
+        '500':
+          description: Internal Server Error
+  /auth/sign-in/verify-otp:
+    post:
+      summary: アカウント新規作成(二次認証)
+      operationId: signInVerifyOTP
+      requestBody:
+        description: 二次認証に必要なデータ
+        required: true
+        content:
+          application/json:
+            example:
+              "name": "NEW"
+              "otp": 123456
+      responses:
+        '200':
+          description: アカウント作成成功
+        '400':
+          description: 認証失敗
+        '500':
+          description: Internal Server Error
+  /auth/login/:
+    post:
+      summary: ログイン
+      operationId: login
+      requestBody:
+        description: ユーザー名・パスワード・OTP
+        required: true
+        content:
+          application/json:
+            example:
+              "name": "ABC"
+              "password": "ABCPASS"
+              "otp": 234567
+      responses:
+        '200':
+          description: ログイン成功
+        '400':
+          description: ログイン失敗
+        '500':
+          description: Internal Server Error
+  /auth/jwks/:
+    get:
+      summary: JSON Web Key Set (JWKS)を取得
+      operationId: getJsonWebKeySet
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: JWKSを取得
+          content:
+            application/json:
+              example: [
+                {
+                  "kty": "RSA",
+                  "kid": "2024-12-10",   # キーのID
+                  "use": "sig",          # 鍵の用途（署名）
+                  "alg": "RS256",        # アルゴリズム
+                  "n": "vZg0s7_Jy6c...", # 公開鍵のモジュラス
+                  "e": "AQAB"            # 公開鍵の指数
+                },
+                {
+                  "kty": "RSA",
+                  "kid": "2024-12-09",
+                  "use": "sig",
+                  "alg": "RS256",
+                  "n": "bV2n9Dh4rD3...",
+                  "e": "AQAB"
+                }
+              ]
+        '500':
+          description: 公開鍵配信が正常に動作していない
+  /auth/password/:
+    put:
+      summary: パスワードを更新する
+      operationId: updatePassword
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: 新しいパスワード
+        required: true
+        content:
+          application/json:
+            example:
+              "new_password": "NEWABC"
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: パスワードがおかしい
+  /auth/mail:
+    put:
+      summary: メールアドレスを更新
+      operationId: updateMail
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: 新しいパスワード
+        required: true
+        content:
+          application/json:
+            example:
+              "new_mail": "def@gmail.com"
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: メールアドレスがおかしい
+        '409':
+          description: メールアドレスがすでに使用されている
