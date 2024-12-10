@@ -18,7 +18,7 @@ security:
   - BearerAuth: []
 
 paths:
-  /tournament/ws/enter_room/:
+  /tournament/ws/enter-room/:
     get:
       summary: トーナメントのマッチング待機部屋に入る(JWTでUserIDを渡す前提)
       security:
@@ -32,7 +32,7 @@ paths:
         '500':
           description: Internal Server Error
 
-  /tournament/finish_match/:
+  /tournament/finish-match:
     post:
       summary: トーナメントの一試合が終了した際に試合管理APIから叩かれる。この処理をトリガーにその後のアナウンスが行われる
       security:

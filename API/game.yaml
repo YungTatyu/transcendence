@@ -18,7 +18,7 @@ security:
   - BearerAuth: []
 
 paths:
-  /game/ws/enter_room/{match_id}/:
+  /game/ws/enter-room/{match_id}/:
     get:
       summary: |
         Pongゲームのルームに参加。人数が揃ったらWebSocket経由でゲーム開始

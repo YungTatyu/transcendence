@@ -18,7 +18,7 @@ security:
   - BearerAuth: []
 
 paths:
-  /match/create_tournament_match/:
+  /match/create-tournament-match/:
     post:
       summary: Matchesにレコードを追加する(トーナメント管理から叩かれる想定)
       security:
@@ -64,7 +64,7 @@ paths:
           description: 試合作成の基となる情報が間違っている
         '500':
           description: Internal Server Error
-  /match/ws/enter_room/:
+  /match/ws/enter-room/:
     get:
       summary: QuickPlayのマッチング待機部屋に入る(JWTでUserIDを渡す前提)。人数が集まったらGame開始
       security:
@@ -77,7 +77,7 @@ paths:
           description: Bad Request (Invalid or Missing UserID)
         '500':
           description: Internal Server Error
-  /match/ws/enter_room/{match_id}/:
+  /match/ws/enter-room/{match_id}/:
     get:
       summary: トーナメントの試合待機部屋に入る(JWTでUserIDを渡す前提)。参加者が集まったらGame開始
       security:

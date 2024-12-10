@@ -18,7 +18,7 @@ security:
   - BearerAuth: []
 
 paths:
-  /login_user_list/ws/:
+  /login-user-list/ws/:
     get:
       summary: リアルタイムにユーザーがログインしているかを表示するためのWebSocket
       security:
