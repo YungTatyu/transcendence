@@ -46,6 +46,8 @@ paths:
     get:
       summary: "Get users info"
       description: "Retrieve a list of all users."
+      tags:
+        - users
       responses:
         "200":
           description: "A list of users."
@@ -70,6 +72,8 @@ paths:
     post:
       summary: "Create a new user"
       description: "Register a new user with the provided information."
+      tags:
+        - users
       security:
         - bearerAuth: []  
       requestBody:
@@ -140,6 +144,8 @@ paths:
     get:
       summary: "Get user by ID"
       description: "Retrieve detailed information about a specific user by ID."
+      tags:
+        - users
       parameters:
         - name: user_id
           in: path
@@ -176,6 +182,8 @@ paths:
     put:
       summary: "Update user information"
       description: "Update an existing user's information by ID."
+      tags:
+        - users
       security:
         - bearerAuth: []  
       parameters:
@@ -253,6 +261,8 @@ paths:
     delete:
       summary: "Delete user"
       description: "Delete a user by ID."
+      tags:
+        - users
       security:
         - bearerAuth: []
       parameters:
@@ -293,6 +303,8 @@ paths:
     get:
       summary: "Get authenticated user's details"
       description: "Retrieve detailed information about the authenticated user."
+      tags:
+        - users
       security:
         - bearerAuth: []
       responses:
@@ -327,6 +339,8 @@ paths:
     put:
       summary: "Update authenticated user's information"
       description: "Update the information of the authenticated user."
+      tags:
+        - users
       security:
         - bearerAuth: []
       requestBody:
@@ -397,6 +411,8 @@ paths:
     delete:
       summary: "Delete authenticated user's account"
       description: "Delete the account of the authenticated user."
+      tags:
+        - users
       security:
         - bearerAuth: []
       responses:
@@ -428,6 +444,8 @@ paths:
   /auth/generate/signup:
     post:
       description: "Register a new user and generate an OTP for verification."
+      tags:
+        - auth
       requestBody:
         required: true
         content:
@@ -482,6 +500,8 @@ paths:
     post:
       summary: "Log in an existing user"
       description: "Authenticate the user and generate JWT tokens."
+      tags:
+        - auth
       requestBody:
         required: true
         content:
@@ -531,6 +551,8 @@ paths:
     post:
       summary: "Refresh access token"
       description: "Generate a new access token using a valid refresh token."
+      tags:
+        - auth
       security:
         - bearerAuth: []
       requestBody:
@@ -574,6 +596,8 @@ paths:
     post:
       summary: "Verify OTP during signup"
       description: "Verify the OTP sent during the signup process."
+      tags:
+        - auth
       requestBody:
         required: true
         content:
@@ -635,6 +659,8 @@ paths:
     post:
       summary: "Verify OTP during login"
       description: "Verify the OTP sent during the login process."
+      tags:
+        - auth
       requestBody:
         required: true
         content:
