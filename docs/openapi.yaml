@@ -924,9 +924,58 @@ paths:
                     type: string
                     example: "Friend not found."
 
+  /ws/friends:
+    get:
+      summary: "Connect to WebSocket for real-time friends updates"
+      description: >
+        Establish a WebSocket connection to retrieve real-time updates about friends,
+        including their online/offline status.
+      tags:
+        - login-users
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: "JWT token for authentication."
+          schema:
+            type: string
+      responses:
+        "101":
+          description: "Switching Protocols (WebSocket connection established)."
+        "401":
+          description: "Unauthorized (invalid or missing token)."
+
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  schemas:
+    WebSocketResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "The type of response, e.g., 'online_friends', 'status_update'."
+          example: "online_friends"
+        data:
+          type: object
+          description: "The actual data returned by the server."
+          additionalProperties: true
+          example:
+            - friend_id: 1
+              username: "friend_1"
+              status: "online"
+
+    WebSocketError:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Error type, e.g., 'authentication_error'."
+        message:
+          type: string
+          description: "Detailed error message."
