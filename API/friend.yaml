@@ -41,6 +41,21 @@ paths:
                   "approved_at": "2024-12-09",
                 }
               ]
+  /friends/{user_id}/:
+    delete:
+      summary: フレンド削除
+      operationId: deleteFriend
+      parameters:
+       - name: user_id
+         in: path
+         required: true
+         schema:
+           type: integer
+      responses:
+        '204':
+          description: フレンド削除成功
+        '400':
+          description: フレンド削除失敗
   /friends/requests/:
     post:
       summary: フレンド申請を送信
@@ -63,6 +78,21 @@ paths:
                 "request_sent_at": "2024-12-02"
         '400':
           description: Invalid user_id
+  /friends/requests/{user_id}/:
+    delete:
+      summary: フレンド申請取消
+      operationId: deleteFriendRequest
+      parameters:
+       - name: user_id
+         in: path
+         required: true
+         schema:
+           type: integer
+      responses:
+        '204':
+          description: フレンド申請取消成功
+        '400':
+          description: フレンド申請取消失敗
   /friends/requests/received/:
     get:
       summary: ユーザーにフレンド申請しているユーザーの情報を取得
