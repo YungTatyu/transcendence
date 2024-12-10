@@ -146,3 +146,28 @@ paths:
                   "date": "2024-12-01",
                 }
               ]
+  /match/search/tournament/:
+    get:
+      summary: トーナメントの試合を検索
+      operationId: SearchTournamentMatch
+      requestBody:
+        description: tournament_id, round
+        required: true
+        content:
+          application/json:
+            example:
+              "tournament_id": 1
+              "round": 10
+      responses:
+        '200':
+          description: トーナメントの試合が見つかった
+          content:
+            application/json:
+              example:
+                "match_id": 2
+                "tournament_id": 1
+                "round": 10
+                "participants": [
+                  {"user_id": 1, "user_name": "ABC"},
+                  {"user_id": 2, "user_name": "DEF"}
+                ]
