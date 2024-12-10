@@ -953,6 +953,261 @@ paths:
         "101":
           description: "Switching protocols to WebSocket for real-time game management."
 
+  /matches:
+    get:
+      summary: "Retrieve a list of matches"
+      description: "Retrieve a list of matches with optional filters for mode, user, tournament, etc."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matches
+      parameters:
+        - name: mode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["QuickPlay", "Tournament"]
+          description: "Filter matches by mode."
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: "Filter matches involving a specific user."
+        - name: tournament_id
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: "Filter matches by tournament ID (only for Tournament mode)."
+        - name: round
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: "Filter matches by round number (only for Tournament mode)."
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["in_progress", "completed"]
+          description: "Filter matches by status (e.g., in progress or completed)."
+      responses:
+        "200":
+          description: "List of matches."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchDetails"
+        "400":
+          description: "Invalid query parameters."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid query parameters."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+    post:
+      summary: "Create a new match"
+      description: "Create a new match for either QuickPlay or Tournament mode."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matches
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+                  description: "Match mode, either 'QuickPlay' or 'Tournament'."
+                  enum: ["QuickPlay", "Tournament"]
+                  example: "QuickPlay"
+                tournament_id:
+                  type: integer
+                  description: "ID of the tournament, required for Tournament mode."
+                  example: 101
+                parent_match_id:
+                  type: integer
+                  description: "ID of the parent match, required for Tournament mode."
+                  example: 12
+                round:
+                  type: integer
+                  description: "The round number in the tournament, required for Tournament mode."
+                  example: 1
+              required:
+                - mode
+              additionalProperties: false
+      responses:
+        "201":
+          description: "Match created successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  match_id:
+                    type: integer
+                    description: "ID of the newly created match."
+                  mode:
+                    type: string
+                    description: "Match mode (QuickPlay or Tournament)."
+                  tournament_id:
+                    type: integer
+                    description: "ID of the tournament, if applicable."
+                  parent_match_id:
+                    type: integer
+                    description: "ID of the parent match, if applicable."
+                  round:
+                    type: integer
+                    description: "Round number in the tournament, if applicable."
+        "400":
+          description: "Invalid request payload."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid request payload."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+
+  /matches/{match_id}:
+    get:
+      summary: "Get match details"
+      description: "Retrieve details about a specific match by its ID."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matches
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "The ID of the match."
+      responses:
+        "200":
+          description: "Match details retrieved successfully."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchDetails"
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+        "404":
+          description: "Match not found."
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                    description: "Error type."
+                    example: "Match not found."
+
+    patch:
+      summary: "Update match after completion"
+      description: "Register the winner of a completed match."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matches
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "The ID of the match."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                winner_user_id:
+                  type: integer
+                  description: "ID of the user who won the match."
+                  example: 42
+              required:
+                - winner_user_id
+      responses:
+        "200":
+          description: "Match updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  match_id:
+                    type: integer
+                    description: "ID of the match."
+                  winner_user_id:
+                    type: integer
+                    description: "ID of the winner."
+        "400":
+          description: "Invalid request payload."
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                    description: "Error type."
+                    example: "Invalid request payload."
+        "404":
+          description: "Match not found."
+          content:
+            application/json:
+              schema:
+                properties:
+                  error:
+                    type: string
+                    description: "Error type."
+                    example: "Match not found."
 
 components:
   securitySchemes:
@@ -1011,7 +1266,7 @@ components:
           description: "Y position of the ball (0 to 1, normalized)."
         ball_x_direction:
           type: number
-          description: "Direction of the ball's movement along the X-axis (-1, 0, or 1)."
+          description: "Direction of the ball's movement along the X-axis (-1, 0, or 1)." 
         ball_y_direction:
           type: number
           description: "Direction of the ball's movement along the Y-axis (-1, 0, or 1)."
@@ -1054,3 +1309,36 @@ components:
           type: string
           description: "A descriptive error message."
           example: "Invalid game state update."
+    MatchDetails:
+      type: object
+      properties:
+        match_id:
+          type: integer
+          description: "ID of the match."
+        mode:
+          type: string
+          description: "Match mode, either 'QuickPlay' or 'Tournament'."
+          enum: ["QuickPlay", "Tournament"]
+        tournament_id:
+          type: integer
+          description: "ID of the tournament, if applicable."
+        parent_match_id:
+          type: integer
+          description: "ID of the parent match, if applicable."
+        round:
+          type: integer
+          description: "Round number in the tournament, if applicable."
+        winner_user_id:
+          type: integer
+          description: "ID of the user who won the match."
+        start_date:
+          type: string
+          format: date-time
+          description: "Timestamp when the match was created."
+        finish_date:
+          type: string
+          format: date-time
+          description: "Timestamp when the match was finished."
+      required:
+        - match_id
+        - mode
