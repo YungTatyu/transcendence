@@ -692,6 +692,212 @@ paths:
                     type: string
                     description: "Error message indicating failed authentication."
 
+  /friends:
+    get:
+      summary: "Get the user's friends list"
+      description: "Retrieve the list of friends for the authenticated user."
+      security:
+        - bearerAuth: []  
+      tags:
+        - friends
+      responses:
+        "200":
+          description: "The user's friends list."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  friends:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: integer
+                          description: "The ID of the friend."
+                        username:
+                          type: string
+                          description: "The username of the friend."
+                        status:
+                          type: string
+                          enum: [pending, approved, rejected]
+                          description: "The status of the friend request."
+                        request_sent_at:
+                          type: string
+                          format: date-time
+                          description: "The timestamp when the friend request was sent."
+                        approved_at:
+                          type: string
+                          format: date-time
+                          description: "The timestamp when the friend request was approved."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+        "404":
+          description: "No friends found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No friends found."
+
+  /friends/{friend_id}:
+    post:
+      summary: "Send a friend request"
+      description: "Send a friend request to another user."
+      security:
+        - bearerAuth: []  
+      tags:
+        - friends
+      parameters:
+        - name: friend_id
+          in: path
+          required: true
+          description: "ID of the user to send the friend request to."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Friend request sent successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Friend request sent successfully."
+        "400":
+          description: "Invalid request or already sent request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request already sent."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+
+    patch:
+      summary: "Approve a friend request"
+      description: "Approve a friend request from another user."
+      security:
+        - bearerAuth: []  
+      tags:
+        - friends
+      parameters:
+        - name: friend_id
+          in: path
+          required: true
+          description: "The ID of the friend request to approve."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Friend request approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Friend request approved."
+        "400":
+          description: "Invalid state (e.g., attempting to approve an already approved or rejected request)."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid state for approval."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+        "404":
+          description: "Friend request not found or already approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request not found."
+  
+    delete:
+      summary: "Delete a friend"
+      description: "Remove a friend from the user's friend list."
+      security:
+        - bearerAuth: []  
+      tags:
+        - friends
+      parameters:
+        - name: friend_id
+          in: path
+          required: true
+          description: "The ID of the friend to delete."
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Friend deleted successfully."
+          content: {}
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+        "404":
+          description: "Friend not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend not found."
+
 components:
   securitySchemes:
     bearerAuth:
