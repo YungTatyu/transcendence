@@ -51,5 +51,3 @@ paths:
           description: 正常にトーナメントの一試合が終了
         '400':
           description: 終了した試合情報とトーナメント管理API内の情報の整合性が取れない
-        '500':
-          description: Internal Server Error

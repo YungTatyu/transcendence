@@ -43,8 +43,6 @@ paths:
                   "approved_at": "2024-12-09",
                 }
               ]
-        '500':
-          description: Internal Server Error
   /friends/requests/:
     post:
       summary: フレンド申請を送信
@@ -69,8 +67,6 @@ paths:
                 "request_sent_at": "2024-12-02"
         '400':
           description: Invalid user_id
-        '500':
-          description: Internal Server Error
   /friends/requests/received/:
     get:
       summary: ユーザーにフレンド申請しているユーザーの情報を取得
@@ -94,8 +90,6 @@ paths:
                   "request_sent_at": "2024-12-03",
                 }
               ]
-        '500':
-          description: Internal Server Error
   /friends/requests/sent/:
     get:
       summary: ユーザーがフレンド申請しているユーザーの情報を取得
@@ -119,8 +113,6 @@ paths:
                   "request_sent_at": "2024-12-03",
                 }
               ]
-        '500':
-          description: Internal Server Error
   /friends/requests/approve/:
     post:
       summary: フレンド申請を承認
@@ -146,5 +138,3 @@ paths:
                 "approved_at": "2024-12-09"
         '400':
           description: Invalid requester_user_id
-        '500':
-          description: Internal Server Error

@@ -62,8 +62,6 @@ paths:
                 "match_id": 101
         '400':
           description: 試合作成の基となる情報が間違っている
-        '500':
-          description: Internal Server Error
   /match/ws/enter-room/:
     get:
       summary: QuickPlayのマッチング待機部屋に入る(JWTでUserIDを渡す前提)。人数が集まったらGame開始
@@ -118,8 +116,6 @@ paths:
           description: 正常に試合が終了
         '400':
           description: リクエストボディと試合テーブルのレコードの整合性が取れない
-        '500':
-          description: Internal Server Error
   /match/statistics/:
     get:
       summary: ユーザーの勝敗などの統計情報統計情報を取得
@@ -135,8 +131,6 @@ paths:
                 "match_win_count": 20
                 "match_lose_count": 8
                 "tournament_winner_count": 2
-        '500':
-          description: Internal Server Error
   /match/history/:
     get:
       summary: ユーザーの試合履歴リストを取得
@@ -164,7 +158,3 @@ paths:
                   "date": "2024-12-01",
                 }
               ]
-                
-        '500':
-          description: Internal Server Error
-

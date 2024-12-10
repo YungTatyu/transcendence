@@ -45,8 +45,6 @@ paths:
             applicaaation/json:
               example:
                 "message": "name or mailがすでに使用されています"
-        '500':
-          description: Internal Server Error
   /auth/sign-in/verify-otp/:
     post:
       summary: アカウント新規作成(二次認証)
@@ -64,8 +62,6 @@ paths:
           description: アカウント作成成功
         '400':
           description: 認証失敗
-        '500':
-          description: Internal Server Error
   /auth/login/:
     post:
       summary: ログイン
@@ -84,8 +80,6 @@ paths:
           description: ログイン成功
         '400':
           description: ログイン失敗
-        '500':
-          description: Internal Server Error
   /auth/jwks/:
     get:
       summary: JSON Web Key Set (JWKS)を取得
