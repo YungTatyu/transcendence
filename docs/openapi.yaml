@@ -1209,6 +1209,233 @@ paths:
                     description: "Error type."
                     example: "Match not found."
 
+  /matches/participants:
+    get:
+      summary: "Get participant scores for a match"
+      description: "Retrieve the scores of all participants in a specific match, or a specific participant's score if user_id is provided."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matche-participants
+      parameters:
+        - name: match_id
+          in: query
+          required: true
+          description: "The ID of the match to retrieve participant scores for."
+          schema:
+            type: integer
+        - name: user_id
+          in: query
+          required: false
+          description: "The ID of the participant whose score should be retrieved. If omitted, scores for all participants will be returned."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Scores retrieved successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  match_id:
+                    type: integer
+                    description: "The ID of the match."
+                  participants:
+                    type: array
+                    description: "List of participants and their scores."
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: integer
+                          description: "The ID of the participant."
+                        score:
+                          type: integer
+                          description: "The score of the participant."
+        "400":
+          description: "Invalid input data."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating invalid input."
+                    example: "Match ID is required."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
+        "404":
+          description: "Match or participant not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating match or participant does not exist."
+                    example: "Match not found."
+    post:
+      summary: "Add a participant to a match"
+      description: "Register a participant for a specific match."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matche-participants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                match_id:
+                  type: integer
+                  description: "The ID of the match."
+                user_id:
+                  type: integer
+                  description: "The ID of the user participating in the match."
+              required:
+                - match_id
+                - user_id
+      responses:
+        "201":
+          description: "Participant successfully added to the match."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  # TODO: participant_idはなし？
+                  # participant_id:
+                  #   type: integer
+                  #   description: "The ID of the created participant entry."
+                  match_id:
+                    type: integer
+                    description: "The ID of the match."
+                  user_id:
+                    type: integer
+                    description: "The ID of the user added as a participant."
+        "400":
+          description: "Invalid input data."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating what went wrong."
+                    example: "Match ID or User ID is missing."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
+        "409":
+          description: "Conflict: Participant already exists for this match."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message for conflict."
+                    example: "User is already a participant in this match."
+
+    patch:
+      summary: "Update a participant's score"
+      description: "Update the score for a participant after the match has ended."
+      security:
+        - bearerAuth: []  
+      tags:
+        - matche-participants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                match_id:
+                  type: integer
+                  description: "The ID of the match."
+                user_id:
+                  type: integer
+                  description: "The ID of the participant."
+                score:
+                  type: integer
+                  description: "The score of the participant."
+              required:
+                - match_id
+                - user_id
+                - score
+      responses:
+        "200":
+          description: "Score successfully updated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  match_id:
+                    type: integer
+                    description: "The ID of the match."
+                  user_id:
+                    type: integer
+                    description: "The ID of the participant."
+                  score:
+                    type: integer
+                    description: "The updated score."
+        "400":
+          description: "Invalid input data."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating invalid input."
+                    example: "Score must be a non-negative integer."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
+        "404":
+          description: "Participant not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the participant does not exist."
+                    example: "Participant not found for the given match ID and user ID."
+
 components:
   securitySchemes:
     bearerAuth:
