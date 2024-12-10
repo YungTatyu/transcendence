@@ -34,7 +34,7 @@ paths:
           description: ユーザーの作成に成功
         '400':
           description: ユーザーの作成に失敗
-  /users/{user_id}:
+  /users/{user_id}/:
     get:
       summary: 特定のuser_idを持つユーザー情報を取得
       parameters:
@@ -95,7 +95,7 @@ paths:
           description: Update avatar
         '400':
           description: Bad Request
-  /users/avatar/{user_id}:
+  /users/avatar/{user_id}/:
     get:
       summary: 特定のユーザーのプロフィール画像の取得
       parameters:

@@ -18,17 +18,11 @@ security:
   - BearerAuth: []
 
 paths:
-  /friends/{user_id}:
+  /friends/:
     get:
-      summary: user_idで指定したユーザーのフレンド情報を取得
+      summary: ユーザーのフレンド情報を取得
       security:
         - BearerAuth: []
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: integer
       operationId: getFriends
       responses:
         '200':
@@ -49,8 +43,6 @@ paths:
                   "approved_at": "2024-12-09",
                 }
               ]
-        '400':
-          description: Invalid user_id
         '500':
           description: Internal Server Error
   /friends/requests/:
@@ -60,37 +52,30 @@ paths:
         - BearerAuth: []
       operationId: sendFriendRequest
       requestBody:
-        description: フレンド申請のfrom/toの情報
+        description: フレンド申請先ユーザーのuser_id
         required: true
         content:
           application/json:
             example:
-              "requester_id": 123 # フレンド申請の送信元ユーザー
-              "receiver_id": 456 # フレンド申請送信先ユーザー
+              "receiver_user_id": 456
       responses:
         '200':
           description: フレンド申請先の情報を取得
           content:
             application/json:
               example:
-                "friend_user_id": 2
-                "friend_user_name": "ABC"
+                "user_id": 2
+                "user_name": "ABC"
                 "request_sent_at": "2024-12-02"
         '400':
           description: Invalid user_id
         '500':
           description: Internal Server Error
-  /friends/requests/received/{user_id}:
+  /friends/requests/received/:
     get:
-      summary: user_idで指定したユーザーにフレンド申請しているユーザーの情報を取得
+      summary: ユーザーにフレンド申請しているユーザーの情報を取得
       security:
         - BearerAuth: []
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: integer
       operationId: getFrinedReceivedInfo
       responses:
         '200':
@@ -109,21 +94,13 @@ paths:
                   "request_sent_at": "2024-12-03",
                 }
               ]
-        '400':
-          description: Invalid user_id
         '500':
           description: Internal Server Error
-  /friends/requests/sent/{user_id}:
+  /friends/requests/sent/:
     get:
-      summary: user_idで指定したユーザーがフレンド申請しているユーザーの情報を取得
+      summary: ユーザーがフレンド申請しているユーザーの情報を取得
       security:
         - BearerAuth: []
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: integer
       operationId: getFrinedSentInfo
       responses:
         '200':
@@ -133,17 +110,15 @@ paths:
               example: [
                 {
                   "user_id": 2,
-                  "friend_user_name": "ABC",
+                  "user_name": "ABC",
                   "request_sent_at": "2024-12-02",
                 },
                 {
                   "user_id": 3,
-                  "friend_user_name": "DEF",
+                  "user_name": "DEF",
                   "request_sent_at": "2024-12-03",
                 }
               ]
-        '400':
-          description: Invalid user_id
         '500':
           description: Internal Server Error
   /friends/requests/approve/:
@@ -153,13 +128,12 @@ paths:
         - BearerAuth: []
       operationId: approveFriendRequest
       requestBody:
-        description: フレンド申請のfrom/toの情報
+        description: フレンド申請もとユーザーのuser_id
         required: true
         content:
           application/json:
             example:
-              "requester_id": 123 # フレンド申請したユーザー
-              "receiver_id": 456 # フレンド承認するユーザー
+              "requester_user_id": 123
       responses:
         '200':
           description: 承認したフレンドの情報を取得
@@ -171,6 +145,6 @@ paths:
                 "request_sent_at": "2024-12-02"
                 "approved_at": "2024-12-09"
         '400':
-          description: Invalid user_id
+          description: Invalid requester_user_id
         '500':
           description: Internal Server Error
