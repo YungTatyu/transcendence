@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: Users API
+  version: 1.0.0
+  description: ft_transcendence内のユーザー管理API
+
+servers:
+  - url: https://user.42.fr
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /users/:
+    post:
+      summary: ユーザーの新規作成(認証APIが叩く想定)
+      operationId: createUser
+      requestBody:
+        description: 新規作成するユーザーのデータ
+        required: true
+        content:
+          application/json:
+            example:
+              "name": "NEW"
+      responses:
+        '201':
+          description: ユーザーの作成に成功
+        '400':
+          description: ユーザーの作成に失敗
+  /users/{user_id}:
+    get:
+      summary: 特定のuser_idを持つユーザー情報を取得
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      operationId: findUser
+      responses:
+        '200':
+          description: Found User
+          content:
+            application/json:
+              example:
+                "user_id": 1
+                "name": "ABC"
+                "created_at": "2011-02-02"
+        '404':
+          description: Not Found User
+  /users/name/:
+    put:
+      summary: ユーザー名の更新
+      security:
+        - BearerAuth: []
+      operationId: updateUserName
+      requestBody:
+        description: 新しいユーザー名
+        required: true
+        content:
+          application/json:
+            example:
+              new_name: "NEWUSER"
+      responses:
+        "204":
+          description: Update Name
+        "400":
+          description: Bad Request
+        "409":
+          description: ユーザー名はすでに使用されている
+  /users/avatar/:
+    put:
+      summary: プロフィール画像の更新
+      security:
+        - BearerAuth: []
+      operationId: updateAvatar
+      requestBody:
+        description: プロフィール画像をBase64でエンコードしたデータ
+        required: true
+        content:
+          application/json:
+            example:
+              image: "Base64 Encode avatar data"
+      responses:
+        "204":
+          description: Update avatar
+        '400':
+          description: Bad Request
+  /users/avatar/{user_id}:
+    get:
+      summary: 特定のユーザーのプロフィール画像の取得
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      operationId: getAvatar
+      responses:
+        '200':
+          description: User avatar found
+          content:
+            application/json:
+              example:
+                "user_id": 1
+                "avator_image": "Base64 Encode Binary Data"
+        '404':
+          description: Not Found User avatar
