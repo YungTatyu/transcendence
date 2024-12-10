@@ -43,8 +43,6 @@ paths:
           required: true
           schema:
             type: integer
-      security:
-        - BearerAuth: []
       operationId: findUser
       responses:
         '200':
@@ -60,8 +58,6 @@ paths:
   /users/name/:
     put:
       summary: ユーザー名の更新
-      security:
-        - BearerAuth: []
       operationId: updateUserName
       requestBody:
         description: 新しいユーザー名
@@ -80,8 +76,6 @@ paths:
   /users/avatar/:
     put:
       summary: プロフィール画像の更新
-      security:
-        - BearerAuth: []
       operationId: updateAvatar
       requestBody:
         description: プロフィール画像をBase64でエンコードしたデータ
@@ -104,8 +98,6 @@ paths:
           required: true
           schema:
             type: integer
-      security:
-        - BearerAuth: []
       operationId: getAvatar
       responses:
         '200':

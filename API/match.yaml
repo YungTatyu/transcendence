@@ -21,8 +21,6 @@ paths:
   /match/create-tournament-match/:
     post:
       summary: Matchesにレコードを追加する(トーナメント管理から叩かれる想定)
-      security:
-        - BearerAuth: []
       operationId: createTournamentMatch
       requestBody:
         description: 試合作成の基となる情報
@@ -65,8 +63,6 @@ paths:
   /match/ws/enter-room/:
     get:
       summary: QuickPlayのマッチング待機部屋に入る(JWTでUserIDを渡す前提)。人数が集まったらGame開始
-      security:
-        - BearerAuth: []
       operationId: enterMatchRoom
       responses:
         '101':
@@ -78,8 +74,6 @@ paths:
   /match/ws/enter-room/{match_id}/:
     get:
       summary: トーナメントの試合待機部屋に入る(JWTでUserIDを渡す前提)。参加者が集まったらGame開始
-      security:
-        - BearerAuth: []
       operationId: enterTournamentMatchRoom
       parameters:
         - name: match_id
@@ -97,8 +91,6 @@ paths:
   /match/finish/:
     post:
       summary: Gameが終了、試合結果をDBに保存
-      security:
-        - BearerAuth: []
       operationId: finishMatch
       requestBody:
         description: 試合結果情報
@@ -119,8 +111,6 @@ paths:
   /match/statistics/:
     get:
       summary: ユーザーの勝敗などの統計情報統計情報を取得
-      security:
-        - BearerAuth: []
       operationId: matchStatistics
       responses:
         '200':
@@ -134,8 +124,6 @@ paths:
   /match/history/:
     get:
       summary: ユーザーの試合履歴リストを取得
-      security:
-        - BearerAuth: []
       operationId: matchHistoryList
       responses:
         '200':

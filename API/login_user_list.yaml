@@ -21,8 +21,6 @@ paths:
   /login-user-list/ws/:
     get:
       summary: リアルタイムにユーザーがログインしているかを表示するためのWebSocket
-      security:
-        - BearerAuth: []
       operationId: loginUserList
       responses:
         '101':

@@ -24,8 +24,6 @@ paths:
         Pongゲームのルームに参加。人数が揃ったらWebSocket経由でゲーム開始
         ブラウザ側からWebSocketに上下キーが押されたかを送信し、サーバ内でPongの盤面を計算
         計算結果をブラウザに返し、その結果を基にフロントエンドで盤面を描画
-      security:
-        - BearerAuth: []
       operationId: enterGameRoom
       parameters:
         - name: match_id

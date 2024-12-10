@@ -21,8 +21,6 @@ paths:
   /tournament/ws/enter-room/:
     get:
       summary: トーナメントのマッチング待機部屋に入る(JWTでUserIDを渡す前提)
-      security:
-        - BearerAuth: []
       operationId: enterTournamentRoom
       responses:
         '101':
@@ -35,8 +33,6 @@ paths:
   /tournament/finish-match:
     post:
       summary: トーナメントの一試合が終了した際に試合管理APIから叩かれる。この処理をトリガーにその後のアナウンスが行われる
-      security:
-        - BearerAuth: []
       operationId: finishTournamentMatch
       requestBody:
         description: 終了した試合のデータ

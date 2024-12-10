@@ -14,9 +14,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-security:
-  - BearerAuth: []
-
 paths:
   /auth/sign-in/:
     post:
