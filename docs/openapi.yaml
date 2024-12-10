@@ -945,6 +945,14 @@ paths:
         "401":
           description: "Unauthorized (invalid or missing token)."
 
+  /ws/game:
+    post:
+      summary: "Establish WebSocket connection for the Ping Pong game"
+      description: "Clients use this endpoint to establish a WebSocket connection."
+      responses:
+        "101":
+          description: "Switching protocols to WebSocket for real-time game management."
+
 
 components:
   securitySchemes:
@@ -979,3 +987,70 @@ components:
         message:
           type: string
           description: "Detailed error message."
+
+    GameState:
+      type: object
+      properties:
+        user1_id:
+          type: integer
+          description: "ID of player 1."
+        user2_id:
+          type: integer
+          description: "ID of player 2."
+        user1_bar_pos:
+          type: number
+          description: "Position of player 1's paddle (0 to 1, normalized)."
+        user2_bar_pos:
+          type: number
+          description: "Position of player 2's paddle (0 to 1, normalized)."
+        ball_x_pos:
+          type: number
+          description: "X position of the ball (0 to 1, normalized)."
+        ball_y_pos:
+          type: number
+          description: "Y position of the ball (0 to 1, normalized)."
+        ball_x_direction:
+          type: number
+          description: "Direction of the ball's movement along the X-axis (-1, 0, or 1)."
+        ball_y_direction:
+          type: number
+          description: "Direction of the ball's movement along the Y-axis (-1, 0, or 1)."
+        ball_speed:
+          type: number
+          description: "Speed of the ball, in arbitrary units."
+      required:
+        - user1_id
+        - user2_id
+        - user1_bar_pos
+        - user2_bar_pos
+        - ball_x_pos
+        - ball_y_pos
+        - ball_x_direction
+        - ball_y_direction
+        - ball_speed
+
+    GameEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Type of event (e.g., 'game_update', 'error')."
+          example: "game_update"
+        data:
+          $ref: "#/components/schemas/GameState"
+
+    GameErrorResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "The type of the message, e.g., 'error'."
+          example: "error"
+        code:
+          type: integer
+          description: "Error code for the message."
+          example: 400
+        message:
+          type: string
+          description: "A descriptive error message."
+          example: "Invalid game state update."
