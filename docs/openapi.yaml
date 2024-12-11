@@ -203,15 +203,11 @@ paths:
                 username:
                   type: string
                   description: "Updated username."
-                email:
-                  type: string
-                  description: "Updated email address."
                 avator_path:
                   type: string
                   description: "Path to the user's avatar image."
               required:
                 - username
-                - email
                 - avator_path
       responses:
         "200":
@@ -229,10 +225,6 @@ paths:
                     type: string
                     description: "The updated username of the user."
                     example: "updated_username"
-                  email:
-                    type: string
-                    description: "The updated email address of the user."
-                    example: "updated_email@example.com"
                   avatar_path:
                     type: string
                     description: "Path to the user's avatar image."
@@ -267,7 +259,7 @@ paths:
                   error:
                     type: string
                     description: "Error message indicating a conflict."
-                    example: "A user with this email already exists."
+                    example: "A user with this username already exists."
 
     delete:
       summary: "Delete user"
@@ -330,8 +322,6 @@ paths:
                     type: integer
                   username:
                     type: string
-                  email:
-                    type: string
                   avatar_path:
                     type: string
                     description: "Path to the user's avatar image."
@@ -364,15 +354,11 @@ paths:
                 username:
                   type: string
                   description: "Updated username."
-                email:
-                  type: string
-                  description: "Updated email address."
                 avatar_path:
                   type: string
                   description: "Path to the user's avatar image."
               required:
                 - username
-                - email
                 - avatar_path
       responses:
         "200":
@@ -390,10 +376,6 @@ paths:
                     type: string
                     description: "The updated username of the user."
                     example: "updated_username"
-                  email:
-                    type: string
-                    description: "The updated email address of the user."
-                    example: "updated_email@example.com"
                   avatar_path:
                     type: string
                     description: "Path to the user's avatar image."
@@ -428,7 +410,7 @@ paths:
                   error:
                     type: string
                     description: "Error message indicating a conflict."
-                    example: "A user with this email already exists."
+                    example: "A user with this username already exists."
 
     delete:
       summary: "Delete authenticated user's account"
@@ -462,6 +444,65 @@ paths:
                     type: string
                     description: "Error type."
                     example: "User not found."
+
+  /auth/me:
+    patch:
+      summary: "Update the currently logged-in user's information"
+      description: "Allows the user to update their email address or password."
+      security:
+        - bearerAuth: []  # JWT認証が必要
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: "New email address for the user."
+                current_password:
+                  type: string
+                  description: "The user's current password, required for password updates."
+                new_password:
+                  type: string
+                  description: "The user's new password."
+              required:
+                - current_password  # パスワード変更時には必須
+      responses:
+        "200":
+          description: "User information updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User information updated successfully."
+        "400":
+          description: "Invalid request data."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Current password is incorrect."
+        "401":
+          description: "Unauthorized."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Authentication required."
 
   /auth/generate/signup:
     post:
