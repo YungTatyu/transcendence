@@ -987,6 +987,49 @@ paths:
                     type: string
                     example: "Friend not found."
 
+  /friends/requests:
+    get:
+      summary: "Get incoming friend requests"
+      description: "Retrieve a list of friend requests sent by other users to the currently logged-in user."
+      security:
+        - bearerAuth: []  
+      tags:
+        - friends
+      responses:
+        "200":
+          description: "List of incoming friend requests."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    from_user_id:
+                      type: integer
+                      description: "The ID of the user who sent the friend request."
+                    username:
+                      type: string
+                      description: "The username of the user who sent the friend request."
+                    avatar_path:
+                      type: string
+                      description: "Path to the avatar image of the user who sent the request."
+                    request_sent_at:
+                      type: string
+                      format: date-time
+                      description: "Timestamp of when the friend request was sent."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Authentication error message."
+                    example: "JWT is invalid or expired."
+
   /ws/friends:
     get:
       summary: "Connect to WebSocket for real-time friends updates"
