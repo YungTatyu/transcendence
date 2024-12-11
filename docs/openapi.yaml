@@ -257,6 +257,17 @@ paths:
                     type: string
                     description: "Error type."
                     example: "User not found."
+        "409":
+          description: "Conflict - User already exists."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating a conflict."
+                    example: "A user with this email already exists."
 
     delete:
       summary: "Delete user"
@@ -407,6 +418,17 @@ paths:
                     type: string
                     description: "Error type."
                     example: "User not found."
+        "409":
+          description: "Conflict - User already exists."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating a conflict."
+                    example: "A user with this email already exists."
 
     delete:
       summary: "Delete authenticated user's account"
