@@ -1436,6 +1436,191 @@ paths:
                     description: "Error message indicating the participant does not exist."
                     example: "Participant not found for the given match ID and user ID."
 
+  /tournaments:
+    get:
+      summary: "Retrieve a list of tournaments"
+      description: "Gets a list of tournaments with their start and finish dates."
+      security:
+        - bearerAuth: []  
+      tags:
+        - tournaments
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: "Filter tournaments that start on or after this date."
+        - name: finish_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: "Filter tournaments that finish on or before this date."
+      responses:
+        "200":
+          description: "A list of tournaments."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "The unique ID of the tournament."
+                    start_date:
+                      type: string
+                      format: date-time
+                      description: "The start date of the tournament."
+                    finish_date:
+                      type: string
+                      format: date-time
+                      description: "The finish date of the tournament."
+        "400":
+          description: "Bad request due to invalid query parameters."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
+    post:
+      summary: "Create a new tournament"
+      description: "Creates a new tournament. The backend assigns the start_date automatically based on the current server time."
+      security:
+        - bearerAuth: []  
+      tags:
+        - tournaments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "No additional data is required since start_date is assigned by the server."
+      responses:
+        "201":
+          description: "Tournament created successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "The unique ID of the created tournament."
+                  start_date:
+                    type: string
+                    format: date-time
+                    description: "The start date of the tournament."
+        "400":
+          description: "Bad request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
+
+  /tournaments/{tournament_id}:
+    patch:
+      summary: "Update the finish date of a tournament"
+      description: "Updates the finish_date of an existing tournament. The finish_date is provided by the client."
+      security:
+        - bearerAuth: []  
+      tags:
+        - tournaments
+      parameters:
+        - name: tournament_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "The ID of the tournament to update."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                finish_date:
+                  type: string
+                  format: date-time
+                  description: "The finish date to be set for the tournament."
+              required:
+                - finish_date
+      responses:
+        "200":
+          description: "Tournament updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "The ID of the updated tournament."
+                  finish_date:
+                    type: string
+                    format: date-time
+                    description: "The updated finish date."
+        "400":
+          description: "Invalid input data."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the invalid or expired refresh token."
+        "404":
+          description: "Tournament not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error message indicating the tournament was not found."
+
 components:
   securitySchemes:
     bearerAuth:
