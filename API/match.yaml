@@ -18,6 +18,77 @@ security:
   - BearerAuth: []
 
 paths:
+  /match/:
+    get:
+      summary: 試合を検索
+      operationId: SearchMatch
+      parameters:
+        - name: match_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: winner_user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: mode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["QuickPlay", "Tournament"]
+        - name: tournament_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: round
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: match_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 試合が見つかった
+          content:
+            application/json:
+              example: [
+                {
+                  "match_id": 2,
+                  "winner_user_id": 1,
+                  "mode": "Tournament",
+                  "tournament_id": 1,
+                  "parent_match_id": 3,
+                  "round": 10,
+                  "participants": [
+                    {"user_id": 1, "user_name": "ABC"},
+                    {"user_id": 2, "user_name": "DEF"}
+                  ]
+                },
+                {
+                  "match_id": 3,
+                  "winner_user_id": NULL,
+                  "mode": "Tournament",
+                  "tournament_id": 1,
+                  "parent_match_id": NULL,
+                  "round": 11,
+                  "participants": [
+                    {"user_id": 2, "user_name": "DEF"},
+                    {"user_id": 3, "user_name": "GHI"}
+                  ]
+                }
+              ]
+        '400':
+          description: QueryStringがおかしい
+        '404':
+          description: 該当する試合が存在しない
   /match/create-tournament-match/:
     post:
       summary: Matchesにレコードを追加する(トーナメント管理から叩かれる想定)
@@ -146,28 +217,3 @@ paths:
                   "date": "2024-12-01",
                 }
               ]
-  /match/search/tournament/:
-    get:
-      summary: トーナメントの試合を検索
-      operationId: SearchTournamentMatch
-      requestBody:
-        description: tournament_id, round
-        required: true
-        content:
-          application/json:
-            example:
-              "tournament_id": 1
-              "round": 10
-      responses:
-        '200':
-          description: トーナメントの試合が見つかった
-          content:
-            application/json:
-              example:
-                "match_id": 2
-                "tournament_id": 1
-                "round": 10
-                "participants": [
-                  {"user_id": 1, "user_name": "ABC"},
-                  {"user_id": 2, "user_name": "DEF"}
-                ]
