@@ -199,6 +199,127 @@ paths:
                   error:
                     type: string
                     description: "無効なユーザー名またはパスワードを示すエラーメッセージ。"
+  /auth/otp/signup/verify:
+    post:
+      summary: "サインアップ時のOTP検証"
+      description: "サインアッププロセス中に送信されたOTPを検証"
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                otp:
+                  type: string
+                  description: "ユーザーに送信されたOTP"
+              required:
+                - username
+                - otp
+      responses:
+        "200":
+          description: "OTPが正常に検証され、ユーザをDBに登録"
+          headers:
+            Set-Cookie:
+              description: "usernameクッキーを削除"
+              schema:
+                type: string
+                example: "username=; HttpOnly; Secure; Path=/; Max-Age=0"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: "accessトークン"
+                  refresh:
+                    type: string
+                    description: "refreshトークン"
+        "400":
+          description: "Invalid OTP or username."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "無効なOTPまたはユーザー名に関するエラーメッセージ"
+        "401":
+          description: "User authentication failed."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "認証失敗に関するエラーメッセージ"
+  /auth/otp/login/verify:
+    post:
+      summary: "ログイン時のOTP検証"
+      description: "OTPを検証"
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                otp:
+                  type: string
+              required:
+                - username
+                - otp
+      responses:
+        "200":
+          description: "OTPが正常に検証され、ログインが完了"
+          headers:
+            Set-Cookie:
+              description: "usernameクッキーを削除"
+              schema:
+                type: string
+                example: "username=; HttpOnly; Secure; Path=/; Max-Age=0"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: "アクセストークン"
+                  refresh:
+                    type: string
+                    description: "リフレッシュトークン"
+        "400":
+          description: "Invalid OTP or username."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "無効なOTPまたはユーザー名に関するエラーメッセージ"
+        "401":
+          description: "User authentication failed."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "認証失敗に関するエラーメッセージ"
   /auth/token/refresh:
     post:
       summary: "accessトークンの更新"
