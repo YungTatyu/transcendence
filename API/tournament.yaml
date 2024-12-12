@@ -21,12 +21,29 @@ paths:
   /tournament/ws/enter-room/:
     get:
       summary: トーナメントのマッチング待機部屋に入る(JWTでUserIDを渡す前提)
-      operationId: enterTournamentRoom
+      operationId: enterTournamentMatchingRoom
       responses:
         '101':
           description: Switching Protocols (WebSocket Handshake Successful)
         '400':
           description: Bad Request (Invalid or Missing UserID)
+        '500':
+          description: Internal Server Error
+  /tournament/ws/enter-room/{tournament_id}/:
+    get:
+      summary: トーナメントの参加者全員が入るルーム
+      operationId: enterTournamentRoom
+      parameters:
+        - name: tournament_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Bad Request (Invalid tournament_id)
         '500':
           description: Internal Server Error
   /tournament/finish-match:
