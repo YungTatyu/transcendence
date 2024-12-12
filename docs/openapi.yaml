@@ -307,7 +307,7 @@ paths:
   /auth/me:
     patch:
       summary: "Update the currently logged-in user's information"
-      description: "Allows the user to update their email address or password."
+      description: "Allows the user to update either their email address or password, but not both at the same time."
       security:
         - bearerAuth: []
       tags:
@@ -329,8 +329,10 @@ paths:
                 new_password:
                   type: string
                   description: "The user's new password."
-              required:
-                - current_password  # パスワード変更時には必須
+              additionalProperties: false
+              oneOf:
+                - required: ["email"]
+                - required: ["current_password", "new_password"]
       responses:
         "200":
           description: "User information updated successfully."
@@ -343,7 +345,7 @@ paths:
                     type: string
                     example: "User information updated successfully."
         "400":
-          description: "Invalid request data."
+          description: "Validation error or invalid request."
           content:
             application/json:
               schema:
@@ -351,9 +353,9 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Current password is incorrect."
+                    example: "Cannot update both email and password in the same request."
         "401":
-          description: "Unauthorized."
+          description: "Unauthorized - Missing or invalid JWT."
           content:
             application/json:
               schema:
@@ -361,7 +363,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Authentication required."
+                    example: "JWT is invalid or expired."
 
   /auth/otp/signup:
     post:
