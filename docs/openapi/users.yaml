@@ -56,16 +56,7 @@ paths:
                     description: "発生したエラーの詳細"
                     example: "Username is invalid."
         "401":
-          description: "Unauthorized - Missing or invalid JWT."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "認証エラーの詳細"
-                    example: "JWT is invalid or expired."
+          $ref: '#/components/responses/UnauthorizedResponse'
         "409":
           description: "Conflict - userが既に存在している"
           content:
@@ -105,16 +96,7 @@ paths:
                   username:
                     type: string
         "401":
-          description: "Unauthorized - Missing or invalid JWT."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "認証エラーの詳細"
-                    example: "JWT is invalid or expired."
+          $ref: '#/components/responses/UnauthorizedResponse'
         "404":
           description: "User not found."
           content:
@@ -157,16 +139,7 @@ paths:
                     description: "更新後のユーザー名。"
                     example: "updated_username"
         "401":
-          description: "Unauthorized - Missing or invalid JWT."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "認証エラーの詳細"
-                    example: "JWT is invalid or expired."
+          $ref: '#/components/responses/UnauthorizedResponse'
         "404":
           description: "User not found."
           content:
@@ -190,9 +163,112 @@ paths:
                     description: "コンフリクトエラーの詳細"
                     example: "A user with this email already exists."
 
+  /users/me/avatar:
+    get:
+      summary: "ユーザのアバターを取得"
+      description: "認証済みユーザーのアバターを取得"
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "現在のアバター画像を返す"
+          content:
+            # 単一のPNG画像データ
+            image/png:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+    put:
+      summary: "ユーザのアバターを更新"
+      description: "認証済みユーザーのアバター画像をアップロード"
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          # ファイルやテキストデータを含めることができ、ファイルアップロード時などに使用される一般的な形式
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: "新しいアバター画像ファイル（PNGやJPEGなど）。"
+      responses:
+        "200":
+          description: "アバターが正常に更新"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar_path:
+                    type: string
+                    description: "更新されたアバター画像のパス。"
+                    example: "/uploads/avatars/12345.png"
+        "400":
+          description: "アバター画像が無効"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "画像形式が無効"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+    delete:
+      summary: "認証済みユーザーのアバターを削除"
+      description: "認証済みユーザーのアバターを削除し、データベースのアバターパスをリセットします。"
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: "アバターを正常に削除"
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "Avatar not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "エラーの詳細"
+                    example: "Avatar not found."
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "認証トークンが無効または不足しています。"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
