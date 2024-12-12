@@ -151,18 +151,6 @@ paths:
                     type: string
                     description: "エラーの詳細"
                     example: "User not found."
-        "409":
-          description: "Conflict - userが既に存在している"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "コンフリクトエラーの詳細"
-                    example: "A user with this email already exists."
-
   /users/me/avatar:
     get:
       summary: "ユーザのアバターを取得"
