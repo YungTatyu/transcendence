@@ -267,7 +267,7 @@ components:
 
   responses:
     UnauthorizedResponse:
-      description: "認証トークンが無効または不足しています。"
+      description: "Unauthorized - Missing or invalid JWT."
       content:
         application/json:
           schema:
