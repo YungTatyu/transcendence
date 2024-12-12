@@ -43,32 +43,9 @@ servers:
 
 paths:
   /users:
-    get:
-      summary: "Get users info"
-      description: "Retrieve a list of all users."
-      tags:
-        - users
-      responses:
-        "200":
-          description: "A list of users."
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "User ID."
-                    username:
-                      type: string
-                      description: "Username."
-                    avator_path:
-                      type: string
-                      description: "User avator path."
-
-    # TODO: jwtの認証はユーザー管理サービスでできる？
+    # TODO: jwt要らない？
+    # auth sericeからこのapi叩かれる
+    # jwtが作成されてから、このapi叩く
     post:
       summary: "Create a new user"
       description: "Register a new user with the provided information."
@@ -114,7 +91,7 @@ paths:
                   error:
                     type: string
                     description: "A brief error message explaining the issue."
-                    example: "Email format is invalid."
+                    example: "Username is invalid."
         "401":
           description: "Unauthorized - Missing or invalid JWT."
           content:
@@ -138,14 +115,14 @@ paths:
                     description: "Error message indicating a conflict."
                     example: "A user with this email already exists."
 
-  # TODO: emailとかpasswordの情報はどうする？
-  # userid version
   /users/{user_id}:
     get:
       summary: "Get user by ID"
       description: "Retrieve detailed information about a specific user by ID."
       tags:
         - users
+      security:
+        - bearerAuth: []  
       parameters:
         - name: user_id
           in: path
@@ -165,8 +142,9 @@ paths:
                     type: integer
                   username:
                     type: string
-                  avator_path:
+                  avatar:
                     type: string
+                    description: "The new avatar image file, encoded in Base64."
         "404":
           description: "User not found."
           content:
@@ -179,165 +157,8 @@ paths:
                     description: "Error type."
                     example: "User not found."
 
-    put:
-      summary: "Update user information"
-      description: "Update an existing user's information by ID."
-      tags:
-        - users
-      security:
-        - bearerAuth: []  
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          description: "ID of the user to update."
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: "Updated username."
-                avator_path:
-                  type: string
-                  description: "Path to the user's avatar image."
-              required:
-                - username
-                - avator_path
-      responses:
-        "200":
-          description: "User updated successfully."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: "The ID of the updated user."
-                    example: 123
-                  username:
-                    type: string
-                    description: "The updated username of the user."
-                    example: "updated_username"
-                  avatar_path:
-                    type: string
-                    description: "Path to the user's avatar image."
-        "401":
-          description: "Invalid or expired refresh token."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "Error message indicating the invalid or expired refresh token."
-        "404":
-          description: "User not found."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "Error type."
-                    example: "User not found."
-        "409":
-          description: "Conflict - User already exists."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "Error message indicating a conflict."
-                    example: "A user with this username already exists."
-
-    delete:
-      summary: "Delete user"
-      description: "Delete a user by ID."
-      tags:
-        - users
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          description: "ID of the user to delete."
-          schema:
-            type: integer
-      responses:
-        "204":
-          description: "User deleted successfully."
-          content: {}
-        "401":
-          description: "Invalid or expired refresh token."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "Error message indicating the invalid or expired refresh token."
-        "404":
-          description: "User not found."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "Error type."
-                    example: "User not found."
-
-  # useridを指定しないヴァージョン
   /users/me:
-    get:
-      summary: "Get authenticated user's details"
-      description: "Retrieve detailed information about the authenticated user."
-      tags:
-        - users
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: "User details."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user_id:
-                    type: integer
-                  username:
-                    type: string
-                  avatar_path:
-                    type: string
-                    description: "Path to the user's avatar image."
-        "401":
-          description: "Invalid or missing authentication token."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "Error message."
-                    example: "Invalid or expired token."
-
-    put:
+    patch:
       summary: "Update authenticated user's information"
       description: "Update the information of the authenticated user."
       tags:
@@ -353,32 +174,19 @@ paths:
               properties:
                 username:
                   type: string
-                  description: "Updated username."
-                avatar_path:
-                  type: string
-                  description: "Path to the user's avatar image."
-              required:
-                - username
-                - avatar_path
+                  description: "The new username."
       responses:
         "200":
-          description: "User updated successfully."
+          description: "Username updated successfully."
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    description: "The ID of the updated user."
-                    example: 123
                   username:
                     type: string
                     description: "The updated username of the user."
                     example: "updated_username"
-                  avatar_path:
-                    type: string
-                    description: "Path to the user's avatar image."
         "401":
           description: "Invalid or expired authentication token."
           content:
@@ -412,16 +220,68 @@ paths:
                     description: "Error message indicating a conflict."
                     example: "A user with this username already exists."
 
+  /users/me/avatar:
+    patch:
+      summary: "Update authenticated user's avatar"
+      description: "Upload or update the avatar for the authenticated user."
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          # jsonの方がいい？
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  description: "The new avatar image file, encoded in Base64."
+                  example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAU..."
+      responses:
+        "200":
+          description: "Avatar updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar_path:
+                    type: string
+                    description: "The updated path to the user's avatar."
+                    example: "/uploads/avatars/12345.png"
+        "400":
+          description: "Invalid avatar file."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid image format."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "JWT is invalid or expired."
     delete:
-      summary: "Delete authenticated user's account"
-      description: "Delete the account of the authenticated user."
+      summary: "Delete authenticated user's avatar"
+      description: "Remove the authenticated user's avatar and reset the avatar path in the database."
       tags:
         - users
       security:
         - bearerAuth: []
       responses:
         "204":
-          description: "User deleted successfully."
+          description: "Avatar deleted successfully."
           content: {}
         "401":
           description: "Invalid or expired authentication token."
@@ -434,7 +294,7 @@ paths:
                     type: string
                     description: "Error message indicating the invalid or expired authentication token."
         "404":
-          description: "User not found."
+          description: "Avatar not found."
           content:
             application/json:
               schema:
@@ -442,8 +302,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: "Error type."
-                    example: "User not found."
+                    example: "Avatar not found."
 
   /auth/me:
     patch:
