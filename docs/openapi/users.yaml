@@ -222,7 +222,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "画像形式が無効"
+                    example: "Invalid image format."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
     delete:
