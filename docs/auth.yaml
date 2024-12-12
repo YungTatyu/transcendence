@@ -1,0 +1,124 @@
+openapi: 3.0.3
+
+info: 
+  title: auth API
+  description: |
+    authサービスのAPIを提供。このAPIは、ユーザー認証管理に関連する操作をサポート。
+  version: 1.0.0
+
+servers:
+  - url: https://auth.transcendence.com
+
+paths:
+  /auth/me/email:
+    patch:
+      summary: "ユーザのemailを更新"
+      description: "認証済みユーザのemailを更新"
+      security:
+        - bearerAuth: []
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+                - email
+      responses:
+        "200":
+          description: "Email updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Email updated successfully."
+        "400":
+          description: "Validation error or invalid email format."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid email format."
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+  /auth/me/password:
+    patch:
+      summary: "ユーザのpasswordを更新"
+      description: "認証済みユーザのpasswordを更新。現在のpasswordも認証に必要。"
+      security:
+        - bearerAuth: []
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+              required:
+                - current_password
+                - new_password
+      responses:
+        "200":
+          description: "Password updated successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password updated successfully."
+        "400":
+          description: "Validation error or invalid request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Current password is incorrect."
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
