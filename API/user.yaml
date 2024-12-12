@@ -34,16 +34,22 @@ paths:
           description: ユーザーの作成に成功
         '400':
           description: ユーザーの作成に失敗
-  /users/{user_id}/:
     get:
-      summary: 特定のuser_idを持つユーザー情報を取得
+      summary: ユーザーを "UserName" または "UserID" で検索
       operationId: findUser
       parameters:
         - name: user_id
-          in: path
-          required: true
+          in: query
+          description: SELECT * FROM Users WHERE Users.user_id = user_id;
+          required: false
           schema:
             type: integer
+        - name: user_name
+          in: query
+          description: SELECT * FROM Users WHERE Users.name = user_name;
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Found User
