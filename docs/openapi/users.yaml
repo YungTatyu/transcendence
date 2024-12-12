@@ -127,10 +127,10 @@ paths:
                     description: "エラーの詳細"
                     example: "User not found."
 
-  /users/me:
-    patch:
-      summary: "認証済みユーザー情報の更新"
-      description: "認証済みユーザーの情報を更新"
+  /users/me/username:
+    put:
+      summary: "usernameの更新"
+      description: "認証済みユーザのusernameを更新"
       tags:
         - users
       security:
