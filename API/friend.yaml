@@ -80,7 +80,7 @@ paths:
           description: Invalid user_id
   /friends/requests/{user_id}/:
     delete:
-      summary: フレンド申請取消
+      summary: フレンド申請拒否
       operationId: deleteFriendRequest
       parameters:
        - name: user_id
@@ -90,9 +90,32 @@ paths:
            type: integer
       responses:
         '204':
-          description: フレンド申請取消成功
+          description: フレンド申請拒否成功
         '400':
-          description: フレンド申請取消失敗
+          description: フレンド申請拒否失敗
+  /friends/requests/approve/:
+    post:
+      summary: フレンド申請を承認
+      operationId: approveFriendRequest
+      requestBody:
+        description: フレンド申請もとユーザーのuser_id
+        required: true
+        content:
+          application/json:
+            example:
+              "requester_user_id": 123
+      responses:
+        '200':
+          description: 承認したフレンドの情報を取得
+          content:
+            application/json:
+              example:
+                "friend_user_id": 2
+                "friend_user_name": "ABC"
+                "request_sent_at": "2024-12-02"
+                "approved_at": "2024-12-09"
+        '400':
+          description: Invalid requester_user_id
   /friends/requests/received/:
     get:
       summary: ユーザーにフレンド申請しているユーザーの情報を取得
@@ -135,26 +158,3 @@ paths:
                   "request_sent_at": "2024-12-03",
                 }
               ]
-  /friends/requests/approve/:
-    post:
-      summary: フレンド申請を承認
-      operationId: approveFriendRequest
-      requestBody:
-        description: フレンド申請もとユーザーのuser_id
-        required: true
-        content:
-          application/json:
-            example:
-              "requester_user_id": 123
-      responses:
-        '200':
-          description: 承認したフレンドの情報を取得
-          content:
-            application/json:
-              example: 
-                "friend_user_id": 2
-                "friend_user_name": "ABC"
-                "request_sent_at": "2024-12-02"
-                "approved_at": "2024-12-09"
-        '400':
-          description: Invalid requester_user_id
