@@ -49,7 +49,6 @@ paths:
             application/json:
               example:
                 "error_message": "メールアドレスが重複している"
-
   /auth/sign-in/verify-otp/:
     post:
       summary: アカウント新規作成(二次認証)
@@ -69,22 +68,45 @@ paths:
           description: 認証失敗
   /auth/login/:
     post:
-      summary: ログイン
+      summary: ログイン(一次認証)
       operationId: login
       requestBody:
-        description: ユーザー名・パスワード・OTP
+        description: ユーザー名・パスワード
         required: true
         content:
           application/json:
             example:
               "name": "ABC"
               "password": "ABCPASS"
+      responses:
+        '200':
+          description: 引き続き二次認証を行ってください
+          headers:
+            Set-Cookie:
+              description: 二次認証に必要なuser_name
+              schema:
+                type: string
+                example: "user_name=NEW; HttpOnly; Secure; Path=/; Max-Age=300"
+        '400':
+          description: ログイン失敗
+  /auth/login/verify-otp/:
+    post:
+      summary: ログイン(二次認証)
+      operationId: loginVerifyOTP
+      requestBody:
+        description: 二次認証に必要なデータ
+        required: true
+        content:
+          application/json:
+            example:
+              "name": "NEW"
               "otp": 234567
       responses:
         '200':
           description: ログイン成功
         '400':
           description: ログイン失敗
+
   /auth/jwks/:
     get:
       summary: JSON Web Key Set (JWKS)を取得
@@ -154,3 +176,24 @@ paths:
           description: メールアドレスがすでに使用されている
       security:
         - BearerAuth: []
+  /auth/token/refresh:
+    post:
+      summary: トークンの更新
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              refresh: "IIII"
+      responses:
+        "200":
+          description: 新たなトークンを発行
+          content:
+            application/json:
+              example:
+                "access": "XXXX"
+                "refresh": "YYYY"
+        "401":
+          description: リフレッシュトークンの有効期限切れ
