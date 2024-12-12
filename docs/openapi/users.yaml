@@ -1,0 +1,86 @@
+openapi: 3.0.3
+
+info: 
+  title: users API
+  description: |
+    UsersサービスのAPIを提供。このAPIは、ユーザー管理に関連する操作をサポート。
+  version: 1.0.0
+
+servers:
+  - url: https://users.transcendence.com
+
+paths:
+  /users:
+    post:
+      summary: "userの新規作成"
+      description: "userの新規登録。authサービスからこのapiが叩かれる。"
+      tags:
+        - users
+      security:
+        - bearerAuth: []  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: "新規ユーザーのusername"
+              required:
+                - username
+      responses:
+        "201":
+          description: "user作成成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: "12345"
+                  username:
+                    type: string
+                    example: "johndoe"
+        "400":
+          description: "入力データが無効"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "発生したエラーの詳細"
+                    example: "Username is invalid."
+        "401":
+          description: "Unauthorized - Missing or invalid JWT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "認証エラーの詳細"
+                    example: "JWT is invalid or expired."
+        "409":
+          description: "Conflict - userが既に存在している"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "コンフリクトエラーの詳細"
+                    example: "A user with this email already exists."
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
