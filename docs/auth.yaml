@@ -11,7 +11,7 @@ servers:
 
 paths:
   /auth/me/email:
-    patch:
+    put:
       summary: "ユーザのemailを更新"
       description: "認証済みユーザのemailを更新"
       security:
@@ -54,7 +54,7 @@ paths:
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
   /auth/me/password:
-    patch:
+    put:
       summary: "ユーザのpasswordを更新"
       description: "認証済みユーザのpasswordを更新。現在のpasswordも認証に必要。"
       security:
