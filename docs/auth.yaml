@@ -199,6 +199,58 @@ paths:
                   error:
                     type: string
                     description: "無効なユーザー名またはパスワードを示すエラーメッセージ。"
+  /auth/token/refresh:
+    post:
+      summary: "accessトークンの更新"
+      description: "有効なrefreshトークンを使用して新しいaccessトークンを生成"
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+              required:
+                - refresh
+      responses:
+        "200":
+          description: "New access token generated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: "The new access token."
+        "400":
+          description: "Missing refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "エラー詳細"
+                    example: "Refresh token is missing."
+        "401":
+          description: "Invalid or expired refresh token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "リフレッシュトークンが無効または期限切れであることを示すエラーメッセージ"
+                    example: "Refresh token is missing or invalid."
 
 components:
   securitySchemes:
