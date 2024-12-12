@@ -309,7 +309,7 @@ paths:
       summary: "Update the currently logged-in user's information"
       description: "Allows the user to update their email address or password."
       security:
-        - bearerAuth: []  # JWT認証が必要
+        - bearerAuth: []
       tags:
         - auth
       requestBody:
@@ -363,7 +363,7 @@ paths:
                     type: string
                     example: "Authentication required."
 
-  /auth/generate/signup:
+  /auth/otp/signup:
     post:
       description: "Register a new user and generate an OTP for verification."
       tags:
@@ -418,7 +418,7 @@ paths:
                     description: "A brief error message explaining the issue."
                     example: "Invalid email format."
 
-  /auth/generate/login:
+  /auth/otp/login:
     post:
       summary: "Log in an existing user"
       description: "Authenticate the user and generate JWT tokens."
@@ -514,7 +514,7 @@ paths:
                     type: string
                     description: "Error message indicating the invalid or expired refresh token."
 
-  /auth/otp/verify/signup:
+  /auth/otp/signup/verify:
     post:
       summary: "Verify OTP during signup"
       description: "Verify the OTP sent during the signup process."
@@ -577,7 +577,7 @@ paths:
                     type: string
                     description: "Error message indicating failed authentication."
 
-  /auth/otp/verify/login:
+  /auth/otp/login/verify:
     post:
       summary: "Verify OTP during login"
       description: "Verify the OTP sent during the login process."
