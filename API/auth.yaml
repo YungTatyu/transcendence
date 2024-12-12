@@ -138,49 +138,43 @@ paths:
           description: 公開鍵配信が正常に動作していない
       security:
         - BearerAuth: []
-  /auth/password/:
-    put:
-      summary: パスワードを更新する
-      operationId: updatePassword
+  /auth/users/me/:
+    patch:
+      summary: ユーザーの情報の更新
+      operationId: updateUserAuthInfo
       requestBody:
-        description: 新しいパスワード
         required: true
         content:
           application/json:
-            example:
-              "new_password": "NEWABC"
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: 新しいメールアドレス
+                current_password:
+                  type: string
+                  format: password
+                  description: 現在のパスワード
+                new_password:
+                  type: string
+                  format: password
+                  description: 新しいパスワード
+              required:
+                - current_password
       responses:
-        '204':
-          description: No Content
+        '200':
+          description: ユーザー情報を更新
         '400':
-          description: パスワードがおかしい
-      security:
-        - BearerAuth: []
-  /auth/mail/:
-    put:
-      summary: メールアドレスを更新
-      operationId: updateMail
-      requestBody:
-        description: 新しいパスワード
-        required: true
-        content:
-          application/json:
-            example:
-              "new_mail": "def@gmail.com"
-      responses:
-        '204':
-          description: No Content
-        '400':
-          description: メールアドレスがおかしい
+          description: 情報がおかしい
         '409':
-          description: メールアドレスがすでに使用されている
+          description: メールアドレスが既に使用されている
       security:
-        - BearerAuth: []
+        - bearerAuth: []
   /auth/token/refresh:
     post:
       summary: トークンの更新
-      security:
-        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -197,3 +191,5 @@ paths:
                 "refresh": "YYYY"
         "401":
           description: リフレッシュトークンの有効期限切れ
+      security:
+        - bearerAuth: []

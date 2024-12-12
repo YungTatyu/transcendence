@@ -61,40 +61,40 @@ paths:
                 "created_at": "2011-02-02"
         '404':
           description: Not Found User
-  /users/name/:
-    put:
-      summary: ユーザー名の更新
-      operationId: updateUserName
+  /users/me/:
+    patch:
+      summary: ユーザー情報の更新
+      operationId: updateUserInfo
       requestBody:
-        description: 新しいユーザー名
         required: true
         content:
           application/json:
-            example:
-              new_name: "NEWUSER"
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  format: string
+                  description: 新しいユーザー名
+                avatar_image:
+                  type: string
+                  format: string
+                  description: Base64エンコード済みのプロフィール画像
+              required:
+                - current_password
       responses:
-        "204":
-          description: Update Name
-        "400":
-          description: Bad Request
-        "409":
-          description: ユーザー名はすでに使用されている
-  /users/avatar/:
-    put:
-      summary: プロフィール画像の更新
-      operationId: updateAvatar
-      requestBody:
-        description: プロフィール画像をBase64でエンコードしたデータ
-        required: true
-        content:
-          application/json:
-            example:
-              image: "Base64 Encode avatar data"
-      responses:
-        "204":
-          description: Update avatar
+        '200':
+          description: ユーザー情報を更新
+          content:
+            application/json:
+              example:
+                "user_id": 1
+                "user_name": "NEW"
+                "avatar_image": "Base64 Encode Binary Data"
         '400':
-          description: Bad Request
+          description: 情報がおかしい
+        '409':
+          description: 既にユーザー名が使用されている
   /users/avatar/{user_id}/:
     get:
       summary: 特定のユーザーのプロフィール画像の取得
@@ -112,6 +112,6 @@ paths:
             application/json:
               example:
                 "user_id": 1
-                "avator_image": "Base64 Encode Binary Data"
+                "avatar_image": "Base64 Encode Binary Data"
         '404':
           description: Not Found User avatar
