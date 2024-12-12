@@ -34,8 +34,13 @@ paths:
           content:
             application/json:
               example:
-                "user_name": "NEW"
                 "qr": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...（省略）...5ErkJggg=="
+          headers:
+            Set-Cookie:
+              description: 二次認証に必要なuser_name
+              schema:
+                type: string
+                example: "user_name=NEW; HttpOnly; Secure; Path=/; Max-Age=300"
         '400':
           description: 一次認証に必要なデータでエラー
         '409':
