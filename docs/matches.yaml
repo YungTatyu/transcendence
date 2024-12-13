@@ -44,11 +44,6 @@ paths:
           required: false
           schema:
             type: integer
-        - name: match_id
-          in: query
-          required: false
-          schema:
-            type: integer
       responses:
         '200':
           description: 試合が見つかった
