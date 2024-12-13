@@ -75,7 +75,7 @@ paths:
 
   /tournament/finish-match/:
     post:
-      summary: 試合終了を通知
+      summary: 試合終了に通知を受け取る
       description: |
         トーナメントの一試合が終了するごとに試合管理APIから叩かれる。
         この処理をトリガーにその後のアナウンスが行われる。
