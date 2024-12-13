@@ -14,6 +14,7 @@ paths:
       description: |
         QueryStringを用いて試合を検索する。
         複数条件による検索を許容する。
+        user_idに基づいた試合履歴の検索は別のエンドポイントで行う。
       operationId: SearchMatches
       tags:
         - Matches
@@ -77,19 +78,32 @@ paths:
               ]
         '400':
           description: QueryStringがおかしい
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
         '404':
           description: 該当する試合が存在しない
+          content:
+            application/json:
+              example:
+                "error": "Match Not Found"
       security:
         - BearerAuth: []
 
   /matches/create-tournament-match/:
     post:
-      summary: Matchesにレコードを追加する(トーナメント管理から叩かれる想定)
+      summary: トーナメントに紐づいた試合を作成
+      description: |
+        トーナメント内の試合レコードを作成する。
+        トーナメント管理から叩かれる。
       operationId: createTournamentMatch
       tags:
         - Matches
       requestBody:
-        description: 試合作成の基となる情報
+        description: トーナメント試合作成の基となる情報
         required: true
         content:
           application/json:
@@ -119,35 +133,60 @@ paths:
               "round": 1
       responses:
         '200':
-          description: 試合作成
-          content:                                                                                         
+          description: トーナメント試合が作成された
+          content:
             application/json:
               example:
                 "match_id": 101
         '400':
-          description: 試合作成の基となる情報が間違っている
+          description: 試合作成の基となる情報に不備がある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: トーナメント管理API以外から叩かれた
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
       security:
         - BearerAuth: []
 
   /matches/ws/enter-room/:
     get:
-      summary: QuickPlayのマッチング待機部屋に入る(JWTでUserIDを渡す前提)。人数が集まったらGame開始
+      summary: QuickPlayマッチングルームに入る
+      description: |
+        QuickPlayのマッチング待機部屋に入る。
+        人数が集まったらGame開始する。
+        このWebSocketはGameが開始されたらコネクションを切る。
       operationId: enterMatchRoom
       tags:
         - Matches
       responses:
         '101':
-          description: Switching Protocols (WebSocket Handshake Successful)
+          description: WebSocketへのプロトコルアップデート成功
         '400':
-          description: Bad Request (Invalid or Missing UserID)
-        '500':
-          description: Internal Server Error
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
       security:
         - BearerAuth: []
 
   /matches/ws/enter-room/{match_id}/:
     get:
-      summary: トーナメントの試合待機部屋に入る(JWTでUserIDを渡す前提)。参加者が集まったらGame開始
+      summary: トーナメント試合のルームに入る
+      description: |
+        トーナメントの試合待機部屋に入る。
+        試合のレコード自体はトーナメント開始時に作成済み。
+        参加者が集まったらGame開始する。
+        このWebSocketはGameが開始されたらコネクションを切る。
       operationId: enterTournamentMatchRoom
       tags:
         - Matches
@@ -155,21 +194,38 @@ paths:
         - name: match_id
           in: path
           required: true
-          schema:                                   
+          schema:
             type: integer
       responses:
         '101':
-          description: Switching Protocols (WebSocket Handshake Successful)
+          description: WebSocketへのプロトコルアップデート成功
         '400':
-          description: Bad Request (Invalid or Missing UserID)
-        '500':
-          description: Internal Server Error
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: |
+            存在しないルームに入ろうとした
+            or
+            許可されていないルームに入ろうとした
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
       security:
         - BearerAuth: []
 
   /matches/finish/:
     post:
-      summary: Gameが終了、試合結果をDBに保存
+      summary: Game終了時に通知を受け取る
+      description: |
+        Gameが終了した時にGame管理APIから叩かれる。
+        試合結果をDBに保存する。
+        試合結果をトーナメント管理に通知する。
       operationId: finishMatch
       tags:
         - Matches
@@ -185,34 +241,50 @@ paths:
                 {"user_id": 2, "score": 11}
               ]
       responses:
-        '200': 
-          description: 正常に試合が終了
+        '204':
+          description: 正常にGameが終了
         '400':
           description: リクエストボディと試合テーブルのレコードの整合性が取れない
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Game管理API以外から叩かれた
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
       security:
         - BearerAuth: []
 
   /matches/statistics/:
     get:
-      summary: ユーザーの勝敗などの統計情報統計情報を取得
+      summary: ユーザーの試合統計情報を取得
+      description: ユーザーの試合に関する統計情報を返す。
       operationId: matchStatistics
       tags:
         - Matches
       responses:
         '200':
-          description: 試合勝利回数・試合敗北回数・トーナメント優勝回数(表示する統計情報の詳細は未定)
-          content:                                                                                         
+          description: 試合勝利回数・試合敗北回数・トーナメント優勝回数
+          content:
             application/json:
               example:
                 "match_win_count": 20
                 "match_lose_count": 8
                 "tournament_winner_count": 2
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
       security:
         - BearerAuth: []
 
   /matches/history/:
     get:
       summary: ユーザーの試合履歴リストを取得
+      description: ユーザーの試合履歴をリスト形式で取得する。
       operationId: matchHistoryList
       tags:
         - Matches
@@ -224,19 +296,25 @@ paths:
               example: [
                 {
                   "mode": "QuickPlay",
-                  "opponent_name": "User2",
                   "win_or_lose": "win",
-                  "score": [11, 5], # [ユーザー, 相手]
                   "date": "2024-12-09",
+                  "user_score": 11,
+                  "opponent_list": [
+                    {"name": "User2", "score": 5}
+                  ],
                 },
                 {
                   "mode": "Tournament",
-                  "opponent_name": "User3",
                   "win_or_lose": "lose",
-                  "score": [10, 12], # [ユーザー, 相手]
                   "date": "2024-12-01",
+                  "user_score": 10,
+                  "opponent_list": [
+                    {"name": "User3", "score": 12}
+                  ],
                 }
               ]
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
       security:
         - BearerAuth: []
 
