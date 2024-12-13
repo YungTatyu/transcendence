@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  title: Tournament API
+  version: 1.0.0
+  description: ft_transcendence内のトーナメント機能を実現するAPI
+
+servers:
+  - url: https://tournament.42.fr
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /tournament/ws/enter-room/:
+    get:
+      summary: トーナメントのマッチング待機部屋に入る(JWTでUserIDを渡す前提)
+      operationId: enterTournamentMatchingRoom
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Bad Request (Invalid or Missing UserID)
+        '500':
+          description: Internal Server Error
+  /tournament/ws/enter-room/{tournament_id}/:
+    get:
+      summary: トーナメントの参加者全員が入るルーム
+      operationId: enterTournamentRoom
+      parameters:
+        - name: tournament_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Bad Request (Invalid tournament_id)
+        '500':
+          description: Internal Server Error
+  /tournament/finish-match:
+    post:
+      summary: トーナメントの一試合が終了した際に試合管理APIから叩かれる。この処理をトリガーにその後のアナウンスが行われる
+      operationId: finishTournamentMatch
+      requestBody:
+        description: 終了した試合のデータ
+        required: true
+        content:
+          application/json:
+            example:
+              "tournament_id": 1
+              "round": 1
+      responses:
+        '200':
+          description: 正常にトーナメントの一試合が終了
+        '400':
+          description: 終了した試合情報とトーナメント管理API内の情報の整合性が取れない
+
