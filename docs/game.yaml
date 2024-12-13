@@ -1,0 +1,40 @@
+openapi: 3.0.0
+info:
+  title: Game API
+  version: 1.0.0
+  description: ft_transcendence内のGame機能を実現するAPI
+
+servers:
+  - url: https://game.42.fr
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /game/ws/enter-room/{match_id}/:
+    get:
+      summary: |
+        Pongゲームのルームに参加。人数が揃ったらWebSocket経由でゲーム開始
+        ブラウザ側からWebSocketに上下キーが押されたかを送信し、サーバ内でPongの盤面を計算
+        計算結果をブラウザに返し、その結果を基にフロントエンドで盤面を描画
+      operationId: enterGameRoom
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Invalid User ID
+        '500':
+          description: Internal Server Error
