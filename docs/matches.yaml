@@ -1,27 +1,22 @@
 openapi: 3.0.3
 info:
-  title: Match API
+  title: Matches API
+  description: 試合管理機能を実現するAPI
   version: 1.0.0
-  description: ft_transcendence内の試合管理機能を実現するAPI
 
 servers:
   - url: https://matches.42.fr
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - BearerAuth: []
 
 paths:
   /matches/:
     get:
       summary: 試合を検索
+      description: |
+        QueryStringを用いて試合を検索する。
+        複数条件による検索を許容する。
       operationId: SearchMatches
+      tags:
+        - Matches
       parameters:
         - name: match_id
           in: query
@@ -89,10 +84,15 @@ paths:
           description: QueryStringがおかしい
         '404':
           description: 該当する試合が存在しない
+      security:
+        - BearerAuth: []
+
   /matches/create-tournament-match/:
     post:
       summary: Matchesにレコードを追加する(トーナメント管理から叩かれる想定)
       operationId: createTournamentMatch
+      tags:
+        - Matches
       requestBody:
         description: 試合作成の基となる情報
         required: true
@@ -131,10 +131,15 @@ paths:
                 "match_id": 101
         '400':
           description: 試合作成の基となる情報が間違っている
+      security:
+        - BearerAuth: []
+
   /matches/ws/enter-room/:
     get:
       summary: QuickPlayのマッチング待機部屋に入る(JWTでUserIDを渡す前提)。人数が集まったらGame開始
       operationId: enterMatchRoom
+      tags:
+        - Matches
       responses:
         '101':
           description: Switching Protocols (WebSocket Handshake Successful)
@@ -142,10 +147,15 @@ paths:
           description: Bad Request (Invalid or Missing UserID)
         '500':
           description: Internal Server Error
+      security:
+        - BearerAuth: []
+
   /matches/ws/enter-room/{match_id}/:
     get:
       summary: トーナメントの試合待機部屋に入る(JWTでUserIDを渡す前提)。参加者が集まったらGame開始
       operationId: enterTournamentMatchRoom
+      tags:
+        - Matches
       parameters:
         - name: match_id
           in: path
@@ -159,10 +169,15 @@ paths:
           description: Bad Request (Invalid or Missing UserID)
         '500':
           description: Internal Server Error
+      security:
+        - BearerAuth: []
+
   /matches/finish/:
     post:
       summary: Gameが終了、試合結果をDBに保存
       operationId: finishMatch
+      tags:
+        - Matches
       requestBody:
         description: 試合結果情報
         required: true
@@ -179,10 +194,15 @@ paths:
           description: 正常に試合が終了
         '400':
           description: リクエストボディと試合テーブルのレコードの整合性が取れない
+      security:
+        - BearerAuth: []
+
   /matches/statistics/:
     get:
       summary: ユーザーの勝敗などの統計情報統計情報を取得
       operationId: matchStatistics
+      tags:
+        - Matches
       responses:
         '200':
           description: 試合勝利回数・試合敗北回数・トーナメント優勝回数(表示する統計情報の詳細は未定)
@@ -192,10 +212,15 @@ paths:
                 "match_win_count": 20
                 "match_lose_count": 8
                 "tournament_winner_count": 2
+      security:
+        - BearerAuth: []
+
   /matches/history/:
     get:
       summary: ユーザーの試合履歴リストを取得
       operationId: matchHistoryList
+      tags:
+        - Matches
       responses:
         '200':
           description: 試合モード・対戦相手・勝敗・スコア・試合日時
@@ -217,3 +242,29 @@ paths:
                   "date": "2024-12-01",
                 }
               ]
+      security:
+        - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
