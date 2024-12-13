@@ -1,0 +1,95 @@
+openapi: 3.0.3
+
+info: 
+  title: users API
+  description: |
+    FriendsサービスのAPIを提供。このAPIは、フレンド管理に関連する操作をサポート。
+  version: 1.0.0
+
+servers:
+  - url: https://friends.transcendence.com
+
+paths:
+  /friends:
+    get:
+      summary: "ユーザーの友達リストを取得"
+      description: "認証されたユーザーの友達リストを取得"
+      security:
+        - bearerAuth: []  
+      tags:
+        - friends
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/FriendStatus'
+          required: false
+          description: "取得したい友達リクエストのステータス。省略した場合、すべてのステータスが返す"
+      responses:
+        "200":
+          description: "ユーザーの友達リスト"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  friends:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: integer
+                        username:
+                          type: string
+                        status:
+                          $ref: '#/components/schemas/FriendStatus'
+                        request_sent_at:
+                          type: string
+                          format: date-time
+                          description: "友達リクエストが送信された日時"
+                        approved_at:
+                          type: string
+                          format: date-time
+                          description: "友達リクエストが承認された日時"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "No friends found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No friends found."
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+    FriendStatus:
+      type: string
+      enum: [pending, approved]
+      description: "友達のステータス"
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
