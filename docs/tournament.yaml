@@ -1,38 +1,49 @@
 openapi: 3.0.3
+
 info:
   title: Tournament API
+  description: トーナメント機能を実現するAPI
   version: 1.0.0
-  description: ft_transcendence内のトーナメント機能を実現するAPI
 
 servers:
   - url: https://tournament.42.fr
 
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - BearerAuth: []
-
 paths:
   /tournament/ws/enter-room/:
     get:
-      summary: トーナメントのマッチング待機部屋に入る(JWTでUserIDを渡す前提)
+      summary: トーナメントマッチングルームに入る
+      description: |
+        トーナメントのマッチング待機部屋に入る。
+        トーナメント参加者が集まり、トーナメントが開始されたら
+        このWebSocketはコネクションを切る。
       operationId: enterTournamentMatchingRoom
+      tags:
+        - tournament
       responses:
         '101':
-          description: Switching Protocols (WebSocket Handshake Successful)
+          description: WebSocketへのプロトコルアップデート成功
         '400':
-          description: Bad Request (Invalid or Missing UserID)
-        '500':
-          description: Internal Server Error
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+      security:
+        - BearerAuth: []
+
   /tournament/ws/enter-room/{tournament_id}/:
     get:
-      summary: トーナメントの参加者全員が入るルーム
+      summary: トーナメントルームに入る
+      description: |
+        参加人数が集まったら参加者の情報を用いてトーナメントに必要なレコード作成し、
+        このエンドポイントにアクセスさせる。
+        その後、試合のアナウンスをこのWebSocket経由で行う。
+        全ての試合が終了したらこのWebSocketはコネクションを切る。
       operationId: enterTournamentRoom
+      tags:
+        - tournament
       parameters:
         - name: tournament_id
           in: path
@@ -41,26 +52,95 @@ paths:
             type: integer
       responses:
         '101':
-          description: Switching Protocols (WebSocket Handshake Successful)
+          description: WebSocketへのプロトコルアップデート成功
         '400':
-          description: Bad Request (Invalid tournament_id)
-        '500':
-          description: Internal Server Error
-  /tournament/finish-match:
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: |
+            存在しないルームに入ろうとした
+            or
+            許可されていないルームに入ろうとした
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+      security:
+        - BearerAuth: []
+
+  /tournament/finish-match/:
     post:
-      summary: トーナメントの一試合が終了した際に試合管理APIから叩かれる。この処理をトリガーにその後のアナウンスが行われる
+      summary: 試合終了を通知
+      description: |
+        トーナメントの一試合が終了するごとに試合管理APIから叩かれる。
+        この処理をトリガーにその後のアナウンスが行われる。
       operationId: finishTournamentMatch
+      tags:
+        - tournament
       requestBody:
-        description: 終了した試合のデータ
         required: true
         content:
           application/json:
+            schema:
+              type: object
+              properties:
+                tournament_id:
+                  type: integer
+                  description: 終了した試合のTournamentID
+                round:
+                  type: integer
+                  description: 終了した試合のRound
+              required:
+                - tournament_id
+                - round
             example:
               "tournament_id": 1
               "round": 1
       responses:
-        '200':
+        '204':
           description: 正常にトーナメントの一試合が終了
         '400':
           description: 終了した試合情報とトーナメント管理API内の情報の整合性が取れない
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: トーナメント管理API以外から叩かれた
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+      security:
+        - BearerAuth: []
 
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
