@@ -1,0 +1,219 @@
+openapi: 3.0.0
+info:
+  title: Match API
+  version: 1.0.0
+  description: ft_transcendence内の試合管理機能を実現するAPI
+
+servers:
+  - url: https://matches.42.fr
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /matches/:
+    get:
+      summary: 試合を検索
+      operationId: SearchMatches
+      parameters:
+        - name: match_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: winner_user_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: mode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["QuickPlay", "Tournament"]
+        - name: tournament_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: round
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: match_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 試合が見つかった
+          content:
+            application/json:
+              example: [
+                {
+                  "match_id": 2,
+                  "winner_user_id": 1,
+                  "mode": "Tournament",
+                  "tournament_id": 1,
+                  "parent_match_id": 3,
+                  "round": 10,
+                  "participants": [
+                    {"user_id": 1, "user_name": "ABC"},
+                    {"user_id": 2, "user_name": "DEF"}
+                  ]
+                },
+                {
+                  "match_id": 3,
+                  "winner_user_id": NULL,
+                  "mode": "Tournament",
+                  "tournament_id": 1,
+                  "parent_match_id": NULL,
+                  "round": 11,
+                  "participants": [
+                    {"user_id": 2, "user_name": "DEF"},
+                    {"user_id": 3, "user_name": "GHI"}
+                  ]
+                }
+              ]
+        '400':
+          description: QueryStringがおかしい
+        '404':
+          description: 該当する試合が存在しない
+  /matches/create-tournament-match/:
+    post:
+      summary: Matchesにレコードを追加する(トーナメント管理から叩かれる想定)
+      operationId: createTournamentMatch
+      requestBody:
+        description: 試合作成の基となる情報
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id_list:
+                  type: array
+                  items:
+                    type: integer
+                tournament_id:
+                  type: integer
+                parent_match_id:
+                  type: integer
+                  nullable: true
+                  description: 決勝戦はparent_match_idが存在しないため、NULLを許容する
+                round:
+                  type: integer
+              required:
+                - user_id_list
+                - tournament_id
+                - round
+            example:
+              "user_id_list": [1, 42]
+              "tournament_id": 1
+              "parent_match_id": 100
+              "round": 1
+      responses:
+        '200':
+          description: 試合作成
+          content:                                                                                         
+            application/json:
+              example:
+                "match_id": 101
+        '400':
+          description: 試合作成の基となる情報が間違っている
+  /matches/ws/enter-room/:
+    get:
+      summary: QuickPlayのマッチング待機部屋に入る(JWTでUserIDを渡す前提)。人数が集まったらGame開始
+      operationId: enterMatchRoom
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Bad Request (Invalid or Missing UserID)
+        '500':
+          description: Internal Server Error
+  /matches/ws/enter-room/{match_id}/:
+    get:
+      summary: トーナメントの試合待機部屋に入る(JWTでUserIDを渡す前提)。参加者が集まったらGame開始
+      operationId: enterTournamentMatchRoom
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          schema:                                   
+            type: integer
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket Handshake Successful)
+        '400':
+          description: Bad Request (Invalid or Missing UserID)
+        '500':
+          description: Internal Server Error
+  /matches/finish/:
+    post:
+      summary: Gameが終了、試合結果をDBに保存
+      operationId: finishMatch
+      requestBody:
+        description: 試合結果情報
+        required: true
+        content:
+          application/json:
+            example:
+              "match_id": 1
+              results: [
+                {"user_id": 1, "score": 8},
+                {"user_id": 2, "score": 11}
+              ]
+      responses:
+        '200': 
+          description: 正常に試合が終了
+        '400':
+          description: リクエストボディと試合テーブルのレコードの整合性が取れない
+  /matches/statistics/:
+    get:
+      summary: ユーザーの勝敗などの統計情報統計情報を取得
+      operationId: matchStatistics
+      responses:
+        '200':
+          description: 試合勝利回数・試合敗北回数・トーナメント優勝回数(表示する統計情報の詳細は未定)
+          content:                                                                                         
+            application/json:
+              example:
+                "match_win_count": 20
+                "match_lose_count": 8
+                "tournament_winner_count": 2
+  /matches/history/:
+    get:
+      summary: ユーザーの試合履歴リストを取得
+      operationId: matchHistoryList
+      responses:
+        '200':
+          description: 試合モード・対戦相手・勝敗・スコア・試合日時
+          content:
+            application/json:
+              example: [
+                {
+                  "mode": "QuickPlay",
+                  "opponent_name": "User2",
+                  "win_or_lose": "win",
+                  "score": [11, 5], # [ユーザー, 相手]
+                  "date": "2024-12-09",
+                },
+                {
+                  "mode": "Tournament",
+                  "opponent_name": "User3",
+                  "win_or_lose": "lose",
+                  "score": [10, 12], # [ユーザー, 相手]
+                  "date": "2024-12-01",
+                }
+              ]
