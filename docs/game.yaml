@@ -1,30 +1,24 @@
 openapi: 3.0.3
 info:
   title: Game API
+  description: Game機能を実現するAPI
   version: 1.0.0
-  description: ft_transcendence内のGame機能を実現するAPI
 
 servers:
   - url: https://game.42.fr
 
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - BearerAuth: []
-
 paths:
   /game/ws/enter-room/{match_id}/:
     get:
-      summary: |
-        Pongゲームのルームに参加。人数が揃ったらWebSocket経由でゲーム開始
-        ブラウザ側からWebSocketに上下キーが押されたかを送信し、サーバ内でPongの盤面を計算
-        計算結果をブラウザに返し、その結果を基にフロントエンドで盤面を描画
+      summary: ゲームルームに入る
+      description: |
+        ゲームのルームに参加する。
+        参加者が揃ったらこのWebSocket経由でゲームを開始する。
+        ゲームが終了したら試合管理APIに試合結果を通知する。
+        このWebSocketはゲームが終了したらコネクションを切る。
       operationId: enterGameRoom
+      tags:
+        - game
       parameters:
         - name: match_id
           in: path
@@ -33,8 +27,47 @@ paths:
             type: integer
       responses:
         '101':
-          description: Switching Protocols (WebSocket Handshake Successful)
+          description: WebSocketへのプロトコルアップデート成功
         '400':
-          description: Invalid User ID
-        '500':
-          description: Internal Server Error
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: |
+            存在しないルームに入ろうとした
+            or
+            許可されていないルームに入ろうとした
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+      security:
+        - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
