@@ -156,22 +156,6 @@ paths:
                     description: "エラーの詳細"
                     example: "User not found."
   /users/me/avatar:
-    get:
-      summary: "ユーザのアバターを取得"
-      description: "認証済みユーザーのアバターを取得"
-      tags:
-        - users
-      responses:
-        "200":
-          description: "現在のアバター画像を返す"
-          content:
-            # 単一のPNG画像データ
-            image/png:
-              schema:
-                type: string
-                format: binary
-        "401":
-          $ref: '#/components/responses/UnauthorizedResponse'
     put:
       summary: "ユーザのアバターを更新"
       description: "認証済みユーザーのアバター画像をアップロード"
@@ -235,6 +219,29 @@ paths:
                     type: string
                     description: "エラーの詳細"
                     example: "Avatar not found."
+  /users/{userId}/avatar:
+    get:
+      summary: "ユーザーのavatarを取得"
+      description: "ユーザーIDを使用して、そのavatarを取得"
+      tags:
+        - users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "アバター画像を返す"
+          content:
+            # 単一のPNG画像データ
+            image/png:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
 
 security:
   - bearerAuth: []
