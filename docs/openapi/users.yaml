@@ -16,8 +16,6 @@ paths:
       description: "userの新規登録。authサービスからこのapiが叩かれる。"
       tags:
         - users
-      security:
-        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -75,8 +73,6 @@ paths:
       description: "ユーザーIDを使用して、その詳細情報を取得"
       tags:
         - users
-      security:
-        - bearerAuth: []
       parameters:
         - name: userId
           in: path
@@ -115,8 +111,6 @@ paths:
       description: "認証済みユーザのusernameを更新"
       tags:
         - users
-      security:
-        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -157,8 +151,6 @@ paths:
       description: "認証済みユーザーのアバターを取得"
       tags:
         - users
-      security:
-        - bearerAuth: []
       responses:
         "200":
           description: "現在のアバター画像を返す"
@@ -175,8 +167,6 @@ paths:
       description: "認証済みユーザーのアバター画像をアップロード"
       tags:
         - users
-      security:
-        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -218,8 +208,6 @@ paths:
       description: "認証済みユーザーのアバターを削除し、データベースのアバターパスをリセットします。"
       tags:
         - users
-      security:
-        - bearerAuth: []
       responses:
         "204":
           description: "アバターを正常に削除"
@@ -237,6 +225,10 @@ paths:
                     type: string
                     description: "エラーの詳細"
                     example: "Avatar not found."
+
+security:
+  - bearerAuth: []
+
 components:
   securitySchemes:
     bearerAuth:
