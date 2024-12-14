@@ -45,6 +45,19 @@ paths:
           required: false
           schema:
             type: integer
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
       responses:
         '200':
           description: 試合が見つかった
@@ -308,6 +321,19 @@ paths:
           required: true
           schema:
             type: integer
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
       responses:
         '200':
           description: 試合モード・対戦相手・勝敗・スコア・試合日時
