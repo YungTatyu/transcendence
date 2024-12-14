@@ -14,17 +14,17 @@ paths:
       description: |
         QueryStringを用いて試合を検索する。
         複数条件による検索を許容する。
-        user_idに基づいた試合履歴の検索は別のエンドポイントで行う。
+        userIdに基づいた試合履歴の検索は別のエンドポイントで行う。
       operationId: SearchMatches
       tags:
         - Matches
       parameters:
-        - name: match_id
+        - name: matchId
           in: query
           required: false
           schema:
             type: integer
-        - name: winner_user_id
+        - name: winnerUserId
           in: query
           required: false
           schema:
@@ -35,7 +35,7 @@ paths:
           schema:
             type: string
             enum: ["QuickPlay", "Tournament"]
-        - name: tournament_id
+        - name: tournamentId
           in: query
           required: false
           schema:
@@ -52,27 +52,27 @@ paths:
             application/json:
               example: [
                 {
-                  "match_id": 2,
-                  "winner_user_id": 1,
+                  "matchId": 2,
+                  "winnerUserId": 1,
                   "mode": "Tournament",
-                  "tournament_id": 1,
-                  "parent_match_id": 3,
+                  "tournamentId": 1,
+                  "parentMatchId": 3,
                   "round": 10,
                   "participants": [
-                    {"user_id": 1, "user_name": "ABC"},
-                    {"user_id": 2, "user_name": "DEF"}
+                    {"userId": 1, "userName": "ABC"},
+                    {"userId": 2, "userName": "DEF"}
                   ]
                 },
                 {
-                  "match_id": 3,
-                  "winner_user_id": NULL,
+                  "matchId": 3,
+                  "winnerUserId": NULL,
                   "mode": "Tournament",
-                  "tournament_id": 1,
-                  "parent_match_id": NULL,
+                  "tournamentId": 1,
+                  "parentMatchId": NULL,
                   "round": 11,
                   "participants": [
-                    {"user_id": 2, "user_name": "DEF"},
-                    {"user_id": 3, "user_name": "GHI"}
+                    {"userId": 2, "userName": "DEF"},
+                    {"userId": 3, "userName": "GHI"}
                   ]
                 }
               ]
@@ -110,26 +110,26 @@ paths:
             schema:
               type: object
               properties:
-                user_id_list:
+                userIdList:
                   type: array
                   items:
                     type: integer
-                tournament_id:
+                tournamentId:
                   type: integer
-                parent_match_id:
+                parentMatchId:
                   type: integer
                   nullable: true
-                  description: 決勝戦はparent_match_idが存在しないため、NULLを許容する
+                  description: 決勝戦はparentMatchIdが存在しないため、NULLを許容する
                 round:
                   type: integer
               required:
-                - user_id_list
-                - tournament_id
+                - userIdList
+                - tournamentId
                 - round
             example:
-              "user_id_list": [1, 42]
-              "tournament_id": 1
-              "parent_match_id": 100
+              "userIdList": [1, 42]
+              "tournamentId": 1
+              "parentMatchId": 100
               "round": 1
       responses:
         '200':
@@ -137,7 +137,7 @@ paths:
           content:
             application/json:
               example:
-                "match_id": 101
+                "matchId": 101
         '400':
           description: 試合作成の基となる情報に不備がある
           content:
@@ -179,7 +179,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /matches/ws/enter-room/{match_id}/:
+  /matches/ws/enter-room/{matchId}/:
     get:
       summary: トーナメント試合のルームに入る
       description: |
@@ -191,7 +191,7 @@ paths:
       tags:
         - Matches
       parameters:
-        - name: match_id
+        - name: matchId
           in: path
           required: true
           schema:
@@ -235,10 +235,10 @@ paths:
         content:
           application/json:
             example:
-              "match_id": 1
+              "matchId": 1
               results: [
-                {"user_id": 1, "score": 8},
-                {"user_id": 2, "score": 11}
+                {"userId": 1, "score": 8},
+                {"userId": 2, "score": 11}
               ]
       responses:
         '204':
@@ -260,7 +260,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /matches/statistics/{user_id}/:
+  /matches/statistics/{userId}/:
     get:
       summary: 試合統計情報を取得
       description: 試合に関する統計情報を返す。
@@ -268,7 +268,7 @@ paths:
       tags:
         - Matches
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           schema:
@@ -279,11 +279,11 @@ paths:
           content:
             application/json:
               example:
-                "match_win_count": 20
-                "match_lose_count": 8
-                "tournament_winner_count": 2
+                "matchWinCount": 20
+                "matchLoseCount": 8
+                "tournamentWinnerCount": 2
         '400':
-          description: user_idがおかしい
+          description: userIdがおかしい
           content:
             application/json:
               example:
@@ -293,7 +293,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /matches/history/{user_id}/:
+  /matches/history/{userId}/:
     get:
       summary: 試合履歴リストを取得
       description: 試合履歴をリスト形式で取得する。
@@ -301,7 +301,7 @@ paths:
       tags:
         - Matches
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           schema:
@@ -314,25 +314,25 @@ paths:
               example: [
                 {
                   "mode": "QuickPlay",
-                  "win_or_lose": "win",
+                  "winOrLose": "win",
                   "date": "2024-12-09",
-                  "user_score": 11,
-                  "opponent_list": [
+                  "userScore": 11,
+                  "opponentList": [
                     {"name": "User2", "score": 5}
                   ],
                 },
                 {
                   "mode": "Tournament",
-                  "win_or_lose": "lose",
+                  "winOrLose": "lose",
                   "date": "2024-12-01",
-                  "user_score": 10,
-                  "opponent_list": [
+                  "userScore": 10,
+                  "opponentList": [
                     {"name": "User3", "score": 12}
                   ],
                 }
               ]
         '400':
-          description: user_idがおかしい
+          description: userIdがおかしい
           content:
             application/json:
               example:
