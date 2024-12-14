@@ -55,6 +55,16 @@ paths:
                     example: "Username is invalid."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "想定していないクライアントからのリクエストの場合は、endpointを隠す"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Page not found."
         "409":
           description: "Conflict - userが既に存在している"
           content:
