@@ -50,32 +50,34 @@ paths:
           description: 試合が見つかった
           content:
             application/json:
-              example: [
-                {
-                  "matchId": 2,
-                  "winnerUserId": 1,
-                  "mode": "Tournament",
-                  "tournamentId": 1,
-                  "parentMatchId": 3,
-                  "round": 10,
-                  "participants": [
-                    {"userId": 1, "userName": "ABC"},
-                    {"userId": 2, "userName": "DEF"}
-                  ]
-                },
-                {
-                  "matchId": 3,
-                  "winnerUserId": NULL,
-                  "mode": "Tournament",
-                  "tournamentId": 1,
-                  "parentMatchId": NULL,
-                  "round": 11,
-                  "participants": [
-                    {"userId": 2, "userName": "DEF"},
-                    {"userId": 3, "userName": "GHI"}
-                  ]
-                }
-              ]
+              example:
+                "total": 2
+                "results": [
+                  {
+                    "matchId": 2,
+                   "winnerUserId": 1,
+                    "mode": "Tournament",
+                    "tournamentId": 1,
+                    "parentMatchId": 3,
+                    "round": 10,
+                    "participants": [
+                      {"userId": 1, "userName": "ABC"},
+                      {"userId": 2, "userName": "DEF"}
+                    ]
+                  },
+                  {
+                    "matchId": 3,
+                    "winnerUserId": NULL,
+                    "mode": "Tournament",
+                    "tournamentId": 1,
+                    "parentMatchId": NULL,
+                    "round": 11,
+                    "participants": [
+                      {"userId": 2, "userName": "DEF"},
+                      {"userId": 3, "userName": "GHI"}
+                    ]
+                  }
+                ]
         '400':
           description: QueryStringがおかしい
           content:
@@ -311,26 +313,28 @@ paths:
           description: 試合モード・対戦相手・勝敗・スコア・試合日時
           content:
             application/json:
-              example: [
-                {
-                  "mode": "QuickPlay",
-                  "winOrLose": "win",
-                  "date": "2024-12-09",
-                  "userScore": 11,
-                  "opponentList": [
-                    {"name": "User2", "score": 5}
-                  ],
-                },
-                {
-                  "mode": "Tournament",
-                  "winOrLose": "lose",
-                  "date": "2024-12-01",
-                  "userScore": 10,
-                  "opponentList": [
-                    {"name": "User3", "score": 12}
-                  ],
-                }
-              ]
+              example:
+                "total": 2
+                "results": [
+                  {
+                    "mode": "QuickPlay",
+                    "result": "win",
+                    "date": "2024-12-09",
+                    "userScore": 11,
+                    "opponents": [
+                      {"name": "User2", "score": 5}
+                    ],
+                  },
+                  {
+                    "mode": "Tournament",
+                    "result": "lose",
+                    "date": "2024-12-01",
+                    "userScore": 10,
+                    "opponents": [
+                      {"name": "User3", "score": 12}
+                    ],
+                  }
+                ]
         '400':
           description: userIdがおかしい
           content:
