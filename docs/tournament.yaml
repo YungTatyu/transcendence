@@ -33,7 +33,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /tournament/ws/enter-room/{tournament_id}/:
+  /tournament/ws/enter-room/{tournamentId}/:
     get:
       summary: トーナメントルームに入る
       description: |
@@ -45,7 +45,7 @@ paths:
       tags:
         - tournament
       parameters:
-        - name: tournament_id
+        - name: tournamentId
           in: path
           required: true
           schema:
@@ -89,17 +89,17 @@ paths:
             schema:
               type: object
               properties:
-                tournament_id:
+                tournamentId:
                   type: integer
                   description: 終了した試合のTournamentID
                 round:
                   type: integer
                   description: 終了した試合のRound
               required:
-                - tournament_id
+                - tournamentId
                 - round
             example:
-              "tournament_id": 1
+              "tournamentId": 1
               "round": 1
       responses:
         '204':
