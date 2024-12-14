@@ -64,7 +64,9 @@ paths:
           content:
             application/json:
               example:
-                "total": 2
+                "total": 100 # サーバー内のリソースの総数
+                "offset": 0
+                "limit": 2
                 "results": [
                   {
                     "matchId": 2,
@@ -340,7 +342,9 @@ paths:
           content:
             application/json:
               example:
-                "total": 2
+                "total": 42 # サーバー内のリソースの総数
+                "offset": 0
+                "limit": 2
                 "results": [
                   {
                     "mode": "QuickPlay",
