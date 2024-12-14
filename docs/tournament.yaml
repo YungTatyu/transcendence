@@ -18,7 +18,7 @@ paths:
         このWebSocketはコネクションを切る。
       operationId: enterTournamentMatchingRoom
       tags:
-        - tournament
+        - Tournament
       responses:
         '101':
           description: WebSocketへのプロトコルアップデート成功
@@ -43,7 +43,7 @@ paths:
         全ての試合が終了したらこのWebSocketはコネクションを切る。
       operationId: enterTournamentRoom
       tags:
-        - tournament
+        - Tournament
       parameters:
         - name: tournamentId
           in: path
@@ -75,13 +75,13 @@ paths:
 
   /tournament/finish-match/:
     post:
-      summary: 試合終了に通知を受け取る
+      summary: 試合終了時に通知を受け取る
       description: |
         トーナメントの一試合が終了するごとに試合管理APIから叩かれる。
         この処理をトリガーにその後のアナウンスが行われる。
       operationId: finishTournamentMatch
       tags:
-        - tournament
+        - Tournament
       requestBody:
         required: true
         content:
@@ -113,13 +113,34 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
         '404':
-          description: トーナメント管理API以外から叩かれた
+          description: 試合管理API以外から叩かれた
           content:
             application/json:
               example:
                 "error": "Not Found"
       security:
         - BearerAuth: []
+
+  /tournament/health/:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Tournament
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
 
 components:
   securitySchemes:
