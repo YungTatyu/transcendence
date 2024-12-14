@@ -260,13 +260,19 @@ paths:
       security:
         - BearerAuth: []
 
-  /matches/statistics/:
+  /matches/statistics/{user_id}/:
     get:
-      summary: ユーザーの試合統計情報を取得
-      description: ユーザーの試合に関する統計情報を返す。
+      summary: 試合統計情報を取得
+      description: 試合に関する統計情報を返す。
       operationId: matchStatistics
       tags:
         - Matches
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: 試合勝利回数・試合敗北回数・トーナメント優勝回数
@@ -276,18 +282,30 @@ paths:
                 "match_win_count": 20
                 "match_lose_count": 8
                 "tournament_winner_count": 2
+        '400':
+          description: user_idがおかしい
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
       security:
         - BearerAuth: []
 
-  /matches/history/:
+  /matches/history/{user_id}/:
     get:
-      summary: ユーザーの試合履歴リストを取得
-      description: ユーザーの試合履歴をリスト形式で取得する。
+      summary: 試合履歴リストを取得
+      description: 試合履歴をリスト形式で取得する。
       operationId: matchHistoryList
       tags:
         - Matches
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: 試合モード・対戦相手・勝敗・スコア・試合日時
@@ -313,6 +331,12 @@ paths:
                   ],
                 }
               ]
+        '400':
+          description: user_idがおかしい
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
       security:
