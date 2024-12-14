@@ -30,8 +30,6 @@ paths:
                 "error": "Bad Request"
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
-      security:
-        - BearerAuth: []
 
   /tournament/ws/enter-room/{tournamentId}/:
     get:
@@ -70,8 +68,6 @@ paths:
             application/json:
               example:
                 "error": "Not Found"
-      security:
-        - BearerAuth: []
 
   /tournament/finish-match/:
     post:
@@ -118,8 +114,6 @@ paths:
             application/json:
               example:
                 "error": "Not Found"
-      security:
-        - BearerAuth: []
 
   /tournament/health/:
     get:
@@ -141,6 +135,10 @@ paths:
             application/json:
               example:
                 "status": "unhealthy"
+      security: []
+
+security:
+  - BearerAuth: []
 
 components:
   securitySchemes:
