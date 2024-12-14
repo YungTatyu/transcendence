@@ -14,8 +14,6 @@ paths:
     put:
       summary: "ユーザのemailを更新"
       description: "認証済みユーザのemailを更新"
-      security:
-        - bearerAuth: []
       tags:
         - auth
       requestBody:
@@ -57,8 +55,6 @@ paths:
     put:
       summary: "ユーザのpasswordを更新"
       description: "認証済みユーザのpasswordを更新。現在のpasswordも認証に必要。"
-      security:
-        - bearerAuth: []
       tags:
         - auth
       requestBody:
@@ -104,6 +100,7 @@ paths:
       description: "新規ユーザーを仮登録し、認証用のOTPを生成"
       tags:
         - auth
+      security: []
       requestBody:
         required: true
         content:
@@ -157,6 +154,7 @@ paths:
       description: "ユーザーを認証し、OTPを生成"
       tags:
         - auth
+      security: []
       requestBody:
         required: true
         content:
@@ -205,6 +203,7 @@ paths:
       description: "サインアッププロセス中に送信されたOTPを検証"
       tags:
         - auth
+      security: []
       requestBody:
         required: true
         content:
@@ -266,6 +265,7 @@ paths:
       description: "OTPを検証"
       tags:
         - auth
+      security: []
       requestBody:
         required: true
         content:
@@ -323,11 +323,11 @@ paths:
   /auth/token/refresh:
     post:
       summary: "accessトークンの更新"
-      description: "有効なrefreshトークンを使用して新しいaccessトークンを生成"
+      description: "有効なrefreshトークンを使用して新しいaccessトークンを生成。accessトークン認証はなし"
       tags:
         - auth
-      security:
-        - bearerAuth: []
+      # accessトークンを更新するので、認証しない
+      security: []
       requestBody:
         required: true
         content:
@@ -372,6 +372,9 @@ paths:
                     type: string
                     description: "リフレッシュトークンが無効または期限切れであることを示すエラーメッセージ"
                     example: "Refresh token is missing or invalid."
+
+security:
+  - bearerAuth: []
 
 components:
   securitySchemes:
