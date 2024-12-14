@@ -183,6 +183,37 @@ paths:
                   error:
                     type: string
                     example: "No friend request exists from the specified user."
+  /friends/{friend_id}:
+    delete:
+      summary: "フレンドの削除"
+      description: "ユーザーのフレンドリストからフレンドを削除"
+      security:
+        - bearerAuth: []
+      tags:
+        - friends
+      parameters:
+        - name: friend_id
+          in: path
+          required: true
+          description: "削除するフレンドのID"
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "フレンドを正常に削除"
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "Friend not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend not found."
 
 components:
   securitySchemes:
