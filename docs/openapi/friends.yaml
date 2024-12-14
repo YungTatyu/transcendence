@@ -23,6 +23,22 @@ paths:
             $ref: '#/components/schemas/FriendStatus'
           required: false
           description: "取得したい友達リクエストのステータス。省略した場合、すべてのステータスが返す"
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          required: false
+          description: "取得を開始する位置。デフォルトは0"
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          required: false
+          description: "取得する友達リストの最大数。デフォルトは20"
       responses:
         "200":
           description: "ユーザーの友達リスト"
@@ -50,6 +66,10 @@ paths:
                           type: string
                           format: date-time
                           description: "友達リクエストが承認された日時"
+                  total:
+                    type: integer
+                    description: "友達の総数（フィルター後の結果）"
+                    example: 1
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
         "404":
