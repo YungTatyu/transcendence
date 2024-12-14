@@ -93,7 +93,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /matches/create-tournament-match/:
+  /matches/tournament-match/:
     post:
       summary: トーナメントに紐づいた試合を作成
       description: |
@@ -293,7 +293,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /matches/history/{userId}/:
+  /matches/histories/{userId}/:
     get:
       summary: 試合履歴リストを取得
       description: 試合履歴をリスト形式で取得する。
