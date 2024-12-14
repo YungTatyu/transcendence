@@ -8,7 +8,7 @@ servers:
   - url: https://game.42.fr
 
 paths:
-  /game/ws/enter-room/{match_id}/:
+  /game/ws/enter-room/{matchId}/:
     get:
       summary: ゲームルームに入る
       description: |
@@ -20,7 +20,7 @@ paths:
       tags:
         - game
       parameters:
-        - name: match_id
+        - name: matchId
           in: path
           required: true
           schema:
