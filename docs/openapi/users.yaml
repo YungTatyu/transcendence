@@ -11,6 +11,42 @@ servers:
 
 paths:
   /users:
+    get:
+      summary: "クエリパラメータでユーザーを検索"
+      description: "指定されたパラメータでユーザー情報を取得"
+      tags:
+        - users
+      parameters:
+        - name: username
+          in: query
+          description: "検索対象のユーザー名"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "ユーザー情報の取得に成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                  username:
+                    type: string
+        "400":
+          description: "Missing or invalid query parameter."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "query parameter 'username' is required."
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
     post:
       summary: "userの新規作成"
       description: "userの新規登録。authサービスからこのapiが叩かれる。"
@@ -181,7 +217,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  avatar_path:
+                  avatarPath:
                     type: string
                     description: "更新されたアバター画像のパス。"
                     example: "/uploads/avatars/12345.png"
