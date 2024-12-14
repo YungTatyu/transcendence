@@ -18,7 +18,7 @@ paths:
         このWebSocketはゲームが終了したらコネクションを切る。
       operationId: enterGameRoom
       tags:
-        - game
+        - Game
       parameters:
         - name: matchId
           in: path
@@ -47,6 +47,27 @@ paths:
                 "error": "Not Found"
       security:
         - BearerAuth: []
+
+  /game/health/:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Game
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
 
 components:
   securitySchemes:
