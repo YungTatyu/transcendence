@@ -38,7 +38,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        user_id:
+                        userId:
                           type: integer
                         username:
                           type: string
@@ -64,7 +64,7 @@ paths:
                   error:
                     type: string
                     example: "No friends found."
-  /friends/requests/{user_id}/:
+  /friends/requests/{userId}/:
     post:
       summary: "フレンドリクエストを送信"
       description: "指定したユーザーIDにフレンドリクエストを送信"
@@ -73,7 +73,7 @@ paths:
       tags:
         - friends
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           description: "リクエストを送信する相手のユーザーID"
@@ -120,7 +120,7 @@ paths:
       tags:
         - friends
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           description: "承認するフレンドリクエストを送信したユーザーのID"
@@ -134,7 +134,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id:
+                  userId:
                     type: integer
                     example: 123
                   # username要る？
@@ -161,7 +161,7 @@ paths:
       tags:
         - friends
       parameters:
-        - name: user_id
+        - name: userId
           in: path
           required: true
           description: "削除または拒否するフレンドリクエストを送信したユーザーのID"
@@ -183,7 +183,7 @@ paths:
                   error:
                     type: string
                     example: "No friend request exists from the specified user."
-  /friends/{friend_id}:
+  /friends/{friendId}:
     delete:
       summary: "フレンドの削除"
       description: "ユーザーのフレンドリストからフレンドを削除"
@@ -192,7 +192,7 @@ paths:
       tags:
         - friends
       parameters:
-        - name: friend_id
+        - name: friendId
           in: path
           required: true
           description: "削除するフレンドのID"
