@@ -14,8 +14,6 @@ paths:
     get:
       summary: "ユーザーの友達リストを取得"
       description: "認証されたユーザーの友達リストを取得"
-      security:
-        - bearerAuth: []  
       tags:
         - friends
       parameters:
@@ -68,8 +66,6 @@ paths:
     post:
       summary: "フレンドリクエストを送信"
       description: "指定したユーザーIDにフレンドリクエストを送信"
-      security:
-        - bearerAuth: []
       tags:
         - friends
       parameters:
@@ -115,8 +111,6 @@ paths:
     patch:
       summary: "フレンドリクエストを承認"
       description: "指定したユーザーIDからのフレンドリクエストを承認"
-      security:
-        - bearerAuth: []
       tags:
         - friends
       parameters:
@@ -156,8 +150,6 @@ paths:
     delete:
       summary: "フレンドリクエストを削除または拒否"
       description: "指定したユーザーIDからのフレンドリクエストを削除"
-      security:
-        - bearerAuth: []
       tags:
         - friends
       parameters:
@@ -187,8 +179,6 @@ paths:
     delete:
       summary: "フレンドの削除"
       description: "ユーザーのフレンドリストからフレンドを削除"
-      security:
-        - bearerAuth: []
       tags:
         - friends
       parameters:
@@ -214,6 +204,9 @@ paths:
                   error:
                     type: string
                     example: "Friend not found."
+
+security:
+  - bearerAuth: []
 
 components:
   securitySchemes:
