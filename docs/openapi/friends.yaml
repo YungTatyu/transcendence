@@ -64,6 +64,125 @@ paths:
                   error:
                     type: string
                     example: "No friends found."
+  /friends/requests/{user_id}/:
+    post:
+      summary: "フレンドリクエストを送信"
+      description: "指定したユーザーIDにフレンドリクエストを送信"
+      security:
+        - bearerAuth: []
+      tags:
+        - friends
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: "リクエストを送信する相手のユーザーID"
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: "フレンドリクエストが正常に送信"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Friend request sent successfully."
+        "400":
+          description: "Invalid request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You cannot send a request to yourself."
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "409":
+          description: "already sent request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request already sent."
+    patch:
+      summary: "フレンドリクエストを承認"
+      description: "指定したユーザーIDからのフレンドリクエストを承認"
+      security:
+        - bearerAuth: []
+      tags:
+        - friends
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: "承認するフレンドリクエストを送信したユーザーのID"
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Friend request approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 123
+                  # username要る？
+                  # username:
+                  #   type: string
+                  #   example: "example_user"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "Friend request not found or already approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request not found."
+    delete:
+      summary: "フレンドリクエストを削除または拒否"
+      description: "指定したユーザーIDからのフレンドリクエストを削除"
+      security:
+        - bearerAuth: []
+      tags:
+        - friends
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: "削除または拒否するフレンドリクエストを送信したユーザーのID"
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "フレンドリクエストが正常に削除"
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "No friend request found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No friend request exists from the specified user."
 
 components:
   securitySchemes:
