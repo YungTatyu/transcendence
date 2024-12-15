@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info: 
-  title: users API
+  title: Friends API
   description: |
     FriendsサービスのAPIを提供。このAPIは、フレンド管理に関連する操作をサポート。
   version: 1.0.0
