@@ -1,0 +1,11 @@
+openapi: 3.0.3
+
+info: 
+  title: Friends Activity API
+  description: |
+    friends activityサービスのAPIを提供
+    このAPIは、ユーザのフレンドのオンラインステータスに関連する操作をサポート。
+  version: 1.0.0
+
+servers:
+  - url: wss://activity.transcendence.com
