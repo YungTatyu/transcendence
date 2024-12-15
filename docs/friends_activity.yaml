@@ -9,3 +9,63 @@ info:
 
 servers:
   - url: wss://activity.transcendence.com
+
+paths:
+  /friends/online:
+    description: "オンラインのフレンドリストをWebSocketで取得"
+    get:
+      summary: "オンラインのフレンドリストを取得するWebSocket接続"
+      operationId: "getOnlineFriendsWS"
+      tags:
+        - Friends Activity
+      responses:
+        '101':
+          description: "WebSocket接続の確立"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "WebSocket connection established for online friends list."
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '500':
+          description: "サーバーエラー"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "エラーの詳細"
+                    example: "Internal server error"
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
