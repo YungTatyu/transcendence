@@ -99,8 +99,12 @@ paths:
               "tournamentId": 1
               "round": 1
       responses:
-        '204':
+        '200':
           description: 正常にトーナメントの一試合が終了
+          content:
+            application/json:
+              example:
+                "message": "Match ended normally"
         '400':
           description: 終了した試合情報とトーナメント管理API内の情報の整合性が取れない
           content:
