@@ -6,6 +6,7 @@ info:
 
 servers:
   - url: https://matches.42.fr
+  - url: wss://matches.42.fr
 
 paths:
   /matches/:
