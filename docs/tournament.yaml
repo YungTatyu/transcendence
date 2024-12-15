@@ -7,6 +7,7 @@ info:
 
 servers:
   - url: https://tournament.42.fr
+  - url: wss://tournament.42.fr
 
 paths:
   /tournament/ws/enter-room/:
