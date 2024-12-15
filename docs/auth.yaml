@@ -1,9 +1,9 @@
 openapi: 3.0.3
 
 info: 
-  title: auth API
+  title: Auth API
   description: |
-    authサービスのAPIを提供。このAPIは、ユーザー認証管理に関連する操作をサポート。
+    AuthサービスのAPIを提供。このAPIは、ユーザー認証管理に関連する操作をサポート。
   version: 1.0.0
 
 servers:
