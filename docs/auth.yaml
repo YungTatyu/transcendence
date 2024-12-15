@@ -51,6 +51,16 @@ paths:
                     example: "Invalid email format."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
+        "409":
+          description: "The email address is already registered."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "This email address is already in use."
   /auth/me/password:
     put:
       summary: "ユーザのpasswordを更新"
@@ -148,6 +158,16 @@ paths:
                     type: string
                     description: "エラー詳細"
                     example: "Invalid email format."
+        "409":
+          description: "The email address or username is already registered."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "This email address or username is already in use."
   /auth/otp/login:
     post:
       summary: "既存ユーザーのログイン"
