@@ -5,7 +5,7 @@ import { Login } from "./views/pages/login.js";
 
 const routes = {
   '/': Home,
-  '/login/': Login
+  '/login': Login
 };
 
 async function router() {
@@ -14,6 +14,7 @@ async function router() {
   const page = new pageClass()
   page.render()
   await page.initializeEvents()
+  history.pushState({}, '', uri);
 }
 
 document.addEventListener('load', router);

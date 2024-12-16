@@ -2,7 +2,7 @@
 all: build
 
 build:
-	http-server 
+	serve -s .
 
 test:
 	npm test
