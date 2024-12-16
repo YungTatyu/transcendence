@@ -279,7 +279,7 @@ paths:
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
 
-  /health/:
+  /health:
     get:
       summary: ヘルスチェック用エンドポイント
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
