@@ -82,7 +82,7 @@ paths:
                   error:
                     type: string
                     example: "No friends found."
-  /friends/requests/{userId}/:
+  /friends/requests/{userId}:
     post:
       summary: "フレンドリクエストを送信"
       description: "指定したユーザーIDにフレンドリクエストを送信"
@@ -231,7 +231,7 @@ paths:
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
       operationId: healthCheck
       tags:
-        - Auth
+        - Friends
       responses:
         '200':
           description: サーバーが正常に稼働中
