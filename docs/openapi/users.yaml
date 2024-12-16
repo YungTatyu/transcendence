@@ -15,7 +15,7 @@ paths:
       summary: "クエリパラメータでユーザーを検索"
       description: "指定されたパラメータでユーザー情報を取得"
       tags:
-        - users
+        - Users
       parameters:
         - name: username
           in: query
@@ -51,7 +51,7 @@ paths:
       summary: "userの新規作成"
       description: "userの新規登録。authサービスからこのapiが叩かれる。"
       tags:
-        - users
+        - Users
       requestBody:
         required: true
         content:
@@ -118,7 +118,7 @@ paths:
       summary: "ユーザー情報の取得"
       description: "ユーザーIDを使用して、その詳細情報を取得"
       tags:
-        - users
+        - Users
       parameters:
         - name: userId
           in: path
@@ -156,7 +156,7 @@ paths:
       summary: "usernameの更新"
       description: "認証済みユーザのusernameを更新"
       tags:
-        - users
+        - Users
       requestBody:
         required: true
         content:
@@ -196,7 +196,7 @@ paths:
       summary: "ユーザのアバターを更新"
       description: "認証済みユーザーのアバター画像をアップロード"
       tags:
-        - users
+        - Users
       requestBody:
         required: true
         content:
@@ -237,7 +237,7 @@ paths:
       summary: "認証済みユーザーのアバターを削除"
       description: "認証済みユーザーのアバターを削除し、データベースのアバターパスをリセットします。"
       tags:
-        - users
+        - Users
       responses:
         "204":
           description: "アバターを正常に削除"
@@ -260,7 +260,7 @@ paths:
       summary: "ユーザーのavatarを取得"
       description: "ユーザーIDを使用して、そのavatarを取得"
       tags:
-        - users
+        - Users
       parameters:
         - name: userId
           in: path
@@ -278,6 +278,28 @@ paths:
                 format: binary
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
+
+  /health/:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Users
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
 
 security:
   - bearerAuth: []
