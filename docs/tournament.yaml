@@ -120,7 +120,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /tournament/health/:
+  /health/:
     get:
       summary: ヘルスチェック用エンドポイント
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
