@@ -1,10 +1,14 @@
-export const error404 = {
-  render: function() {
-    return `
+import { Router } from "../router.js"
+
+export class Error404 extends Router {
+  constructor() { super() }
+
+  render() {
+    this.root = `
       <h1>404 Error</h1>
       <h2>page not found</h2>
 `
-  },
-  initializeEvents: async function() {
   }
+
+  initializeEvents() { }
 }

@@ -1,31 +1,10 @@
-import { ACCESS_TOKEN, BACKEND_BASE_URL, REFRESH_TOKEN } from "../../config/constants.js";
+import { Router } from "../router.js";
 
-export async function loginEvent(event) {
-  event.preventDefault()
-  const username = event.target.username.value
-  const password = event.target.password.value
-  const response = await fetch(`${BACKEND_BASE_URL}/api/token/`, {
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username: username, password: password })
-  })
-  const json = await response.json()
-  console.log(json)
-  if (!response.ok) {
-    alert(json.error || "login failed.")
-    return false
-  }
-  localStorage.setItem(ACCESS_TOKEN, String(json.access))
-  localStorage.setItem(REFRESH_TOKEN, String(json.refresh))
-  window.location.pathname = '/';
-  return true
-}
+export class Login extends Router {
+  constructor() { super() }
 
-export const login = {
-  render: function() {
-    return `
+  render() {
+    this.root.innerHTML = `
       <div id = "login-page" class="container mt-5 d-flex justify-content-center align-items-center text-center" >
         <div class="position-relative">
           <h2 class="mb-3">Login</h2>
@@ -41,8 +20,8 @@ export const login = {
         </div>
     </div >
   `
-  },
-  initializeEvents: async function() {
-    document.querySelector(".login-form").addEventListener("submit", loginEvent)
   }
+
+  initializeEvents() { }
 }
+
