@@ -15,7 +15,7 @@ paths:
       summary: "ユーザのemailを更新"
       description: "認証済みユーザのemailを更新"
       tags:
-        - auth
+        - Auth
       requestBody:
         required: true
         content:
@@ -66,7 +66,7 @@ paths:
       summary: "ユーザのpasswordを更新"
       description: "認証済みユーザのpasswordを更新。現在のpasswordも認証に必要。"
       tags:
-        - auth
+        - Auth
       requestBody:
         required: true
         content:
@@ -109,7 +109,7 @@ paths:
       summary: "新規ユーザーのサインアップ"
       description: "新規ユーザーを仮登録し、認証用のOTPを生成"
       tags:
-        - auth
+        - Auth
       security: []
       requestBody:
         required: true
@@ -173,7 +173,7 @@ paths:
       summary: "既存ユーザーのログイン"
       description: "ユーザーを認証し、OTPを生成"
       tags:
-        - auth
+        - Auth
       security: []
       requestBody:
         required: true
@@ -222,7 +222,7 @@ paths:
       summary: "サインアップ時のOTP検証"
       description: "サインアッププロセス中に送信されたOTPを検証"
       tags:
-        - auth
+        - Auth
       security: []
       requestBody:
         required: true
@@ -284,7 +284,7 @@ paths:
       summary: "ログイン時のOTP検証"
       description: "OTPを検証"
       tags:
-        - auth
+        - Auth
       security: []
       requestBody:
         required: true
@@ -345,7 +345,7 @@ paths:
       summary: "accessトークンの更新"
       description: "有効なrefreshトークンを使用して新しいaccessトークンを生成。accessトークン認証はなし"
       tags:
-        - auth
+        - Auth
       # accessトークンを更新するので、認証しない
       security: []
       requestBody:
@@ -392,6 +392,28 @@ paths:
                     type: string
                     description: "リフレッシュトークンが無効または期限切れであることを示すエラーメッセージ"
                     example: "Refresh token is missing or invalid."
+
+  /health:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
 
 security:
   - bearerAuth: []
