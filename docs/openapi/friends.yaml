@@ -15,7 +15,7 @@ paths:
       summary: "ユーザーの友達リストを取得"
       description: "認証されたユーザーの友達リストを取得"
       tags:
-        - friends
+        - Friends
       parameters:
         - in: query
           name: status
@@ -87,7 +87,7 @@ paths:
       summary: "フレンドリクエストを送信"
       description: "指定したユーザーIDにフレンドリクエストを送信"
       tags:
-        - friends
+        - Friends
       parameters:
         - name: userId
           in: path
@@ -132,7 +132,7 @@ paths:
       summary: "フレンドリクエストを承認"
       description: "指定したユーザーIDからのフレンドリクエストを承認"
       tags:
-        - friends
+        - Friends
       parameters:
         - name: userId
           in: path
@@ -171,7 +171,7 @@ paths:
       summary: "フレンドリクエストを削除または拒否"
       description: "指定したユーザーIDからのフレンドリクエストを削除"
       tags:
-        - friends
+        - Friends
       parameters:
         - name: userId
           in: path
@@ -200,7 +200,7 @@ paths:
       summary: "フレンドの削除"
       description: "ユーザーのフレンドリストからフレンドを削除"
       tags:
-        - friends
+        - Friends
       parameters:
         - name: friendId
           in: path
@@ -224,6 +224,28 @@ paths:
                   error:
                     type: string
                     example: "Friend not found."
+
+  /health:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
 
 security:
   - bearerAuth: []
