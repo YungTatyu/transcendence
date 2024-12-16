@@ -46,7 +46,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /game/health/:
+  /health/:
     get:
       summary: ヘルスチェック用エンドポイント
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
