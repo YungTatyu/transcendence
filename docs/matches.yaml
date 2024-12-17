@@ -9,7 +9,7 @@ servers:
   - url: wss://matches.42.fr
 
 paths:
-  /matches/:
+  /matches:
     get:
       summary: 試合を検索
       description: |
@@ -109,7 +109,7 @@ paths:
               example:
                 "error": "Match Not Found"
 
-  /matches/tournament-match/:
+  /matches/tournament-match:
     post:
       summary: トーナメントに紐づいた試合を作成
       description: |
@@ -169,7 +169,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /matches/ws/enter-room/:
+  /matches/ws/enter-room:
     get:
       summary: QuickPlayマッチングルームに入る
       description: |
@@ -191,7 +191,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
 
-  /matches/ws/enter-room/{matchId}/:
+  /matches/ws/enter-room/{matchId}:
     get:
       summary: トーナメント試合のルームに入る
       description: |
@@ -229,7 +229,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /matches/finish/:
+  /matches/finish:
     post:
       summary: Game終了時に通知を受け取る
       description: |
@@ -272,7 +272,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /matches/statistics/{userId}/:
+  /matches/statistics/{userId}:
     get:
       summary: 試合統計情報を取得
       description: 試合に関する統計情報を返す。
@@ -303,7 +303,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
 
-  /matches/histories/{userId}/:
+  /matches/histories/{userId}:
     get:
       summary: 試合履歴リストを取得
       description: 試合履歴をリスト形式で取得する。
@@ -367,7 +367,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
 
-  /health/:
+  /health:
     get:
       summary: ヘルスチェック用エンドポイント
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
