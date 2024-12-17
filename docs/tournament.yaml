@@ -10,7 +10,7 @@ servers:
   - url: wss://tournaments.42.fr
 
 paths:
-  /tournaments/ws/enter-room/:
+  /tournaments/ws/enter-room:
     get:
       summary: トーナメントマッチングルームに入る
       description: |
@@ -32,7 +32,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
 
-  /tournaments/ws/enter-room/{tournamentId}/:
+  /tournaments/ws/enter-room/{tournamentId}:
     get:
       summary: トーナメントルームに入る
       description: |
@@ -70,7 +70,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /tournaments/finish-match/:
+  /tournaments/finish-match:
     post:
       summary: 試合終了時に通知を受け取る
       description: |
@@ -120,7 +120,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /health/:
+  /health:
     get:
       summary: ヘルスチェック用エンドポイント
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
