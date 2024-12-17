@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info:
-  title: Tournament API
+  title: Tournaments API
   description: トーナメント機能を実現するAPI
   version: 1.0.0
 
