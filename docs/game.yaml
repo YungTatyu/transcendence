@@ -8,7 +8,7 @@ servers:
   - url: wss://games.42.fr
 
 paths:
-  /games/ws/enter-room/{matchId}/:
+  /games/ws/enter-room/{matchId}:
     get:
       summary: ゲームルームに入る
       description: |
@@ -46,7 +46,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /health/:
+  /health:
     get:
       summary: ヘルスチェック用エンドポイント
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
