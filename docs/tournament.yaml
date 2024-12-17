@@ -6,11 +6,11 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://tournament.42.fr
-  - url: wss://tournament.42.fr
+  - url: https://tournaments.42.fr
+  - url: wss://tournaments.42.fr
 
 paths:
-  /tournament/ws/enter-room/:
+  /tournaments/ws/enter-room/:
     get:
       summary: トーナメントマッチングルームに入る
       description: |
@@ -19,7 +19,7 @@ paths:
         このWebSocketはコネクションを切る。
       operationId: enterTournamentMatchingRoom
       tags:
-        - Tournament
+        - Tournaments
       responses:
         '101':
           description: WebSocketへのプロトコルアップデート成功
@@ -32,7 +32,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
 
-  /tournament/ws/enter-room/{tournamentId}/:
+  /tournaments/ws/enter-room/{tournamentId}/:
     get:
       summary: トーナメントルームに入る
       description: |
@@ -42,7 +42,7 @@ paths:
         全ての試合が終了したらこのWebSocketはコネクションを切る。
       operationId: enterTournamentRoom
       tags:
-        - Tournament
+        - Tournaments
       parameters:
         - name: tournamentId
           in: path
@@ -70,7 +70,7 @@ paths:
               example:
                 "error": "Not Found"
 
-  /tournament/finish-match/:
+  /tournaments/finish-match/:
     post:
       summary: 試合終了時に通知を受け取る
       description: |
@@ -78,7 +78,7 @@ paths:
         この処理をトリガーにその後のアナウンスが行われる。
       operationId: finishTournamentMatch
       tags:
-        - Tournament
+        - Tournaments
       requestBody:
         required: true
         content:
@@ -126,7 +126,7 @@ paths:
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
       operationId: healthCheck
       tags:
-        - Tournament
+        - Tournaments
       responses:
         '200':
           description: サーバーが正常に稼働中
