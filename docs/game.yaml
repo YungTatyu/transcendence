@@ -1,14 +1,14 @@
 openapi: 3.0.3
 info:
-  title: Game API
+  title: Games API
   description: Game機能を実現するAPI
   version: 1.0.0
 
 servers:
-  - url: wss://game.42.fr
+  - url: wss://games.42.fr
 
 paths:
-  /game/ws/enter-room/{matchId}/:
+  /games/ws/enter-room/{matchId}/:
     get:
       summary: ゲームルームに入る
       description: |
@@ -18,7 +18,7 @@ paths:
         このWebSocketはゲームが終了したらコネクションを切る。
       operationId: enterGameRoom
       tags:
-        - Game
+        - Games
       parameters:
         - name: matchId
           in: path
@@ -52,7 +52,7 @@ paths:
       description: dockerコンテナ立ち上げ時のヘルスチェックなど
       operationId: healthCheck
       tags:
-        - Game
+        - Games
       responses:
         '200':
           description: サーバーが正常に稼働中
