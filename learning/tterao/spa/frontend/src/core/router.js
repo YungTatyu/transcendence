@@ -1,16 +1,31 @@
+/**
+ * @class Router
+ * @description 
+ * シングルページアプリケーション (SPA) のルーティングを管理するクラス。
+ * 現在のURLに基づいて適切なコンポーネントを表示し、動的な画面遷移を可能にする。
+ */
 export class Router {
-  constructor(routes) {
+  constructor(routes, rootEle) {
     this.routes = routes
-    this.root = document.getElementById("root")
+    this.rootEle = rootEle
     this.initialize();
   }
 
-  // 現在のURLに対応するコンポーネントを表示
+  /**
+   * @method route
+   * @description
+   * 現在のURLパスを解析し、対応するコンポーネントを描画する。
+   * 404エラーページを表示する場合も含む。
+   * @returns {Promise<void>}
+   * @example
+   * URLが '/login/' の場合、Loginコンポーネントを表示
+   * router.route();
+   */
   async route() {
     const uri = window.location.pathname;
     const component = this.routes[uri] || this.routes["/404"];
     const rootComp = new component();
-    this.root.innerHTML = rootComp.render();
+    this.rootEle.innerHTML = rootComp.render();
     await rootComp.initializeEvents();
   }
 
