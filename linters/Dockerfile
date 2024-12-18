@@ -1,13 +1,16 @@
-FROM python:3.13-slim
+FROM node:22-alpine
 
-# RUN apt-get update && apt-get install -y 
+RUN apk update && apk add bash \
+    py3-pip
 
-RUN pip install ruff
+RUN pip install ruff --break-system-packages; \
+    npm install -g --save-exact @biomejs/biome
 
 WORKDIR /app
 
 COPY . /app
 
-# CMD ["./linters/check.sh"]
+CMD ["./linters/check.sh"]
+
 # debug
-CMD ["bash"]
+# CMD ["bash"]
