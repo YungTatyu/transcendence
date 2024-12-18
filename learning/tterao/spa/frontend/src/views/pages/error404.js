@@ -1,4 +1,4 @@
-import { Component } from "../component.js"
+import { Component } from "../../core/component.js";
 
 export class Error404 extends Component {
   constructor() { super() }

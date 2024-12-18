@@ -1,7 +1,7 @@
 import { Error404 } from "./views/pages/error404.js";
 import { Home } from "./views/pages/home.js";
 import { Login } from "./views/pages/login.js";
-import { Router } from "./router.js";
+import { Router } from "./core/router.js";
 
 
 
