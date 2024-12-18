@@ -8,4 +8,5 @@ WORKDIR /app
 
 COPY . /app
 
-CMD ["./check.sh"]
+# CMD ["./linters/check.sh"]
+CMD ["bash"]

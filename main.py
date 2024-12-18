@@ -1,7 +1,9 @@
 import os
 
 
+# thisis test
 def main():
+    print('this is test')
     print("this is test")
 
 
