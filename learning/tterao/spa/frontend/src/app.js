@@ -1,21 +1,19 @@
 import { Error404 } from "./views/pages/error404.js";
 import { Home } from "./views/pages/home.js";
 import { Login } from "./views/pages/login.js";
+import { Router } from "./router.js";
 
 
-const routes = {
-  '/': Home,
-  '/login': Login
-};
 
-async function router() {
-  const uri = window.location.pathname;
-  const pageClass = (routes[uri] ? routes[uri] : Error404)
-  const page = new pageClass()
-  page.render()
-  await page.initializeEvents()
-  history.pushState({}, '', uri);
+async function main() {
+  const routes = {
+    '/': Home,
+    '/login': Login,
+    '/404': Error404,
+  };
+  const router = new Router(routes)
+  router.route()
 }
 
-document.addEventListener('load', router);
-document.addEventListener("DOMContentLoaded", router)
+document.addEventListener('load', main);
+document.addEventListener("DOMContentLoaded", main)

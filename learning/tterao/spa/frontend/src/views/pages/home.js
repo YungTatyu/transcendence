@@ -4,7 +4,7 @@ export class Home extends Component {
   constructor() { super() }
 
   render() {
-    this.root.innerHTML = `
+    return `
     <div class="container mt-5">
       <div class="d-flex justify-content-between align-items-center">
         <h2>Welcome</h2>

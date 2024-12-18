@@ -4,7 +4,7 @@ export class Login extends Component {
   constructor() { super() }
 
   render() {
-    this.root.innerHTML = `
+    return `
       <div id = "login-page" class="container mt-5 d-flex justify-content-center align-items-center text-center" >
         <div class="position-relative">
           <h2 class="mb-3">Login</h2>

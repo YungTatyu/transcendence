@@ -6,7 +6,6 @@ export class Component {
     if (this.constructor === Component) {
       throw new Error("Component interface needs to be inherited.")
     }
-    this.root = document.getElementById("root")
   }
 
   render() {
