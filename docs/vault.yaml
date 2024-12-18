@@ -1,0 +1,114 @@
+openapi: 3.0.3
+
+info: 
+  title: Vault API
+  description: |
+    HashiCorp Vaultによる機密情報の一元管理を行う。
+  version: 1.0.0
+
+servers:
+  - url: https://vault.42.fr
+
+paths:
+  /vault/jwt/sign-jwt:
+    post:
+      summary: JWTに署名
+      description: |
+        リクエストに含まれるJWTの元データに秘密鍵で署名を行う。
+        認証サーバ以外からのアクセスは拒否する。
+      tags:
+        - JWT
+      responses:
+        '200':
+          description: JWTに署名
+
+  /vault/jwt/public-key:
+    get:
+      summary: JWT検証用の公開鍵を取得
+      description: |
+        JWT検証用の公開鍵を取得する。
+        アクセス制限は設けない。
+      tags:
+        - JWT
+      responses:
+        '200':
+          description: 公開鍵を返す
+  /vault/environment-variables:
+    get:
+      summary: 環境変数の取得
+      description: |
+        APIサーバ用の環境変数をレスポンスする。
+        コンテナ立ち上げ時にこのエンドポイントを叩いて環境変数を取得する。
+        環境変数をVaultサーバで一元管理する。
+        APIサーバ以外からのアクセスは拒否する。
+      tags:
+        - EnvirnmentVariables
+      responses:
+        '200':
+          description: 環境変数を返す
+
+  /vault/api-key/user-registration:
+    get:
+      summary: ユーザー登録用APIキーを取得
+      description: |
+        認証サーバ -> ユーザー管理サーバ
+        ユーザー登録処理を制御するAPIキーを取得する。
+        認証サーバ以外からのアクセスは拒否する。
+      tags:
+        - APIKey
+      responses:
+        '200':
+          description: APIキーを返す
+
+  /vault/api-key/user-id-getter:
+    get:
+      summary: UserId取得用APIキーを取得
+      description: |
+        認証サーバ -> ユーザー管理サーバ
+        UserNameからUserIdを取得する処理を制御するAPIキーを取得する。
+        認証サーバ以外からのアクセスは拒否する。
+      tags:
+        - APIKey
+      responses:
+        '200':
+          description: APIキーを返す
+
+  /vault/api-key/tournament-match-create:
+    get:
+      summary: トーナメント試合作成用APIキーを取得
+      description: |
+        トーナメント管理サーバ -> 試合管理サーバ
+        トーナメント試合を作成する処理を制御するAPIキーを取得する。
+        トーナメント管理以外からのアクセスは拒否する。
+      tags:
+        - APIKey
+      responses:
+        '200':
+          description: APIキーを返す
+
+  /vault/api-key/game-result-send:
+    get:
+      summary: ゲーム結果通知用APIキーを取得
+      description: |
+        Game管理サーバ -> 試合管理サーバ
+        Game結果を通知する処理を制御するAPIキーを取得する。
+        Game管理以外からのアクセスは拒否する。
+      tags:
+        - APIKey
+      responses:
+        '200':
+          description: APIキーを返す
+
+  /vault/api-key/tournament-match-finish:
+    get:
+      summary: トーナメント試合結果通知用APIキーを取得
+      description: |
+        試合管理サーバ -> トーナメント管理サーバ
+        トーナメント試合終了を通知する処理を制御するAPIキーを取得する。
+        試合管理以外からのアクセスは拒否する。
+      tags:
+        - APIKey
+      responses:
+        '200':
+          description: APIキーを返す
+
