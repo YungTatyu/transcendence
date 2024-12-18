@@ -1,6 +1,6 @@
-import { Router } from "../router.js"
+import { Component } from "../component.js"
 
-export class Error404 extends Router {
+export class Error404 extends Component {
   constructor() { super() }
 
   render() {

@@ -1,10 +1,10 @@
 /**
  * interface
  */
-export class Router {
+export class Component {
   constructor() {
-    if (this.constructor === Router) {
-      throw new Error("Router interface needs to be inherited.")
+    if (this.constructor === Component) {
+      throw new Error("Component interface needs to be inherited.")
     }
     this.root = document.getElementById("root")
   }

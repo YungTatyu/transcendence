@@ -1,6 +1,6 @@
-import { Router } from "../router.js";
+import { Component } from "../component.js";
 
-export class Home extends Router {
+export class Home extends Component {
   constructor() { super() }
 
   render() {
