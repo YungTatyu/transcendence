@@ -8,7 +8,7 @@ RUN pip install ruff --break-system-packages; \
 
 WORKDIR /app
 
-CMD ["./linters/entrypoint.sh"]
+ENTRYPOINT ["./linters/entrypoint.sh"]
 
 # debug
 # CMD ["bash"]
