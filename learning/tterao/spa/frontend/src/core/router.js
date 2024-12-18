@@ -29,9 +29,21 @@ export class Router {
     await rootComp.initializeEvents();
   }
 
+  navigateTo(newUri) {
+    history.pushState(null, null, newUri); // ブラウザのURLを更新
+    this.route(); // SPAのルーティング処理を呼び出す
+  }
+
   // イベントリスナーでURL変更時にrouteを実行
   initialize() {
     window.addEventListener("popstate", () => this.route()); // 戻る/進むボタン対応
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-link]");
+      if (target) {
+        event.preventDefault(); // 通常のリンク動作を無効化
+        this.navigateTo(target.getAttribute("href")); // カスタム遷移処理
+      }
+    });
     document.addEventListener("DOMContentLoaded", () => this.route());
   }
 }
