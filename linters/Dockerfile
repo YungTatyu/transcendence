@@ -9,4 +9,5 @@ WORKDIR /app
 COPY . /app
 
 # CMD ["./linters/check.sh"]
+# debug
 CMD ["bash"]
