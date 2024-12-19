@@ -10,13 +10,13 @@ build-linter:
 .PHONY: lint
 lint: build-linter
 	# make lint ARG=py もしくは make lint ARG=js で言語を選択可
-	docker run -it --rm -v .:${DOCKER_MNT_DIR} ${LINTER_IMG_NAME} lint ${ARG}
+	docker run -t --rm -v .:${DOCKER_MNT_DIR} ${LINTER_IMG_NAME} lint ${ARG}
 
 .PHONY: fmt
 fmt: build-linter
 	# make fmt ARG=py もしくは make fmt ARG=js で言語を選択可
-	docker run -it --rm -v .:${DOCKER_MNT_DIR} ${LINTER_IMG_NAME} fmt ${ARG}
+	docker run -t --rm -v .:${DOCKER_MNT_DIR} ${LINTER_IMG_NAME} fmt ${ARG}
 
 .PHONY: check
 check: build-linter
-	docker run -it --rm -v .:${DOCKER_MNT_DIR} ${LINTER_IMG_NAME}
+	docker run --rm -v .:${DOCKER_MNT_DIR} ${LINTER_IMG_NAME}
