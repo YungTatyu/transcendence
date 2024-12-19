@@ -11,4 +11,4 @@ WORKDIR /app
 ENTRYPOINT ["./linters/entrypoint.sh"]
 
 # debug
-# CMD ["bash"]
+# ENTRYPOINT ["bash"]
