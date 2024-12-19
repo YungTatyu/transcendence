@@ -1,11 +1,11 @@
 
-LINTER_DIR := linters
+TOOL_DIR := tools
 LINTER_IMG_NAME := linter-formatter
 DOCKER_MNT_DIR := /app
 
 .PHONY: build-linter
 build-linter:
-	docker build -t ${LINTER_IMG_NAME} -f ${LINTER_DIR}/Dockerfile .
+	docker build -t ${LINTER_IMG_NAME} -f ${TOOL_DIR}/Dockerfile .
 
 .PHONY: lint
 lint: build-linter
