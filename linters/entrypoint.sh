@@ -1,11 +1,14 @@
 #! /bin/bash
 
+readonly PYTHON="py"
+readonly JS="js"
+
 lint() {
   local option="$1"
-  if [[ ${option} != "py" ]]; then
+  if [[ ${option} != ${PYTHON} ]]; then
     biome lint --write --error-on-warnings
   fi
-  if [[ ${option} != "js" ]]; then
+  if [[ ${option} != ${JS} ]]; then
     ruff check --fix
   fi
   return 0
@@ -13,10 +16,10 @@ lint() {
 
 fmt() {
   local option="$1"
-  if [[ ${option} != "py" ]]; then
+  if [[ ${option} != ${PYTHON} ]]; then
     biome format --write
   fi
-  if [[ ${option} != "js" ]]; then
+  if [[ ${option} != ${JS} ]]; then
     ruff format
   fi
   return 0
