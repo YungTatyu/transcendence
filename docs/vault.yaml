@@ -18,9 +18,39 @@ paths:
         認証サーバ以外からのアクセスは拒否する。
       tags:
         - JWT
+      requestBody:
+        description: JWTの元データ
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: string
+                  description: JWTの元データ
       responses:
         '200':
-          description: JWTに署名
+          description: |
+            JWTに署名
+            署名済みJWTをレスポンス
+          content:
+            application/json:
+              example:
+                jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '400':
+          description: リクエストボディが不正な値
+          content:
+            application/json:
+              example:
+                message: "Payload is required"
+        '404':
+          description: |
+            認証サーバ以外からのアクセス
+          content:
+            application/json:
+              example:
+                message: "Not Found"
 
   /vault/jwt/public-key:
     get:
@@ -33,7 +63,35 @@ paths:
       responses:
         '200':
           description: 公開鍵を返す
-  /vault/environment-variables:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  publicKey:
+                    type: string
+                    description: JWT検証用の公開鍵
+              example:
+                publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkq...\n-----END PUBLIC KEY-----"
+        '404':
+          description: 公開鍵が見つからない場合
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+                  message:
+                    type: string
+                    description: 詳細なエラー説明
+              example:
+                error: "Not Found"
+                message: "Public key not available."
+      security: []
+
+  /vault/envs:
     get:
       summary: 環境変数の取得
       description: |
@@ -41,74 +99,81 @@ paths:
         コンテナ立ち上げ時にこのエンドポイントを叩いて環境変数を取得する。
         環境変数をVaultサーバで一元管理する。
         APIサーバ以外からのアクセスは拒否する。
+        小規模サービスなので全てのAPIサーバ共通で使用する環境変数を全て配信。
       tags:
         - EnvirnmentVariables
       responses:
         '200':
-          description: 環境変数を返す
+          description: 全ての環境変数を返す
+          content:
+            application/json:
+              example:
+                DATABASE_URL: "postgres://user:password@host/db"
+                ABC: "DEF"
+        '404':
+          description: APIサーバ以外からアクセス(クライアント証明書が不正)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+                  message:
+                    type: string
+                    description: 詳細なエラー説明
+              example:
+                message: "Not Found"
 
-  /vault/api-key/user-registration:
+  /vault/api-keys:
     get:
-      summary: ユーザー登録用APIキーを取得
+      summary: APIキーを取得
       description: |
-        認証サーバ -> ユーザー管理サーバ
-        ユーザー登録処理を制御するAPIキーを取得する。
-        認証サーバ以外からのアクセスは拒否する。
+        指定された種類に基づき、適切なAPIキーを返す。
+        送信元・送信先APIサーバのみAPIキーを取得可能に制限する。
+        APIサーバ以外から叩かれた場合、アクセスを拒否する。
       tags:
-        - APIKey
+        - ApiKeys
+      parameters:
+        - in: query
+          name: api_key_type
+          required: true
+          schema:
+            type: string
+            enum:
+              - auth-users          # ユーザー登録処理・UserNameからUserId取得処理
+              - games-matches       # ゲーム結果通知処理
+              - tournaments-matches # トーナメント試合作成処理
+              - matches-tournaments # トーナメント試合終了通知処理
+          description: 取得するAPIキーの種類
       responses:
         '200':
-          description: APIキーを返す
+          description: 指定されたAPIキーを返す
+          content:
+            application/json:
+              example:
+                apiKey: "QWERTYUIOP..."
+        '400':
+          description: 無効なAPIキーの種類が指定された場合
+          content:
+            application/json:
+              example:
+                error: "Invalid api_key_type"
+        '404':
+          description: APIキーの送信元・送信先APIサーバ以外からのアクセス
+          content:
+            application/json:
+              example:
+                message: "Not Found"
 
-  /vault/api-key/user-id-getter:
-    get:
-      summary: UserId取得用APIキーを取得
-      description: |
-        認証サーバ -> ユーザー管理サーバ
-        UserNameからUserIdを取得する処理を制御するAPIキーを取得する。
-        認証サーバ以外からのアクセスは拒否する。
-      tags:
-        - APIKey
-      responses:
-        '200':
-          description: APIキーを返す
+components:
+  securitySchemes:
+    clientCertAuth:
+      type: http
+      scheme: mutualTLS  # mTLSを使用
+      description: クライアント証明書による認証
 
-  /vault/api-key/tournament-match-create:
-    get:
-      summary: トーナメント試合作成用APIキーを取得
-      description: |
-        トーナメント管理サーバ -> 試合管理サーバ
-        トーナメント試合を作成する処理を制御するAPIキーを取得する。
-        トーナメント管理以外からのアクセスは拒否する。
-      tags:
-        - APIKey
-      responses:
-        '200':
-          description: APIキーを返す
-
-  /vault/api-key/game-result-send:
-    get:
-      summary: ゲーム結果通知用APIキーを取得
-      description: |
-        Game管理サーバ -> 試合管理サーバ
-        Game結果を通知する処理を制御するAPIキーを取得する。
-        Game管理以外からのアクセスは拒否する。
-      tags:
-        - APIKey
-      responses:
-        '200':
-          description: APIキーを返す
-
-  /vault/api-key/tournament-match-finish:
-    get:
-      summary: トーナメント試合結果通知用APIキーを取得
-      description: |
-        試合管理サーバ -> トーナメント管理サーバ
-        トーナメント試合終了を通知する処理を制御するAPIキーを取得する。
-        試合管理以外からのアクセスは拒否する。
-      tags:
-        - APIKey
-      responses:
-        '200':
-          description: APIキーを返す
+security:
+  - clientCertAuth: []  # API全体でmTLS認証を適用
 
