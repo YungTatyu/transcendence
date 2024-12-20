@@ -22,7 +22,7 @@ paths:
           schema:
             $ref: '#/components/schemas/FriendStatus'
           required: false
-          description: "取得したい友達リクエストのステータス。省略した場合、すべてのステータスが返す"
+          description: "取得したい友達リクエストのステータス。省略した場合、すべてのステータスを返す"
         - in: query
           name: offset
           schema:
@@ -151,14 +151,10 @@ paths:
                   userId:
                     type: integer
                     example: 123
-                  # username要る？
-                  # username:
-                  #   type: string
-                  #   example: "example_user"
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
         "404":
-          description: "Friend request not found or already approved."
+          description: "Friend request not found."
           content:
             application/json:
               schema:
@@ -167,6 +163,16 @@ paths:
                   error:
                     type: string
                     example: "Friend request not found."
+        "409":
+          description: "Friend request already approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request already approved."
     delete:
       summary: "フレンドリクエストを削除または拒否"
       description: "指定したユーザーIDからのフレンドリクエストを削除"
