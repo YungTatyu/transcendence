@@ -25,3 +25,6 @@ vault secrets enable -path=env-vars kv
 """
 vault kv put env-vars/users @/users.secret.json
 
+
+# APIKey配信エンドポイント作成
+vault write transit/keys/api-key auto_rotate_period=24h
