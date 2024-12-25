@@ -292,11 +292,10 @@ paths:
 
 components:
   securitySchemes:
-    clientCertAuth:
-      type: http
-      scheme: mutualTLS  # mTLSを使用
-      description: クライアント証明書による認証
+    VaultTokenAuth:
+      type: apiKey
+      name: X-Vault-Token  # Vaultトークンを指定するヘッダーの名前
+      in: header
 
 security:
-  - clientCertAuth: []  # API全体でmTLS認証を適用
-
+  - VaultTokenAuth: []
