@@ -35,8 +35,7 @@ b64_jwt_data = base64.b64encode(jwt_data).decode()
 headers = {"X-Vault-Token": VAULT_TOKEN}
 sign_url = f"{VAULT_ADDR}/v1/transit/sign/{TRANSIT_KEY}"
 sign_request_data = {
-    "input": b64_jwt_data,
-    "key_version": 1
+    "input": b64_jwt_data
 }
 
 response = requests.post(sign_url, headers=headers, json=sign_request_data)
