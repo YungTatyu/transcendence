@@ -137,6 +137,10 @@ paths:
                     type: integer
                   username:
                     type: string
+                  avatarPath:
+                    type: string
+                    description: "アバター画像のパス"
+                    example: "/uploads/avatars/12345.png"
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
         "404":
@@ -208,7 +212,7 @@ paths:
                 avatar:
                   type: string
                   format: binary
-                  description: "新しいアバター画像ファイル（PNGやJPEGなど）。"
+                  description: "新しいアバター画像ファイル（PNGやJPEGなど）"
       responses:
         "200":
           description: "アバターが正常に更新"
@@ -219,7 +223,7 @@ paths:
                 properties:
                   avatarPath:
                     type: string
-                    description: "更新されたアバター画像のパス。"
+                    description: "更新されたアバター画像のパス"
                     example: "/uploads/avatars/12345.png"
         "400":
           description: "アバター画像が無効"
@@ -255,29 +259,6 @@ paths:
                     type: string
                     description: "エラーの詳細"
                     example: "Avatar not found."
-  /users/{userId}/avatar:
-    get:
-      summary: "ユーザーのavatarを取得"
-      description: "ユーザーIDを使用して、そのavatarを取得"
-      tags:
-        - Users
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "アバター画像を返す"
-          content:
-            # 単一のPNG画像データ
-            image/png:
-              schema:
-                type: string
-                format: binary
-        "401":
-          $ref: '#/components/responses/UnauthorizedResponse'
 
   /health:
     get:
