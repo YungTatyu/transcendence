@@ -1,20 +1,40 @@
-
 body {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* 上下に要素を配置 */
   align-items: center;
   height: 100vh;
-  background-color: #000;
+  background-color: green; /* 背景を黒に */
+  color: #000; /* テキストを白色に設定 */
+}
+
+.js-game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 垂直方向で中央揃え */
+  width: 800px; /* ゲームと同じ幅 */
+  padding: 10px 20px;
+  background-color: #fff; /* 灰色の背景で視認性を確保 */
+  font-size: 16px;
+  color: #000; /* テキストを白色に設定 */
+  margin-bottom: 10px; /* ゲームとの間隔 */
+  border-radius: 5px; /* 角を少し丸く */
+  border: 1px solid #555; /* 境界線を追加 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* 軽い影を付ける */
+}
+
+.js-player1, .js-player2, .js-score, .js-timer {
+  margin: 0 10px;
+  color: #000; /* テキストを白色に設定 */
 }
 
 #game {
   position: relative;
   width: 800px;
   height: 500px;
-  background-color: #222;
-  border: 2px solid #fff;
+  background-color: #222; /* ダークグレーの背景 */
+  border: 2px solid #fff; /* 白色の枠線 */
   overflow: hidden;
 }
 
@@ -40,3 +60,5 @@ body {
   background-color: #fff;
   border-radius: 50%;
 }
+
+

@@ -1,4 +1,6 @@
 
+const PLAYER_ONE = "player1"
+const PLAYER_TWO = "player2"
 const game = document.getElementById('game');
 const ball = document.getElementById('ball');
 const paddle1 = document.getElementById('paddle1');
@@ -22,6 +24,20 @@ const keys = {
   KeyS: false
 };
 
+const score = {
+  player1: 0,
+  player2: 0,
+}
+
+// ゲーム状態の初期化
+const gameState = {
+  player1: PLAYER_ONE,
+  player2: PLAYER_TWO,
+  score1: 0,
+  score2: 0,
+  timer: 60,
+};
+
 // キーボードイベント
 document.addEventListener('keydown', (e) => {
   if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
@@ -29,6 +45,34 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
   if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
 });
+
+// DOM 要素を取得
+const player1Element = document.querySelector('.js-player1');
+const player2Element = document.querySelector('.js-player2');
+const scoreElement = document.querySelector('.js-score');
+const timerElement = document.querySelector('.js-timer');
+
+// ゲーム情報を表示
+function updateGameInfo() {
+  player1Element.textContent = `${gameState.player1}`;
+  player2Element.textContent = `${gameState.player2}`;
+  scoreElement.textContent = `${gameState.score1} - ${gameState.score2}`;
+  timerElement.textContent = `${gameState.timer}`;
+}
+
+// タイマーを開始
+function startTimer() {
+  const timerInterval = setInterval(() => {
+    if (gameState.timer > 0) {
+      gameState.timer -= 1;
+      updateGameInfo();
+    } else {
+      clearInterval(timerInterval);
+      alert("Game Over!");
+    }
+  }, 1000);
+}
+
 
 // ゲームループ
 function gameLoop() {
@@ -58,6 +102,8 @@ function gameLoop() {
 
   // スコアリセット (ゲームオーバー)
   if (ballX <= 0 || ballX >= 780) {
+    if (ballX <= 0) gameState.score1 += 1;
+    else gameState.score2 += 1;
     ballX = 390;
     ballY = 240;
     ballSpeedX = 4 * (Math.random() > 0.5 ? 1 : -1);
@@ -70,5 +116,7 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// ゲーム開始
+// 初期表示
+updateGameInfo();
+startTimer();
 gameLoop();
