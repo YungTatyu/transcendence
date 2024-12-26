@@ -1,0 +1,44 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}
+<h3 class=" text-center">Django-Chat検索画面</h3>
+{% endblock %}
+{% block contents %}
+<div class="mesgs">
+    <div class="msg_history">
+        <div class="wrapper" style="width: 400px;">
+            <h4 style="margin: 16px 0px">ユーザを追加する</h4>
+            <div class="topnav">
+                <div class="search-container">
+                    <form method="get">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control-sm" placeholder="ユーザ名で検索" name="search"
+                                saria-describedby="basic-addon2">
+                            <button type="submit" class="btn btn-success ml-2">検索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush mt-3">
+                {% for user in users %}
+                <a href="{% url 'chat:addfriend' user.username %}" id="user_card">
+                    <li class="list-group-item list-group-item-action">
+                        <div class="row">
+                            <div class="col">
+                                <img src="#" style="width: 50px; height: 50px;">
+                            </div>
+                            <div class="col">
+                                <div class="row user-add">
+                                    <p>@{{user.username}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </a>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
