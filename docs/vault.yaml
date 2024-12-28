@@ -95,6 +95,16 @@ paths:
                     "2 errors occurred:\n\t* permission denied\n\t* invalid token\n\n"
                   ]
                 }
+        '404':
+          description: 署名用のエンドポイントが登録されていない
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "no handler for route \"transit/sign/signing-key\". route entry not found."
+                  ]
+                }
 
   /v1/transit/keys/jwt-key:
     get:
@@ -152,7 +162,9 @@ paths:
             application/json:
               example:
                 {
-                  "errors": []
+                  "errors": [
+                    "no handler for route \"transit/keys/signing-key\". route entry not found."
+                  ]
                 }
       security: []
 
@@ -212,12 +224,14 @@ paths:
                   ]
                 }
         '404':
-          description: 何らかのエラー
+          description: APIサーバ用の環境変数が登録されていない
           content:
             application/json:
               example:
                 {
-                  "errors":[]
+                  "errors": [
+                    "no handler for route \"env-vars/users\". route entry not found."
+                  ]
                 }
 
   /v1/transit/keys/{apiKey}:
@@ -287,6 +301,16 @@ paths:
                 {
                   "errors": [
                     "2 errors occurred:\n\t* permission denied\n\t* invalid token\n\n"
+                  ]
+                }
+        '404':
+          description: APIKeyが登録されていない
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "no handler for route \"transit/keys/api-key\". route entry not found."
                   ]
                 }
 
