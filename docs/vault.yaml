@@ -314,6 +314,48 @@ paths:
                   ]
                 }
 
+  /v1/sys/health:
+    get:
+      summary: ヘルスチェック
+      description: ヘルスチェック用エンドポイント
+      tags:
+        - HealthCheck
+      responses:
+        '200':
+          description: サーバが正常に稼働中
+          content:
+            application/json:
+              example:
+                {
+                  "initialized": true,
+                  "sealed": false,
+                  "standby": false,
+                  "performance_standby": false,
+                  "replication_performance_mode": "disabled",
+                  "replication_dr_mode": "disabled",
+                  "server_time_utc": 1735371030,
+                  "version": "1.18.3",
+                  "enterprise": false,
+                  "cluster_name": "vault-cluster-735a781c",
+                  "cluster_id": "fa356f82-379a-e5ac-b736-2d8137d29f5d",
+                  "echo_duration_ms": 0,
+                  "clock_skew_ms": 0,
+                  "replication_primary_canary_age_ms": 0
+                }
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                {
+                  "sealed": false,
+                  "standby": false,
+                  "initialized": false,
+                  "performance_standby": false,
+                  "cluster_name": "vault-cluster",
+                  "cluster_id": "abcd1234"
+                }
+
 components:
   securitySchemes:
     VaultTokenAuth:
