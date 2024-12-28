@@ -355,6 +355,7 @@ paths:
                   "cluster_name": "vault-cluster",
                   "cluster_id": "abcd1234"
                 }
+      security: []
 
 components:
   securitySchemes:
