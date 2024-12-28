@@ -2,13 +2,13 @@ function main() {
   const gameEle = document.querySelector((".js-game"))
   const ws = new WebSocket(`ws://127.0.0.1:8000/ws/game`)
 
-  ws.onmessage = function(e) {
+  ws.onopen = function(e) {
     console.log("ws connection established")
   }
 
   ws.onmessage = function(e) {
     const data = JSON.parse(e.data)
-    gameEle.value += data.message
+    gameEle.textContent += data.message
     console.log("onmessage", data)
   }
 
@@ -17,8 +17,8 @@ function main() {
   }
 
   document.querySelector(".js-input")?.addEventListener("input", (e) => {
-    console.log("input event")
-    ws.send(JSON.stringify({ "message": e.value }))
+    console.log("input event", e.target.value)
+    ws.send(JSON.stringify({ message: e.target.value }))
   })
 }
 

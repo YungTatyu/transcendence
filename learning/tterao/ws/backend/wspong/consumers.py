@@ -26,5 +26,12 @@ class GameConsumer(WebsocketConsumer):
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {"type": "chat.message", "message": message}
+            self.room_group_name, {"type": "game.message", "message": message}
         )
+
+    # async_to_sync(self.channel_layer.group_send)の時にしてされたtypeがgame.messageのときにこの関数が呼ばれる
+    def game_message(self, event):
+        message = event["message"]
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({"message": message}))
