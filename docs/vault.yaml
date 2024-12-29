@@ -192,7 +192,7 @@ paths:
               - games
               - matches
               - tournaments
-              - friendsActivity
+              - friends-activity
       responses:
         '200':
           description: 全ての環境変数を返す
