@@ -180,7 +180,7 @@ paths:
       tags:
         - EnvirnmentVariables
       parameters:
-        - in: query
+        - in: path
           name: apiName
           required: true
           schema:
@@ -245,8 +245,8 @@ paths:
       tags:
         - ApiKeys
       parameters:
-        - in: query
-          name: api_key_type
+        - in: path
+          name: apiKey
           required: true
           schema:
             type: string
