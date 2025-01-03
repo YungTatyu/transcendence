@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "myapp",
     "corsheaders",
+    "rest_framework.authtoken",
 ]
 
 REST_FRAMEWORK = {
