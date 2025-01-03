@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication and Friend Request</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>User Authentication and Friend Request</h1>
+
+        <!-- Registration Form -->
+        <h2>Register</h2>
+        <form id="register-form">
+            <label for="register-username">Username:</label>
+            <input type="text" id="register-username" required>
+            <label for="register-password">Password:</label>
+            <input type="password" id="register-password" required>
+            <button type="submit">Register</button>
+        </form>
+        <p id="register-result"></p>
+
+        <!-- Login Form -->
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="login-username">Username:</label>
+            <input type="text" id="login-username" required>
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p id="login-result"></p>
+
+        <!-- Friend Request Form -->
+        <h2>Send Friend Request</h2>
+        <form id="friend-request-form">
+            <label for="from-user">Your Username:</label>
+            <input type="text" id="from-user" required>
+            <label for="to-user">Friend's Username:</label>
+            <input type="text" id="to-user" required>
+            <button type="submit">Send Friend Request</button>
+        </form>
+        <p id="friend-request-result"></p>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
