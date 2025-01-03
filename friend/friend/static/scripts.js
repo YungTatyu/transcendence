@@ -25,6 +25,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 	e.preventDefault();
 	const username = document.getElementById('login-username').value;
 	const password = document.getElementById('login-password').value;
+	console.log(username, password)
 
 	const response = await fetch(`${apiBaseUrl}/login/`, {
 		method: "POST",
@@ -35,6 +36,10 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 	});
 
 	const result = await response.json();
+	console.log(result)
+	if (response.ok) {
+		localStorage.setItem("authToken", result.token)
+	}
 	document.getElementById('login-result').textContent = response.ok ? `Token: ${result.token}` : result.error;
 });
 
