@@ -33,4 +33,3 @@ networks:
 
 volumes:
   auth_db_data:
-  sample1_db_data:
