@@ -84,7 +84,7 @@ class SignupView(APIView):
         qr_code_base64 = self._generate_base64_qr_code(qr_code_data)
 
         # Cookieにユーザー名を設定しレスポンスを返す
-        response = JsonResponse(
+        response = Response(
             {"qr_code": qr_code_base64}, 
             status=status.HTTP_200_OK
         )
