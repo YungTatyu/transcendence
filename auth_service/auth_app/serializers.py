@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from utils.redis_handler import RedisHandler
-import uuid
 import json
 
 class SignupSerializer(serializers.ModelSerializer):
