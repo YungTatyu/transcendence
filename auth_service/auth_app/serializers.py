@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from utils.redis_handler import RedisHandler
+import uuid
+import json
 
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150)
@@ -21,5 +24,22 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        # 仮登録 (保存はしない)
-        return User(**validated_data)
+        """
+        仮登録をRedisに保存する
+        ユーザー名をキーとして使用し、ユーザー情報をRedisに保存
+        """
+        # Redisキーとしてユーザー名を使用
+        redis_key = validated_data["username"]
+        
+        # 仮登録情報をRedisに保存
+        redis_data = {
+            "username": validated_data["username"],
+            "email": validated_data["email"],
+            "password": validated_data["password"],
+        }
+
+        # Redisに仮登録情報を保存
+        RedisHandler.set(redis_key, json.dumps(redis_data), timeout=3600)  # 1時間の有効期限
+
+        # 仮登録用のデータを返す
+        return validated_data  # ユーザー情報をそのまま返す

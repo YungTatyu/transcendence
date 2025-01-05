@@ -69,7 +69,7 @@ class SignupView(APIView):
             )
 
         # 仮登録データ取得
-        user_data = serializer.validated_data
+        user_data = serializer.save()
         username = user_data["username"]
 
         # OTP用シークレット生成とQRコードデータ作成
