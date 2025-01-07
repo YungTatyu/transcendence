@@ -1,5 +1,5 @@
 import json
-
+import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
@@ -13,6 +13,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        # timerスタート
+        self.timer_task = asyncio.create_task(self.start_timer())
+
     async def disconnect(self, close_code):
         # Leave room group
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -23,16 +26,23 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         # Send message to room group
         await self.channel_layer.group_send(
-            # self.room_group_name, {"type": "game.message", "message": message}
             self.room_group_name,
             {"type": "game.message"} | text_data_json,
         )
 
     # async_to_sync(self.channel_layer.group_send)の時にしてされたtypeがgame.messageのときにこの関数が呼ばれる
     async def game_message(self, event):
-        print("event", event)
-        message = event["message"]
-        timer = event["timer"]
-
         # Send message to WebSocket
         await self.send(text_data=json.dumps(event))
+
+    async def start_timer(self):
+        """サーバーサイドのタイマー"""
+        counter = 60
+        while counter >= 0:
+            # タイマーイベントを送信
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "game.message", "message": "Timer Update", "timer": counter},
+            )
+            counter -= 1
+            await asyncio.sleep(1)  # 1秒ごとに更新
