@@ -3,7 +3,7 @@ import qrcode
 import base64
 from io import BytesIO
 from auth_app.utils.redis_handler import RedisHandler
-
+import json
 
 class OTPService:
     """OTP関連のサービスクラス"""
@@ -39,10 +39,20 @@ class OTPService:
         :param otp_token: ユーザーが入力したOTPトークン
         :return: OTPトークンが正しい場合はTrue、そうでない場合はFalse
         """
-        # Redisから秘密鍵を取得
-        secret = RedisHandler.get(key=f"otp_secret:{username}")
+        # Redisから仮登録データを取得
+        redis_key = f"pending_user:{username}"
+        redis_data = RedisHandler.get(key=redis_key)
+
+        if not redis_data:
+            return False  # ユーザーが仮登録されていない場合
+
+        # 仮登録データがJSON形式なので、デコード
+        user_data = json.loads(redis_data)
+
+        # OTP秘密鍵を取得
+        secret = user_data.get("otp_secret")
         if not secret:
-            return False
+            return False  # OTP秘密鍵がない場合
 
         # OTPトークンを検証
         otp = pyotp.TOTP(secret)

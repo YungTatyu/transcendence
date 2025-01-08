@@ -15,10 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from .views import generate_jwt, get_public_key, SignupView
+from .views import generate_jwt, get_public_key, SignupView, OTPVerificationView
 
 urlpatterns = [
     path('api/token/', generate_jwt, name='generate_jwt'),
     path('api/public-key/', get_public_key, name='get_public_key'),
     path('auth/otp/signup', SignupView.as_view(), name='otp-signup'),
+    path('auth/otp/signup/verify', OTPVerificationView.as_view(), name='otp-verify'),
 ]

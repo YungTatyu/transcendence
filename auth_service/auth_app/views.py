@@ -10,10 +10,6 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from io import BytesIO
-import base64
-import pyotp
-import qrcode
 from .serializers import SignupSerializer 
 from auth_app.services.otp_service import OTPService
 
@@ -89,3 +85,34 @@ class SignupView(APIView):
             max_age=300
         )
         return response
+
+class OTPVerificationView(APIView):
+    """
+    サインアップ時のOTP検証
+    """
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        otp_token = request.data.get("otp")
+
+        if not username or not otp_token:
+            return Response({"error": "username and otp are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # OTPの検証
+        if OTPService.verify_otp(username, otp_token):
+            # クッキーを削除
+            response = Response(
+                {
+                    "access": "tmp",
+                    "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+                },
+                status=status.HTTP_200_OK,
+            )
+
+            # usernameクッキーを削除
+            response.delete_cookie("username", path="/")
+            return response
+        else:
+            return Response(
+                {"error": "Invalid OTP or username."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
