@@ -1,5 +1,7 @@
 GAME_HEIGHT = 500
 GAME_WIDTH = 80
+GAME_HIGHEST_POS = 0
+GAME_LEFTEST_POS = 0
 
 
 class Ball:
@@ -28,8 +30,28 @@ class Ball:
             self.x_speed *= -1 * self.ACCELERATION
 
     def hit_wall(self):
-        if self.y_pos <= 0 or self.y_pos >= GAME_HEIGHT - self.HEIGHT:
+        if self.y_pos <= GAME_HIGHEST_POS or self.y_pos >= GAME_HEIGHT - self.HEIGHT:
             self.y_speed *= -1
+
+    def move(self, left_paddle, right_paddle):
+        self.x_pos = self.adjust_limit(
+            self.x_pos + self.x_speed, GAME_WIDTH - self.WIDTH
+        )
+        self.y_pos = self.adjust_limit(
+            self.y_pos + self.y_speed, GAME_HEIGHT - self.HEIGHT
+        )
+        self.hit_paddle(left_paddle, right_paddle)
+        self.hit_wall()
+
+    def adjust_limit(self, pos, limit):
+        """
+        ballがgameの範囲を越えないように調整する
+        """
+        if pos <= 0:
+            return 0
+        if pos > limit:
+            return limit
+        return pos
 
 
 class Paddle:
@@ -42,9 +64,9 @@ class Paddle:
         self.y_pos = y_pos
 
     def move_up(self):
-        if self.y_pos > 0:
+        if self.y_pos > GAME_HIGHEST_POS:
             # 0以下になってほしくない
-            self.y_pos = max(0, self.y_pos - self.SPEED)
+            self.y_pos = max(GAME_HIGHEST_POS, self.y_pos - self.SPEED)
 
     def move_down(self):
         if self.y_pos < self.LOWEST_POSITION:
@@ -54,3 +76,5 @@ class Paddle:
 class PingPong:
     def __init__(self):
         self.ball = Ball()
+        self.left_paddle = Paddle(GAME_HIGHEST_POS, GAME_HEIGHT / 2)
+        self.right_paddle = Paddle(GAME_WIDTH, GAME_HEIGHT / 2)
