@@ -15,6 +15,7 @@ import base64
 import pyotp
 import qrcode
 from .serializers import SignupSerializer 
+from auth_app.services.otp_service import OTPService
 
 # TODO csrf_exempt
 @csrf_exempt
@@ -72,16 +73,7 @@ class SignupView(APIView):
         user_data = serializer.save()
         username = user_data["username"]
 
-        # OTP用シークレット生成とQRコードデータ作成
-        secret = pyotp.random_base32()
-        otp = pyotp.TOTP(secret)
-        qr_code_data = otp.provisioning_uri(
-            name=user_data["email"], 
-            issuer_name="YourApp"
-        )
-
-        # QRコードを生成しBase64エンコード
-        qr_code_base64 = self._generate_base64_qr_code(qr_code_data)
+        qr_code_base64 = OTPService.generate_qr_code(email=user_data["email"], secret=user_data["otp_secret"])
 
         # Cookieにユーザー名を設定しレスポンスを返す
         response = Response(
@@ -97,11 +89,3 @@ class SignupView(APIView):
             max_age=300
         )
         return response
-
-    def _generate_base64_qr_code(self, data: str) -> str:
-        """QRコードを生成してBase64エンコードする"""
-        img = qrcode.make(data)
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        qr_code_base64 = f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
-        return qr_code_base64

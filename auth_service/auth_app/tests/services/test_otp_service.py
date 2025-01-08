@@ -6,13 +6,12 @@ import pyotp
 class OTPServiceTestCase(TestCase):
     @patch("auth_app.utils.redis_handler.RedisHandler.set")
     def test_generate_qr_code(self, mock_redis_set):
-        username = "testuser"
+        # username = "testuser"
         email = "testuser@example.com"
+        otp_secret = pyotp.random_base32()
 
         # QRコード生成
-        qr_code_base64 = OTPService.generate_qr_code(username=username, email=email)
-
-        mock_redis_set.assert_called_once()
+        qr_code_base64 = OTPService.generate_qr_code(email=email, secret=otp_secret)
 
         # # QRコードが生成されていることを確認
         self.assertTrue(qr_code_base64.startswith("data:image/png;base64,"))

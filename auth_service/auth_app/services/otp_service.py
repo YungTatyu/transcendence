@@ -9,24 +9,19 @@ class OTPService:
     """OTP関連のサービスクラス"""
 
     @staticmethod
-    def generate_qr_code(username: str, email: str, issuer_name: str = "auth_app") -> str:
+    def generate_qr_code(email: str, secret: str, issuer_name: str = "auth_app") -> str:
         """
         OTPの秘密鍵を生成し、QRコードを生成する。
 
-        :param username: ユーザー名（Redisに保存するキー）
         :param email: メールアドレス（QRコードのプロビジョニングURIに使用）
+        :param secret: OTPの秘密鍵
         :param issuer_name: OTPの発行者名（デフォルト: "auth_app"）
         :return: Base64エンコードされたQRコード
         """
-        # 秘密鍵を生成
-        secret = pyotp.random_base32()
 
         # OTPプロビジョニングURIを作成
         otp = pyotp.TOTP(secret)
         provisioning_uri = otp.provisioning_uri(name=email, issuer_name=issuer_name)
-
-        # 秘密鍵をRedisに保存（ユーザー名をキーにする）
-        RedisHandler.set(key=f"otp_secret:{username}", value=secret, timeout=3600)
 
         # QRコードを生成してBase64エンコード
         img = qrcode.make(provisioning_uri)
