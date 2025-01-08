@@ -73,8 +73,54 @@ class Paddle:
             self.y_pos = min(self.LOWEST_POSITION, self.y_pos - self.SPEED)
 
 
+class Player:
+    UP = "UP"
+    DOWN = "DOWN"
+
+    def __init__(self, name, paddle):
+        self.name = name
+        self.paddle = paddle
+        self.keys = {self.UP: "KeyW", self.DOWN: "KeyS"}
+
+    def move_paddle(self, key):
+        actions = {
+            self.keys[self.UP]: self.paddle.move_up,
+            self.keys[self.DOWN]: self.paddle.move_down,
+        }
+        action = actions.get(key)
+        if action is None:
+            return
+        action()
+
+
 class PingPong:
-    def __init__(self):
+    def __init__(self, name1=None, name2=None):
         self.ball = Ball()
-        self.left_paddle = Paddle(GAME_HIGHEST_POS, GAME_HEIGHT / 2)
-        self.right_paddle = Paddle(GAME_WIDTH, GAME_HEIGHT / 2)
+        self.left_player = self.add_player(name1)
+        self.right_player = self.add_player(name2)
+
+    def add_player(self, name):
+        if name is None:
+            return None  # Noneでplayerを初期化
+        if self.is_game_ready():
+            return
+        if self.left_player is None:
+            self.left_player = Player(name, Paddle(GAME_HIGHEST_POS, GAME_HEIGHT / 2))
+            return
+        self.right_player = Player(name, Paddle(GAME_WIDTH, GAME_HEIGHT / 2))
+
+    def is_game_ready(self):
+        return self.left_player is not None and self.right_player is not None
+
+    def player_action(self, name, key):
+        if name == self.left_player.name:
+            self.left_player.move_paddle(key)
+        elif name == self.right_player.name:
+            self.right_player.move_paddle(key)
+
+    def get_state(self):
+        return {
+            "ball": {"x": self.ball.x_pos, "y": self.ball.y_pos},
+            self.left_player.name: {"y": self.left_player.paddle.y_pos},
+            self.right_player.name: {"y": self.right_player.paddle.y_pos},
+        }
