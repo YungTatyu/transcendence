@@ -18,7 +18,7 @@ class SignupViewTestCase(APITestCase):
             "password": "short"
         }
 
-    @patch('utils.redis_handler.RedisHandler.set')  # RedisHandler.set メソッドのモック
+    @patch('auth_app.utils.redis_handler.RedisHandler.set')  # RedisHandler.set メソッドのモック
     def test_signup_success(self, mock_redis_set):
         """正常なサインアップのテスト"""
 

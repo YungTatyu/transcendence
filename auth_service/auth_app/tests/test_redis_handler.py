@@ -1,5 +1,5 @@
 from django.test import TestCase
-from utils.redis_handler import RedisHandler
+from auth_app.utils.redis_handler import RedisHandler
 
 class RedisHandlerTestCase(TestCase):
     def setUp(self):
