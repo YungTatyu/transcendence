@@ -18,7 +18,6 @@ from django.urls import path, include
 from .views import generate_jwt, get_public_key, SignupView
 
 urlpatterns = [
-    path('api/users/', include('users.urls')),
     path('api/token/', generate_jwt, name='generate_jwt'),
     path('api/public-key/', get_public_key, name='get_public_key'),
     path('auth/otp/signup', SignupView.as_view(), name='otp-signup'),
