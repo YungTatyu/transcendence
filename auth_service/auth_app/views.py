@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import SignupSerializer 
 from auth_app.services.otp_service import OTPService
+from auth_app.utils.redis_handler import RedisHandler
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -57,9 +59,21 @@ class OTPVerificationView(APIView):
         if not username or not otp_token:
             return Response({"error": "username and otp are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # OTPの検証
         if OTPService.verify_otp(username, otp_token):
-            # クッキーを削除
+            # Redisから仮登録データを取得
+            user_data = self._get_pending_user_data(username)
+            if not user_data:
+                return Response(
+                    {"error": "No pending user data found."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            if not self._register_user(user_data):
+                return Response(
+                    {"error": "Failed to register user."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            self._cleanup_pending_user(username)
+
             response = Response(
                 {
                     "access": "tmp",
@@ -76,3 +90,43 @@ class OTPVerificationView(APIView):
                 {"error": "Invalid OTP or username."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+    
+    def _get_pending_user_data(self, username: str) -> dict:
+        """
+        Redisから仮登録データを取得する
+        :param username: ユーザー名
+        :return: 仮登録データまたはNone
+        """
+        redis_key = f"pending_user:{username}"
+        redis_data = RedisHandler.get(key=redis_key)
+
+        if not redis_data:
+            return None
+
+        return json.loads(redis_data)
+
+    def _register_user(self, user_data: dict) -> bool:
+        """
+        本登録データをデータベースに保存する
+        :param user_data: 仮登録データ
+        :return: 保存成功ならTrue、失敗ならFalse
+        """
+        try:
+            user = User.objects.create_user(
+                username=user_data["username"],
+                email=user_data["email"],
+                password=user_data["password"],
+            )
+            user.save()
+            return True
+        except Exception as e:
+            logger.error(f"Error saving user: {str(e)}")
+            return False
+
+    def _cleanup_pending_user(self, username: str) -> None:
+        """
+        Redisから仮登録データを削除する
+        :param username: ユーザー名
+        """
+        redis_key = f"pending_user:{username}"
+        RedisHandler.delete(key=redis_key)
