@@ -4,6 +4,8 @@ import base64
 from io import BytesIO
 from auth_app.utils.redis_handler import RedisHandler
 import json
+import logging
+logger = logging.getLogger(__name__)
 
 class OTPService:
     """OTP関連のサービスクラス"""
@@ -44,6 +46,7 @@ class OTPService:
         redis_data = RedisHandler.get(key=redis_key)
 
         if not redis_data:
+            logger.warn("there no temporary user")
             return False  # ユーザーが仮登録されていない場合
 
         # 仮登録データがJSON形式なので、デコード
@@ -52,6 +55,7 @@ class OTPService:
         # OTP秘密鍵を取得
         secret = user_data.get("otp_secret")
         if not secret:
+            logger.debug("there no secret")
             return False  # OTP秘密鍵がない場合
 
         # OTPトークンを検証

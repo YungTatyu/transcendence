@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import SignupSerializer 
 from auth_app.services.otp_service import OTPService
+import logging
+logger = logging.getLogger(__name__)
 
 # TODO csrf_exempt
 @csrf_exempt
