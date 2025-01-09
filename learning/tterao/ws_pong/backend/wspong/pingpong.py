@@ -1,3 +1,8 @@
+from collections import namedtuple
+from enum import Enum, auto
+
+Position = namedtuple("Position", ["x", "y"])
+
 GAME_HEIGHT = 500
 GAME_WIDTH = 80
 GAME_HIGHEST_POS = 0
@@ -7,15 +12,14 @@ GAME_LEFTEST_POS = 0
 class Ball:
     HEIGHT = 20
     WIDTH = 20
-    SPEED = 4
+    INITIAL_POS = Position(x=GAME_WIDTH / 2, y=GAME_HEIGHT / 2)
+    INITIAL_SPEED = Position(x=4, y=4)
     ACCELERATION = 1.2
     LEFTEST_POS = WIDTH
 
     def __init__(self):
-        self.x_pos = GAME_WIDTH / 2
-        self.y_pos = GAME_HEIGHT / 2
-        self.x_speed = self.SPEED
-        self.y_speed = self.SPEED
+        self.x_pos, self.y_pos = self.INITIAL_POS
+        self.x_speed, self.y_speed = self.INITIAL_SPEED
 
     def hit_paddle(self, left_paddle, right_paddle):
         if (
@@ -33,15 +37,23 @@ class Ball:
         if self.y_pos <= GAME_HIGHEST_POS or self.y_pos >= GAME_HEIGHT - self.HEIGHT:
             self.y_speed *= -1
 
-    def move(self, left_paddle, right_paddle):
+    def move(self, left_player, right_player):
+        """
+        ゴールしたら、Trueとゴールしたplayerを返す
+        """
         self.x_pos = self.adjust_limit(
             self.x_pos + self.x_speed, GAME_WIDTH - self.WIDTH
         )
         self.y_pos = self.adjust_limit(
             self.y_pos + self.y_speed, GAME_HEIGHT - self.HEIGHT
         )
-        self.hit_paddle(left_paddle, right_paddle)
+        self.hit_paddle(left_player.paddle, right_player.paddle)
         self.hit_wall()
+        if self.x_pos >= GAME_WIDTH - self.WIDTH:
+            return (True, left_player)
+        elif self.y_pos <= GAME_LEFTEST_POS:
+            return (True, right_player)
+        return (False, None)
 
     def adjust_limit(self, pos, limit):
         """
@@ -52,6 +64,10 @@ class Ball:
         if pos > limit:
             return limit
         return pos
+
+    def reset_ball_status(self):
+        self.x_pos, self.y_pos = self.INITIAL_POS
+        self.x_speed, self.y_speed = self.INITIAL_SPEED
 
 
 class Paddle:
@@ -76,11 +92,13 @@ class Paddle:
 class Player:
     UP = "UP"
     DOWN = "DOWN"
+    KEY = "Key"
 
     def __init__(self, name, paddle):
         self.name = name
         self.paddle = paddle
-        self.keys = {self.UP: "KeyW", self.DOWN: "KeyS"}
+        self.keys = {self.UP: self.KEY + "W", self.DOWN: self.KEY + "S"}
+        self.score = 0
 
     def move_paddle(self, key):
         actions = {
@@ -92,9 +110,20 @@ class Player:
             return
         action()
 
+    def score(self):
+        self.score += 1
+
 
 class PingPong:
+    class GameState(Enum):
+        WAITING_FOR_FIRST_PLAYER = auto()
+        WAITING_FOR_SECOND_PLAYER = auto()
+        READY_TO_START = auto()
+        IN_PROGRESS = auto()
+        GAME_OVER = auto()
+
     def __init__(self, name1=None, name2=None):
+        self.state = self.GameState.WAITING_FOR_FIRST_PLAYER
         self.ball = Ball()
         self.left_player = self.add_player(name1)
         self.right_player = self.add_player(name2)
@@ -102,15 +131,17 @@ class PingPong:
     def add_player(self, name):
         if name is None:
             return None  # Noneでplayerを初期化
-        if self.is_game_ready():
+        if (
+            self.state != self.GameState.WAITING_FOR_FIRST_PLAYER
+            and self.state != self.GameState.WAITING_FOR_SECOND_PLAYER
+        ):
             return
-        if self.left_player is None:
+        if self.state == self.GameState.WAITING_FOR_FIRST_PLAYER:
             self.left_player = Player(name, Paddle(GAME_HIGHEST_POS, GAME_HEIGHT / 2))
+            self.state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
         self.right_player = Player(name, Paddle(GAME_WIDTH, GAME_HEIGHT / 2))
-
-    def is_game_ready(self):
-        return self.left_player is not None and self.right_player is not None
+        self.state = self.GameState.READY_TO_START
 
     def player_action(self, name, key):
         if name == self.left_player.name:
