@@ -22,6 +22,10 @@ class SignupSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError("This username is already in use.")
+        # Redisで仮登録状態を確認
+        redis_key = f"pending_user:{value}"
+        if RedisHandler.exists(redis_key):
+            raise serializers.ValidationError("This username is already pending registration.")
         return value
 
     def create(self, validated_data):
