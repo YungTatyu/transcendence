@@ -4,6 +4,7 @@ info:
   title: Vault API
   description: |
     HashiCorp Vaultによる機密情報の一元管理を行う。
+    Path, StatusCode, RequestBody, ResponseBody等はVaultの仕様に準拠する
   version: 1.0.0
 
 servers:
