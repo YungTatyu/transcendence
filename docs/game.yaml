@@ -46,6 +46,45 @@ paths:
               example:
                 "error": "Not Found"
 
+  /games:
+    post:
+      summary: ゲームルーム作成
+      description: |
+        ゲームルームを作成する。
+        matchesサーバからのみ叩かれる。
+        matchesサーバはシングル・トーナメントにかかわらず、
+        ゲームを開始する前にこのエンドポイントを叩き、
+        roomを作成する必要がある。
+      operationId: createGameRoom
+      tags:
+        - Games
+      requestBody:
+        description: ゲームルーム作成の基となる情報
+        required: true
+        content:
+          application/json:
+            example:
+              "matchId": 1
+              "userIdList": [
+                100,
+                200
+              ]
+      responses:
+        '201':
+          description: ゲームルームの作成成功
+          content:
+            application/json:
+              example:
+                "message": "Game room created."
+        '400':
+          description: ゲームルーム作成の基となる情報が不正
+          content:
+            application/json:
+              example:
+                "error": "Invalid params provided for game room creation."
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
   /health:
     get:
       summary: ヘルスチェック用エンドポイント
