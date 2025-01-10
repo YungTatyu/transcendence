@@ -1,6 +1,35 @@
 import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
+from pingpong import PingPong
+
+
+class GameManager:
+    """
+    インスタンスを作らない
+    クラス変数ですべてのpingpongゲームを管理する
+    """
+
+    games = {}
+
+    @classmethod
+    def create_game(cls, match_id):
+        if match_id in cls.games:
+            return cls.games[match_id]
+        cls.games[match_id] = PingPong()
+        return cls.games[match_id]
+
+    @classmethod
+    def get_game(cls, match_id):
+        """
+        Return: Game or None
+        """
+        return cls.games.get(match_id)
+
+    @classmethod
+    def remove_game(cls, match_id):
+        if match_id in cls.games:
+            del cls.games[match_id]
 
 
 class GameConsumer(AsyncWebsocketConsumer):
