@@ -38,7 +38,7 @@ class SignupViewTestCase(APITestCase):
         self.assertEqual(response.cookies['username'].value, self.valid_data['username'])
 
         # Redisに仮登録情報が保存されたか確認
-        mock_redis_set.assert_called_once()
+        self.assertEqual(mock_redis_set.call_count, 2)
 
     def test_signup_invalid_data(self):
         """無効なデータでサインアップする場合のテスト"""
