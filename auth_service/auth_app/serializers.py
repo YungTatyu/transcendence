@@ -17,6 +17,10 @@ class SignupSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email address is already in use.")
+        # Redisで仮登録状態を確認
+        redis_key = f"pending_email:{value}"
+        if RedisHandler.exists(redis_key):
+            raise serializers.ValidationError("This email is already pending registration.")
         return value
 
     def validate_username(self, value):
@@ -33,8 +37,9 @@ class SignupSerializer(serializers.ModelSerializer):
         仮登録をRedisに保存する
         ユーザー名をキーとして使用し、ユーザー情報をRedisに保存
         """
-        # Redisキーとしてユーザー名を使用
-        redis_key = f"pending_user:{validated_data['username']}"
+        # Redisキーとしてユーザー名とemailを使用
+        redis_key_user = f"pending_user:{validated_data['username']}"
+        redis_key_email = f"pending_email:{validated_data['email']}"
 
         # パスワードをハッシュ化
         hashed_password = make_password(validated_data["password"])
@@ -50,7 +55,10 @@ class SignupSerializer(serializers.ModelSerializer):
             "otp_secret": otp_secret,  # OTPの秘密鍵
         }
 
-        RedisHandler.set(redis_key, json.dumps(redis_data), timeout=3600)  # 1時間の有効期限
+        RedisHandler.set(redis_key_user, json.dumps(redis_data), timeout=3600)  # 1時間の有効期限
+
+        # 重複チェックのためRedisキーとしてEmailを使用
+        RedisHandler.set(redis_key_email, validated_data["username"], timeout=3600)  # 1時間の有効期限
 
         # 仮登録用のデータを返す
         return {
