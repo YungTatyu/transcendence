@@ -135,7 +135,7 @@ class PingPong:
             self.state != self.GameState.WAITING_FOR_FIRST_PLAYER
             and self.state != self.GameState.WAITING_FOR_SECOND_PLAYER
         ):
-            return
+            raise RuntimeError("this game is already ready to play.")
         if self.state == self.GameState.WAITING_FOR_FIRST_PLAYER:
             self.left_player = Player(name, Paddle(GAME_HIGHEST_POS, GAME_HEIGHT / 2))
             self.state = self.GameState.WAITING_FOR_SECOND_PLAYER
