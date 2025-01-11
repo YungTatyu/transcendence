@@ -28,6 +28,7 @@ jobs:
           docker ps
           if docker compose exec auth python manage.py check; then
             echo "Services are ready!"
+            sleep 20
             exit 0
           fi
           sleep 5
