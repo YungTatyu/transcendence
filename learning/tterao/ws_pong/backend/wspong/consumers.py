@@ -1,6 +1,8 @@
+import enum
 import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
+from learning.tterao.ws_pong.backend.wspong.actionhandler import ActionHandler
 from pingpong import PingPong
 
 
@@ -33,13 +35,21 @@ class GameManager:
 
 
 class GameConsumer(AsyncWebsocketConsumer):
+    class MessageType(enum.Enum):
+        MSG_UPDATE = "game update"
+        MSG_ERROR = "error"
+        MSG_GAME_OVER = "game over"
+
     async def connect(self):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.username = self.scope["url_route"]["kwargs"]["username"]
 
         if self.match_id is None or self.username is None:
             return await self.disconnect_with_error_message(
-                {"type": "error", "message": "missing match_id or username."}
+                {
+                    "type": self.MessageType.MSG_ERROR,
+                    "message": "missing match_id or username.",
+                }
             )
 
         self.game = GameManager.get_game(self.match_id)
@@ -52,7 +62,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game.add_player(self.username)
         except RuntimeError as e:
             return await self.disconnect_with_error_message(
-                {"type": "error", "message": f"{e}"}
+                {"type": self.MessageType.MSG_ERROR, "message": f"{e}"}
             )
 
         # awiteはブロックするわけではない。処理を待つが待ってる間に他の処理を実行する
@@ -60,7 +70,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         if self.game.state == PingPong.GameState.READY_TO_START:
-            pass
+            self.game.set_task(asyncio.create_task(self.game_loop()))
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -68,12 +78,17 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(text_data_json)
-
+        ActionHandler.handle(text_data_json, self.game)
         # Send message to room group
         await self.channel_layer.group_send(
-            self.room_group_name,
-            {"type": "game.message"} | text_data_json,
+            self.match_id,
+            {
+                "type": "game.message",
+                "message": self.MessageType.MSG_UPDATE,
+                "data": {
+                    "state": self.game.get_state(),
+                },
+            },
         )
 
     # async_to_sync(self.channel_layer.group_send)の時にしてされたtypeがgame.messageのときにこの関数が呼ばれる
@@ -81,17 +96,20 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps(event))
 
-    async def start_timer(self):
-        """サーバーサイドのタイマー"""
-        counter = 60
-        while counter >= 0:
-            # タイマーイベントを送信
+    async def game_loop(self):
+        while self.game.state != PingPong.GameState.GAME_OVER:
+            self.game.update()
             await self.channel_layer.group_send(
-                self.room_group_name,
-                {"type": "game.message", "message": "Timer Update", "timer": counter},
+                self.match_id,
+                {
+                    "type": "game.message",
+                    "message": self.MessageType.MSG_UPDATE,
+                    "data": {
+                        "state": self.game.get_state(),
+                    },
+                },
             )
-            counter -= 1
-            await asyncio.sleep(1)  # 1秒ごとに更新
+            await asyncio.sleep(1 / 60)  # 60FPS
 
     async def disconnect_with_error_message(self, json):
         await self.send(json.dumps(json))
