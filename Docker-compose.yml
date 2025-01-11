@@ -46,3 +46,4 @@ networks:
 
 volumes:
   auth_db_data:
+
