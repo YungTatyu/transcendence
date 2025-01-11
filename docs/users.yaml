@@ -35,6 +35,10 @@ paths:
                     type: integer
                   username:
                     type: string
+                  avatarPath:
+                    type: string
+                    description: "アバター画像のパス"
+                    example: "/uploads/avatars/12345.png"
         "400":
           description: "Missing or invalid query parameter."
           content:
@@ -47,6 +51,17 @@ paths:
                     example: "query parameter 'username' is required."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "User not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "エラーの詳細"
+                    example: "User not found."
     post:
       summary: "userの新規作成"
       description: "userの新規登録。authサービスからこのapiが叩かれる。"
@@ -112,48 +127,6 @@ paths:
                     type: string
                     description: "コンフリクトエラーの詳細"
                     example: "A user with this email already exists."
-
-  /users/{userId}:
-    get:
-      summary: "ユーザー情報の取得"
-      description: "ユーザーIDを使用して、その詳細情報を取得"
-      tags:
-        - Users
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "ユーザーの詳細情報"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  userId:
-                    type: integer
-                  username:
-                    type: string
-                  avatarPath:
-                    type: string
-                    description: "アバター画像のパス"
-                    example: "/uploads/avatars/12345.png"
-        "401":
-          $ref: '#/components/responses/UnauthorizedResponse'
-        "404":
-          description: "User not found."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "エラーの詳細"
-                    example: "User not found."
 
   /users/me/username:
     put:
