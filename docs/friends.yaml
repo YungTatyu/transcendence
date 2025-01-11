@@ -118,6 +118,16 @@ paths:
                     example: "You cannot send a request to yourself."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "User not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found."
         "409":
           description: "already sent request."
           content:
