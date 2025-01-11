@@ -1,5 +1,5 @@
 from enum import Enum
-from pingpong import PingPong
+from wspong.pingpong import PingPong
 
 
 class ActionHandler:

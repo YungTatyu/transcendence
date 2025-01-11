@@ -2,8 +2,8 @@ import enum
 import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
-from learning.tterao.ws_pong.backend.wspong.actionhandler import ActionHandler
-from pingpong import PingPong
+from wspong.actionhandler import ActionHandler
+from wspong.pingpong import PingPong
 
 
 class GameManager:
