@@ -26,6 +26,7 @@ jobs:
         echo "Waiting for services to be ready..."
         for i in {1..30}; do
           docker ps
+          sleep 5
           if docker compose exec auth python manage.py check; then
             echo "Services are ready!"
             sleep 20
