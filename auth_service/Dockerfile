@@ -4,5 +4,6 @@ COPY requirements.txt .
 RUN apt-get update && apt-get install -y libpq-dev gcc
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN chmod +x ./wait-for-it.sh
 COPY . .
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["./wait-for-it.sh", "auth_db:5432", "--", "sh", "-c", "python manage.py runserver 0.0.0.0:8000"]
