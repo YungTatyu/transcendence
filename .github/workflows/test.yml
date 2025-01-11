@@ -32,6 +32,7 @@ jobs:
             exit 0
           fi
           sleep 5
+          docker-compose logs auth
         done
         echo "Services did not become ready in time."
         exit 1
