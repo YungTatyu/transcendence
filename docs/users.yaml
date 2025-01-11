@@ -17,12 +17,20 @@ paths:
       tags:
         - Users
       parameters:
-        - name: username
-          in: query
-          description: "検索対象のユーザー名"
-          required: true
-          schema:
-            type: string
+      - name: query
+        in: query
+        description: "検索条件（usernameまたはuserid）"
+        required: true
+        schema:
+          oneOf:
+            - type: object
+              properties:
+                username:
+                  type: string
+            - type: object
+              properties:
+                userid:
+                  type: integer
       responses:
         "200":
           description: "ユーザー情報の取得に成功"
@@ -48,7 +56,7 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "query parameter 'username' is required."
+                    example: "query parameter 'username' or 'userid' is required."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
         "404":
