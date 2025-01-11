@@ -1,10 +1,6 @@
 name: Django Test with Docker Compose
 
 on:
-  push:
-    # 全てのコミットに対してトリガー
-    branches:
-      - "*"
   pull_request:
     # プルリクエストに対してもトリガー
     branches:
