@@ -8,14 +8,14 @@ services:
       - app_network
     depends_on:
       - auth_db
-      - redis
+      - auth_redis
     environment:
       - DJANGO_DB_NAME=auth_db
       - DJANGO_DB_USER=auth_user
       - DJANGO_DB_PASSWORD=auth_password
       - DJANGO_DB_HOST=auth_db
       - DJANGO_DB_PORT=5432
-      - REDIS_HOST=redis
+      - REDIS_HOST=auth_redis
       - REDIS_PORT=6379
 
   auth_db:
@@ -30,7 +30,7 @@ services:
     volumes:
       - auth_db_data:/var/lib/postgresql/data
 
-  redis:
+  auth_redis:
     image: redis:alpine
     container_name: redis_server
     ports:
