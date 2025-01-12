@@ -1,0 +1,48 @@
+version: '3'
+services:
+  tournament:
+    build: ./tournament_service
+    ports:
+      - "8001:8001"
+    networks:
+      - tournament_network
+    depends_on:
+      - tournament_db
+      - tournament_redis
+    environment:
+      - DJANGO_DB_NAME=tournament_db
+      - DJANGO_DB_USER=tournament_user
+      - DJANGO_DB_PASSWORD=tournament_password
+      - DJANGO_DB_HOST=tournament_db
+      - DJANGO_DB_PORT=5432
+      - REDIS_HOST=tournament_redis
+      - REDIS_PORT=6378
+
+  tournament_db:
+    image: postgres:15
+    container_name: tournament_db
+    environment:
+      POSTGRES_USER: tournament_user
+      POSTGRES_PASSWORD: tournament_password
+      POSTGRES_DB: tournament_db
+    networks:
+      - tournament_network
+    volumes:
+      - tournament_db_data:/var/lib/postgresql/data
+
+  tournament_redis:
+    image: redis:alpine
+    container_name: tournament_redis
+    ports:
+      - "6378:6378"
+    volumes:
+      - ./redis/tournament-data:/data
+    networks:
+      - tournament_network
+
+networks:
+  tournament_network:
+    driver: bridge
+
+volumes:
+  tournament_db_data:
