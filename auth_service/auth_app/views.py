@@ -65,7 +65,7 @@ class OTPVerificationView(APIView):
             if not user_data:
                 return Response(
                     {"error": "No pending user data found."},
-                    status=status.HTTP_404_NOT_FOUND,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             if not self.__register_user(user_data):
                 return Response(
