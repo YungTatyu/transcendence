@@ -22,6 +22,7 @@ class SignupView(APIView):
         # リクエストデータをシリアライザで検証
         serializer = SignupSerializer(data=request.data)
         if not serializer.is_valid():
+            logger.warn("invalid request body")
             return Response(
                 {"error": serializer.errors}, 
                 status=status.HTTP_400_BAD_REQUEST
@@ -57,17 +58,20 @@ class OTPVerificationView(APIView):
         otp_token = request.data.get("otp")
 
         if not username or not otp_token:
+            logger.warn("invalid request body")
             return Response({"error": "username and otp are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         if OTPService.verify_otp(username, otp_token):
             # Redisから仮登録データを取得
             user_data = self.__get_pending_user_data(username)
             if not user_data:
+                logger.warn("No pending user data found.")
                 return Response(
                     {"error": "No pending user data found."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if not self.__register_user(user_data):
+                logger.fatal("Failed to register user.")
                 return Response(
                     {"error": "Failed to register user."},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -86,6 +90,7 @@ class OTPVerificationView(APIView):
             response.delete_cookie("username", path="/")
             return response
         else:
+            logger.warn("Invalid OTP or username.")
             return Response(
                 {"error": "Invalid OTP or username."},
                 status=status.HTTP_400_BAD_REQUEST,
