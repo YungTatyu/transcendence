@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 import pyotp
 
 class SignupSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150)
+    username = serializers.CharField(max_length=20)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
 
