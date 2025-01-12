@@ -60,42 +60,41 @@ class OTPVerificationView(APIView):
         if not username or not otp_token:
             logger.warn("invalid request body")
             return Response({"error": "username and otp are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if OTPService.verify_otp(username, otp_token):
-            # Redisから仮登録データを取得
-            user_data = self.__get_pending_user_data(username)
-            if not user_data:
-                logger.warn("No pending user data found.")
-                return Response(
-                    {"error": "No pending user data found."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if not self.__register_user(user_data):
-                logger.fatal("Failed to register user.")
-                return Response(
-                    {"error": "Failed to register user."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-            self.__cleanup_pending_user(username)
-
-            response = Response(
-                {
-                    "access": "tmp",
-                    "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
-                },
-                status=status.HTTP_200_OK,
-            )
-
-            # usernameクッキーを削除
-            response.delete_cookie("username", path="/")
-            return response
-        else:
+        
+        if not OTPService.verify_otp(username, otp_token):
             logger.warn("Invalid OTP or username.")
             return Response(
                 {"error": "Invalid OTP or username."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    
+        # Redisから仮登録データを取得
+        user_data = self.__get_pending_user_data(username)
+        if not user_data:
+            logger.warn("No pending user data found.")
+            return Response(
+                {"error": "No pending user data found."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not self.__register_user(user_data):
+            logger.fatal("Failed to register user.")
+            return Response(
+                {"error": "Failed to register user."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        self.__cleanup_pending_user(username)
+
+        response = Response(
+            {
+                "access": "tmp",
+                "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+            },
+            status=status.HTTP_200_OK,
+        )
+
+        # usernameクッキーを削除
+        response.delete_cookie("username", path="/")
+        return response
+
     def __get_pending_user_data(self, username: str) -> dict:
         """
         Redisから仮登録データを取得する
