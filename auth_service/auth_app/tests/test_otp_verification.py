@@ -58,7 +58,7 @@ class OTPVerificationViewTestCase(APITestCase):
         self.assertIn("error", response.data)
         self.assertEqual(response.data["error"], "Invalid OTP or username.")
 
-    def test_otp_verification_missing_fields(self):
+    def test_otp_verification_missing_otp_fields(self):
         """必要なフィールドが欠けている場合のテスト"""
         data = {"username": self.username}  # OTPが欠けている
         response = self.client.post(self.url, data, format='json')

@@ -51,7 +51,7 @@ class SignupViewTestCase(APITestCase):
         # エラーメッセージが返されることを確認
         self.assertIn("error", response.data)
 
-    def test_signup_missing_field(self):
+    def test_signup_missing_password_field(self):
         """必要なフィールドが欠けている場合のテスト"""
 
         invalid_data = {
