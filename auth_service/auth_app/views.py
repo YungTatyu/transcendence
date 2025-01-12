@@ -61,18 +61,18 @@ class OTPVerificationView(APIView):
 
         if OTPService.verify_otp(username, otp_token):
             # Redisから仮登録データを取得
-            user_data = self._get_pending_user_data(username)
+            user_data = self.__get_pending_user_data(username)
             if not user_data:
                 return Response(
                     {"error": "No pending user data found."},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-            if not self._register_user(user_data):
+            if not self.__register_user(user_data):
                 return Response(
                     {"error": "Failed to register user."},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
-            self._cleanup_pending_user(username)
+            self.__cleanup_pending_user(username)
 
             response = Response(
                 {
@@ -91,7 +91,7 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     
-    def _get_pending_user_data(self, username: str) -> dict:
+    def __get_pending_user_data(self, username: str) -> dict:
         """
         Redisから仮登録データを取得する
         :param username: ユーザー名
@@ -105,7 +105,7 @@ class OTPVerificationView(APIView):
 
         return json.loads(redis_data)
 
-    def _register_user(self, user_data: dict) -> bool:
+    def __register_user(self, user_data: dict) -> bool:
         """
         本登録データをデータベースに保存する
         :param user_data: 仮登録データ
@@ -123,7 +123,7 @@ class OTPVerificationView(APIView):
             logger.error(f"Error saving user: {str(e)}")
             return False
 
-    def _cleanup_pending_user(self, username: str) -> None:
+    def __cleanup_pending_user(self, username: str) -> None:
         """
         Redisから仮登録データを削除する
         :param username: ユーザー名
