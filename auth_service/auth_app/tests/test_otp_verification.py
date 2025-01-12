@@ -7,7 +7,7 @@ import json
 class OTPVerificationViewTestCase(APITestCase):
     def setUp(self):
         """テストデータの準備"""
-        self.url = reverse('otp-verification')  # OTP検証エンドポイントのURL
+        self.url = reverse('otp-verify')  # OTP検証エンドポイントのURL
         self.username = "testuser"
         self.valid_otp = "123456"
         self.invalid_otp = "000000"
