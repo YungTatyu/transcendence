@@ -2,3 +2,7 @@ django
 channels[daphne]
 channels_redis
 uwsgi
+djangorestframework
+markdown
+django-filter
+django-cors-headers
