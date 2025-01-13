@@ -9,14 +9,12 @@ services:
     depends_on:
       - auth_db
       - auth_redis
-    environment:
-      - auth.env
+    env_file: auth.env
 
   auth_db:
     image: postgres:15
     container_name: auth_db
-    environment:
-      - auth_db.env
+    env_file: auth_db.env
     networks:
       - app_network
     volumes:
@@ -24,7 +22,7 @@ services:
 
   auth_redis:
     image: redis:alpine
-    container_name: redis_server
+    container_name: auth_redis_server
     ports:
       - "6379:6379"
     volumes:
