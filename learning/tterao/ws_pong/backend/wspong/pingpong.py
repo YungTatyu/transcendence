@@ -72,7 +72,8 @@ class Ball:
 
 class Paddle:
     SPEED = 10
-    HEIGHT = 20
+    HEIGHT = 100
+    WIDTH = 10
     LOWEST_POSITION = GAME_HEIGHT - HEIGHT
 
     def __init__(self, x_pos, y_pos):
@@ -153,12 +154,18 @@ class PingPong:
     def get_state(self):
         return {
             "ball": {"x": self.ball.x_pos, "y": self.ball.y_pos},
-            self.left_player.name: {"y": self.left_player.paddle.y_pos},
-            self.right_player.name: {"y": self.right_player.paddle.y_pos},
+            self.left_player.name: {
+                "y": self.left_player.paddle.y_pos,
+                "score": self.left_player.score,
+            },
+            self.right_player.name: {
+                "y": self.right_player.paddle.y_pos,
+                "score": self.left_player.score,
+            },
         }
 
     def set_task(self, task):
-        if task is not None:
+        if self.task is not None:
             raise RuntimeError("task already exists.")
         self.task = task
 

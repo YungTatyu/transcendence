@@ -3,5 +3,8 @@ from django.urls import re_path
 from . import consumers
 
 websocket_urlpatterns = [
-    re_path("ws/game", consumers.GameConsumer.as_asgi()),
+    re_path(
+        r"ws/game/(?P<match_id>\d+)/(?P<username>\w+)$",
+        consumers.GameConsumer.as_asgi(),
+    ),
 ]
