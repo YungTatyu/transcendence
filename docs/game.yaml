@@ -1,0 +1,135 @@
+openapi: 3.0.3
+info:
+  title: Games API
+  description: Game機能を実現するAPI
+  version: 1.0.0
+
+servers:
+  - url: wss://games.42.fr
+
+paths:
+  /games/ws/enter-room/{matchId}:
+    get:
+      summary: ゲームルームに入る
+      description: |
+        ゲームのルームに参加する。
+        参加者が揃ったらこのWebSocket経由でゲームを開始する。
+        ゲームが終了したら試合管理APIに試合結果を通知する。
+        このWebSocketはゲームが終了したらコネクションを切る。
+      operationId: enterGameRoom
+      tags:
+        - Games
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '101':
+          description: WebSocketへのプロトコルアップデート成功
+        '400':
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: |
+            存在しないルームに入ろうとした
+            or
+            許可されていないルームに入ろうとした
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+
+  /games:
+    post:
+      summary: ゲームルーム作成
+      description: |
+        ゲームルームを作成する。
+        matchesサーバからのみ叩かれる。
+        matchesサーバはシングル・トーナメントにかかわらず、
+        ゲームを開始する前にこのエンドポイントを叩き、
+        roomを作成する必要がある。
+      operationId: createGameRoom
+      tags:
+        - Games
+      requestBody:
+        description: ゲームルーム作成の基となる情報
+        required: true
+        content:
+          application/json:
+            example:
+              "matchId": 1
+              "userIdList": [
+                100,
+                200
+              ]
+      responses:
+        '201':
+          description: ゲームルームの作成成功
+          content:
+            application/json:
+              example:
+                "message": "Game room created."
+        '400':
+          description: ゲームルーム作成の基となる情報が不正
+          content:
+            application/json:
+              example:
+                "error": "Invalid params provided for game room creation."
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+  /health:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Games
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
