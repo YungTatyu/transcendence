@@ -1,0 +1,170 @@
+openapi: 3.0.3
+
+info:
+  title: Tournaments API
+  description: トーナメント機能を実現するAPI
+  version: 1.0.0
+
+servers:
+  - url: https://tournaments.42.fr
+  - url: wss://tournaments.42.fr
+
+paths:
+  /tournaments/ws/enter-room:
+    get:
+      summary: トーナメントマッチングルームに入る
+      description: |
+        トーナメントのマッチング待機部屋に入る。
+        トーナメント参加者が集まり、トーナメントが開始されたら
+        このWebSocketはコネクションを切る。
+      operationId: enterTournamentMatchingRoom
+      tags:
+        - Tournaments
+      responses:
+        '101':
+          description: WebSocketへのプロトコルアップデート成功
+        '400':
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+  /tournaments/ws/enter-room/{tournamentId}:
+    get:
+      summary: トーナメントルームに入る
+      description: |
+        参加人数が集まったら参加者の情報を用いてトーナメントに必要なレコード作成し、
+        このエンドポイントにアクセスさせる。
+        その後、試合のアナウンスをこのWebSocket経由で行う。
+        全ての試合が終了したらこのWebSocketはコネクションを切る。
+      operationId: enterTournamentRoom
+      tags:
+        - Tournaments
+      parameters:
+        - name: tournamentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '101':
+          description: WebSocketへのプロトコルアップデート成功
+        '400':
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: |
+            存在しないルームに入ろうとした
+            or
+            許可されていないルームに入ろうとした
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+
+  /tournaments/finish-match:
+    post:
+      summary: 試合終了時に通知を受け取る
+      description: |
+        トーナメントの一試合が終了するごとに試合管理APIから叩かれる。
+        この処理をトリガーにその後のアナウンスが行われる。
+      operationId: finishTournamentMatch
+      tags:
+        - Tournaments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tournamentId:
+                  type: integer
+                  description: 終了した試合のTournamentID
+                round:
+                  type: integer
+                  description: 終了した試合のRound
+              required:
+                - tournamentId
+                - round
+            example:
+              "tournamentId": 1
+              "round": 1
+      responses:
+        '200':
+          description: 正常にトーナメントの一試合が終了
+          content:
+            application/json:
+              example:
+                "message": "Match ended normally"
+        '400':
+          description: 終了した試合情報とトーナメント管理API内の情報の整合性が取れない
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: 試合管理API以外から叩かれた
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+
+  /health:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Tournaments
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
