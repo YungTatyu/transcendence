@@ -7,6 +7,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
     # マッチングルームは全てのユーザーが同じルームを使用するので定数を使用
     __matching_room = "matching_room"
 
+    # TODO userIdごとにredis上にCounterを作成し、不正ができないようにする
     async def connect(self):
         # Channelにクライアントを登録
         await self.channel_layer.group_add(self.__matching_room, self.channel_name)
