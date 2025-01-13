@@ -111,7 +111,7 @@ class Player:
             return
         action()
 
-    def score(self):
+    def increment_score(self):
         self.score += 1
 
 
@@ -172,4 +172,4 @@ class PingPong:
     def update(self):
         scored, player = self.ball.move(self.left_player, self.right_player)
         if scored:
-            player.score()
+            player.increment_score()

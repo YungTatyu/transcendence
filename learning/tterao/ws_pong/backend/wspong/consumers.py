@@ -97,15 +97,13 @@ class GameConsumer(AsyncWebsocketConsumer):
     # async_to_sync(self.channel_layer.group_send)の時にしてされたtypeがgame.messageのときにこの関数が呼ばれる
     async def game_message(self, event):
         # Send message to WebSocket
-        print("sendind data", event)
         await self.send(text_data=json.dumps(event))
 
     async def game_loop(self):
         print("game loop start")
         while self.game.state != PingPong.GameState.GAME_OVER:
             self.game.update()
-            print("update game", self.game.get_state())
-            print("group name", self.match_id)
+            print("group sending state", self.game.get_state())
             await self.channel_layer.group_send(
                 self.match_id,
                 {
