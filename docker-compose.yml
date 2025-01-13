@@ -26,7 +26,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis/data:/data
+      - ./auth_redis/data:/data
     networks:
       - app_network
 
