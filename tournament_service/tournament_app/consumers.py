@@ -1,23 +1,42 @@
-import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+from tournament_app.utils.redis_handler import RedisHandler
 
 
-class TournamentConsumer(AsyncWebsocketConsumer):
+class TournamentMatchingConsumer(AsyncWebsocketConsumer):
+    # マッチングルームは全てのユーザーが同じルームを使用するので定数を使用
+    __matching_room = "matching_room"
+
     async def connect(self):
-        # WebSocket接続時に呼び出される
-        print("WebSocket connection established")
-
+        # Channelにクライアントを登録
+        await self.channel_layer.group_add(self.__matching_room, self.channel_name)
+        # WebSocket接続を受け入れる
         await self.accept()
-        # クライアントに接続確認のメッセージを送信
-        await self.send(text_data=json.dumps({"message": "Connection established!"}))
+        await self.increment_member_count()
 
     async def disconnect(self, close_code):
-        # WebSocket切断時に呼び出される
-        print("WebSocket connection closed", close_code)
+        _ = close_code
+        await self.channel_layer.group_discard(self.__matching_room, self.channel_name)
+        await self.decrement_member_count()
 
-    async def receive(self, text_data):
-        # クライアントからメッセージを受け取る
-        print(f"Received message: {text_data}")
+    async def tournament_start(self, event):
+        message = event["message"]
+        await self.send(text_data=json.dumps({"message": message}))
 
-        # メッセージを受け取った後、クライアントに同じメッセージを送り返す
-        await self.send(text_data=json.dumps({"message": text_data}))
+    async def increment_member_count(self):
+        key = f"{self.__matching_room}_count"
+        current_count = RedisHandler.get(key=key) or 0
+        current_count += 1
+        RedisHandler.set(key=key, value=current_count)
+
+        # 参加者がN人になったらメッセージを送る
+        if current_count >= 3:
+            await self.channel_layer.group_send(
+                self.__matching_room, {"type": "tournament.start", "message": "START"}
+            )
+
+    async def decrement_member_count(self):
+        key = f"{self.__matching_room}_count"
+        current_count = RedisHandler.get(key=key) or 0
+        current_count -= 1
+        RedisHandler.set(key=key, value=current_count)

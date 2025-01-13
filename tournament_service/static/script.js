@@ -4,9 +4,8 @@ uri += '//' + window.location.host + loc.pathname + 'tournaments/ws/enter-room';
 const ws = new WebSocket(uri);
 
 ws.onmessage = function(event) {
-	console.log("DEBUGDESU!")
 	const sentData = JSON.parse(event.data);
-	console.log(sentData);
+	console.log(sentData.message);
 };
 
 ws.onerror = function(error) { console.error("WebSocket error:", error); };
