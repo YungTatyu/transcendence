@@ -10,21 +10,13 @@ services:
       - auth_db
       - auth_redis
     environment:
-      - DJANGO_DB_NAME=auth_db
-      - DJANGO_DB_USER=auth_user
-      - DJANGO_DB_PASSWORD=auth_password
-      - DJANGO_DB_HOST=auth_db
-      - DJANGO_DB_PORT=5432
-      - REDIS_HOST=auth_redis
-      - REDIS_PORT=6379
+      - auth.env
 
   auth_db:
     image: postgres:15
     container_name: auth_db
     environment:
-      POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_password
-      POSTGRES_DB: auth_db
+      - auth_db.env
     networks:
       - app_network
     volumes:
