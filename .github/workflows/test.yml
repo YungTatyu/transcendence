@@ -1,0 +1,42 @@
+name: Django Test with Docker Compose
+
+on:
+  pull_request:
+    # プルリクエストに対してもトリガー
+    branches:
+      - "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build and start services
+      run: docker compose up -d --build
+
+    - name: Wait for services to be ready
+      run: |
+        echo "Waiting for services to be ready..."
+        for i in {1..30}; do
+          docker ps
+          sleep 5
+          if docker compose exec auth python manage.py check; then
+            echo "Services are ready!"
+            sleep 20
+            exit 0
+          fi
+          sleep 5
+          docker compose logs auth
+        done
+        echo "Services did not become ready in time."
+        exit 1
+
+    - name: Run tests
+      run: docker compose exec auth python manage.py test
+
+    - name: Tear down
+      if: always()
+      run: docker compose down
