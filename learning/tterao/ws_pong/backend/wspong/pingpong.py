@@ -128,7 +128,6 @@ class PingPong:
         self.ball = Ball()
         self.left_player = self.add_player(name1)
         self.right_player = self.add_player(name2)
-        self.task = None
 
     def add_player(self, name):
         if name is None:
@@ -163,11 +162,6 @@ class PingPong:
                 "score": self.left_player.score,
             },
         }
-
-    def set_task(self, task):
-        if self.task is not None:
-            raise RuntimeError("task already exists.")
-        self.task = task
 
     def update(self):
         scored, player = self.ball.move(self.left_player, self.right_player)

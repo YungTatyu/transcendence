@@ -7,7 +7,11 @@ class ActionHandler:
         ACTION_PADDLE = "game.paddle_move"
 
     @staticmethod
-    def handle(json, game):
+    def handle_new_connection(match_dict):
+        pass
+
+    @staticmethod
+    def handle_player_action(json, game):
         type = json.get("type")
         key = json.get("key")
         name = json.get("username")
