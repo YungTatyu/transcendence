@@ -3,6 +3,7 @@ import json
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+from django.dispatch.dispatcher import logging
 from wspong.actionhandler import ActionHandler
 from wspong.pingpong import PingPong
 
@@ -151,8 +152,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     @staticmethod
     async def group_send(event, match_id):
-        print("group_send called")
-        print("data", event)
         channel_layer = get_channel_layer()
         event["type"] = "game.message"
         await channel_layer.group_send(match_id, event)

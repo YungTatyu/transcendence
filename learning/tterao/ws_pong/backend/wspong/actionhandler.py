@@ -17,5 +17,5 @@ class ActionHandler:
         name = json.get("username")
         if type is None:
             return
-        if type == ActionHandler.ActionType.ACTION_PADDLE:
+        if type == ActionHandler.ActionType.ACTION_PADDLE.value:
             game.player_action(name, key)

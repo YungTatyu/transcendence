@@ -91,11 +91,13 @@ class Paddle:
         self.y_pos = y_pos
 
     def move_up(self):
+        # print("move up")
         if self.y_pos > GAME_HIGHEST_POS:
             # 0以下になってほしくない
             self.y_pos = max(GAME_HIGHEST_POS, self.y_pos - self.SPEED)
 
     def move_down(self):
+        # print("move down")
         if self.y_pos < self.LOWEST_POSITION:
             self.y_pos = min(self.LOWEST_POSITION, self.y_pos - self.SPEED)
 
@@ -155,6 +157,8 @@ class PingPong:
         self.state = self.GameState.READY_TO_START
 
     def player_action(self, name, key):
+        # print("player action called")
+        # print(name, key)
         if name == self.left_player.name:
             self.left_player.move_paddle(key)
         elif name == self.right_player.name:
