@@ -4,7 +4,7 @@ from enum import Enum, auto
 Position = namedtuple("Position", ["x", "y"])
 
 GAME_HEIGHT = 500
-GAME_WIDTH = 80
+GAME_WIDTH = 800
 GAME_HIGHEST_POS = 0
 GAME_LEFTEST_POS = 0
 
@@ -18,8 +18,10 @@ class Ball:
     LEFTEST_POS = WIDTH
 
     def __init__(self):
-        self.x_pos, self.y_pos = self.INITIAL_POS
-        self.x_speed, self.y_speed = self.INITIAL_SPEED
+        self.x_pos = self.INITIAL_POS.x
+        self.y_pos = self.INITIAL_POS.y
+        self.x_speed = self.INITIAL_SPEED.x
+        self.y_speed = self.INITIAL_SPEED.y
 
     def hit_paddle(self, left_paddle, right_paddle):
         if (
@@ -31,10 +33,12 @@ class Ball:
             and self.y_pos + self.WIDTH >= right_paddle.y_pos
             and self.y_pos <= right_paddle.y_pos + right_paddle.HEIGHT
         ):
+            print("hit paddle")
             self.x_speed *= -1 * self.ACCELERATION
 
     def hit_wall(self):
         if self.y_pos <= GAME_HIGHEST_POS or self.y_pos >= GAME_HEIGHT - self.HEIGHT:
+            print("hit wall")
             self.y_speed *= -1
 
     def move(self, left_player, right_player):
@@ -50,8 +54,10 @@ class Ball:
         self.hit_paddle(left_player.paddle, right_player.paddle)
         self.hit_wall()
         if self.x_pos >= GAME_WIDTH - self.WIDTH:
+            self.reset_ball_status()
             return (True, left_player)
-        elif self.y_pos <= GAME_LEFTEST_POS:
+        elif self.x_pos <= GAME_LEFTEST_POS:
+            self.reset_ball_status()
             return (True, right_player)
         return (False, None)
 
@@ -61,13 +67,15 @@ class Ball:
         """
         if pos <= 0:
             return 0
-        if pos > limit:
+        if pos >= limit:
             return limit
         return pos
 
     def reset_ball_status(self):
-        self.x_pos, self.y_pos = self.INITIAL_POS
-        self.x_speed, self.y_speed = self.INITIAL_SPEED
+        self.x_pos = self.INITIAL_POS.x
+        self.y_pos = self.INITIAL_POS.y
+        self.x_speed = self.INITIAL_SPEED.x
+        self.y_speed = self.INITIAL_SPEED.y
 
 
 class Paddle:

@@ -71,10 +71,8 @@ class GameContoroller:
 
     async def game_loop(self, match_id):
         try:
-            print("start game loop")
             while self.game.state != PingPong.GameState.GAME_OVER:
                 self.game.update()
-                print("group_sending in loop")
                 await GameConsumer.group_send(
                     {
                         "message": GameConsumer.MessageType.MSG_UPDATE.value,
@@ -84,7 +82,6 @@ class GameContoroller:
                     },
                     match_id,
                 )
-                print("sent in loop")
                 await asyncio.sleep(1 / 60)  # 60FPS (約16.67ミリ秒間隔)
         except asyncio.CancelledError:
             print("Game loop was cancelled.")
