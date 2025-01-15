@@ -10,11 +10,14 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
     __forced_start_time = 10
     __room_capacity = 4
 
-    # TODO userIdごとにredis上にCounterを作成し、不正ができないようにする
+    # TODO self.channel_name -> userId
     async def connect(self):
-        # Channelにクライアントを登録
+        # 既にマッチング待機中なら接続を拒否する
+        if self.channel_name in TournamentMatchingManager.get_matching_wait_users():
+            await self.close(code=4400)
+            return
+
         await self.channel_layer.group_add(self.__matching_room, self.channel_name)
-        # WebSocket接続を受け入れる
         await self.accept()
         count = TournamentMatchingManager.append_matching_wait_users(self.channel_name)
 
@@ -33,7 +36,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.__matching_room, self.channel_name)
         count = TournamentMatchingManager.del_matching_wait_user(self.channel_name)
 
-        # 2 -> 1人のタイミングでトーナメント強制開始タイマーを削除
+        # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
         if count == 1:
             TournamentMatchingManager.cancel_timer()
 
