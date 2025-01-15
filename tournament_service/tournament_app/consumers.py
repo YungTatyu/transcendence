@@ -4,6 +4,7 @@ import asyncio
 from .utils.tournament_matching_manager import TournamentMatchingManager
 from tournament_app.models import Tournaments
 from channels.db import database_sync_to_async
+from .utils.tournament_session import TournamentSession
 
 
 class TournamentMatchingConsumer(AsyncWebsocketConsumer):
@@ -68,5 +69,11 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __create_tournament(self) -> int:
+        """永続的データとメモリ上のデータの両方を作成"""
         tournament = Tournaments.objects.create()
-        return tournament.tournament_id
+        tournament_id = tournament.tournament_id
+        TournamentSession.register_tournament_session(
+            tournament_id,
+            list(TournamentMatchingManager.get_matching_wait_users().keys()),
+        )
+        return tournament_id
