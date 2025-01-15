@@ -6,6 +6,9 @@ const ws = new WebSocket(uri);
 ws.onmessage = function(event) {
 	const sentData = JSON.parse(event.data);
 	console.log(sentData.message);
+	if (sentData.message === "START") {
+		ws.close();
+	}
 };
 
 ws.onerror = function(error) { console.error("WebSocket error:", error); };
