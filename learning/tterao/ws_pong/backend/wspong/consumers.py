@@ -7,35 +7,6 @@ from wspong.actionhandler import ActionHandler
 from wspong.pingpong import PingPong
 
 
-class GameManager:
-    """
-    インスタンスを作らない
-    クラス変数ですべてのpingpongゲームを管理する
-    """
-
-    games = {}
-    sessions = {}
-
-    @classmethod
-    def create_game(cls, match_id):
-        if match_id in cls.games:
-            return cls.games[match_id]
-        cls.games[match_id] = PingPong()
-        return cls.games[match_id]
-
-    @classmethod
-    def get_game(cls, match_id):
-        """
-        Return: Game or None
-        """
-        return cls.games.get(match_id)
-
-    @classmethod
-    def remove_game(cls, match_id):
-        if match_id in cls.games:
-            del cls.games[match_id]
-
-
 class Match:
     def __init__(self, match_id, players):
         self.match_id = match_id
@@ -77,56 +48,6 @@ class MatchManager:
         """
         if match_id in MatchManager.__matches:
             del MatchManager.__matches[match_id]
-
-
-class GameSession:
-    """
-    ゲームの進行とWebSocket通信を管理するクラス
-    """
-
-    def __init__(self, cs, game):
-        self.consumer = cs
-        self.task = None
-
-    async def start_game(self):
-        """
-        ゲームの進行を開始
-        """
-        if self.task is not None:
-            raise RuntimeError("Game session is already running.")
-        self.task = asyncio.create_task(self.game_loop())
-
-    async def stop_game(self):
-        """
-        ゲームを停止
-        """
-        if self.task is not None:
-            self.task.cancel()
-            self.task = None
-
-    async def game_loop(self):
-        """
-        ゲームの進行ループ
-        """
-        try:
-            while self.game.state != PingPong.GameState.GAME_OVER:
-                self.game.update()
-                print("group sending state", self.game.get_state())
-                await self.consumer.group_send(
-                    {
-                        "message": GameConsumer.MessageType.MSG_UPDATE.value,
-                        "data": {
-                            "state": self.game.get_state(),
-                        },
-                    },
-                )
-                print("sent state")
-                await asyncio.sleep(1 / 60)  # 60FPS
-
-            print("game loop end")
-
-        except asyncio.CancelledError:
-            print(f"Game {self.consumer.match_id} stopped.")
 
 
 class GameContoroller:
