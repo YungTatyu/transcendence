@@ -2,7 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import asyncio
 from .utils.tournament_matching_manager import TournamentMatchingManager
-from tournament_app.models import Tournament
+from tournament_app.models import Tournaments
 from channels.db import database_sync_to_async
 
 
@@ -62,5 +62,5 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __create_tournament(self) -> int:
-        tournament = Tournament.objects.create()
+        tournament = Tournaments.objects.create()
         return tournament.tournament_id
