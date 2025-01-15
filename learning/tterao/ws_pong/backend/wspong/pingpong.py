@@ -26,11 +26,13 @@ class Ball:
     def hit_paddle(self, left_paddle, right_paddle):
         if (
             self.x_pos <= left_paddle.WIDTH
-            and self.y_pos + self.WIDTH >= left_paddle.y_pos
+            and self.x_pos + self.WIDTH >= self.LEFTEST_POS
+            and self.y_pos + self.HEIGHT >= left_paddle.y_pos
             and self.y_pos <= left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            self.x_pos >= GAME_WIDTH - right_paddle.WIDTH
-            and self.y_pos + self.WIDTH >= right_paddle.y_pos
+            self.x_pos + self.WIDTH >= GAME_WIDTH - right_paddle.WIDTH
+            and self.x_pos <= GAME_WIDTH
+            and self.y_pos + self.HEIGHT >= right_paddle.y_pos
             and self.y_pos <= right_paddle.y_pos + right_paddle.HEIGHT
         ):
             print("hit paddle")
