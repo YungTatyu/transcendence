@@ -2,35 +2,40 @@ import asyncio
 
 
 class TournamentMatchingManager:
-    # ルーム全体の待機ユーザー数を管理
-    _matching_wait_users: set[str] = set()
+    """
+    トーナメントマッチングルームの人数を管理
+    N秒後に強制的にトーナメントを開始させるためのタイマー管理
+    """
+
+    # dict[user_id, channel_name]
+    _matching_wait_users: dict[int, str] = dict()
     # トーナメント強制開始用タイマーオブジェクト
-    _timer = None
+    _task = None
 
-    @staticmethod
-    def get_matching_wait_users():
-        return TournamentMatchingManager._matching_wait_users
+    @classmethod
+    def get_matching_wait_users(cls) -> dict[int, str]:
+        return cls._matching_wait_users
 
-    @staticmethod
-    def append_matching_wait_users(user_id: str) -> int:
-        TournamentMatchingManager._matching_wait_users.add(user_id)
-        return len(TournamentMatchingManager._matching_wait_users)
+    @classmethod
+    def add_matching_wait_users(cls, user_id: int, channel_name: str) -> int:
+        cls._matching_wait_users[user_id] = channel_name
+        return len(cls._matching_wait_users)
 
-    @staticmethod
-    def del_matching_wait_user(user_id: str) -> int:
-        TournamentMatchingManager._matching_wait_users.discard(user_id)
-        return len(TournamentMatchingManager._matching_wait_users)
+    @classmethod
+    def del_matching_wait_user(cls, user_id: int) -> int:
+        cls._matching_wait_users.pop(user_id, None)
+        return len(cls._matching_wait_users)
 
-    @staticmethod
-    def clear_matching_wait_users():
-        TournamentMatchingManager._matching_wait_users.clear()
+    @classmethod
+    def clear_matching_wait_users(cls):
+        cls._matching_wait_users.clear()
 
-    @staticmethod
-    def set_timer(task: asyncio.Task):
-        TournamentMatchingManager._timer = task
+    @classmethod
+    def set_task(cls, task: asyncio.Task):
+        cls._task = task
 
-    @staticmethod
-    def cancel_timer():
-        if TournamentMatchingManager._timer:
-            TournamentMatchingManager._timer.cancel()
-        TournamentMatchingManager._timer = None
+    @classmethod
+    def cancel_task(cls):
+        if cls._task:
+            cls._task.cancel()
+        cls._task = None
