@@ -3,16 +3,18 @@ from enum import Enum, auto
 
 Position = namedtuple("Position", ["x", "y"])
 
-GAME_HEIGHT = 500
-GAME_WIDTH = 800
-GAME_HIGHEST_POS = 0
-GAME_LEFTEST_POS = 0
+
+class Game(Enum):
+    HEIGHT = 500
+    WIDTH = 800
+    HIGHEST_POS = 0
+    LEFTEST_POS = 0
 
 
 class Ball:
     HEIGHT = 20
     WIDTH = 20
-    INITIAL_POS = Position(x=GAME_WIDTH / 2, y=GAME_HEIGHT / 2)
+    INITIAL_POS = Position(x=Game.WIDTH.value / 2, y=Game.HEIGHT.value / 2)
     INITIAL_SPEED = Position(x=4, y=4)
     ACCELERATION = 1.2
     LEFTEST_POS = WIDTH
@@ -30,8 +32,8 @@ class Ball:
             and self.y_pos + self.HEIGHT >= left_paddle.y_pos
             and self.y_pos <= left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            self.x_pos + self.WIDTH >= GAME_WIDTH - right_paddle.WIDTH
-            and self.x_pos <= GAME_WIDTH
+            self.x_pos + self.WIDTH >= Game.WIDTH.value - right_paddle.WIDTH
+            and self.x_pos <= Game.WIDTH.value
             and self.y_pos + self.HEIGHT >= right_paddle.y_pos
             and self.y_pos <= right_paddle.y_pos + right_paddle.HEIGHT
         ):
@@ -39,7 +41,10 @@ class Ball:
             self.x_speed *= -1 * self.ACCELERATION
 
     def hit_wall(self):
-        if self.y_pos <= GAME_HIGHEST_POS or self.y_pos >= GAME_HEIGHT - self.HEIGHT:
+        if (
+            self.y_pos <= Game.HIGHEST_POS.value
+            or self.y_pos >= Game.HEIGHT.value - self.HEIGHT
+        ):
             print("hit wall")
             self.y_speed *= -1
 
@@ -48,17 +53,17 @@ class Ball:
         ゴールしたら、Trueとゴールしたplayerを返す
         """
         self.x_pos = self.adjust_limit(
-            self.x_pos + self.x_speed, GAME_WIDTH - self.WIDTH
+            self.x_pos + self.x_speed, Game.WIDTH.value - self.WIDTH
         )
         self.y_pos = self.adjust_limit(
-            self.y_pos + self.y_speed, GAME_HEIGHT - self.HEIGHT
+            self.y_pos + self.y_speed, Game.HEIGHT.value - self.HEIGHT
         )
         self.hit_paddle(left_player.paddle, right_player.paddle)
         self.hit_wall()
-        if self.x_pos >= GAME_WIDTH - self.WIDTH:
+        if self.x_pos >= Game.WIDTH.value - self.WIDTH:
             self.reset_ball_status()
             return (True, left_player)
-        elif self.x_pos <= GAME_LEFTEST_POS:
+        elif self.x_pos <= Game.LEFTEST_POS.value:
             self.reset_ball_status()
             return (True, right_player)
         return (False, None)
@@ -84,7 +89,7 @@ class Paddle:
     SPEED = 10
     HEIGHT = 100
     WIDTH = 10
-    LOWEST_POSITION = GAME_HEIGHT - HEIGHT
+    LOWEST_POSITION = Game.HEIGHT.value - HEIGHT
 
     def __init__(self, x_pos, y_pos):
         self.x_pos = x_pos
@@ -92,14 +97,14 @@ class Paddle:
 
     def move_up(self):
         # print("move up")
-        if self.y_pos > GAME_HIGHEST_POS:
+        if self.y_pos > Game.HIGHEST_POS.value:
             # 0以下になってほしくない
-            self.y_pos = max(GAME_HIGHEST_POS, self.y_pos - self.SPEED)
+            self.y_pos = max(Game.HIGHEST_POS.value, self.y_pos - self.SPEED)
 
     def move_down(self):
         # print("move down")
         if self.y_pos < self.LOWEST_POSITION:
-            self.y_pos = min(self.LOWEST_POSITION, self.y_pos - self.SPEED)
+            self.y_pos = min(self.LOWEST_POSITION, self.y_pos + self.SPEED)
 
 
 class Player:
@@ -150,10 +155,14 @@ class PingPong:
         ):
             raise RuntimeError("this game is already ready to play.")
         if self.state == self.GameState.WAITING_FOR_FIRST_PLAYER:
-            self.left_player = Player(name, Paddle(GAME_HIGHEST_POS, GAME_HEIGHT / 2))
+            self.left_player = Player(
+                name, Paddle(Game.HIGHEST_POS.value, Game.HEIGHT.value / 2)
+            )
             self.state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
-        self.right_player = Player(name, Paddle(GAME_WIDTH, GAME_HEIGHT / 2))
+        self.right_player = Player(
+            name, Paddle(Game.WIDTH.value, Game.HEIGHT.value / 2)
+        )
         self.state = self.GameState.READY_TO_START
 
     def player_action(self, name, key):
