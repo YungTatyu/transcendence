@@ -59,8 +59,9 @@ class MatchManager:
         match = Match(match_id, players)
         MatchManager.__matches[match_id] = {
             MatchManager.MatchKeys.KEY_MATCH.value: match,
-            MatchManager.MatchKeys.KEY_GAME_CONTROLLER.value: GameContoroller(match_id),
+            MatchManager.MatchKeys.KEY_GAME_CONTROLLER.value: GameContoroller(),
         }
+        return MatchManager.__matches[match_id]
 
     @staticmethod
     def get_match(match_id):
@@ -149,8 +150,10 @@ class GameContoroller:
 
     async def game_loop(self, match_id):
         try:
+            print("start game loop")
             while self.game.state != PingPong.GameState.GAME_OVER:
                 self.game.update()
+                print("group_sending in loop")
                 await GameConsumer.group_send(
                     {
                         "message": GameConsumer.MessageType.MSG_UPDATE.value,
@@ -160,6 +163,7 @@ class GameContoroller:
                     },
                     match_id,
                 )
+                print("sent in loop")
                 await asyncio.sleep(1 / 60)  # 60FPS (約16.67ミリ秒間隔)
         except asyncio.CancelledError:
             print("Game loop was cancelled.")
@@ -189,11 +193,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         match_dict = MatchManager.get_match(self.match_id)
         if match_dict is None:
-            match_dict = MatchManager.create_match(self.match_id)
+            match_dict = MatchManager.create_match(self.match_id, ["aa", "bb"])
 
         # TODO: user認証
 
-        game = match_dict[MatchManager.MatchKeys.KEY_GAME_CONTROLLER.value].game
+        game_contoroller = match_dict[MatchManager.MatchKeys.KEY_GAME_CONTROLLER.value]
+        game = game_contoroller.game
 
         try:
             game.add_player(self.username)
@@ -207,15 +212,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         if game.state == PingPong.GameState.READY_TO_START:
-            match_dict[MatchManager.MatchKeys.KEY_GAME_CONTROLLER.value].start_game(
-                self.match_id
-            )
+            game_contoroller.start_game(self.match_id)
 
     async def disconnect(self, close_code):
         # Leave room group
         print(f"leaving channel {self.channel_name} and group {self.match_id}")
         await self.channel_layer.group_discard(self.match_id, self.channel_name)
-        GameManager.remove_game(self.match_id)
+        MatchManager.remove_match(self.match_id)
 
     async def receive(self, text_data):
         match_dict = MatchManager.get_match(self.match_id)
@@ -229,12 +232,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     @staticmethod
-    async def gourp_send(event, match_id):
+    async def group_send(event, match_id):
+        print("group_send called")
+        print("data", event)
         channel_layer = get_channel_layer()
-        await channel_layer.group_send(
-            match_id,
-            {"type": "game.message" | event},
-        )
+        event["type"] = "game.message"
+        await channel_layer.group_send(match_id, event)
 
     async def game_loop(self):
         print("game loop start")
