@@ -20,8 +20,17 @@ let gameState = {
   rightPlayer: { y: (GAME_HEIGHT - PADDLE_HEIGHT) / 2, score: 0 },
 };
 
+const keys = {
+  // KeyK: false,
+  // KeyJ: false,
+  KeyW: false,
+  KeyS: false
+};
+
 // WebSocket変数
 let ws;
+
+let username;
 
 // WebSocketで取得したデータを描画
 function draw() {
@@ -74,22 +83,26 @@ function setupWebSocket(matchId, username) {
   }
   ws.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log(message)
     if (message.type === "game.message" && message.message === "game update") {
       const state = message.data.state;
       gameState = {
         ball: { x: state.ball.x, y: state.ball.y },
         leftPlayer: {
-          y: state[Object.keys(state)[1]].y, // 左プレイヤー
-          score: state[Object.keys(state)[1]].score,
+          y: state.aa.y, // 左プレイヤー
+          score: state.aa.score,
         },
         rightPlayer: {
-          y: state[Object.keys(state)[2]].y, // 右プレイヤー
-          score: state[Object.keys(state)[2]].score,
+          y: state.bb.y, // 右プレイヤー
+          score: state.bb.score,
+          // score: state[Object.keys(state)[2]].score,
         },
       };
       draw();
     }
+  };
+
+  ws.onclose = (event) => {
+    console.log("The connection has been closed successfully.", event);
   };
 
   ws.onerror = (error) => {
@@ -99,7 +112,7 @@ function setupWebSocket(matchId, username) {
 
 // スタートボタンのクリックイベント
 document.getElementById("startGame").addEventListener("click", () => {
-  const username = document.getElementById("username").value.trim();
+  username = document.getElementById("username").value.trim();
   if (!username) {
     alert("Please enter a username.");
     return;
@@ -110,3 +123,31 @@ document.getElementById("startGame").addEventListener("click", () => {
   draw(); // 初期状態描画
 });
 
+document.addEventListener('keydown', (e) => {
+  console.log("keydown event", e.code)
+  if (keys.hasOwnProperty(e.code)) {
+    keys[e.code] = true;
+    sendKeyInputToServer(e.code); // キーが押された状態を送信
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  console.log("keyup event", e.code)
+  if (keys.hasOwnProperty(e.code)) {
+    keys[e.code] = false;
+  }
+});
+
+function sendKeyInputToServer(key) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    const message = JSON.stringify({
+      type: "game.paddle_move", // メッセージのタイプ
+      key: key,      // 押されたキー (例: "KeyW")
+      username: username,   // ユーザー名（必要なら送信）
+    });
+    console.log("sending", message)
+    ws.send(message);
+  } else {
+    console.warn("WebSocket is not open. Unable to send key input.");
+  }
+}
