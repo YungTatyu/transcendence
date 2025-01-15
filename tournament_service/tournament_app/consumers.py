@@ -2,6 +2,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import asyncio
 from .utils.tournament_matching_manager import TournamentMatchingManager
+from tournament_app.models import Tournament
+from channels.db import database_sync_to_async
 
 
 class TournamentMatchingConsumer(AsyncWebsocketConsumer):
@@ -42,14 +44,23 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
     async def __start_tournament(self, delay=0):
         await asyncio.sleep(delay)
+        tournament_id = await self.__create_tournament()
         await self.channel_layer.group_send(
             self.__matching_room,
-            {"type": "send.tournament.start.message", "message": "START"},
+            {
+                "type": "send.tournament.start.message",
+                "tournament_id": str(tournament_id),
+            },
         )
         for user_id in TournamentMatchingManager.get_matching_wait_users():
             await self.channel_layer.group_discard(self.__matching_room, user_id)
         TournamentMatchingManager.clear_matching_wait_users()
 
     async def send_tournament_start_message(self, event):
-        message = event["message"]
-        await self.send(text_data=json.dumps({"message": message}))
+        tournament_id = event["tournament_id"]
+        await self.send(text_data=json.dumps({"tournament_id": tournament_id}))
+
+    @database_sync_to_async
+    def __create_tournament(self) -> int:
+        tournament = Tournament.objects.create()
+        return tournament.tournament_id
