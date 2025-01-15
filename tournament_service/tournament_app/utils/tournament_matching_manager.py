@@ -1,4 +1,6 @@
 import asyncio
+from typing import Optional
+from .task_timer import TaskTimer
 
 
 class TournamentMatchingManager:
@@ -10,7 +12,7 @@ class TournamentMatchingManager:
     # dict[user_id, channel_name]
     _matching_wait_users: dict[int, str] = dict()
     # トーナメント強制開始用タイマーオブジェクト
-    _task = None
+    _task_timer = None
 
     @classmethod
     def get_matching_wait_users(cls) -> dict[int, str]:
@@ -31,11 +33,17 @@ class TournamentMatchingManager:
         cls._matching_wait_users.clear()
 
     @classmethod
-    def set_task(cls, task: asyncio.Task):
-        cls._task = task
+    def set_task(cls, task: asyncio.Task, time_until_execution: int):
+        cls._task_timer = TaskTimer(task, time_until_execution)
 
     @classmethod
     def cancel_task(cls):
-        if cls._task:
-            cls._task.cancel()
-        cls._task = None
+        if cls._task_timer:
+            cls._task_timer.cancel()
+        cls._task_timer = None
+
+    @classmethod
+    def get_task_execution_time(cls) -> Optional[float]:
+        if cls._task_timer:
+            return cls._task_timer.execution_time
+        return None
