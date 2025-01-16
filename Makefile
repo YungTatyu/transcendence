@@ -14,6 +14,9 @@ up:
 down:
 	${DCCOMPOSE} down --rmi all --volumes --remove-orphans
 
+.PHONY: re
+re: down up
+
 .PHONY: build-linter
 build-linter:
 	docker build -t ${LINTER_IMG_NAME} -f ${TOOL_DIR}/Dockerfile .
