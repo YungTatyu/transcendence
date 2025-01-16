@@ -10,4 +10,4 @@ RUN apk upgrade --no-cache \
     && pip install -r requirements.txt
 
 # CMD ["sh"]
-CMD ["python", "manage.py", "runserver"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
