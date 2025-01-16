@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+  game:
+    build: ./game_service
+    ports:
+      - "8001:8001"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  auth_db_data:

@@ -1,7 +1,18 @@
-
+DCCOMPOSE := docker compose
 TOOL_DIR := tools
 LINTER_IMG_NAME := linter-formatter
 DOCKER_MNT_DIR := /app
+
+.PHONY: all
+all: up
+
+.PHONY: up
+up:
+	${DCCOMPOSE} up -d --build
+
+.PHONY: down
+down:
+	${DCCOMPOSE} down --rmi all --volumes --remove-orphans
 
 .PHONY: build-linter
 build-linter:
