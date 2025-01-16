@@ -1,10 +1,20 @@
+from enum import Enum
 from rest_framework import serializers
 
 
 class GameSerializer(serializers.Serializer):
-    match_id = serializers.IntegerField(min_value=0, required=True)
+    class Keys(Enum):
+        KEY_MATCH_ID = "matchId"
+        KEY_USERS = "userIdList"
+
+    match_id = serializers.IntegerField(
+        min_value=0, required=True, source=Keys.KEY_MATCH_ID.value
+    )
     users = serializers.ListField(
-        child=serializers.IntegerField(min_value=0), min_length=1, required=True
+        child=serializers.IntegerField(min_value=0),
+        min_length=1,
+        required=True,
+        source=Keys.KEY_USERS.value,
     )
 
     def validate_match_id(self, value):
