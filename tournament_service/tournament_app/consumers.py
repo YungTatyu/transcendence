@@ -66,7 +66,6 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
     async def __start_tournament(self, delay=0):
         await asyncio.sleep(delay)
-        TournamentMatchingManager.cancel_task()
         tournament_id = await self.__create_tournament()
         await self.channel_layer.group_send(
             self.__matching_room,
@@ -79,6 +78,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         for channel_name in matching_wait_users.values():
             await self.channel_layer.group_discard(self.__matching_room, channel_name)
         TournamentMatchingManager.clear_matching_wait_users()
+        TournamentMatchingManager.cancel_task()
 
     async def send_tournament_start_message(self, event):
         tournament_id = event["tournament_id"]
