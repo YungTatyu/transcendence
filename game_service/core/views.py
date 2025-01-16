@@ -3,6 +3,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.match_manager import MatchManager
+from core.serializers import GameSerializer
+
 
 class GameView(APIView):
     def post(self, request):
@@ -11,7 +14,20 @@ class GameView(APIView):
         matchesサーバからのみ叩かれる
         matchesサーバはゲームを開始する前に必ずこのapiを叩く
         """
-        pass
+        serializer = GameSerializer(request)
+        if not serializer.is_valid():
+            return Response(
+                data={"error": "Invalid data."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        data = serializer.validated_data
+        MatchManager.create_match(
+            data.get(GameSerializer.Keys.KEY_MATCH_ID.value),
+            data.get(GameSerializer.Keys.KEY_USERS.value),
+        )
+        return Response(
+            data={"message": "Match registerd."}, status=status.HTTP_201_CREATED
+        )
 
 
 @api_view(["GET"])
