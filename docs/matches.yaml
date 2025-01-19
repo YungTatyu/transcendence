@@ -1,0 +1,417 @@
+openapi: 3.0.3
+info:
+  title: Matches API
+  description: 試合管理機能を実現するAPI
+  version: 1.0.0
+
+servers:
+  - url: https://matches.42.fr
+  - url: wss://matches.42.fr
+
+paths:
+  /matches:
+    get:
+      summary: 試合を検索
+      description: |
+        QueryStringを用いて試合を検索する。
+        複数条件による検索を許容する。
+        userIdに基づいた試合履歴の検索は別のエンドポイントで行う。
+      operationId: SearchMatches
+      tags:
+        - Matches
+      parameters:
+        - name: matchId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: winnerUserId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: mode
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["QuickPlay", "Tournament"]
+        - name: tournamentId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: round
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        '200':
+          description: 試合が見つかった
+          content:
+            application/json:
+              example:
+                "total": 100 # サーバー内のリソースの総数
+                "offset": 0
+                "limit": 2
+                "results": [
+                  {
+                    "matchId": 2,
+                   "winnerUserId": 1,
+                    "mode": "Tournament",
+                    "tournamentId": 1,
+                    "parentMatchId": 3,
+                    "round": 10,
+                    "participants": [
+                      {"userId": 1, "userName": "ABC"},
+                      {"userId": 2, "userName": "DEF"}
+                    ]
+                  },
+                  {
+                    "matchId": 3,
+                    "winnerUserId": NULL,
+                    "mode": "Tournament",
+                    "tournamentId": 1,
+                    "parentMatchId": NULL,
+                    "round": 11,
+                    "participants": [
+                      {"userId": 2, "userName": "DEF"},
+                      {"userId": 3, "userName": "GHI"}
+                    ]
+                  }
+                ]
+        '400':
+          description: QueryStringがおかしい
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: 該当する試合が存在しない
+          content:
+            application/json:
+              example:
+                "error": "Match Not Found"
+
+  /matches/tournament-match:
+    post:
+      summary: トーナメントに紐づいた試合を作成
+      description: |
+        トーナメント内の試合レコードを作成する。
+        トーナメント管理から叩かれる。
+      operationId: createTournamentMatch
+      tags:
+        - Matches
+      requestBody:
+        description: トーナメント試合作成の基となる情報
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userIdList:
+                  type: array
+                  items:
+                    type: integer
+                tournamentId:
+                  type: integer
+                parentMatchId:
+                  type: integer
+                  nullable: true
+                  description: 決勝戦はparentMatchIdが存在しないため、NULLを許容する
+                round:
+                  type: integer
+              required:
+                - userIdList
+                - tournamentId
+                - round
+            example:
+              "userIdList": [1, 42]
+              "tournamentId": 1
+              "parentMatchId": 100
+              "round": 1
+      responses:
+        '200':
+          description: トーナメント試合が作成された
+          content:
+            application/json:
+              example:
+                "matchId": 101
+        '400':
+          description: 試合作成の基となる情報に不備がある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: トーナメント管理API以外から叩かれた
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+
+  /matches/ws/enter-room:
+    get:
+      summary: QuickPlayマッチングルームに入る
+      description: |
+        QuickPlayのマッチング待機部屋に入る。
+        人数が集まったらGame開始する。
+        このWebSocketはGameが開始されたらコネクションを切る。
+      operationId: enterMatchRoom
+      tags:
+        - Matches
+      responses:
+        '101':
+          description: WebSocketへのプロトコルアップデート成功
+        '400':
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+  /matches/ws/enter-room/{matchId}:
+    get:
+      summary: トーナメント試合のルームに入る
+      description: |
+        トーナメントの試合待機部屋に入る。
+        試合のレコード自体はトーナメント開始時に作成済み。
+        参加者が集まったらGame開始する。
+        このWebSocketはGameが開始されたらコネクションを切る。
+      operationId: enterTournamentMatchRoom
+      tags:
+        - Matches
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '101':
+          description: WebSocketへのプロトコルアップデート成功
+        '400':
+          description: リクエストの情報に誤りがある
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: |
+            存在しないルームに入ろうとした
+            or
+            許可されていないルームに入ろうとした
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+
+  /matches/finish:
+    post:
+      summary: Game終了時に通知を受け取る
+      description: |
+        Gameが終了した時にGame管理APIから叩かれる。
+        試合結果をDBに保存する。
+        試合結果をトーナメント管理に通知する。
+      operationId: finishMatch
+      tags:
+        - Matches
+      requestBody:
+        description: 試合結果情報
+        required: true
+        content:
+          application/json:
+            example:
+              "matchId": 1
+              results: [
+                {"userId": 1, "score": 8},
+                {"userId": 2, "score": 11}
+              ]
+      responses:
+        '200':
+          description: 正常にGameが終了
+          content:
+            application/json:
+              example:
+                "finishDate": "2024-12-14"
+        '400':
+          description: リクエストボディと試合テーブルのレコードの整合性が取れない
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Game管理API以外から叩かれた
+          content:
+            application/json:
+              example:
+                "error": "Not Found"
+
+  /matches/statistics/{userId}:
+    get:
+      summary: 試合統計情報を取得
+      description: 試合に関する統計情報を返す。
+      operationId: matchStatistics
+      tags:
+        - Matches
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 試合勝利回数・試合敗北回数・トーナメント優勝回数
+          content:
+            application/json:
+              example:
+                "matchWinCount": 20
+                "matchLoseCount": 8
+                "tournamentWinnerCount": 2
+        '400':
+          description: userIdがおかしい
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+  /matches/histories/{userId}:
+    get:
+      summary: 試合履歴リストを取得
+      description: 試合履歴をリスト形式で取得する。
+      operationId: matchHistoryList
+      tags:
+        - Matches
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        '200':
+          description: 試合モード・対戦相手・勝敗・スコア・試合日時
+          content:
+            application/json:
+              example:
+                "total": 42 # サーバー内のリソースの総数
+                "offset": 0
+                "limit": 2
+                "results": [
+                  {
+                    "mode": "QuickPlay",
+                    "result": "win",
+                    "date": "2024-12-09",
+                    "userScore": 11,
+                    "opponents": [
+                      {"name": "User2", "score": 5}
+                    ],
+                  },
+                  {
+                    "mode": "Tournament",
+                    "result": "lose",
+                    "date": "2024-12-01",
+                    "userScore": 10,
+                    "opponents": [
+                      {"name": "User3", "score": 12}
+                    ],
+                  }
+                ]
+        '400':
+          description: userIdがおかしい
+          content:
+            application/json:
+              example:
+                "error": "Bad Request"
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+  /health:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
