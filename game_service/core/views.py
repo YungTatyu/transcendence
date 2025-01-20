@@ -17,7 +17,7 @@ class GameView(APIView):
         serializer = GameSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
-                data={"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+                data={"error": "Invalid data."}, status=status.HTTP_400_BAD_REQUEST
             )
 
         data = serializer.validated_data
