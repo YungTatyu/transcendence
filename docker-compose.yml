@@ -3,6 +3,7 @@ services:
 
   game:
     build: ./game_service
+    container_name: game
     tty: true
     ports:
       - "8001:8001"
