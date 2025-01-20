@@ -77,3 +77,15 @@ class GameViewsTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         self.assertEqual(match_before, match_after)
+
+    def test_create_match_with_negative_matchid(self):
+        data = {GameSerializer.KEY_MATCH_ID: -2, GameSerializer.KEY_USERS: [1, 2]}
+        response = self.client.post(self.url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_match_with_negative_userid(self):
+        data = {GameSerializer.KEY_MATCH_ID: 2, GameSerializer.KEY_USERS: [1, -2]}
+        response = self.client.post(self.url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
