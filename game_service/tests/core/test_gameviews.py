@@ -9,7 +9,6 @@ class GameViewsTestCase(APITestCase):
     def setUp(self):
         # 各テストメソッドが実行される前に呼び出される初期化メソッド
         self.url = reverse("games")
-
         MatchManager.delete_all_matches()
 
     def create_match(self, data):
