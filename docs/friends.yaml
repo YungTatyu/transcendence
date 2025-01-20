@@ -1,0 +1,296 @@
+openapi: 3.0.3
+
+info: 
+  title: Friends API
+  description: |
+    FriendsサービスのAPIを提供。このAPIは、フレンド管理に関連する操作をサポート。
+  version: 1.0.0
+
+servers:
+  - url: https://friends.transcendence.com
+
+paths:
+  /friends:
+    get:
+      summary: "ユーザーの友達リストを取得"
+      description: "認証されたユーザーの友達リストを取得"
+      tags:
+        - Friends
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/FriendStatus'
+          required: false
+          description: "取得したい友達リクエストのステータス。省略した場合、すべてのステータスを返す"
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          required: false
+          description: "取得を開始する位置。デフォルトは0"
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+          required: false
+          description: "取得する友達リストの最大数。デフォルトは20"
+      responses:
+        "200":
+          description: "ユーザーの友達リスト"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  friends:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: integer
+                        username:
+                          type: string
+                        status:
+                          $ref: '#/components/schemas/FriendStatus'
+                        request_sent_at:
+                          type: string
+                          format: date-time
+                          description: "友達リクエストが送信された日時"
+                        approved_at:
+                          type: string
+                          format: date-time
+                          description: "友達リクエストが承認された日時"
+                  total:
+                    type: integer
+                    description: "友達の総数（フィルター後の結果）"
+                    example: 1
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "No friends found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No friends found."
+  /friends/requests/{userId}:
+    post:
+      summary: "フレンドリクエストを送信"
+      description: "指定したユーザーIDにフレンドリクエストを送信"
+      tags:
+        - Friends
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: "リクエストを送信する相手のユーザーID"
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: "フレンドリクエストが正常に送信"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Friend request sent successfully."
+        "400":
+          description: "Invalid request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You cannot send a request to yourself."
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "User not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found."
+        "409":
+          description: "already sent request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request already sent."
+    patch:
+      summary: "フレンドリクエストを承認"
+      description: "指定したユーザーIDからのフレンドリクエストを承認"
+      tags:
+        - Friends
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: "承認するフレンドリクエストを送信したユーザーのID"
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Friend request approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 123
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "Friend request not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request not found."
+        "409":
+          description: "Friend request already approved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend request already approved."
+    delete:
+      summary: "フレンドリクエストを削除または拒否"
+      description: "指定したユーザーIDからのフレンドリクエストを削除"
+      tags:
+        - Friends
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: "削除または拒否するフレンドリクエストを送信したユーザーのID"
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "フレンドリクエストが正常に削除"
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "No friend request found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No friend request exists from the specified user."
+  /friends/{friendId}:
+    delete:
+      summary: "フレンドの削除"
+      description: "ユーザーのフレンドリストからフレンドを削除"
+      tags:
+        - Friends
+      parameters:
+        - name: friendId
+          in: path
+          required: true
+          description: "削除するフレンドのID"
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "フレンドを正常に削除"
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: "Friend not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Friend not found."
+
+  /health:
+    get:
+      summary: ヘルスチェック用エンドポイント
+      description: dockerコンテナ立ち上げ時のヘルスチェックなど
+      operationId: healthCheck
+      tags:
+        - Friends
+      responses:
+        '200':
+          description: サーバーが正常に稼働中
+          content:
+            application/json:
+              example:
+                "status": "healthy"
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                "status": "unhealthy"
+      security: []
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "認証エラーの詳細"
+          example: "JWT is invalid or expired."
+
+    FriendStatus:
+      type: string
+      enum: [pending, approved]
+      description: "友達のステータス"
+
+  responses:
+    UnauthorizedResponse:
+      description: "Unauthorized - Missing or invalid JWT."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
