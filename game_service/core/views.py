@@ -21,10 +21,15 @@ class GameView(APIView):
             )
 
         data = serializer.validated_data
-        MatchManager.create_match(
-            data.get(GameSerializer.KEY_MATCH_ID),
-            data.get(GameSerializer.KEY_USERS),
-        )
+        try:
+            MatchManager.create_match(
+                data.get(GameSerializer.KEY_MATCH_ID),
+                data.get(GameSerializer.KEY_USERS),
+            )
+        except ValueError as e:
+            return Response(
+                data={"error": str(e)}, status=status.HTTP_409_CONFLICT
+            )
         return Response(
             data={"message": "Match registerd."}, status=status.HTTP_201_CREATED
         )
