@@ -12,6 +12,9 @@ class GameViewsTestCase(APITestCase):
 
         MatchManager.delete_all_matches()
 
+    def create_match(self, data):
+        return self.client.post(self.url, data, format="json")
+
     def test_create_match_with_two_players(self):
         data = {GameSerializer.KEY_MATCH_ID: 1, GameSerializer.KEY_USERS: [1, 2]}
         response = self.client.post(self.url, data, format="json")
@@ -59,3 +62,18 @@ class GameViewsTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsNone(MatchManager.get_match(1))
+
+    def test_create_match_with_duplicated_match(self):
+        self.create_match(
+            {GameSerializer.KEY_MATCH_ID: 5, GameSerializer.KEY_USERS: [1, 2]}
+        )
+        match_before = MatchManager.get_match(5)
+
+        # 同じmatchを登録
+        response = self.create_match(
+            {GameSerializer.KEY_MATCH_ID: 5, GameSerializer.KEY_USERS: [3, 4]}
+        )
+        match_after = MatchManager.get_match(5)
+
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(match_before, match_after)
