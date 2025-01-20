@@ -3,18 +3,18 @@ from rest_framework import serializers
 
 
 class GameSerializer(serializers.Serializer):
-    class Keys(Enum):
-        KEY_MATCH_ID = "matchId"
-        KEY_USERS = "userIdList"
-
-    match_id = serializers.IntegerField(
-        min_value=0, required=True, source=Keys.KEY_MATCH_ID.value
+    KEY_MATCH_ID = "matchId"
+    KEY_USERS = "userIdList"
+    """
+    以下の変数名は、requestのkeyの命名と完全に一致している必要がある
+    """
+    matchId = serializers.IntegerField(
+        min_value=0, required=True
     )
-    users = serializers.ListField(
+    userIdList = serializers.ListField(
         child=serializers.IntegerField(min_value=0),
         min_length=1,
         required=True,
-        source=Keys.KEY_USERS.value,
     )
 
     def validate_match_id(self, value):

@@ -13,9 +13,8 @@ class MatchManager:
     すべてのmatchを管理する
     """
 
-    class Keys(Enum):
-        KEY_MATCH = "match"
-        KEY_GAME_CONTROLLER = "game_contoroller"
+    KEY_MATCH = "match"
+    KEY_GAME_CONTROLLER = "game_contoroller"
 
     __matches = {}
 
@@ -28,8 +27,8 @@ class MatchManager:
             raise ValueError(f"Match {match_id} already exists.")
         match = Match(match_id, players)
         MatchManager.__matches[match_id] = {
-            MatchManager.Keys.KEY_MATCH.value: match,
-            MatchManager.Keys.KEY_GAME_CONTROLLER.value: GameContoroller(match_id),
+            MatchManager.KEY_MATCH: match,
+            MatchManager.KEY_GAME_CONTROLLER: GameContoroller(),
         }
         return MatchManager.__matches[match_id]
 

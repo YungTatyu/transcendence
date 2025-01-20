@@ -14,16 +14,16 @@ class GameView(APIView):
         matchesサーバからのみ叩かれる
         matchesサーバはゲームを開始する前に必ずこのapiを叩く
         """
-        serializer = GameSerializer(request)
+        serializer = GameSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
-                data={"error": "Invalid data."}, status=status.HTTP_400_BAD_REQUEST
+                data={"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
 
         data = serializer.validated_data
         MatchManager.create_match(
-            data.get(GameSerializer.Keys.KEY_MATCH_ID.value),
-            data.get(GameSerializer.Keys.KEY_USERS.value),
+            data.get(GameSerializer.KEY_MATCH_ID),
+            data.get(GameSerializer.KEY_USERS),
         )
         return Response(
             data={"message": "Match registerd."}, status=status.HTTP_201_CREATED
