@@ -3,6 +3,7 @@ services:
 
   game:
     build: ./game_service
+    tty: true
     ports:
       - "8001:8001"
     networks:
