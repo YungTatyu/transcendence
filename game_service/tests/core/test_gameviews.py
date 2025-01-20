@@ -1,8 +1,8 @@
+from core.match_manager import MatchManager
+from core.serializers import GameSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from core.match_manager import MatchManager
-from core.serializers import GameSerializer
 
 
 class GameViewsTestCase(APITestCase):
@@ -49,14 +49,14 @@ class GameViewsTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_match_with_no_matchid(self):
+    def test_create_match_with_invalid_matchid_key(self):
         data = {"match_id": 1, GameSerializer.KEY_USERS: [1, 2]}
         response = self.client.post(self.url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsNone(MatchManager.get_match(1))
 
-    def test_create_match_with_no_userid_list(self):
+    def test_create_match_with_invalid_userid_list_key(self):
         data = {GameSerializer.KEY_MATCH_ID: 1, "users": [1, 2]}
         response = self.client.post(self.url, data, format="json")
 

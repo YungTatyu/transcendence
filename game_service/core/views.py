@@ -1,5 +1,5 @@
-from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -27,9 +27,7 @@ class GameView(APIView):
                 data.get(GameSerializer.KEY_USERS),
             )
         except ValueError as e:
-            return Response(
-                data={"error": str(e)}, status=status.HTTP_409_CONFLICT
-            )
+            return Response(data={"error": str(e)}, status=status.HTTP_409_CONFLICT)
         return Response(
             data={"message": "Match registerd."}, status=status.HTTP_201_CREATED
         )
