@@ -44,7 +44,7 @@ jobs:
             fi
           done
 
-          if [[ "$all_services_ready" == "$TRUE" ]]
+          if [[ "$all_services_ready" == "$TRUE" ]]; then
             exit 0
           fi
 
