@@ -38,8 +38,6 @@ services:
     container_name: tournament_redis
     ports:
       - "6378:6378"
-    volumes:
-      - ./redis/tournament-data:/data
     networks:
       - tournament_network
 
