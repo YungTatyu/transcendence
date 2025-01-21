@@ -14,10 +14,14 @@ class GameSerializer(serializers.Serializer):
         required=True,
     )
 
-    def validate_match_id(self, value):
+    def validate_matchId(self, value):
         # TODO: match_idがmatchサービスに存在するか確認必要？
         return value
 
-    def validate_users(self, users):
+    def validate_userIdList(self, users):
         # TODO: userが存在するか確認必要？
+
+        # userの重複チェック
+        if len(users) != len(set(users)):
+            raise serializers.ValidationError("Duplicated user in a list.")
         return users

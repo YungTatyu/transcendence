@@ -93,3 +93,10 @@ class GameViewsTestCase(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_match_with_duplicated_user_in_list(self):
+        response = self.create_match(
+            {GameSerializer.KEY_MATCH_ID: 2, GameSerializer.KEY_USERS: [1, 2, 1]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
