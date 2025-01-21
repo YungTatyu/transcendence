@@ -5,29 +5,19 @@ services:
     container_name: tournament
     ports:
       - "8002:8002"
+    env_file: ./dev_envs/tournament.env
     networks:
       - tournament_network
     depends_on:
       - tournament_db
       - tournament_redis
-    environment:
-      - DJANGO_DB_NAME=tournament_db
-      - DJANGO_DB_USER=tournament_user
-      - DJANGO_DB_PASSWORD=tournament_password
-      - DJANGO_DB_HOST=tournament_db
-      - DJANGO_DB_PORT=5432
-      - REDIS_HOST=tournament_redis
-      - REDIS_PORT=6378
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://tournament:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
 
   tournament_db:
     image: postgres:15
     container_name: tournament_db
-    environment:
-      POSTGRES_USER: tournament_user
-      POSTGRES_PASSWORD: tournament_password
-      POSTGRES_DB: tournament_db
+    env_file: ./dev_envs/tournament_db.env
     networks:
       - tournament_network
     volumes:
@@ -36,8 +26,6 @@ services:
   tournament_redis:
     image: redis:alpine
     container_name: tournament_redis
-    ports:
-      - "6378:6378"
     networks:
       - tournament_network
 
