@@ -1,3 +1,4 @@
+from typing import Dict
 from core.game_controller import GameContoroller
 
 
@@ -15,12 +16,12 @@ class MatchManager:
     KEY_MATCH = "match"
     KEY_GAME_CONTROLLER = "game_contoroller"
 
-    __matches = {}
+    __matches: dict[int, dict[str, Match | GameContoroller]] = {}
 
     @classmethod
     def create_match(cls, match_id, players):
         """
-        新しいMatchを作成
+        新しいmatch_dictを作成
         """
         if match_id in MatchManager.__matches:
             raise ValueError(f"Match {match_id} already exists.")
@@ -34,14 +35,21 @@ class MatchManager:
     @classmethod
     def get_match(cls, match_id):
         """
-        指定されたMatchを取得
+        指定されたmatch_dictを取得
+
+        Returns:
+            dict[str, Match | GameContoroller] | None:
+                指定されたmatch_idに対応する辞書を返す
+                - "match": Match 型のオブジェクト
+                - "game_controller": GameContoroller 型のオブジェクト
+                match_id が見つからない場合は None を返す
         """
         return MatchManager.__matches.get(match_id)
 
     @classmethod
     def remove_match(cls, match_id):
         """
-        指定されたMatchを削除
+        指定されたmatch_dictを削除
         """
         if match_id in MatchManager.__matches:
             del MatchManager.__matches[match_id]
