@@ -1,10 +1,14 @@
 FROM python:3.9-slim
+
 WORKDIR /app
-COPY requirements.txt .
 RUN apt-get update && apt-get install -y libpq-dev gcc curl
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-COPY . .
+
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+	pip install -r requirements.txt
+
+COPY . /app
 RUN python3 manage.py makemigrations && \
 	python3 manage.py migrate
-CMD ["sh", "-c", "python3 manage.py runserver 0.0.0.0:8001"]
+
+CMD ["sh", "-c", "python3 manage.py runserver 0.0.0.0:8002"]
