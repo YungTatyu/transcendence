@@ -31,8 +31,8 @@ urlpatterns = [
         serve,
         {"document_root": settings.STATICFILES_DIRS[0], "path": "index.html"},
     ),
-    path("health", include("tournament_app.urls")),
     path("admin/", admin.site.urls),
+    path("", include("tournament_app.urls")),
 ]
 
 if settings.DEBUG:
