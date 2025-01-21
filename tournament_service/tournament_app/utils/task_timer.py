@@ -13,6 +13,7 @@ class TaskTimer:
         :param time_until_execution: タスクが実行されるまでの時間（秒）
         """
         self.__task = task
+        # タスクが実行されるUNIX時刻
         self.__execution_time = time.time() + time_until_execution
 
     @property
@@ -20,4 +21,5 @@ class TaskTimer:
         return self.__execution_time
 
     def cancel(self):
+        """タスクが既に終了している場合にcancelしても何も起きない"""
         self.__task.cancel()

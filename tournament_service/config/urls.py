@@ -26,6 +26,7 @@ from django.urls import re_path
 from django.views.static import serve
 
 urlpatterns = [
+    # TODO 手動確認用の設定なので最終的に削除する
     re_path(
         r"^$",
         serve,
@@ -35,6 +36,7 @@ urlpatterns = [
     path("", include("tournament_app.urls")),
 ]
 
+# TODO 手動確認用の設定なので最終的に削除する
 if settings.DEBUG:
     urlpatterns += static(
         settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]

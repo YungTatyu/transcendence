@@ -1,7 +1,7 @@
-from typing import Optional
-from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import asyncio
+from typing import Optional
+from channels.generic.websocket import AsyncWebsocketConsumer
 from .utils.tournament_matching_manager import TournamentMatchingManager
 from tournament_app.models import Tournaments
 from channels.db import database_sync_to_async
@@ -9,12 +9,22 @@ from .utils.tournament_session import TournamentSession
 
 
 class TournamentMatchingConsumer(AsyncWebsocketConsumer):
+    """
+    トーナメントマッチング用WebSocketを管理する
+    マッチングは条件1, 2のいずれかを満たすと完了する
+        1. マッチング待機ユーザーが1 -> 2人になったタイミングで
+           FORCED_START_TIME秒でセットされる
+           トーナメント強制開始タイマーが0秒となった
+           (トーナメント開始 OR 2 -> 1人になるタイミングで強制開始タイマーは削除)
+        2. マッチング待機ユーザー数がROOM_CAPACITYに達した
+    """
+
     # マッチングルームは全てのユーザーが同じルームを使用するので定数を使用
     MATCHING_ROOM = "matching_room"
     FORCED_START_TIME = 10
     ROOM_CAPACITY = 4
 
-    # TODO self.scope["client"][1] -> userId
+    # TODO self.scope["client"][1] -> userId(現状はuserIdではなく、ポート番号の値を使用)
     async def connect(self):
         # 既にマッチング待機中なら接続を拒否する
         matching_wait_users = TournamentMatchingManager.get_matching_wait_users()
@@ -56,6 +66,10 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             await self.__inform_tournament_start_time(None)
 
     async def __inform_tournament_start_time(self, start_time: Optional[float]):
+        """
+        マッチング待機中のユーザーにトーナメント強制開始時刻をSend
+        1人しか待機していない場合、強制開始タイマーはセットされていないことをNoneで伝える
+        """
         await self.channel_layer.group_send(
             self.MATCHING_ROOM,
             {
@@ -64,7 +78,16 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def __start_tournament(self, delay=0):
+    async def __start_tournament(self, delay: int = 0):
+        """
+        1. リソースを作成
+        2. tournament_id Send
+        3. ユーザーをchannelから削除
+        4. タイマーを削除(タスクがない場合は何もしない)
+
+        Args:
+            delay (int): トーナメント開始までの遅延時間（秒単位）。
+        """
         await asyncio.sleep(delay)
         tournament_id = await self.__create_tournament()
         await self.channel_layer.group_send(
