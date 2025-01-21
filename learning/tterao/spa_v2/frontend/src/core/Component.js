@@ -1,7 +1,7 @@
 export default class Component extends HTMLElement {
   #props = {}
   #state = {}
-  #events = {}
+  #events = []
 
   constructor(props = {}) {
     super()
@@ -15,18 +15,14 @@ export default class Component extends HTMLElement {
   setState(state) { this.#state = state }
 
   addEvent(event, handler) {
-    document.addEventListener(event, handler)
-    if (!this.#events[event]) {
-      // 一つのイベントに複数のハンドラを登録できるように配列にする
-      this.#events[event] = [];
-    }
-    this.#events[event].push(handler);
+    this.addEventListener(event, handler)
+    this.#events.push({ event, handler });
   }
 
   /**
    * @brief render()の中でeventListnerを追加する際に使用する
    *
-   * @param events {Object<string, Array<Function>>} イベント名をキーとして、対応するイベントハンドラの配列を保持するオブジェクト
+   * @param events Array<string, Function> イベント名をキーとして、対応するイベントハンドラの配列
    * @example
    * const events = {
    *   "onclick": [handler1, handler2],
@@ -35,36 +31,24 @@ export default class Component extends HTMLElement {
    *
    */
   addEvents(events) {
-    for (const event in events) {
-      for (const handler of events[event]) {
-        this.addEvent(event, handler)
-      }
-    }
-  }
-
-  removeEvent(event, handler) {
-    if (!this.#events[event]) {
-      return
-    }
-    this.#events[event] = this.#events[event].filter(target => target !== handler);
-    document.removeEventListener(event, handler);
+    events.forEach(({ event, handler }) => {
+      this.addEvent(event, handler)
+    });
   }
 
   /**
    * 主にrender()の中で要素を追加する際に使用する
    *
-  * @param Component | HTMLElement
-  */
+   * @param Component | HTMLElement
+   */
   addChildComponent(component) {
     this.appendChild(component)
   }
 
   removeAllEvents() {
-    for (const event in this.#events) {
-      for (const handler of this.#events[event]) {
-        document.removeEventListener(event, handler);
-      }
-      delete this.#events[event];
-    }
+    this.#events.forEach(({ event, handler }) => {
+      this.removeEventListener(event, handler);
+    });
+    this.#events = [];
   }
 }
