@@ -8,18 +8,6 @@ export default class Component extends HTMLElement {
     this.#props = props
   }
 
-  /**
-   * HTMLElementを描画して、event listenerを登録
-   */
-  update(events) {
-    this.render()
-    for (const event in events) {
-      for (const handler of events[event]) {
-        this.addEvent(event, handler)
-      }
-    }
-  }
-
   render() { }
 
   getState() { return this.#state }
@@ -35,6 +23,25 @@ export default class Component extends HTMLElement {
     this.#events[event].push(handler);
   }
 
+  /**
+   * @brief render()の中でeventListnerを追加する際に使用する
+   *
+   * @param events {Object<string, Array<Function>>} イベント名をキーとして、対応するイベントハンドラの配列を保持するオブジェクト
+   * @example
+   * const events = {
+   *   "onclick": [handler1, handler2],
+   *   "hover": [handler3]
+   * };
+   *
+   */
+  addEvents(events) {
+    for (const event in events) {
+      for (const handler of events[event]) {
+        this.addEvent(event, handler)
+      }
+    }
+  }
+
   removeEvent(event, handler) {
     if (!this.#events[event]) {
       return
@@ -44,6 +51,8 @@ export default class Component extends HTMLElement {
   }
 
   /**
+   * 主にrender()の中で要素を追加する際に使用する
+   *
   * @param Component | HTMLElement
   */
   addChildComponent(component) {
