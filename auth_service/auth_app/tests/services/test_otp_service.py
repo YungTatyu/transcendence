@@ -1,8 +1,11 @@
-from unittest.mock import patch
-from django.test import TestCase
-from auth_app.services.otp_service import OTPService
-import pyotp
 import json
+from unittest.mock import patch
+
+import pyotp
+from django.test import TestCase
+
+from auth_app.services.otp_service import OTPService
+
 
 class OTPServiceTestCase(TestCase):
     @patch("auth_app.utils.redis_handler.RedisHandler.set")
@@ -24,11 +27,13 @@ class OTPServiceTestCase(TestCase):
         otp = pyotp.TOTP(secret)
 
         # 仮登録情報をRedisに模倣したデータとして設定
-        redis_data = json.dumps({
-            "username": username,
-            "email": "testuser@example.com",
-            "otp_secret": secret
-        })
+        redis_data = json.dumps(
+            {
+                "username": username,
+                "email": "testuser@example.com",
+                "otp_secret": secret,
+            }
+        )
 
         # Redisから秘密鍵を含む仮登録データを取得するモックを設定
         mock_redis_get.return_value = redis_data
@@ -39,4 +44,6 @@ class OTPServiceTestCase(TestCase):
 
         # 無効なOTPトークンを検証
         invalid_token = "000000"
-        self.assertFalse(OTPService.verify_otp(username=username, otp_token=invalid_token))
+        self.assertFalse(
+            OTPService.verify_otp(username=username, otp_token=invalid_token)
+        )

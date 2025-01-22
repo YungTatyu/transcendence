@@ -1,21 +1,18 @@
-import jwt
-import datetime
 import json
-from django.conf import settings
-from django.http import JsonResponse
-from rest_framework.permissions import IsAuthenticated
+import logging
+
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SignupSerializer 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
-import logging
+from .serializers import SignupSerializer
+
 logger = logging.getLogger(__name__)
+
 
 class SignupView(APIView):
     def post(self, request, *args, **kwargs):
@@ -24,43 +21,46 @@ class SignupView(APIView):
         if not serializer.is_valid():
             logger.warn("invalid request body")
             return Response(
-                {"error": serializer.errors}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
 
         # 仮登録データ取得
         user_data = serializer.save()
         username = user_data["username"]
 
-        qr_code_base64 = OTPService.generate_qr_code(email=user_data["email"], secret=user_data["otp_secret"])
+        qr_code_base64 = OTPService.generate_qr_code(
+            email=user_data["email"], secret=user_data["otp_secret"]
+        )
 
         # Cookieにユーザー名を設定しレスポンスを返す
-        response = Response(
-            {"qr_code": qr_code_base64}, 
-            status=status.HTTP_200_OK
-        )
+        response = Response({"qr_code": qr_code_base64}, status=status.HTTP_200_OK)
         response.set_cookie(
             key="username",
             value=username,
             httponly=True,
             secure=True,
             path="/",
-            max_age=300
+            max_age=300,
         )
         return response
+
 
 class OTPVerificationView(APIView):
     """
     サインアップ時のOTP検証
     """
+
     def post(self, request, *args, **kwargs):
         username = request.data.get("username")
         otp_token = request.data.get("otp")
 
         if not username or not otp_token:
             logger.warn("invalid request body")
-            return Response({"error": "username and otp are required."}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error": "username and otp are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if not OTPService.verify_otp(username, otp_token):
             logger.warn("Invalid OTP or username.")
             return Response(

@@ -1,5 +1,6 @@
 from django.core.cache import cache
 
+
 class RedisHandler:
     """Redisの操作を行うためのクラス"""
 

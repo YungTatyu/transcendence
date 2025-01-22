@@ -14,10 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.urls import path
-from .views import SignupView, OTPVerificationView
+
+from .views import OTPVerificationView, SignupView
 
 urlpatterns = [
-    path('auth/otp/signup', SignupView.as_view(), name='otp-signup'),
-    path('auth/otp/signup/verify', OTPVerificationView.as_view(), name='otp-verify'),
+    path("auth/otp/signup", SignupView.as_view(), name="otp-signup"),
+    path("auth/otp/signup/verify", OTPVerificationView.as_view(), name="otp-verify"),
 ]

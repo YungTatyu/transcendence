@@ -1,9 +1,12 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from auth_app.utils.redis_handler import RedisHandler
 import json
-from django.contrib.auth.hashers import make_password
+
 import pyotp
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from rest_framework import serializers
+
+from auth_app.utils.redis_handler import RedisHandler
+
 
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20)
@@ -12,7 +15,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ("username", "email", "password")
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -20,7 +23,9 @@ class SignupSerializer(serializers.ModelSerializer):
         # Redisで仮登録状態を確認
         redis_key = f"pending_email:{value}"
         if RedisHandler.exists(redis_key):
-            raise serializers.ValidationError("This email is already pending registration.")
+            raise serializers.ValidationError(
+                "This email is already pending registration."
+            )
         return value
 
     def validate_username(self, value):
@@ -29,7 +34,9 @@ class SignupSerializer(serializers.ModelSerializer):
         # Redisで仮登録状態を確認
         redis_key = f"pending_user:{value}"
         if RedisHandler.exists(redis_key):
-            raise serializers.ValidationError("This username is already pending registration.")
+            raise serializers.ValidationError(
+                "This username is already pending registration."
+            )
         return value
 
     def create(self, validated_data):
@@ -55,10 +62,14 @@ class SignupSerializer(serializers.ModelSerializer):
             "otp_secret": otp_secret,  # OTPの秘密鍵
         }
 
-        RedisHandler.set(redis_key_user, json.dumps(redis_data), timeout=3600)  # 1時間の有効期限
+        RedisHandler.set(
+            redis_key_user, json.dumps(redis_data), timeout=3600
+        )  # 1時間の有効期限
 
         # 重複チェックのためRedisキーとしてEmailを使用
-        RedisHandler.set(redis_key_email, validated_data["username"], timeout=3600)  # 1時間の有効期限
+        RedisHandler.set(
+            redis_key_email, validated_data["username"], timeout=3600
+        )  # 1時間の有効期限
 
         # 仮登録用のデータを返す
         return {

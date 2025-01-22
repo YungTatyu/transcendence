@@ -1,11 +1,15 @@
-import pyotp
-import qrcode
 import base64
-from io import BytesIO
-from auth_app.utils.redis_handler import RedisHandler
 import json
 import logging
+from io import BytesIO
+
+import pyotp
+import qrcode
+
+from auth_app.utils.redis_handler import RedisHandler
+
 logger = logging.getLogger(__name__)
+
 
 class OTPService:
     """OTP関連のサービスクラス"""
@@ -29,7 +33,9 @@ class OTPService:
         img = qrcode.make(provisioning_uri)
         buffer = BytesIO()
         img.save(buffer, format="PNG")
-        qr_code_base64 = f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
+        qr_code_base64 = (
+            f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
+        )
         return qr_code_base64
 
     @staticmethod
