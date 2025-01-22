@@ -10,6 +10,7 @@ async function main() {
     '/404': new Error404,
   };
   const router = new Router(routes, document.getElementById("root"))
+  router.initialize()
   router.render()
 }
 

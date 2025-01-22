@@ -27,8 +27,9 @@ export class Router {
    */
   async render() {
     const uri = window.location.pathname;
-    const component = this.#routes[uri]
+    const component = this.#routes[uri] || this.#routes["/404"]
     if (!component) {
+      console.log("error not found")
       return
     }
     if (this.#curRoute !== null) {
@@ -37,6 +38,7 @@ export class Router {
       this.#curRoute.remove()
     }
     this.#curRoute = component
+    this.#rootEle.appendChild(component)
     component.render()
   }
 
