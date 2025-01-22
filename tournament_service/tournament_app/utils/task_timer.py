@@ -1,7 +1,7 @@
 from collections.abc import Callable
 import time
 import asyncio
-from typing import Any
+from typing import Any, Optional
 
 
 class TaskTimer:
@@ -19,12 +19,15 @@ class TaskTimer:
         # タスクが実行されるUNIX時刻
         self.__execution_time = time.time() + sec
 
-    async def __run_with_timer(self, sec: int, func: Callable, *args: Any):
+    async def __run_with_timer(
+        self, sec: int, func: Callable, *args: Any
+    ) -> Optional[Any]:
         """
         指定した時間後に関数を実行する非同期タスク
+        非同期タスクに戻り値が存在する場合、task.result()で取得可能
         """
         await asyncio.sleep(sec)
-        await func(*args)
+        return await func(*args)
 
     def cancel(self):
         # INFO タスクが既に終了している場合にcancelしても何も起きない
