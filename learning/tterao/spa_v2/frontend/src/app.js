@@ -1,16 +1,16 @@
 import { Error404 } from "./views/pages/error404.js";
 import { Home } from "./views/pages/home.js";
 import { Login } from "./views/pages/login.js";
-import { Router } from "./core/router.js";
+import { Router } from "./core/Router.js";
 
 async function main() {
   const routes = {
-    '/': Home,
-    '/login': Login,
-    '/404': Error404,
+    '/': new Home,
+    '/login': new Login,
+    '/404': new Error404,
   };
   const router = new Router(routes, document.getElementById("root"))
-  router.route()
+  router.render()
 }
 
 document.addEventListener('load', main);

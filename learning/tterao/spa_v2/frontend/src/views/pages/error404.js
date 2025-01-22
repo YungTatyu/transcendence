@@ -1,14 +1,17 @@
-import { Component } from "../../core/component.js";
+import { Component } from "../../core/Component.js";
 
 export class Error404 extends Component {
   constructor() { super() }
 
   render() {
-    return `
-      <h1>404 Error</h1>
-      <h2>page not found</h2>
-`
-  }
+    const header = document.createElement("h1")
+    header.innerText = "404 Error"
+    this.appendChildComponent(header)
 
-  initializeEvents() { }
+    const message = document.createElement("h2")
+    header.innerText = "page not found"
+    this.appendChildComponent(header)
+  }
 }
+
+customElements.define('error404-component', Error404);

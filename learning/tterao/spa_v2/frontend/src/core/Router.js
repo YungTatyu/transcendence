@@ -27,7 +27,7 @@ export class Router {
    */
   async render() {
     const uri = window.location.pathname;
-    const component = this.routes[uri]
+    const component = this.#routes[uri]
     if (!component) {
       return
     }

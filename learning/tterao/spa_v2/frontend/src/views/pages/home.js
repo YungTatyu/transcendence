@@ -1,10 +1,10 @@
-import { Component } from "../../core/component.js";
+import { Component } from "../../core/Component.js";
 
 export class Home extends Component {
   constructor() { super() }
 
   render() {
-    return `
+    const content = `
     <div class="container mt-5">
       <div class="d-flex justify-content-between align-items-center">
         <h2>Welcome</h2>
@@ -16,10 +16,10 @@ export class Home extends Component {
       </div>
     </div>
 `
-  }
-
-  async initializeEvents() {
-    // document.querySelector(".logout").addEventListener("click", logoutEvent)
+    const template = document.createElement("template");
+    template.innerHTML = content.trim(); // 空白をトリムしておく
+    this.appendChildComponent(template)
   }
 }
 
+customElements.define('home-component', Home);

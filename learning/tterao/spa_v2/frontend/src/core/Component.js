@@ -1,4 +1,4 @@
-export default class Component extends HTMLElement {
+export class Component extends HTMLElement {
   #props = {}
   #state = {}
   #events = []
@@ -7,6 +7,22 @@ export default class Component extends HTMLElement {
   constructor(props = {}) {
     super()
     this.#props = props
+  }
+
+  connectedCallback() {
+    console.log("カスタム要素がページに追加されました。");
+  }
+
+  disconnectedCallback() {
+    console.log("カスタム要素がページから除去されました。");
+  }
+
+  adoptedCallback() {
+    console.log("カスタム要素が新しいページへ移動されました。");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(`属性 ${name} が変更されました。`);
   }
 
   render() { }
@@ -60,3 +76,5 @@ export default class Component extends HTMLElement {
     this.#events = [];
   }
 }
+
+customElements.define('custom-component', Component);

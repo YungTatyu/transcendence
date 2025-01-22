@@ -1,10 +1,10 @@
-import { Component } from "../../core/component.js";
+import { Component } from "../../core/Component.js";
 
 export class Login extends Component {
   constructor() { super() }
 
   render() {
-    return `
+    const content = `
       <div id = "login-page" class="container mt-5 d-flex justify-content-center align-items-center text-center" >
         <div class="position-relative">
           <h2 class="mb-3">Login</h2>
@@ -20,8 +20,10 @@ export class Login extends Component {
         </div>
     </div >
   `
+    const template = document.createElement("template");
+    template.innerHTML = content.trim(); // 空白をトリムしておく
+    this.appendChildComponent(template)
   }
-
-  initializeEvents() { }
 }
 
+customElements.define('login-component', Login);
