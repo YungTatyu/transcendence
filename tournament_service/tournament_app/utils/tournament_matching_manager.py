@@ -1,5 +1,5 @@
-import asyncio
-from typing import Optional
+from collections.abc import Callable
+from typing import Any, Optional
 from .task_timer import TaskTimer
 
 
@@ -35,9 +35,9 @@ class TournamentMatchingManager:
         cls._matching_wait_users.clear()
 
     @classmethod
-    def set_task(cls, task: asyncio.Task, time_until_execution: int):
+    def set_task(cls, sec: int, task: Callable, *args: Any):
         # WARN タスクが終了していない状態で実行すると予期せぬ挙動になる
-        cls._task_timer = TaskTimer(task, time_until_execution)
+        cls._task_timer = TaskTimer(sec, task, *args)
 
     @classmethod
     def cancel_task(cls):

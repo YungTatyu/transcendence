@@ -8,31 +8,28 @@ from tournament_app.utils.task_timer import TaskTimer
 class TaskTimerTest(TestCase):
     delay = 1
 
-    async def async_raise_exception_with_delay(self, delay: int):
-        """delay秒後にTimeoutErrorを投げる"""
-        await asyncio.sleep(delay)
+    async def async_raise_timeout_error(self):
         raise TimeoutError
 
     async def test_execute_task(self):
         """タスクが正常終了し、意図した例外がスローされるか"""
-        task = asyncio.create_task(self.async_raise_exception_with_delay(self.delay))
-        TaskTimer(task, self.delay)
+        task_timer = TaskTimer(self.delay, self.async_raise_timeout_error)
 
         try:
             await asyncio.sleep(self.delay + 1)
-            task.result()
+            task_timer.task.result()
         except Exception as e:
             self.assertIsInstance(e, TimeoutError)
 
     async def test_cancel_task(self):
         """cancel後、タスクが動き続けておらず、CancelledErrorがスローされるか"""
-        task = asyncio.create_task(self.async_raise_exception_with_delay(self.delay))
-        task_timer = TaskTimer(task, self.delay)
+
+        task_timer = TaskTimer(self.delay, self.async_raise_timeout_error)
         task_timer.cancel()
 
         try:
             await asyncio.sleep(self.delay + 1)
-            task.result()
+            task_timer.task.result()
         except asyncio.exceptions.CancelledError as e:
             self.assertIsInstance(e, CancelledError)
         except Exception as e:
@@ -40,19 +37,17 @@ class TaskTimerTest(TestCase):
 
     async def test_no_execute_task(self):
         """タスクが終了しておらず、InvalidStateErrorがスローされるか"""
-        task = asyncio.create_task(self.async_raise_exception_with_delay(self.delay))
-        TaskTimer(task, self.delay)
+        task_timer = TaskTimer(self.delay, self.async_raise_timeout_error)
 
         try:
             await asyncio.sleep(0)
-            task.result()
+            task_timer.task.result()
         except Exception as e:
             self.assertIsInstance(e, InvalidStateError)
 
     async def test_cancel_task_multi(self):
         """複数回キャンセルしても問題ないか"""
-        task = asyncio.create_task(self.async_raise_exception_with_delay(self.delay))
-        task_timer = TaskTimer(task, self.delay)
+        task_timer = TaskTimer(self.delay, self.async_raise_timeout_error)
 
         task_timer.cancel()
 
@@ -63,12 +58,11 @@ class TaskTimerTest(TestCase):
 
         await asyncio.sleep(0.1)
 
-        self.assertTrue(task.cancelled())
+        self.assertTrue(task_timer.task.cancelled())
 
     async def test_execution_time(self):
         """TaskTimerインスタンス作成時に適切にexecution_timeを初期化しているか"""
-        task = asyncio.create_task(self.async_raise_exception_with_delay(self.delay))
-        task_timer = TaskTimer(task, self.delay)
+        task_timer = TaskTimer(self.delay, self.async_raise_timeout_error)
         self.assertTrue(
             time.time() <= task_timer.execution_time <= time.time() + self.delay
         )

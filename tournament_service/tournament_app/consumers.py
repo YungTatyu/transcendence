@@ -41,8 +41,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         # 1 -> 2人のタイミングでトーナメント強制開始タイマーをセット
         if count == 2:
             TournamentMatchingManager.set_task(
-                asyncio.create_task(self.__start_tournament(self.FORCED_START_TIME)),
-                self.FORCED_START_TIME,
+                self.FORCED_START_TIME, self.__start_tournament
             )
 
         # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
@@ -78,17 +77,13 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def __start_tournament(self, delay: int = 0):
+    async def __start_tournament(self):
         """
         1. リソースを作成
         2. tournament_id Send
         3. ユーザーをchannelから削除
         4. タイマーを削除(タスクがない場合は何もしない)
-
-        Args:
-            delay (int): トーナメント開始までの遅延時間（秒単位）。
         """
-        await asyncio.sleep(delay)
         tournament_id = await self.__create_tournament()
         await self.channel_layer.group_send(
             self.MATCHING_ROOM,
