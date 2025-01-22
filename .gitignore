@@ -163,3 +163,5 @@ cython_debug/
 
 /redis/
 .DS_Store
+# cache
+*cache
