@@ -18,7 +18,7 @@ export class Home extends Component {
 `
     const template = document.createElement("template");
     template.innerHTML = content.trim(); // 空白をトリムしておく
-    this.appendChildComponent(template)
+    this.appendChildComponent(template.content)
   }
 }
 

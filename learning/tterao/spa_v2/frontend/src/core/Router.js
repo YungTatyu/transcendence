@@ -44,7 +44,7 @@ export class Router {
 
   navigateTo(newUri) {
     history.pushState(null, null, newUri); // ブラウザのURLを更新
-    this.route(); // SPAのルーティング処理を呼び出す
+    this.render(); // SPAのルーティング処理を呼び出す
   }
 
   // イベントリスナーでURL変更時にrouteを実行
