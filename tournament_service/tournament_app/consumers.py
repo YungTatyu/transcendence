@@ -1,5 +1,4 @@
 import json
-import asyncio
 from typing import Optional
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .utils.tournament_matching_manager import TournamentMatchingManager
@@ -44,14 +43,13 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 self.FORCED_START_TIME, self.__start_tournament
             )
 
-        # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
-        if count == self.ROOM_CAPACITY:
-            await self.__start_tournament()
-            return
-
         # 新規ユーザー接続時にトーナメント強制開始時刻をsend(1人ならNoneをsend)
         execution_time = TournamentMatchingManager.get_task_execution_time()
         await self.__inform_tournament_start_time(execution_time)
+
+        # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
+        if count == self.ROOM_CAPACITY:
+            await self.__start_tournament()
 
     async def disconnect(self, _):
         await self.channel_layer.group_discard(self.MATCHING_ROOM, self.channel_name)

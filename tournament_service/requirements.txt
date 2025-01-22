@@ -3,3 +3,6 @@ channels[daphne]
 channels_redis
 djangorestframework
 psycopg2>=2.9
+pytest
+pytest-django
+pytest-asyncio
