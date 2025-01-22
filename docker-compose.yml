@@ -24,8 +24,6 @@ services:
   auth_redis:
     image: redis:alpine
     container_name: auth_redis_server
-    ports:
-      - "6379:6379"
     networks:
       - app_network
 
