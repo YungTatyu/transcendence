@@ -7,9 +7,12 @@
 export class Router {
   #routes
   #rootEle
+  #curRoute
+
   constructor(routes, rootEle) {
     this.#routes = routes
     this.#rootEle = rootEle
+    this.#curRoute = null
   }
 
   /**
@@ -24,9 +27,17 @@ export class Router {
    */
   async render() {
     const uri = window.location.pathname;
-    const component = this.routes[uri] || this.routes["/404"];
-    const rootComp = new component();
-    component.render();
+    const component = this.routes[uri]
+    if (!component) {
+      return
+    }
+    if (this.#curRoute !== null) {
+      //現在のcomponentを削除
+      this.#curRoute.removeAllEvents()
+      this.#curRoute.remove()
+    }
+    this.#curRoute = component
+    component.render()
   }
 
   navigateTo(newUri) {
@@ -37,13 +48,13 @@ export class Router {
   // イベントリスナーでURL変更時にrouteを実行
   initialize() {
     window.addEventListener("popstate", () => this.route()); // 戻る/進むボタン対応
-    document.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-link]");
-      if (target) {
-        event.preventDefault(); // 通常のリンク動作を無効化
-        this.navigateTo(target.getAttribute("href")); // カスタム遷移処理
-      }
-    });
+    // document.addEventListener("click", (event) => {
+    //   const target = event.target.closest("[data-link]");
+    //   if (target) {
+    //     event.preventDefault(); // 通常のリンク動作を無効化
+    //     this.navigateTo(target.getAttribute("href")); // カスタム遷移処理
+    //   }
+    // });
     document.addEventListener("DOMContentLoaded", () => this.route());
   }
 }

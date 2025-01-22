@@ -2,6 +2,7 @@ export default class Component extends HTMLElement {
   #props = {}
   #state = {}
   #events = []
+  #childComponents = []
 
   constructor(props = {}) {
     super()
@@ -41,8 +42,15 @@ export default class Component extends HTMLElement {
    *
    * @param Component | HTMLElement
    */
-  addChildComponent(component) {
+  appendChildComponent(component) {
     this.appendChild(component)
+    this.#childComponents.push(component)
+  }
+
+  removeAllChildren() {
+    this.#childComponents.forEach((component) => {
+
+    });
   }
 
   removeAllEvents() {
