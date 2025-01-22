@@ -8,21 +8,25 @@ class TournamentSession:
         self.__create_matches_record(tournament_id, user_ids)
 
     @classmethod
-    def register_tournament_session(cls, tournament_id: int, user_ids: list[int]):
+    def register(cls, tournament_id: int, user_ids: list[int]):
         tournament_session = TournamentSession(tournament_id, user_ids)
         cls.__tournament_session_dict[tournament_id] = tournament_session
         return tournament_session
 
     @classmethod
-    def search_tournament_session(cls, tournament_id: int):
+    def search(cls, tournament_id: int):
         return cls.__tournament_session_dict.get(tournament_id, None)
 
     @classmethod
-    def del_tournament_session(cls, tournament_id: int) -> bool:
-        if cls.search_tournament_session(tournament_id):
+    def delete(cls, tournament_id: int) -> bool:
+        if cls.search(tournament_id):
             del cls.__tournament_session_dict[tournament_id]
             return True
         return False
+
+    @classmethod
+    def clear(cls):
+        cls.__tournament_session_dict.clear()
 
     @property
     def now_round(self) -> int:

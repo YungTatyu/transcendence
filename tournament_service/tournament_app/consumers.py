@@ -111,7 +111,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         """永続的データとメモリ上のデータの両方を作成"""
         tournament = Tournaments.objects.create()
         tournament_id = tournament.tournament_id
-        TournamentSession.register_tournament_session(
+        TournamentSession.register(
             tournament_id,
             list(TournamentMatchingManager.get_matching_wait_users().keys()),
         )
