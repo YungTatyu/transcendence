@@ -37,6 +37,14 @@ class TournamentSession:
         cls.__tournament_session_dict.clear()
 
     @property
+    def tournament_id(self) -> int:
+        return self.__tournament_id
+
+    @property
+    def user_ids(self) -> list[int]:
+        return self.__user_ids
+
+    @property
     def now_round(self) -> int:
         return self.__now_round
 
