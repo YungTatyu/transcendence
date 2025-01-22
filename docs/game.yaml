@@ -84,6 +84,12 @@ paths:
                 "error": "Invalid params provided for game room creation."
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
+        '409':
+          description: ゲームルームがすでに存在
+          content:
+            application/json:
+              example:
+                "error": "Game room already exists."
 
   /health:
     get:
