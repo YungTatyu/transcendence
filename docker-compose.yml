@@ -2,6 +2,7 @@ version: '3'
 services:
   auth:
     build: ./auth_service
+    container_name: auth_app
     ports:
       - "8000:8000"
     networks:
