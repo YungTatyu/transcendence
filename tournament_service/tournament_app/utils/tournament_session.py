@@ -1,5 +1,8 @@
+from typing import Any, Optional
+
+
 class TournamentSession:
-    __tournament_session_dict = dict()
+    __tournament_session_dict: dict[int, "TournamentSession"] = {}
 
     def __init__(self, tournament_id: int, user_ids: list[int]):
         self.__tournament_id: int = tournament_id
@@ -8,13 +11,18 @@ class TournamentSession:
         self.__create_matches_record(tournament_id, user_ids)
 
     @classmethod
-    def register(cls, tournament_id: int, user_ids: list[int]):
+    def register(
+        cls, tournament_id: int, user_ids: list[int]
+    ) -> Optional["TournamentSession"]:
+        """既にセッションが存在する場合、何もしない"""
+        if tournament_id in cls.__tournament_session_dict:
+            return None
         tournament_session = TournamentSession(tournament_id, user_ids)
         cls.__tournament_session_dict[tournament_id] = tournament_session
         return tournament_session
 
     @classmethod
-    def search(cls, tournament_id: int):
+    def search(cls, tournament_id: int) -> Optional["TournamentSession"]:
         return cls.__tournament_session_dict.get(tournament_id, None)
 
     @classmethod
