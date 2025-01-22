@@ -10,12 +10,12 @@ services:
     depends_on:
       - auth_db
       - auth_redis
-    env_file: auth.env
+    env_file: ./docker_env/auth.env
 
   auth_db:
     image: postgres:15
     container_name: auth_db
-    env_file: auth_db.env
+    env_file: ./docker_env/auth_db.env
     networks:
       - app_network
     volumes:
