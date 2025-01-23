@@ -253,3 +253,31 @@ async def test_start_after_timer_cancel():
 
     for communicator in communicators:
         await communicator.disconnect()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_receive_matching_wait_user_ids():
+    """
+    マッチング待機中ユーザーのIDが送信されるか
+    TODO ポート番号 -> userIdを用いたユーザーの識別に変更時、このテストも変更する
+    """
+    communicator1 = await create_communicator(10000)
+
+    data1 = await communicator1.receive_json_from()
+    assert data1["wait_user_ids"] == "[10000]"
+
+    communicator2 = await create_communicator(20000)
+
+    data2 = await communicator1.receive_json_from()
+    assert data2["wait_user_ids"] == "[10000, 20000]"
+
+    data3 = await communicator2.receive_json_from()
+    assert data3["wait_user_ids"] == "[10000, 20000]"
+
+    await communicator1.disconnect()
+
+    data4 = await communicator2.receive_json_from()
+    assert data4["wait_user_ids"] == "[20000]"
+
+    await communicator2.disconnect()
