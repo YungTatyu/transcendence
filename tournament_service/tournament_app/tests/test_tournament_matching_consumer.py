@@ -2,6 +2,9 @@ import pytest
 import time
 from channels.testing import WebsocketCommunicator
 from tournament_app.consumers import TournamentMatchingConsumer as TMC
+from tournament_app.utils.tournament_matching_manager import (
+    TournamentMatchingManager as TMM,
+)
 import asyncio
 
 PATH = "/tournament/ws/enter-room"
@@ -101,7 +104,7 @@ async def test_start_tournament_by_room_capacity():
     """ROOM_CAPACITYに達した時にtournament_idが送信されるか"""
     communicators = []
     for i in range(TMC.ROOM_CAPACITY):
-        communicators.append(await create_communicator(1000 + i))
+        communicators.append(await create_communicator(10000 + i))
         # tournament_start_timeの通知はWebSocketが作成されるたびにルーム内の全員にSendされる
         [await communicator.receive_json_from() for communicator in communicators]
 
@@ -121,7 +124,7 @@ async def test_start_tournament_by_force_start_time():
 
     # ROOM_CAPACITYに満たない数のWebSocketを作成する
     for i in range(TMC.ROOM_CAPACITY - 1):
-        communicators.append(await create_communicator(1000 + i))
+        communicators.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators]
 
     # FORCED_START_TIME秒以上待機
@@ -143,7 +146,7 @@ async def test_not_start_tournament():
 
     # ROOM_CAPACITYに満たない数のWebSocketを作成する
     for i in range(TMC.ROOM_CAPACITY - 1):
-        communicators.append(await create_communicator(1000 + i))
+        communicators.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators]
 
     # FORCED_START_TIMEに満たない秒数待機
@@ -154,4 +157,45 @@ async def test_not_start_tournament():
         assert await communicator.receive_nothing(timeout=0.1, interval=0.01) is True
 
     for communicator in communicators:
+        await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db
+async def test_init_matching_room_after_start_tournament():
+    """
+    トーナメント開始後、マッチングルームが初期化され、別ユーザーがマッチングできるか
+
+    communicators_1 -> 初めにマッチングルームに入り、トーナメントを開始するグループ
+    communicators_2 -> communicators_1がトーナメント開始後にマッチングルームに入り、トーナメントを開始するグループ
+    """
+    communicators_1 = []
+    for i in range(TMC.ROOM_CAPACITY):
+        communicators_1.append(await create_communicator(10000 + i))
+        [await communicator.receive_json_from() for communicator in communicators_1]
+
+    for communicator in communicators_1:
+        data = await communicator.receive_json_from()
+        assert "tournament_id" in data
+
+    # トーナメント開始後、トーナメントマッチングルームにユーザーが存在しないか
+    assert len(TMM.get_matching_wait_users()) == 0
+
+    communicators_2 = []
+    for i in range(TMC.ROOM_CAPACITY):
+        communicators_2.append(await create_communicator(20000 + i))
+        [await communicator.receive_json_from() for communicator in communicators_2]
+
+    for communicator in communicators_2:
+        data = await communicator.receive_json_from()
+        assert "tournament_id" in data
+
+    # communicators_2に対するトーナメント開始情報がcommunicators_1にSendされていないか
+    for communicator in communicators_1:
+        assert await communicator.receive_nothing(timeout=0.1, interval=0.01) is True
+
+    for communicator in communicators_1:
+        await communicator.disconnect()
+
+    for communicator in communicators_2:
         await communicator.disconnect()
