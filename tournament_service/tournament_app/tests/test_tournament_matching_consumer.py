@@ -73,6 +73,26 @@ async def test_exit_room_with_two_users():
     await communicator1.disconnect()
 
 
+@pytest.mark.asyncio
+async def test_same_port():
+    """
+    同じポート番号のWebSocketを拒否するか
+    TODO ポート番号 -> userIdを用いたユーザーの識別に変更時、このテストも変更する
+    """
+    port = 10000
+    communicator1 = await create_communicator(port)
+    await communicator1.receive_json_from()
+    communicator2 = CustomWebsocketCommunicator(
+        TMC.as_asgi(),
+        PATH,
+        scope_override={"client": ("127.0.0.1", port)},
+    )
+    connected, _ = await communicator2.connect()
+    assert connected is False  # 接続が拒否される
+
+    await communicator1.disconnect()
+
+
 # INFO @pytest.mark.django_dbはアプリケーション内で実際にDB操作を行うテストに付与しないとエラー
 # INFO @pytest.mark.django_dbを付与したテストで作成されたレコードはテスト後にロールバックされ、永続化しない。
 @pytest.mark.asyncio
