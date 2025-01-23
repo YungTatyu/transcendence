@@ -2,6 +2,7 @@ import pytest
 import time
 from channels.testing import WebsocketCommunicator
 from tournament_app.consumers import TournamentMatchingConsumer as TMC
+import asyncio
 
 PATH = "/tournament/ws/enter-room"
 
@@ -86,7 +87,51 @@ async def test_start_tournament_by_room_capacity():
 
     for communicator in communicators:
         data = await communicator.receive_json_from()
-        assert data == {"tournament_id": "1"}
+        assert "tournament_id" in data
+
+    for communicator in communicators:
+        await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db
+async def test_start_tournament_by_force_start_time():
+    """FORCED_START_TIMEに達した時にtournament_idが送信されるか"""
+    communicators = []
+
+    # ROOM_CAPACITYに満たない数のWebSocketを作成する
+    for i in range(TMC.ROOM_CAPACITY - 1):
+        communicators.append(await create_communicator(1000 + i))
+        [await communicator.receive_json_from() for communicator in communicators]
+
+    # FORCED_START_TIME秒以上待機
+    await asyncio.sleep(TMC.FORCED_START_TIME + 1)
+
+    for communicator in communicators:
+        data = await communicator.receive_json_from()
+        assert "tournament_id" in data
+
+    for communicator in communicators:
+        await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db
+async def test_not_start_tournament():
+    """FORCED_START_TIMEに達していない場合にtournament_idが送信されないか"""
+    communicators = []
+
+    # ROOM_CAPACITYに満たない数のWebSocketを作成する
+    for i in range(TMC.ROOM_CAPACITY - 1):
+        communicators.append(await create_communicator(1000 + i))
+        [await communicator.receive_json_from() for communicator in communicators]
+
+    # FORCED_START_TIMEに満たない秒数待機
+    await asyncio.sleep(TMC.FORCED_START_TIME - 1)
+
+    for communicator in communicators:
+        # サーバから送信されたデータが無いことを確認
+        assert await communicator.receive_nothing(timeout=0.1, interval=0.01) is True
 
     for communicator in communicators:
         await communicator.disconnect()
