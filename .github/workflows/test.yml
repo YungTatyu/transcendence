@@ -1,0 +1,60 @@
+name: Django Test with Docker Compose
+
+on:
+  pull_request:
+    # プルリクエストに対してもトリガー
+    branches:
+      - "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build and start services
+      run: docker compose up -d --build
+
+    - name: Wait for services to be ready
+      run: |
+        echo "Waiting for services to be ready..."
+        declare -A services
+        readonly CHECK="python manage.py check"
+        readonly TRUE="true"
+        readonly FALSE="false"
+        services=(
+          # ["auth"]=$CHECK
+          # ["game"]=$CHECK
+          ["tournament"]=$CHECK
+        )
+        for i in {1..30}; do
+          docker ps
+          all_services_ready=$TRUE
+          sleep 5
+          for service in "${!services[@]}"; do
+            if ! docker compose exec $service ${services[$service]}; then
+              echo "$service is not ready yet."
+              all_services_ready=$FALSE
+              break
+            fi
+          done
+          if [[ "$all_services_ready" == "$TRUE" ]]; then
+            exit 0
+          fi
+          sleep 5
+          for service in "${!services[@]}"; do
+            docker compose logs $service
+          done
+        done
+        echo "Services did not become ready in time."
+        exit 1
+    - name: Run tests
+      run: |
+        # docker compose exec auth python manage.py test
+        # docker compose exec game python manage.py test
+        docker compose exec tournament pytest
+    - name: Tear down
+      if: always()
+      run: docker compose down
