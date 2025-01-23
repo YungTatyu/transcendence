@@ -5,6 +5,7 @@ from tournament_app.consumers import TournamentMatchingConsumer as TMC
 from tournament_app.utils.tournament_matching_manager import (
     TournamentMatchingManager as TMM,
 )
+from tournament_app.utils.tournament_session import TournamentSession
 import asyncio
 
 PATH = "/tournament/ws/enter-room"
@@ -199,3 +200,21 @@ async def test_init_matching_room_after_start_tournament():
 
     for communicator in communicators_2:
         await communicator.disconnect()
+
+
+@pytest.mark.asyncio
+@pytest.mark.django_db
+async def test_create_resource():
+    """トーナメント開始後、リソースが作成されたか"""
+    communicators = []
+    for i in range(TMC.ROOM_CAPACITY):
+        communicators.append(await create_communicator(10000 + i))
+        [await communicator.receive_json_from() for communicator in communicators]
+
+    tournament_id = await communicators[0].receive_json_from()
+    tournament_id = int(tournament_id["tournament_id"])
+
+    for communicator in communicators:
+        await communicator.disconnect()
+
+    assert TournamentSession.search(tournament_id) is not None
