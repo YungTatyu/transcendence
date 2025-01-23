@@ -38,6 +38,7 @@ class TournamentMatchingWsHandler {
       "recieve",
       sentData.tournament_id,
       sentData.tournament_start_time,
+      sentData.wait_user_ids,
     );
 
     if (sentData.tournament_id) {

@@ -48,7 +48,8 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
         # 新規ユーザー接続時にトーナメント強制開始時刻をsend(1人ならNoneをsend)
         execution_time = TournamentMatchingManager.get_task_execution_time()
-        await self.__inform_tournament_start_time(execution_time)
+        wait_user_ids = list(TournamentMatchingManager.get_matching_wait_users().keys())
+        await self.__inform_tournament_start_time(execution_time, wait_user_ids)
 
         # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
         if count == self.ROOM_CAPACITY:
@@ -63,11 +64,16 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
         if count == 1:
             TournamentMatchingManager.cancel_task()
-            await self.__inform_tournament_start_time(None)
+            wait_user_ids = list(
+                TournamentMatchingManager.get_matching_wait_users().keys()
+            )
+            await self.__inform_tournament_start_time(None, wait_user_ids)
 
-    async def __inform_tournament_start_time(self, start_time: Optional[float]):
+    async def __inform_tournament_start_time(
+        self, start_time: Optional[float], wait_user_ids: list[int]
+    ):
         """
-        マッチング待機中のユーザーにトーナメント強制開始時刻をSend
+        マッチング待機中のユーザーにトーナメント強制開始時刻と待機中ユーザーのIDをSend
         1人しか待機していない場合、強制開始タイマーはセットされていないことをNoneで伝える
         """
         await self.channel_layer.group_send(
@@ -75,6 +81,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             {
                 "type": "send.tournament.start.time",
                 "tournament_start_time": str(start_time),
+                "wait_user_ids": str(wait_user_ids),
             },
         )
 
@@ -105,7 +112,15 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
     async def send_tournament_start_time(self, event):
         start_time = event["tournament_start_time"]
-        await self.send(text_data=json.dumps({"tournament_start_time": start_time}))
+        wait_user_ids = event["wait_user_ids"]
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "tournament_start_time": start_time,
+                    "wait_user_ids": wait_user_ids,
+                }
+            )
+        )
 
     @database_sync_to_async
     def __create_tournament(self) -> int:
