@@ -1,7 +1,9 @@
 import asyncio
 import time
-from asyncio.exceptions import InvalidStateError, CancelledError
+from asyncio.exceptions import CancelledError, InvalidStateError
+
 from django.test import TestCase
+
 from tournament_app.utils.task_timer import TaskTimer
 
 

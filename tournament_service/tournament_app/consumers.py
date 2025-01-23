@@ -1,9 +1,12 @@
 import json
 from typing import Optional
-from channels.generic.websocket import AsyncWebsocketConsumer
-from .utils.tournament_matching_manager import TournamentMatchingManager
-from tournament_app.models import Tournaments
+
 from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+from tournament_app.models import Tournaments
+
+from .utils.tournament_matching_manager import TournamentMatchingManager
 from .utils.tournament_session import TournamentSession
 
 

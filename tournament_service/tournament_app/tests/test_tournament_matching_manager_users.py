@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from tournament_app.utils.tournament_matching_manager import (
     TournamentMatchingManager as TMM,
 )

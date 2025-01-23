@@ -1,6 +1,6 @@
-from collections.abc import Callable
-import time
 import asyncio
+import time
+from collections.abc import Callable
 from typing import Any, Optional
 
 

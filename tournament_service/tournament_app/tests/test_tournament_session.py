@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from tournament_app.utils.tournament_session import TournamentSession as TS
 
 
