@@ -31,7 +31,7 @@ async def create_communicator(port: int):
     return communicator
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 async def test_enter_room_from_empty_with_one_user():
     """0 -> 1人時は{'tournament_start_time': 'None'}がSendされる"""
     communicator = await create_communicator(10000)
@@ -40,7 +40,7 @@ async def test_enter_room_from_empty_with_one_user():
     await communicator.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 async def test_enter_room_with_second_user():
     """
     1 -> 2人時はマッチング待機中の全員に
@@ -62,7 +62,7 @@ async def test_enter_room_with_second_user():
     await communicator2.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 async def test_exit_room_with_two_users():
     """2 -> 1人時は{'tournament_start_time': 'None'}がSendされる"""
     communicator1 = await create_communicator(10001)
@@ -79,7 +79,7 @@ async def test_exit_room_with_two_users():
     await communicator1.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 async def test_same_port():
     """
     同じポート番号のWebSocketを拒否するか
@@ -101,7 +101,7 @@ async def test_same_port():
 
 # INFO @pytest.mark.django_dbはアプリケーション内で実際にDB操作を行うテストに付与しないとエラー
 # INFO @pytest.mark.django_dbを付与したテストで作成されたレコードはテスト後にロールバックされ、永続化しない。
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 async def test_start_tournament_by_room_capacity():
     """ROOM_CAPACITYに達した時にtournament_idが送信されるか"""
@@ -119,7 +119,7 @@ async def test_start_tournament_by_room_capacity():
         await communicator.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 async def test_start_tournament_by_force_start_time():
     """FORCED_START_TIMEに達した時にtournament_idが送信されるか"""
@@ -141,7 +141,7 @@ async def test_start_tournament_by_force_start_time():
         await communicator.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 async def test_not_start_tournament():
     """FORCED_START_TIMEに達していない場合にtournament_idが送信されないか"""
@@ -163,7 +163,7 @@ async def test_not_start_tournament():
         await communicator.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 async def test_init_matching_room_after_start_tournament():
     """
@@ -204,7 +204,7 @@ async def test_init_matching_room_after_start_tournament():
         await communicator.disconnect()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 async def test_create_resource():
     """トーナメント開始後、リソースが作成されたか"""
@@ -220,3 +220,36 @@ async def test_create_resource():
         await communicator.disconnect()
 
     assert TournamentSession.search(tournament_id) is not None
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_start_after_timer_cancel():
+    """
+    2人の状態で1人抜け、トーナメント強制開始タイマーがcancelされた後、トーナメントが正常に開始されるか
+    """
+    communicators = []
+    # 2人が待機している状態
+    for i in range(2):
+        communicators.append(await create_communicator(10000 + i))
+        [await communicator.receive_json_from() for communicator in communicators]
+
+    # １人ルームから出る
+    await communicators[1].disconnect()
+    del communicators[1]
+
+    # 残っているユーザーに{"tournament_start_time": "None"}がSend
+    await communicators[0].receive_json_from()
+
+    # トーナメント開始できるまでWebSocketを作成
+    for i in range(1, TMC.ROOM_CAPACITY):
+        communicators.append(await create_communicator(10000 + i))
+        [await communicator.receive_json_from() for communicator in communicators]
+
+    # tournament_idが正常に送信されたか
+    for communicator in communicators:
+        data = await communicator.receive_json_from()
+        assert "tournament_id" in data
+
+    for communicator in communicators:
+        await communicator.disconnect()
