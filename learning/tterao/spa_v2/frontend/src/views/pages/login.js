@@ -1,5 +1,35 @@
 import { Component } from "../../core/Component.js";
 
+class ExampleButton extends Component {
+  constructor() { super() }
+
+  buttonHandler(event) {
+    event.preventDefault()
+    alert("example button clicked!")
+  }
+
+  buttonHandler2(event) {
+    event.preventDefault()
+    alert("buttonHandler2")
+  }
+
+  render() {
+    // const button = document.createElement("button")
+    // button.classList.add("btn", "btn-warning");
+    // button.innerText = "Example Button";
+    // this.appendChild(button);
+
+    this.classList.add("btn", "btn-warning");
+    this.innerText = "Example Button!";
+    this.addEvents([
+      { "click": this.buttonHandler },
+      { "click": this.buttonHandler2 }
+    ])
+  }
+}
+
+customElements.define('example-button-component', ExampleButton);
+
 export class Login extends Component {
   constructor() { super() }
 
@@ -18,11 +48,12 @@ export class Login extends Component {
             <button type="submit" class="btn btn-primary">Login</button>
           </form>
         </div>
-    </div >
+    </div>
   `
     const template = document.createElement("template");
     template.innerHTML = content.trim(); // 空白をトリムしておく
     this.appendChildComponent(template.content)
+    this.appendChildComponent(new ExampleButton)
   }
 }
 

@@ -39,7 +39,7 @@ export class Router {
     }
     this.#curRoute = component
     this.#rootEle.appendChild(component)
-    component.render()
+    // component.render()
   }
 
   navigateTo(newUri) {

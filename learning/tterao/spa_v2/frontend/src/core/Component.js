@@ -10,11 +10,13 @@ export class Component extends HTMLElement {
   }
 
   connectedCallback() {
+    this.render()
     console.log("カスタム要素がページに追加されました。");
   }
 
   disconnectedCallback() {
     console.log("カスタム要素がページから除去されました。");
+    this.removeAllEvents()
   }
 
   adoptedCallback() {
