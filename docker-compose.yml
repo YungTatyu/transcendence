@@ -1,0 +1,37 @@
+version: '3'
+services:
+  tournament:
+    build: ./tournament_service
+    container_name: tournament
+    ports:
+      - "8002:8002"
+    env_file: ./dev_envs/tournament.env
+    networks:
+      - tournament_network
+    depends_on:
+      - tournament_db
+      - tournament_redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+
+  tournament_db:
+    image: postgres:15
+    container_name: tournament_db
+    env_file: ./dev_envs/tournament_db.env
+    networks:
+      - tournament_network
+    volumes:
+      - tournament_db_data:/var/lib/postgresql/data
+
+  tournament_redis:
+    image: redis:alpine
+    container_name: tournament_redis
+    networks:
+      - tournament_network
+
+networks:
+  tournament_network:
+    driver: bridge
+
+volumes:
+  tournament_db_data:
