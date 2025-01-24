@@ -182,7 +182,7 @@ async def test_init_matching_room_after_start_tournament():
         assert "tournament_id" in data
 
     # トーナメント開始後、トーナメントマッチングルームにユーザーが存在しないか
-    assert len(TMM.get_matching_wait_users()) == 0
+    assert len(TMM.get_waiting_users()) == 0
 
     communicators_2 = []
     for i in range(TMC.ROOM_CAPACITY):

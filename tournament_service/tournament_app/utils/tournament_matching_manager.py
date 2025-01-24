@@ -11,29 +11,29 @@ class TournamentMatchingManager:
     """
 
     # dict[user_id, channel_name]
-    __matching_wait_users: dict[int, str] = dict()
+    __waiting_users: dict[int, str] = dict()
     # トーナメント強制開始用タイマーオブジェクト
     __task_timer = None
 
     @classmethod
-    def get_matching_wait_users(cls) -> dict[int, str]:
-        return cls.__matching_wait_users
+    def get_waiting_users(cls) -> dict[int, str]:
+        return cls.__waiting_users
 
     @classmethod
-    def add_matching_wait_users(cls, user_id: int, channel_name: str) -> int:
+    def add_user(cls, user_id: int, channel_name: str) -> int:
         # WARN 既に存在しているuser_idの場合、上書きされる
-        cls.__matching_wait_users[user_id] = channel_name
-        return len(cls.__matching_wait_users)
+        cls.__waiting_users[user_id] = channel_name
+        return len(cls.__waiting_users)
 
     @classmethod
-    def del_matching_wait_user(cls, user_id: int) -> int:
+    def del_user(cls, user_id: int) -> int:
         """存在しないuser_idを指定しても何も起きません"""
-        cls.__matching_wait_users.pop(user_id, None)
-        return len(cls.__matching_wait_users)
+        cls.__waiting_users.pop(user_id, None)
+        return len(cls.__waiting_users)
 
     @classmethod
-    def clear_matching_wait_users(cls):
-        cls.__matching_wait_users.clear()
+    def clear_waiting_users(cls):
+        cls.__waiting_users.clear()
 
     @classmethod
     def set_task(cls, sec: int, task: Callable, *args: Any):

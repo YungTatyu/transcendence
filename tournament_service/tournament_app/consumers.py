@@ -29,14 +29,13 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
     # TODO self.scope["client"][1] -> userId(現状はuserIdではなく、ポート番号の値を使用)
     async def connect(self):
         # 既にマッチング待機中なら接続を拒否する
-        matching_wait_users = TournamentMatchingManager.get_matching_wait_users()
-        if self.scope["client"][1] in matching_wait_users:
+        if self.scope["client"][1] in TournamentMatchingManager.get_waiting_users():
             await self.close(code=4400)
             return
 
         await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
         await self.accept()
-        count = TournamentMatchingManager.add_matching_wait_users(
+        count = TournamentMatchingManager.add_user(
             self.scope["client"][1], self.channel_name
         )
 
@@ -48,7 +47,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
         # 新規ユーザー接続時にトーナメント強制開始時刻をsend(1人ならNoneをsend)
         execution_time = TournamentMatchingManager.get_task_execution_time()
-        wait_user_ids = list(TournamentMatchingManager.get_matching_wait_users().keys())
+        wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
         await self.__inform_tournament_start_time(execution_time, wait_user_ids)
 
         # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
@@ -57,16 +56,12 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, _):
         await self.channel_layer.group_discard(self.MATCHING_ROOM, self.channel_name)
-        count = TournamentMatchingManager.del_matching_wait_user(
-            self.scope["client"][1]
-        )
+        count = TournamentMatchingManager.del_user(self.scope["client"][1])
 
         # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
         if count == 1:
             TournamentMatchingManager.cancel_task()
-            wait_user_ids = list(
-                TournamentMatchingManager.get_matching_wait_users().keys()
-            )
+            wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
             await self.__inform_tournament_start_time(None, wait_user_ids)
 
     async def __inform_tournament_start_time(
@@ -100,10 +95,9 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 "tournament_id": str(tournament_id),
             },
         )
-        matching_wait_users = TournamentMatchingManager.get_matching_wait_users()
-        for channel_name in matching_wait_users.values():
+        for channel_name in TournamentMatchingManager.get_waiting_users().values():
             await self.channel_layer.group_discard(self.MATCHING_ROOM, channel_name)
-        TournamentMatchingManager.clear_matching_wait_users()
+        TournamentMatchingManager.clear_waiting_users()
         TournamentMatchingManager.cancel_task()
 
     async def send_tournament_start_message(self, event):
@@ -129,6 +123,6 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         tournament_id = tournament.tournament_id
         TournamentSession.register(
             tournament_id,
-            list(TournamentMatchingManager.get_matching_wait_users().keys()),
+            list(TournamentMatchingManager.get_waiting_users().keys()),
         )
         return tournament_id
