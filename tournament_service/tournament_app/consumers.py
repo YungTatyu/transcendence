@@ -45,10 +45,10 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 self.FORCED_START_TIME, self.__start_tournament
             )
 
-        # 新規ユーザー接続時にトーナメント強制開始時刻をsend(1人ならNoneをsend)
+        # 新規ユーザー接続時にルーム内のユーザーにマッチングルームの状態をSend
         execution_time = TournamentMatchingManager.get_task_execution_time()
         wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
-        await self.__inform_tournament_start_time(execution_time, wait_user_ids)
+        await self.__broadcast_matching_room_state(execution_time, wait_user_ids)
 
         # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
         if count == self.ROOM_CAPACITY:
@@ -62,9 +62,9 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         if count == 1:
             TournamentMatchingManager.cancel_task()
             wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
-            await self.__inform_tournament_start_time(None, wait_user_ids)
+            await self.__broadcast_matching_room_state(None, wait_user_ids)
 
-    async def __inform_tournament_start_time(
+    async def __broadcast_matching_room_state(
         self, start_time: Optional[float], wait_user_ids: list[int]
     ):
         """
@@ -74,7 +74,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.MATCHING_ROOM,
             {
-                "type": "send.tournament.start.time",
+                "type": "send.matching.room.state",
                 "tournament_start_time": str(start_time),
                 "wait_user_ids": str(wait_user_ids),
             },
@@ -104,7 +104,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         tournament_id = event["tournament_id"]
         await self.send(text_data=json.dumps({"tournament_id": tournament_id}))
 
-    async def send_tournament_start_time(self, event):
+    async def send_matching_room_state(self, event):
         start_time = event["tournament_start_time"]
         wait_user_ids = event["wait_user_ids"]
         await self.send(
