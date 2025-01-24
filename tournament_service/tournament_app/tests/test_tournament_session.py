@@ -38,7 +38,7 @@ class TournamentSessionTest(TestCase):
     def test_round(self):
         user_ids = [1, 2, 3]
         tournament_session = TS.register(1, user_ids)
-        self.assertEqual(1, tournament_session.now_round)
+        self.assertEqual(1, tournament_session.current_round)
         self.assertEqual(2, tournament_session.next_round())
         self.assertEqual(3, tournament_session.next_round())
-        self.assertEqual(3, tournament_session.now_round)
+        self.assertEqual(3, tournament_session.current_round)

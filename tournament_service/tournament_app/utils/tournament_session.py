@@ -6,7 +6,7 @@ class TournamentSession:
 
     def __init__(self, tournament_id: int, user_ids: list[int]):
         self.__tournament_id: int = tournament_id
-        self.__now_round: int = 1
+        self.__current_round: int = 1
         self.__user_ids: list[int] = user_ids
         self.__create_matches_record(tournament_id, user_ids)
 
@@ -45,12 +45,12 @@ class TournamentSession:
         return self.__user_ids
 
     @property
-    def now_round(self) -> int:
-        return self.__now_round
+    def current_round(self) -> int:
+        return self.__current_round
 
     def next_round(self) -> int:
-        self.__now_round += 1
-        return self.__now_round
+        self.__current_round += 1
+        return self.__current_round
 
     # TODO 実際にmatchesAPIを叩き、レコードを作成する処理
     def __create_matches_record(self, tournament_id: int, user_ids: list[int]):
