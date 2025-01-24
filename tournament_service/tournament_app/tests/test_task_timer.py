@@ -68,9 +68,8 @@ class TaskTimerTest(TestCase):
     async def test_execution_time(self):
         """TaskTimerインスタンス作成時に適切にexecution_timeを初期化しているか"""
         task_timer = TaskTimer(self.delay, self.__async_raise_timeout_error)
-        self.assertTrue(
-            time.time() <= task_timer.execution_time <= time.time() + self.delay
-        )
+        now = time.time()
+        self.assertTrue(now <= task_timer.execution_time <= now + self.delay)
 
     async def test_return_value(self):
         """TaskTimerが引数有りでも正常に動作するか"""
