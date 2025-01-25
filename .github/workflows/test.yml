@@ -27,7 +27,7 @@ jobs:
         readonly FALSE="false"
 
         services=(
-          # ["auth"]=$CHECK
+          ["auth"]=$CHECK
           ["game"]=$CHECK
         )
 
@@ -55,6 +55,7 @@ jobs:
         done
         echo "Services did not become ready in time."
         exit 1
+
     - name: Run tests
       run: |
         # docker compose exec auth python manage.py test
