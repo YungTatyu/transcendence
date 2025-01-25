@@ -1,0 +1,35 @@
+version: '3'
+services:
+  auth:
+    build: ./auth_service
+    container_name: auth_app
+    ports:
+      - "8000:8000"
+    networks:
+      - app_network
+    depends_on:
+      - auth_db
+      - auth_redis
+    env_file: ./docker_env/auth.env
+
+  auth_db:
+    image: postgres:15
+    container_name: auth_db
+    env_file: ./docker_env/auth_db.env
+    networks:
+      - app_network
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  auth_redis:
+    image: redis:alpine
+    container_name: auth_redis_server
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  auth_db_data:
