@@ -33,36 +33,44 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             await self.close(code=4400)
             return
 
-        await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
         await self.accept()
-        count = TournamentMatchingManager.add_user(
-            self.scope["client"][1], self.channel_name
-        )
 
-        # 1 -> 2人のタイミングでトーナメント強制開始タイマーをセット
-        if count == 2:
-            TournamentMatchingManager.set_task(
-                self.FORCED_START_TIME, self.__start_tournament
+        # Lockを用いて1人ずつ処理(パフォーマンスを犠牲に整合性を保つ)
+        async with TournamentMatchingManager.get_lock():
+            await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
+            count = TournamentMatchingManager.add_user(
+                self.scope["client"][1], self.channel_name
             )
 
-        # 新規ユーザー接続時にルーム内のユーザーにマッチングルームの状態をSend
-        execution_time = TournamentMatchingManager.get_task_execution_time()
-        wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
-        await self.__broadcast_matching_room_state(execution_time, wait_user_ids)
+            # 1 -> 2人のタイミングでトーナメント強制開始タイマーをセット
+            if count == 2:
+                TournamentMatchingManager.set_task(
+                    self.FORCED_START_TIME, self.__start_tournament
+                )
 
-        # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
-        if count == self.ROOM_CAPACITY:
-            await self.__start_tournament()
+            # 新規ユーザー接続時にルーム内のユーザーにマッチングルームの状態をSend
+            execution_time = TournamentMatchingManager.get_task_execution_time()
+            wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
+            await self.__broadcast_matching_room_state(execution_time, wait_user_ids)
+
+            # マッチング待ちユーザー数がトーナメントの最大参加者人数に達した
+            if count == self.ROOM_CAPACITY:
+                await self.__start_tournament()
 
     async def disconnect(self, _):
-        await self.channel_layer.group_discard(self.MATCHING_ROOM, self.channel_name)
-        count = TournamentMatchingManager.del_user(self.scope["client"][1])
+        async with TournamentMatchingManager.get_lock():
+            await self.channel_layer.group_discard(
+                self.MATCHING_ROOM, self.channel_name
+            )
+            count = TournamentMatchingManager.del_user(self.scope["client"][1])
 
-        # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
-        if count == 1:
-            TournamentMatchingManager.cancel_task()
-            wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
-            await self.__broadcast_matching_room_state(None, wait_user_ids)
+            # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
+            if count == 1:
+                TournamentMatchingManager.cancel_task()
+                wait_user_ids = list(
+                    TournamentMatchingManager.get_waiting_users().keys()
+                )
+                await self.__broadcast_matching_room_state(None, wait_user_ids)
 
     async def __broadcast_matching_room_state(
         self, start_time: Optional[float], wait_user_ids: list[int]

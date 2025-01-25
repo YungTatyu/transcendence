@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import Callable
 from typing import Any, Optional
 
@@ -14,6 +15,8 @@ class TournamentMatchingManager:
     __waiting_users: dict[int, str] = dict()
     # トーナメント強制開始用タイマーオブジェクト
     __task_timer = None
+    # 非同期排他制御用のlockオブジェクト
+    __lock = asyncio.Lock()
 
     @classmethod
     def get_waiting_users(cls) -> dict[int, str]:
@@ -56,3 +59,7 @@ class TournamentMatchingManager:
         if cls.__task_timer:
             return cls.__task_timer.execution_time
         return None
+
+    @classmethod
+    def get_lock(cls) -> asyncio.Lock:
+        return cls.__lock
