@@ -4,6 +4,7 @@ import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import { useUsername } from "./UsernameContext";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const { username, setUsername } = useUsername();
@@ -23,11 +24,38 @@ export default function Home() {
   }
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1>ユーザーネームを入力してください</h1>
+      <Link
+        href="/match"
+        style={{
+          display: "inline-block",
+          padding: "10px 20px",
+          fontSize: "16px",
+          backgroundColor: "#4CAF50",
+          color: "white",
+          borderRadius: "8px",
+          textAlign: "center",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          transition: "background-color 0.3s ease, transform 0.2s ease",
+          textDecoration: "none", // デフォルトのリンクの下線を削除
+        }}
+      >
+        <button
+          style={{
+            all: "unset",
+            fontSize: "inherit",
+            cursor: "pointer",
+          }}
+        >
+          matchを作成
+        </button>
+      </Link>
+      <h1>Gameをplay</h1>
+      <h3>※まずはmatchを作成する必要があります</h3>
+      <h3>match作成したplayer idとmatch idを以下に入力</h3>
       <form onSubmit={submitHandler} style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "300px" }}>
         <div>
           <label htmlFor="username" style={{ display: "block", marginBottom: "5px" }}>
-            ユーザーネーム
+            Your user id
           </label>
           <input
             type="text"
