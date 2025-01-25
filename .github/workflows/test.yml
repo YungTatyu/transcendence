@@ -58,7 +58,7 @@ jobs:
 
     - name: Run tests
       run: |
-        # docker compose exec auth python manage.py test
+        docker compose exec auth python manage.py test
         docker compose exec game python manage.py test
 
     - name: Tear down
