@@ -294,14 +294,14 @@ paths:
                 "matchWinCount": 20
                 "matchLoseCount": 8
                 "tournamentWinnerCount": 2
-        '400':
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
           description: userIdがおかしい
           content:
             application/json:
               example:
                 "error": "Bad Request"
-        '401':
-          $ref: '#/components/responses/UnauthorizedResponse'
 
   /matches/histories/{userId}:
     get:
@@ -358,14 +358,14 @@ paths:
                     ],
                   }
                 ]
-        '400':
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
           description: userIdがおかしい
           content:
             application/json:
               example:
                 "error": "Bad Request"
-        '401':
-          $ref: '#/components/responses/UnauthorizedResponse'
 
   /health:
     get:
