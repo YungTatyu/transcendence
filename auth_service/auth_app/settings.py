@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # APIベースURL
-USER_API_BASE_URL = "http://localhost:8000"
+USER_API_BASE_URL = "https://users.transcendence.com"
 
 # モックモードの設定
 # TODO user api 実装後にFalseとする
