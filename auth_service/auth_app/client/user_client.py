@@ -19,6 +19,7 @@ class UserClient:
         Set up mock responses for the client.
         """
         self.mock_post_user = Mock()
+        self.mock_get_user = Mock()
 
         # Mock for successful user creation
         self.mock_post_user.return_value = {
@@ -27,6 +28,16 @@ class UserClient:
                 "userId": "12345",
                 "username": "mockuser"
             }
+        }
+
+        self.mock_get_user.return_value = {
+            "status_code": 200,
+            "json": lambda: [
+                {
+                    "userId": "12345",
+                    "username": "mockuser"
+                }
+            ]
         }
 
     def create_user(self, username):
@@ -44,5 +55,25 @@ class UserClient:
             return self.mock_post_user(payload)
 
         response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response
+
+    def search_users(self, query):
+        """
+        Search for users by username or userid.
+
+        :param query: A dictionary with a single key ('username' or 'userid') and its value
+        :return: Response object (or mock response if use_mock is True)
+        """
+        url = f"{self.base_url}/users"
+
+        if not isinstance(query, dict) or len(query) != 1:
+            raise ValueError("Query must be a dictionary with exactly one key: 'username' or 'userid'.")
+
+        if self.use_mock:
+            print("Using mock response for search_users.")
+            return self.mock_get_user(query)
+
+        response = requests.get(url, params=query)
         response.raise_for_status()
         return response
