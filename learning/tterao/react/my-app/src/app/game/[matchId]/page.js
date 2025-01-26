@@ -60,9 +60,6 @@ export default function Game() {
     const downKey = "SKey";
 
     const handler = (e) => {
-      if (!keys.hasOwnProperty(e.code)) {
-        return;
-      }
       if (e.code !== upKey && e.code !== downKey) {
         return;
       }
@@ -81,8 +78,64 @@ export default function Game() {
   const wsManager = createWebSocketManager(matchId);
   registerEventHandler(wsManager.sendMessage)
 
-  return <div>
-    game
-    <div>{matchId}</div>
-  </div>
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    const draw = () => {
+      // 背景クリア
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+      // ボール描画
+      ctx.fillStyle = "white";
+      ctx.fillRect(
+        gameState.ball.x,
+        gameState.ball.y,
+        BALL_WIDTH,
+        BALL_HEIGHT
+      );
+
+      // 左プレイヤーのパドル描画
+      ctx.fillRect(
+        0,
+        gameState.leftPlayer.y,
+        PADDLE_WIDTH,
+        PADDLE_HEIGHT
+      );
+
+      // 右プレイヤーのパドル描画
+      ctx.fillRect(
+        GAME_WIDTH - PADDLE_WIDTH,
+        gameState.rightPlayer.y,
+        PADDLE_WIDTH,
+        PADDLE_HEIGHT
+      );
+
+      // スコア描画
+      ctx.fillStyle = "white";
+      ctx.font = "20px Arial";
+      ctx.fillText(`Player 1: ${gameState.leftPlayer.score}`, 20, 30);
+      ctx.fillText(
+        `Player 2: ${gameState.rightPlayer.score}`,
+        GAME_WIDTH - 140,
+        30
+      );
+    };
+
+    draw();
+  }, [gameState]);
+
+  return (
+    <div>
+      <h1>Game Room: {matchId}</h1>
+      <canvas
+        ref={canvasRef}
+        id="gameCanvas"
+        width={GAME_WIDTH}
+        height={GAME_HEIGHT}
+        style={{ border: "1px solid white" }}
+      ></canvas>
+    </div>
+  );
 }
