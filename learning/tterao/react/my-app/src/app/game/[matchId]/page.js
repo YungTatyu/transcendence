@@ -16,9 +16,9 @@ export default function Game() {
   const { matchId } = useParams();
   const { userid } = useUsername();
   const [gameState, setGameState] = useState({
-    ball: { x: 100, y: 200 },
-    left_player: { id: "", y: 50, score: 0 },
-    right_player: { id: "", y: 50, score: 0 },
+    ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
+    left_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+    right_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
   });
   const canvasRef = useRef(null);
 
@@ -118,49 +118,84 @@ export default function Game() {
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-      // ボール描画
+      // ボールを球体として描画
       ctx.fillStyle = "white";
-      ctx.fillRect(gameState.ball.x, gameState.ball.y, BALL_WIDTH, BALL_HEIGHT);
+      ctx.beginPath();
+      ctx.arc(gameState.ball.x + BALL_WIDTH / 2, gameState.ball.y + BALL_HEIGHT / 2, BALL_WIDTH / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
 
       // 左プレイヤーのパドル描画
+      ctx.fillStyle = "#0f0"; // 左プレイヤーのパドル色
       ctx.fillRect(0, gameState.left_player.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
       // 右プレイヤーのパドル描画
-      ctx.fillRect(
-        GAME_WIDTH - PADDLE_WIDTH,
-        gameState.right_player.y,
-        PADDLE_WIDTH,
-        PADDLE_HEIGHT
-      );
+      ctx.fillStyle = "#f00"; // 右プレイヤーのパドル色
+      ctx.fillRect(GAME_WIDTH - PADDLE_WIDTH, gameState.right_player.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
-      // スコア描画
+      // スコアとIDの描画
       ctx.fillStyle = "white";
-      ctx.font = "20px Arial";
-      ctx.fillText(
-        `${gameState.left_player.id}: ${gameState.left_player.score}`,
-        20,
-        30
-      );
-      ctx.fillText(
-        `${gameState.right_player.id}: ${gameState.right_player.score}`,
-        GAME_WIDTH - 140,
-        30
-      );
+      ctx.font = "24px Arial";
+      // 左プレイヤーのIDとスコア
+      ctx.fillText(`${gameState.left_player.id}`, 20, 30);
+      ctx.font = "18px Arial"; // スコアのフォントサイズを少し小さく
+      ctx.fillText(`${gameState.left_player.score}`, 20, 60);
+
+      // 右プレイヤーのIDとスコア
+      ctx.font = "24px Arial";
+      ctx.fillText(`${gameState.right_player.id}`, GAME_WIDTH - 100, 30);
+      ctx.font = "18px Arial";
+      ctx.fillText(`${gameState.right_player.score}`, GAME_WIDTH - 100, 60);
     };
 
     draw();
   }, [gameState]);
 
   return (
-    <div>
-      <h1>Game Room: {matchId}</h1>
-      <canvas
-        ref={canvasRef}
-        id="gameCanvas"
-        width={GAME_WIDTH}
-        height={GAME_HEIGHT}
-        style={{ border: "1px solid white" }}
-      ></canvas>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        backgroundColor: "#1e1e1e", // ダークテーマの背景色
+        color: "white",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <h1
+        style={{
+          fontSize: "36px",
+          marginBottom: "20px",
+          fontWeight: "bold",
+          textShadow: "2px 2px 10px rgba(0, 0, 0, 0.8)", // タイトルに影をつけて強調
+        }}
+      >
+        Game Room: {matchId}
+      </h1>
+      <div
+        style={{
+          position: "relative",
+          border: "2px solid white",
+          boxShadow: "0 0 20px rgba(255, 255, 255, 0.5)", // キャンバスにシャドウを追加
+          backgroundColor: "#000", // ゲームキャンバスの背景色を黒に
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <canvas
+          ref={canvasRef}
+          id="gameCanvas"
+          width={GAME_WIDTH}
+          height={GAME_HEIGHT}
+          style={{
+            border: "1px solid white",
+            boxSizing: "border-box", // ボーダーをキャンバスサイズに含める
+          }}
+        ></canvas>
+      </div>
     </div>
   );
 }
