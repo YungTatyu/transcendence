@@ -24,4 +24,9 @@ class MatchParticipants(models.Model):
     score = models.IntegerField(null=True, blank=True)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["match_id", "user_id"])]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["match_id", "user_id"],
+                name="unique_participant",
+            )
+        ]
