@@ -16,6 +16,12 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# APIベースURL
+USER_API_BASE_URL = "http://localhost:8000"
+
+# モックモードの設定
+# TODO user api 実装後にFalseとする
+USER_API_USE_MOCK = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
