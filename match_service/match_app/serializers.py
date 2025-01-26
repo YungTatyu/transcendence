@@ -15,3 +15,8 @@ class TournamentMatchSerializer(serializers.Serializer):
         if len(value) != len(set(value)):
             raise serializers.ValidationError("Duplicate user ID")
         return value
+
+
+class MatchHistorySerializer(serializers.Serializer):
+    offset = serializers.IntegerField(min_value=0, required=False, default=0)
+    limit = serializers.IntegerField(min_value=1, required=False, default=10)

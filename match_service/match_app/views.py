@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import TournamentMatchSerializer
+from .serializers import TournamentMatchSerializer, MatchHistorySerializer
 from .models import Matches, MatchParticipants
 
 
@@ -95,8 +95,65 @@ class MatchStatisticView(APIView):
 
 
 class MatchHistoryView(APIView):
-    def get(self, request):
-        pass
+    def get(self, request, user_id):
+        serializer = MatchHistorySerializer(data=request.query_params)
+        if not serializer.is_valid():
+            return Response(
+                {"error": "Bad QueryString"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        matches = self.__fetch_finished_matches(user_id)
+
+        offset = serializer.validated_data["offset"]
+        limit = serializer.validated_data["limit"]
+        results = self.__convert_matches_to_results(
+            matches[offset : offset + limit], user_id
+        )
+
+        data = {
+            "total": len(matches),
+            "offset": offset,
+            "limit": len(results),
+            "results": results,
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def __fetch_finished_matches(self, user_id: int) -> list[Matches]:
+        finished_matches = (
+            MatchParticipants.objects.filter(
+                user_id=user_id,  # 指定したuser_idを持つ参加者である
+                match_id__finish_date__isnull=False,  # 終了した試合である
+            )
+            .select_related("match_id")  # 逆参照
+            .order_by("match_id")  # 並び順を固定(offsetとlimitを使うため)
+        )
+        return [participant.match_id for participant in finished_matches]
+
+    def __convert_matches_to_results(
+        self, matches: list[Matches], user_id: int
+    ) -> list[dict]:
+        """N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています"""
+        if matches == []:
+            return []
+        return [self.__convert_match_to_result(match, user_id) for match in matches]
+
+    def __convert_match_to_result(self, match: Matches, user_id: int) -> dict:
+        win_or_lose = "win" if match.winner_user_id == user_id else "lose"
+        participants = MatchParticipants.objects.filter(match_id=match.match_id)
+        user = participants.filter(user_id=user_id).first()
+        opponents = participants.exclude(user_id=user_id)
+        opponent_data = [
+            {"id": opponent.user_id, "score": opponent.score} for opponent in opponents
+        ]
+
+        result = {
+            "mode": match.mode,
+            "result": win_or_lose,
+            "date": match.start_date,
+            "userScore": user.score,
+            "opponents": opponent_data,
+        }
+        return result
 
 
 @api_view(["GET"])
