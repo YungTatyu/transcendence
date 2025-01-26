@@ -345,7 +345,7 @@ paths:
                     "date": "2024-12-09",
                     "userScore": 11,
                     "opponents": [
-                      {"name": "User2", "score": 5}
+                      {"id": 1, "score": 5}
                     ],
                   },
                   {
@@ -354,7 +354,7 @@ paths:
                     "date": "2024-12-01",
                     "userScore": 10,
                     "opponents": [
-                      {"name": "User3", "score": 12}
+                      {"id": 2, "score": 12}
                     ],
                   }
                 ]
