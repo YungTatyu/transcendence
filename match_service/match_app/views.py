@@ -61,8 +61,37 @@ class MatchFinishView(APIView):
 
 
 class MatchStatisticView(APIView):
-    def get(self, request):
-        pass
+    def get(self, _, user_id):
+        data = {
+            "matchWinCount": self.__fetch_match_win_count(user_id),
+            "matchLoseCount": self.__fetch_match_lose_count(user_id),
+            "tournamentWinCount": self.__fetch_tournament_win_count(user_id),
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def __fetch_match_win_count(self, user_id: int) -> int:
+        match_win_count = Matches.objects.filter(winner_user_id=user_id).count()
+        return match_win_count
+
+    def __fetch_match_lose_count(self, user_id: int) -> int:
+        lose_matches_count = (
+            MatchParticipants.objects.filter(
+                user_id=user_id,  # 試合参加者である
+                match_id__finish_date__isnull=False,  # 試合が終了している
+            )
+            .exclude(match_id__winner_user_id=user_id)  # 勝利した試合は除外
+            .count()
+        )
+        return lose_matches_count
+
+    def __fetch_tournament_win_count(self, user_id: int) -> int:
+        tournament_win_count = Matches.objects.filter(
+            finish_date__isnull=False,  # 試合が終了している
+            mode="Tournament",  # トーナメントの試合である
+            winner_user_id=user_id,  # `勝者である
+            parent_match_id__isnull=True,  # 親試合がない == 決勝戦
+        ).count()
+        return tournament_win_count
 
 
 class MatchHistoryView(APIView):
