@@ -1,0 +1,369 @@
+openapi: 3.0.3
+
+info: 
+  title: Vault API
+  description: |
+    HashiCorp Vaultによる機密情報の一元管理を行う。
+    Path, StatusCode, RequestBody, ResponseBody等はVaultの仕様に準拠する
+  version: 1.0.0
+
+servers:
+  - url: https://vault.42.fr
+
+paths:
+  /v1/transit/sign/jwt-key:
+    post:
+      summary: JWTに署名
+      description: |
+        リクエストボディに含まれるJWTの元データを使用し、秘密鍵で署名を行う。
+        認証サーバ以外からのアクセスは拒否する。
+      tags:
+        - JWT
+      requestBody:
+        description: JWTの元データ
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: string
+                  description: |
+                    JWTの元データをBase64エンコードした文字列
+                    key名はVaultで決められている
+      responses:
+        '200':
+          description: |
+            JWTに署名
+            署名をレスポンス
+          content:
+            application/json:
+              example:
+                {
+                  'request_id': '79e900fc-2d32-f557-58b5-a357beef6df0',
+                  'lease_id': '',
+                  'renewable': False,
+                  'lease_duration': 0,
+                  'data': {
+                    'allow_plaintext_backup': False,
+                    'auto_rotate_period': 0,
+                    'deletion_allowed': False,
+                    'derived': False,
+                    'exportable': False,
+                    'imported_key': False,
+                    'keys': {
+                      '1': {
+                        'certificate_chain': '',
+                        'creation_time': '2024-12-25T05:07:53.008433943Z',
+                        'name': 'rsa-2048',
+                        'public_key': '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoJMz6VWfbf0ap22WKZop\nyYogb7THx4MFADrDp3dbA45pztM0LEGBaAYCYgKB5hE+NAbOXHLNsYtVFvBDfyXu\nsOPegElO8hB6a0NJvPZfN4P1eFzxKGI4CDliQ/dI4gqD3jx4JKaW0pXfkCn9aOx9\ns85wS4VjoH1L/rgv68gIlQu3S+M+TtFNHF7BJEp8ZvpXCm+1foIfvWse25xP5wzf\nrhwcXkB8EUYABqqRqmrMF5V/hCi8T4vYyNrp/tyf7RtXbF5rntWs9nhnsaUZNrFe\nFq3gzoTNidkcj5XMKuqbM719gvJcVKUnlE/LeKR8lvsbH1tJDUiOr9z/qY+CoceB\nWwIDAQAB\n-----END PUBLIC KEY-----\n'
+                      }
+                    },
+                    'latest_version': 1,
+                    'min_available_version': 0,
+                    'min_decryption_version': 1,
+                    'min_encryption_version': 0,
+                    'name': 'signing-key',
+                    'supports_decryption': True,
+                    'supports_derivation': False,
+                    'supports_encryption': True,
+                    'supports_signing': True,
+                    'type': 'rsa-2048'
+                  },
+                  'wrap_info': None,
+                  'warnings': None,
+                  'auth': None,
+                  'mount_type': 'transit'
+                }
+        '400':
+          description: リクエストボディが不正な値
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "error parsing JSON"
+                  ]
+                }
+        '403':
+          description: 無効なトークン
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "2 errors occurred:\n\t* permission denied\n\t* invalid token\n\n"
+                  ]
+                }
+        '404':
+          description: 署名用のエンドポイントが登録されていない
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "no handler for route \"transit/sign/signing-key\". route entry not found."
+                  ]
+                }
+
+  /v1/transit/keys/jwt-key:
+    get:
+      summary: JWT検証用の公開鍵を取得
+      description: |
+        JWT検証用の公開鍵を取得する。
+        アクセス制限は設けない。
+      tags:
+        - JWT
+      responses:
+        '200':
+          description: 公開鍵を返す
+          content:
+            application/json:
+              example:
+                {
+                  'request_id': '0f8706d3-d6a1-28f6-e4e9-cfdded1143cb',
+                  'lease_id': '',
+                  'renewable': False,
+                  'lease_duration': 0,
+                  'data': {
+                    'allow_plaintext_backup': False,
+                    'auto_rotate_period': 0,
+                    'deletion_allowed': False,
+                    'derived': False,
+                    'exportable': False,
+                    'imported_key': False,
+                    'keys': {
+                      '1': {
+                        'certificate_chain': '',
+                        'creation_time': '2024-12-25T05:07:53.008433943Z',
+                        'name': 'rsa-2048',
+                        'public_key': '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoJMz6VWfbf0ap22WKZop\nyYogb7THx4MFADrDp3dbA45pztM0LEGBaAYCYgKB5hE+NAbOXHLNsYtVFvBDfyXu\nsOPegElO8hB6a0NJvPZfN4P1eFzxKGI4CDliQ/dI4gqD3jx4JKaW0pXfkCn9aOx9\ns85wS4VjoH1L/rgv68gIlQu3S+M+TtFNHF7BJEp8ZvpXCm+1foIfvWse25xP5wzf\nrhwcXkB8EUYABqqRqmrMF5V/hCi8T4vYyNrp/tyf7RtXbF5rntWs9nhnsaUZNrFe\nFq3gzoTNidkcj5XMKuqbM719gvJcVKUnlE/LeKR8lvsbH1tJDUiOr9z/qY+CoceB\nWwIDAQAB\n-----END PUBLIC KEY-----\n'
+                      }
+                    },
+                    'latest_version': 1,
+                    'min_available_version': 0,
+                    'min_decryption_version': 1,
+                    'min_encryption_version': 0,
+                    'name': 'signing-key',
+                    'supports_decryption': True,
+                    'supports_derivation': False,
+                    'supports_encryption': True,
+                    'supports_signing': True,
+                    'type': 'rsa-2048'
+                  },
+                  'wrap_info': None,
+                  'warnings': None,
+                  'auth': None,
+                  'mount_type': 'transit'
+                }
+        '404':
+          description: 公開鍵が見つからない場合
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "no handler for route \"transit/keys/signing-key\". route entry not found."
+                  ]
+                }
+      security: []
+
+  /v1/env-vars/{apiName}:
+    get:
+      summary: 環境変数の取得
+      description: |
+        APIサーバ用の環境変数をレスポンスする。
+        コンテナ立ち上げ時にこのエンドポイントを叩いて環境変数を取得する。
+        環境変数をVaultサーバで一元管理する。
+        APIサーバ以外からのアクセスは拒否する。
+        小規模サービスなので全てのAPIサーバ共通で使用する環境変数を全て配信。
+      tags:
+        - EnvirnmentVariables
+      parameters:
+        - in: path
+          name: apiName
+          required: true
+          schema:
+            type: string
+            enum:
+              - users
+              - auth
+              - friends
+              - games
+              - matches
+              - tournaments
+              - friends-activity
+      responses:
+        '200':
+          description: 全ての環境変数を返す
+          content:
+            application/json:
+              example:
+                {
+                  'request_id': '2c2f4b53-b099-7dfd-9e2a-2af9f31acf48',
+                  'lease_id': '',
+                  'renewable': False,
+                  'lease_duration': 2764800,
+                  'data': {
+                    'MASTER_ID': '0',
+                    'NO_FLAG': 'true'
+                  },
+                  'wrap_info': None,
+                  'warnings': None,
+                  'auth': None,
+                  'mount_type': 'kv'
+                }
+        '403':
+          description: 無効なトークン
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "2 errors occurred:\n\t* permission denied\n\t* invalid token\n\n"
+                  ]
+                }
+        '404':
+          description: APIサーバ用の環境変数が登録されていない
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "no handler for route \"env-vars/users\". route entry not found."
+                  ]
+                }
+
+  /v1/transit/keys/{apiKey}:
+    post:
+      summary: APIキーを取得
+      description: |
+        指定された種類に基づき、適切なAPIキーを返す。
+        送信元・送信先APIサーバのみAPIキーを取得可能に制限する。
+        Vaultの使用でPOSTメソッドが使用される。
+        APIサーバ以外から叩かれた場合、アクセスを拒否する。
+      tags:
+        - ApiKeys
+      parameters:
+        - in: path
+          name: apiKey
+          required: true
+          schema:
+            type: string
+            enum:
+              - auth-users-key          # ユーザー登録処理・UserNameからUserId取得処理
+              - games-matches-key       # ゲーム結果通知処理
+              - tournaments-matches-key # トーナメント試合作成処理
+              - matches-tournaments-key # トーナメント試合終了通知処理
+          description: 取得するAPIキーの種類
+      responses:
+        '200':
+          description: 指定されたAPIキーを返す
+          content:
+            application/json:
+              example:
+                {
+                  'request_id': '98fc3c12-9a16-3dcf-8c05-66d2727ba5dd',
+                  'lease_id': '',
+                  'renewable': False,
+                  'lease_duration': 0,
+                  'data': {
+                    'allow_plaintext_backup': False,
+                    'auto_rotate_period': 0,
+                    'deletion_allowed': False,
+                    'derived': False,
+                    'exportable': False,
+                    'imported_key': False,
+                    'keys': {
+                      '1': 1735111224
+                    },
+                    'latest_version': 1,
+                    'min_available_version': 0,
+                    'min_decryption_version': 1,
+                    'min_encryption_version': 0,
+                    'name': 'api-key',
+                    'supports_decryption': True,
+                    'supports_derivation': True,
+                    'supports_encryption': True,
+                    'supports_signing': False,
+                    'type': 'aes256-gcm96'
+                  },
+                  'wrap_info': None,
+                  'warnings': None,
+                  'auth': None,
+                  'mount_type': 'transit'
+                }
+        '403':
+          description: 無効なトークン
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "2 errors occurred:\n\t* permission denied\n\t* invalid token\n\n"
+                  ]
+                }
+        '404':
+          description: APIKeyが登録されていない
+          content:
+            application/json:
+              example:
+                {
+                  "errors": [
+                    "no handler for route \"transit/keys/api-key\". route entry not found."
+                  ]
+                }
+
+  /v1/sys/health:
+    get:
+      summary: ヘルスチェック
+      description: ヘルスチェック用エンドポイント
+      tags:
+        - HealthCheck
+      responses:
+        '200':
+          description: サーバが正常に稼働中
+          content:
+            application/json:
+              example:
+                {
+                  "initialized": true,
+                  "sealed": false,
+                  "standby": false,
+                  "performance_standby": false,
+                  "replication_performance_mode": "disabled",
+                  "replication_dr_mode": "disabled",
+                  "server_time_utc": 1735371030,
+                  "version": "1.18.3",
+                  "enterprise": false,
+                  "cluster_name": "vault-cluster-735a781c",
+                  "cluster_id": "fa356f82-379a-e5ac-b736-2d8137d29f5d",
+                  "echo_duration_ms": 0,
+                  "clock_skew_ms": 0,
+                  "replication_primary_canary_age_ms": 0
+                }
+        '500':
+          description: サーバーが正常に稼働していない
+          content:
+            application/json:
+              example:
+                {
+                  "sealed": false,
+                  "standby": false,
+                  "initialized": false,
+                  "performance_standby": false,
+                  "cluster_name": "vault-cluster",
+                  "cluster_id": "abcd1234"
+                }
+      security: []
+
+components:
+  securitySchemes:
+    VaultTokenAuth:
+      type: apiKey
+      name: X-Vault-Token  # Vaultトークンを指定するヘッダーの名前
+      in: header
+
+security:
+  - VaultTokenAuth: []
