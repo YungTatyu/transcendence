@@ -10,6 +10,7 @@ from auth_app.client.user_client import UserClient
 
 from django.conf import settings
 
+
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20)
     email = serializers.EmailField()
@@ -31,8 +32,9 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
     def validate_username(self, value):
-
-        client = UserClient(base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK)
+        client = UserClient(
+            base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
+        )
         res = client.search_users({"username": value})
         if res.status_code == 200:
             raise serializers.ValidationError("This username is already in use.")

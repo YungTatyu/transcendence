@@ -1,10 +1,12 @@
 import requests
 from unittest.mock import Mock
 
+
 class MockResponse:
     """
     A mock response object to mimic requests.Response.
     """
+
     def __init__(self, json_data, status_code):
         self._json_data = json_data
         self.status_code = status_code
@@ -15,6 +17,7 @@ class MockResponse:
     def raise_for_status(self):
         if self.status_code >= 400:
             raise requests.HTTPError(f"HTTP {self.status_code}")
+
 
 class UserClient:
     def __init__(self, base_url, use_mock=False):
@@ -43,9 +46,7 @@ class UserClient:
         )
 
         self.mock_get_user.return_value = MockResponse(
-            json_data=[
-                {"error": "User not found."}
-            ],
+            json_data=[{"error": "User not found."}],
             status_code=404,
         )
 
@@ -77,7 +78,9 @@ class UserClient:
         url = f"{self.base_url}/users"
 
         if not isinstance(query, dict) or len(query) != 1:
-            raise ValueError("Query must be a dictionary with exactly one key: 'username' or 'userid'.")
+            raise ValueError(
+                "Query must be a dictionary with exactly one key: 'username' or 'userid'."
+            )
 
         if self.use_mock:
             print("Using mock response for search_users.")

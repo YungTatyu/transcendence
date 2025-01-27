@@ -118,7 +118,9 @@ class OTPVerificationView(APIView):
         :param user_data: 仮登録データ
         :return: 保存成功ならTrue、失敗ならFalse
         """
-        client = UserClient(base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK)
+        client = UserClient(
+            base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
+        )
         try:
             user = User.objects.create_user(
                 username=user_data["username"],
@@ -129,7 +131,7 @@ class OTPVerificationView(APIView):
 
             res = client.create_user(user_data["username"])
             user_id = res.json()["userId"]
-            
+
             return True
         except Exception as e:
             logger.error(f"Error saving user: {str(e)}")
