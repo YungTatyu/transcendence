@@ -1,4 +1,4 @@
-from core.game_controller import GameContoroller
+from realtime_pingpong.game_controller import GameContoroller
 
 
 class Match:
