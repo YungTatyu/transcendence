@@ -171,6 +171,10 @@ class Player:
 
 
 class PingPong:
+    """
+    ピンポンゲームのロジックを担当する
+    """
+
     class GameState(Enum):
         WAITING_FOR_FIRST_PLAYER = auto()
         WAITING_FOR_SECOND_PLAYER = auto()
