@@ -108,7 +108,7 @@ class Paddle:
     LOWEST_POSITION = Screen.HEIGHT.value - HEIGHT
 
     def __init__(self, x_pos, y_pos):
-        self.__x_posos = x_pos
+        self.__x_pos = x_pos
         self.__y_pos = y_pos
 
     @property
@@ -134,16 +134,32 @@ class Player:
     DOWN = "DOWN"
     KEY = "Key"
 
-    def __init__(self, name, paddle):
-        self.name = name
-        self.paddle = paddle
-        self.keys = {self.UP: self.KEY + "W", self.DOWN: self.KEY + "S"}
-        self.score = 0
+    def __init__(self, id, paddle, key_up="W", key_down="S"):
+        self.__id = id
+        self.__paddle = paddle
+        self.__keys = {self.UP: self.KEY + key_up, self.DOWN: self.KEY + key_down}
+        self.__score = 0
+
+    @property
+    def id(self):
+        return self.__id
+
+    @property
+    def paddle(self):
+        return self.__paddle
+
+    @property
+    def keys(self):
+        return self.__keys
+
+    @property
+    def score(self):
+        return self.__score
 
     def move_paddle(self, key):
         actions = {
-            self.keys[self.UP]: self.paddle.move_up,
-            self.keys[self.DOWN]: self.paddle.move_down,
+            self.__keys[self.UP]: self.__paddle.move_up,
+            self.__keys[self.DOWN]: self.__paddle.move_down,
         }
         action = actions.get(key)
         if action is None:
@@ -151,7 +167,7 @@ class Player:
         action()
 
     def increment_score(self):
-        self.score += 1
+        self.__score += 1
 
 
 class PingPong:
@@ -190,21 +206,21 @@ class PingPong:
     def player_action(self, name, key):
         # print("player action called")
         # print(name, key)
-        if name == self.left_player.name:
+        if name == self.left_player.__id:
             self.left_player.move_paddle(key)
-        elif name == self.right_player.name:
+        elif name == self.right_player.__id:
             self.right_player.move_paddle(key)
 
     def get_state(self):
         return {
             "ball": {"x": self.ball.__x_pos, "y": self.ball.__y_pos},
-            self.left_player.name: {
-                "y": self.left_player.paddle.__y_pos,
-                "score": self.left_player.score,
+            self.left_player.__id: {
+                "y": self.left_player.__paddle.__y_pos,
+                "score": self.left_player.__score,
             },
-            self.right_player.name: {
-                "y": self.right_player.paddle.__y_pos,
-                "score": self.left_player.score,
+            self.right_player.__id: {
+                "y": self.right_player.__paddle.__y_pos,
+                "score": self.left_player.__score,
             },
         }
 
