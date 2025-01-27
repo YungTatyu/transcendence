@@ -1,9 +1,14 @@
 from typing import Optional
+from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import TournamentMatchSerializer, MatchHistorySerializer
+from .serializers import (
+    TournamentMatchSerializer,
+    MatchHistorySerializer,
+    MatchFinishSerializer,
+)
 from .models import Matches, MatchParticipants
 
 
@@ -57,6 +62,68 @@ class TournamentMatchView(APIView):
 
 class MatchFinishView(APIView):
     def post(self, request):
+        serializer = MatchFinishSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        match_id = serializer.validated_data["matchId"]
+        results = serializer.validated_data["results"]
+        if not self.__check_match_integrity(match_id, results):
+            return Response(
+                {"error": "The match data has integrity issues."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        finish_date = self.__update_match_data(match_id, results)
+
+        self.__send_match_result_to_tournament_api(match_id)
+
+        return Response({"finishDate": str(finish_date)}, status=status.HTTP_200_OK)
+
+    def __check_match_integrity(self, match_id: int, results: list[dict]) -> bool:
+        match = Matches.objects.filter(match_id=match_id).first()
+
+        # 試合が存在しない
+        if match is None:
+            return False
+
+        # 試合は既に終了している
+        if match.finish_date is not None:
+            return False
+
+        # 勝者が複数存在する
+        scores = [result["score"] for result in results]
+        winner_score = max(scores)
+        if scores.count(winner_score) != 1:
+            return False
+
+        # リクエストボディとDB内のuser_idsに整合性が無い
+        user_ids = [result["userId"] for result in results]
+        participants_ids = MatchParticipants.objects.filter(
+            match_id=match_id
+        ).values_list("user_id", flat=True)
+        return set(user_ids) == set(participants_ids)
+
+    def __update_match_data(self, match_id: int, results: list[dict]) -> now:
+        for result in results:
+            user_id = result["user_id"]
+            score = result["score"]
+            MatchParticipants.objects.filter(match_id=match_id, user_id=user_id).update(
+                score=score
+            )
+
+        winner_user_id = max(results, key=lambda x: x["score"])
+        finish_date = now()
+        Matches.objects.filter(match_id=match_id).update(
+            winner_user_id=winner_user_id, finish_date=finish_date
+        )
+
+        return finish_date
+
+    def __send_match_result_to_tournament_api(self, match_id: int):
+        """
+        /tournaments/finish-match エンドポイントを叩き、TournamentAPIに試合が終了したことを通知
+        """
         pass
 
 

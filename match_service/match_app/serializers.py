@@ -20,3 +20,12 @@ class TournamentMatchSerializer(serializers.Serializer):
 class MatchHistorySerializer(serializers.Serializer):
     offset = serializers.IntegerField(min_value=0, required=False, default=0)
     limit = serializers.IntegerField(min_value=1, required=False, default=10)
+
+
+class MatchFinishSerializer(serializers.Serializer):
+    class ResultSerializer(serializers.Serializer):
+        userId = serializers.IntegerField(min_value=0)
+        score = serializers.IntegerField(min_value=0)
+
+    matchId = serializers.IntegerField(min_value=0)
+    results = serializers.ListField(child=ResultSerializer())
