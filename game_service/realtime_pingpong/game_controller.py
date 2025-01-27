@@ -24,7 +24,7 @@ class GameContoroller:
 
     async def game_loop(self, match_id):
         try:
-            while self.game.state != PingPong.GameState.GAME_OVER:
+            while self.game.__state != PingPong.GameState.GAME_OVER:
                 self.game.update()
                 await GameConsumer.group_send(
                     {
