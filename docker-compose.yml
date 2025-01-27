@@ -35,12 +35,20 @@ services:
       - "8001:8001"
     networks:
       - app_network
+    depends_on:
+      - game_redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://game:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  game_redis:
+    image: redis:alpine
+    container_name: game_redis_server
+    networks:
+      - app_network
 
 networks:
   app_network:
