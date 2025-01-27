@@ -183,52 +183,68 @@ class PingPong:
         GAME_OVER = auto()
 
     def __init__(self, player1=None, playerr2=None):
-        self.state = self.GameState.WAITING_FOR_FIRST_PLAYER
-        self.ball = Ball()
-        self.left_player = self.add_player(player1)
-        self.right_player = self.add_player(playerr2)
+        self.__state = self.GameState.WAITING_FOR_FIRST_PLAYER
+        self.__ball = Ball()
+        self.__left_player = self.add_player(player1)
+        self.__right_player = self.add_player(playerr2)
+
+    @property
+    def state(self):
+        return self.__state
+
+    @property
+    def ball(self):
+        return self.__ball
+
+    @property
+    def left_player(self):
+        return self.__left_player
+
+    @property
+    def right_player(self):
+        return self.__right_player
 
     def add_player(self, player_id):
         if player_id is None:
             return None  # Noneでplayerを初期化
         if (
-            self.state != self.GameState.WAITING_FOR_FIRST_PLAYER
-            and self.state != self.GameState.WAITING_FOR_SECOND_PLAYER
+            self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER
+            and self.__state == self.GameState.WAITING_FOR_SECOND_PLAYER
         ):
             raise RuntimeError("this game is already ready to play.")
-        if self.state == self.GameState.WAITING_FOR_FIRST_PLAYER:
-            self.left_player = Player(
+        if self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER:
+            self.__left_player = Player(
                 player_id, Paddle(Screen.HIGHEST_POS.value, Screen.HEIGHT.value / 2)
             )
-            self.state = self.GameState.WAITING_FOR_SECOND_PLAYER
+            self.__state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
-        self.right_player = Player(
+        self.__right_player = Player(
             player_id, Paddle(Screen.WIDTH.value, Screen.HEIGHT.value / 2)
         )
-        self.state = self.GameState.READY_TO_START
+        self.__state = self.GameState.READY_TO_START
 
     def player_action(self, id, key):
-        if id == self.left_player.id:
-            self.left_player.move_paddle(key)
-        elif id == self.right_player.id:
-            self.right_player.move_paddle(key)
+        if id == self.__left_player.id:
+            self.__left_player.move_paddle(key)
+        elif id == self.__right_player.id:
+            self.__right_player.move_paddle(key)
 
     def get_state(self):
         return {
-            "ball": {"x": self.ball.x_pos, "y": self.ball.y_pos},
+            "ball": {"x": self.__ball.x_pos, "y": self.__ball.y_pos},
             "left_player": {
-                "id": self.left_player.id,
-                "y": self.left_player.paddle.y_pos,
-                "score": self.left_player.score,
+                "id": self.__left_player.id,
+                "y": self.__left_player.paddle.y_pos,
+                "score": self.__left_player.score,
             },
             "right_player": {
-                "id": self.right_player.id,
-                "y": self.right_player.paddle.y_pos,
-                "score": self.right_player.score,
+                "id": self.__right_player.id,
+                "y": self.__right_player.paddle.y_pos,
+                "score": self.__right_player.score,
             },
         }
 
     def update(self):
-        scored, player = self.ball.move(self.left_player, self.right_player)
+        scored, player = self.__ball.move(self.__left_player, self.__right_player)
         if scored:
             player.increment_score()
