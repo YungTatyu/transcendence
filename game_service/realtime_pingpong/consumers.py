@@ -43,6 +43,9 @@ class AuthHandler:
 
 
 class ActionHandler:
+    """
+    ws connectionのhandler
+    """
     ACTION_PADDLE = "game.paddle_move"
 
     @staticmethod
@@ -79,7 +82,7 @@ class ActionHandler:
     def handle_player_action(json, game):
         type = json.get("type")
         key = json.get("key")
-        name = json.get("username")
+        name = json.get("userid")
         if type is None:
             return
         if type == ActionHandler.ACTION_PADDLE:
