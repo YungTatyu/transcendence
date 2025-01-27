@@ -1,1 +1,3 @@
 djangorestframework
+channels[daphne]
+channels_redis
