@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Image from "next/image";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
@@ -8,20 +8,20 @@ import Link from "next/link";
 
 export default function Home() {
   const { username, setUsername } = useUsername();
-  const [error, setError] = useState('');
-  const router = useRouter()
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const submitHandler = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const username = e.target.username.value;
     const matchId = e.target.matchId.value;
     if (!username || !matchId) {
-      setError("username or match id can not be empty.")
-      return
+      setError("username or match id can not be empty.");
+      return;
     }
     setUsername(username);
-    router.push(`/game`)
-  }
+    router.push("/game");
+  };
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <Link
@@ -40,6 +40,7 @@ export default function Home() {
         }}
       >
         <button
+          type="button"
           style={{
             all: "unset",
             fontSize: "inherit",
@@ -52,9 +53,20 @@ export default function Home() {
       <h1>Gameをplay</h1>
       <h3>※まずはmatchを作成する必要があります</h3>
       <h3>match作成したplayer idとmatch idを以下に入力</h3>
-      <form onSubmit={submitHandler} style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "300px" }}>
+      <form
+        onSubmit={submitHandler}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          maxWidth: "300px",
+        }}
+      >
         <div>
-          <label htmlFor="username" style={{ display: "block", marginBottom: "5px" }}>
+          <label
+            htmlFor="username"
+            style={{ display: "block", marginBottom: "5px" }}
+          >
             Your user id
           </label>
           <input
@@ -66,7 +78,10 @@ export default function Home() {
           />
         </div>
         <div>
-          <label htmlFor="matchId" style={{ display: "block", marginBottom: "5px" }}>
+          <label
+            htmlFor="matchId"
+            style={{ display: "block", marginBottom: "5px" }}
+          >
             match id
           </label>
           <input
@@ -77,7 +92,7 @@ export default function Home() {
             style={{ width: "100%", padding: "8px", fontSize: "16px" }}
           />
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>} {/* エラー表示 */}
+        {error && <p style={{ color: "red" }}>{error}</p>} {/* エラー表示 */}
         <button
           type="submit"
           style={{
@@ -89,7 +104,6 @@ export default function Home() {
             borderRadius: "4px",
             cursor: "pointer",
           }}
-
         >
           Go to Game
         </button>

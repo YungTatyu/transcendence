@@ -1,6 +1,6 @@
-'use client'
+"use client";
 import { useUsername } from "@/app/UsernameContext";
-import { useParams } from "next/navigation"
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const GAME_HEIGHT = 500;
@@ -9,8 +9,6 @@ const BALL_WIDTH = 20;
 const BALL_HEIGHT = 20;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
-
-
 
 export default function Game() {
   const { matchId } = useParams();
@@ -25,7 +23,9 @@ export default function Game() {
   useEffect(() => {
     const createWebSocketManager = (matchId) => {
       const REDIS_SERVER = "127.0.0.1:3000";
-      const socket = new WebSocket(`ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}`);
+      const socket = new WebSocket(
+        `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}`,
+      );
 
       socket.onopen = () => {
         console.log(`Connected to match: ${matchId}`);
@@ -35,7 +35,10 @@ export default function Game() {
         try {
           const parsedMessage = JSON.parse(message.data);
 
-          if (parsedMessage.type === "game.message" && parsedMessage.message === "MSG_UPDATE") {
+          if (
+            parsedMessage.type === "game.message" &&
+            parsedMessage.message === "MSG_UPDATE"
+          ) {
             const updatedState = parsedMessage.data.state;
 
             setGameState({
@@ -88,7 +91,7 @@ export default function Game() {
           username: userid,
         });
         eventCallback(message);
-      }
+      };
 
       document.addEventListener("keydown", handler);
       document.addEventListener("keyup", handler);
@@ -121,7 +124,13 @@ export default function Game() {
       // ボールを球体として描画
       ctx.fillStyle = "white";
       ctx.beginPath();
-      ctx.arc(gameState.ball.x + BALL_WIDTH / 2, gameState.ball.y + BALL_HEIGHT / 2, BALL_WIDTH / 2, 0, Math.PI * 2);
+      ctx.arc(
+        gameState.ball.x + BALL_WIDTH / 2,
+        gameState.ball.y + BALL_HEIGHT / 2,
+        BALL_WIDTH / 2,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
       ctx.closePath();
 
@@ -131,7 +140,12 @@ export default function Game() {
 
       // 右プレイヤーのパドル描画
       ctx.fillStyle = "#f00"; // 右プレイヤーのパドル色
-      ctx.fillRect(GAME_WIDTH - PADDLE_WIDTH, gameState.right_player.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+      ctx.fillRect(
+        GAME_WIDTH - PADDLE_WIDTH,
+        gameState.right_player.y,
+        PADDLE_WIDTH,
+        PADDLE_HEIGHT,
+      );
 
       // スコアとIDの描画
       ctx.fillStyle = "white";
@@ -194,7 +208,7 @@ export default function Game() {
             border: "1px solid white",
             boxSizing: "border-box", // ボーダーをキャンバスサイズに含める
           }}
-        ></canvas>
+        />
       </div>
     </div>
   );
