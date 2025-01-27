@@ -24,7 +24,10 @@ class MatchView(APIView):
 
         offset = serializer.validated_data["offset"]
         limit = serializer.validated_data["limit"]
-        results = self.__convert_matches_to_results(matches[offset : offset + limit])
+
+        # N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています
+        sliced_matches = matches[offset : offset + limit]
+        results = [self.__convert_match_to_result(match) for match in sliced_matches]
 
         data = {
             "total": len(matches),
@@ -47,12 +50,6 @@ class MatchView(APIView):
         if validated_data.get("round", None) is not None:
             filters["round"] = validated_data["round"]
         return filters
-
-    def __convert_matches_to_results(self, matches: list[Matches]) -> list[dict]:
-        """N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています"""
-        if matches == []:
-            return []
-        return [self.__convert_match_to_result(match) for match in matches]
 
     def __convert_match_to_result(self, match: Matches) -> dict:
         participants = MatchParticipants.objects.filter(match_id=match.match_id)
@@ -231,9 +228,12 @@ class MatchHistoryView(APIView):
 
         offset = serializer.validated_data["offset"]
         limit = serializer.validated_data["limit"]
-        results = self.__convert_matches_to_results(
-            matches[offset : offset + limit], user_id
-        )
+
+        # N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています
+        sliced_matches = matches[offset : offset + limit]
+        results = [
+            self.__convert_match_to_result(match, user_id) for match in sliced_matches
+        ]
 
         data = {
             "total": len(matches),
@@ -253,14 +253,6 @@ class MatchHistoryView(APIView):
             .order_by("match_id")  # 並び順を固定(offsetとlimitを使うため)
         )
         return [participant.match_id for participant in finished_matches]
-
-    def __convert_matches_to_results(
-        self, matches: list[Matches], user_id: int
-    ) -> list[dict]:
-        """N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています"""
-        if matches == []:
-            return []
-        return [self.__convert_match_to_result(match, user_id) for match in matches]
 
     def __convert_match_to_result(self, match: Matches, user_id: int) -> dict:
         win_or_lose = "win" if match.winner_user_id == user_id else "lose"
