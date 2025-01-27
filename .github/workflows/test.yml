@@ -24,14 +24,17 @@ jobs:
         readonly CHECK="python manage.py check"
         readonly TRUE="true"
         readonly FALSE="false"
+
         services=(
-          # ["auth"]=$CHECK
-          # ["game"]=$CHECK
+          ["auth"]=$CHECK
+          ["game"]=$CHECK
           ["tournament"]=$CHECK
         )
+
         for i in {1..30}; do
           docker ps
           all_services_ready=$TRUE
+
           sleep 5
           for service in "${!services[@]}"; do
             if ! docker compose exec $service ${services[$service]}; then
@@ -40,9 +43,11 @@ jobs:
               break
             fi
           done
+
           if [[ "$all_services_ready" == "$TRUE" ]]; then
             exit 0
           fi
+
           sleep 5
           for service in "${!services[@]}"; do
             docker compose logs $service
@@ -50,11 +55,13 @@ jobs:
         done
         echo "Services did not become ready in time."
         exit 1
+
     - name: Run tests
       run: |
-        # docker compose exec auth python manage.py test
-        # docker compose exec game python manage.py test
+        docker compose exec auth python manage.py test
+        docker compose exec game python manage.py test
         docker compose exec tournament pytest
+
     - name: Tear down
       if: always()
       run: docker compose down

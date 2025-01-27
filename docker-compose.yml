@@ -1,13 +1,55 @@
 version: '3'
 services:
+  auth:
+    build: ./auth_service
+    container_name: auth_app
+    ports:
+      - "8000:8000"
+    networks:
+      - app_network
+    depends_on:
+      - auth_db
+      - auth_redis
+    env_file: ./docker_env/auth.env
+
+  auth_db:
+    image: postgres:15
+    container_name: auth_db
+    env_file: ./docker_env/auth_db.env
+    networks:
+      - app_network
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  auth_redis:
+    image: redis:alpine
+    container_name: auth_redis_server
+    networks:
+      - app_network
+
+  game:
+    build: ./game_service
+    container_name: game
+    tty: true
+    ports:
+      - "8001:8001"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://game:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
   tournament:
     build: ./tournament_service
     container_name: tournament
     ports:
       - "8002:8002"
-    env_file: ./dev_envs/tournament.env
+    env_file: ./docker_env/tournament.env
     networks:
-      - tournament_network
+      - app_network
     depends_on:
       - tournament_db
       - tournament_redis
@@ -17,9 +59,9 @@ services:
   tournament_db:
     image: postgres:15
     container_name: tournament_db
-    env_file: ./dev_envs/tournament_db.env
+    env_file: ./docker_env/tournament_db.env
     networks:
-      - tournament_network
+      - app_network
     volumes:
       - tournament_db_data:/var/lib/postgresql/data
 
@@ -27,11 +69,12 @@ services:
     image: redis:alpine
     container_name: tournament_redis
     networks:
-      - tournament_network
+      - app_network
 
 networks:
-  tournament_network:
+  app_network:
     driver: bridge
 
 volumes:
+  auth_db_data:
   tournament_db_data:
