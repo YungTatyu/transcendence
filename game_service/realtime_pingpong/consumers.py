@@ -1,11 +1,10 @@
-from enum import Enum
 import json
+from enum import Enum
+
+import jwt
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
-
 from core.match_manager import MatchManager
-import jwt
-
 from core.pingpong import PingPong
 
 
@@ -29,7 +28,7 @@ class AuthHandler:
     def verify_jwt(self, token):
         # JWTの検証ロジック
         try:
-            decoded = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
+            jwt.decode(token, "your-secret-key", algorithms=["HS256"])
             return True
         except jwt.ExpiredSignatureError:
             return False
@@ -46,6 +45,7 @@ class ActionHandler:
     """
     ws connectionのhandler
     """
+
     ACTION_PADDLE = "game.paddle_move"
 
     @staticmethod
@@ -73,7 +73,7 @@ class ActionHandler:
         game = game_contoroller.game
         try:
             game.add_player(user_id)
-        except RuntimeError as e:
+        except RuntimeError:
             # 1007(矛盾するデータ)
             return (False, 1007)
         return (True,)
@@ -86,7 +86,15 @@ class ActionHandler:
         if type is None:
             return
         if type == ActionHandler.ACTION_PADDLE:
-            game.player_action(name, key):
+            game.player_action(name, key)
+
+    @staticmethod
+    def start_game(match_id):
+        match_dict = MatchManager.get_match(match_id)
+        game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
+        game = game_contoroller.game
+        if game.state == PingPong.GameState.READY_TO_START:
+            game_contoroller.start_game(match_id)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -114,9 +122,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.match_id, self.channel_name)
         await self.accept()
-
-        if game.state == PingPong.GameState.READY_TO_START:
-            game_contoroller.start_game(self.match_id)
+        ActionHandler.start_game(self.match_id)
 
     async def disconnect(self, close_code):
         # Leave room group
