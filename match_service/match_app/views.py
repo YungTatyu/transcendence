@@ -40,13 +40,13 @@ class MatchView(APIView):
     def __create_filters(self, validated_data) -> dict:
         filters = {}
         if validated_data.get("matchId", None) is not None:
-            filters["matchId"] = validated_data["matchId"]
+            filters["match_id"] = validated_data["matchId"]
         if validated_data.get("winnerUserId", None) is not None:
-            filters["winnerUserId"] = validated_data["winnerUserId"]
+            filters["winner_user_id"] = validated_data["winnerUserId"]
         if validated_data.get("mode", None) is not None:
             filters["mode"] = validated_data["mode"]
         if validated_data.get("tournamentId", None) is not None:
-            filters["tournamentId"] = validated_data["tournamentId"]
+            filters["tournament_id"] = validated_data["tournamentId"]
         if validated_data.get("round", None) is not None:
             filters["round"] = validated_data["round"]
         return filters
