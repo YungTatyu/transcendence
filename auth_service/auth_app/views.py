@@ -127,7 +127,9 @@ class OTPVerificationView(APIView):
             )
             user.save()
 
-            client.create_user(user_data["username"])
+            res = client.create_user(user_data["username"])
+            user_id = res.json()["userId"]
+            
             return True
         except Exception as e:
             logger.error(f"Error saving user: {str(e)}")
