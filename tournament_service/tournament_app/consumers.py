@@ -59,6 +59,11 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 await self.__start_tournament()
 
     async def disconnect(self, _):
+        """
+        INFO トーナメント開始のタイミングでdisconnectが多発し、
+             0 or 1人でトーナメントが開始される可能性があるため、
+             connectとdisconnectは同時に処理されないように排他制御しています
+        """
         lock = await TournamentMatchingManager.get_lock()
         async with lock:
             await self.channel_layer.group_discard(
