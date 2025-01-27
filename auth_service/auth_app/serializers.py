@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from auth_app.utils.redis_handler import RedisHandler
+from auth_app.client.user_client import UserClient
 
+from django.conf import settings
 
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20)
@@ -29,8 +31,12 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
     def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
+
+        client = UserClient(base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK)
+        res = client.search_users({"username": value})
+        if res.status_code == 200:
             raise serializers.ValidationError("This username is already in use.")
+
         # Redisで仮登録状態を確認
         redis_key = f"pending_user:{value}"
         if RedisHandler.exists(redis_key):

@@ -44,9 +44,9 @@ class UserClient:
 
         self.mock_get_user.return_value = MockResponse(
             json_data=[
-                {"userId": "12345", "username": "mockuser"}
+                {"error": "User not found."}
             ],
-            status_code=200,
+            status_code=404,
         )
 
     def create_user(self, username):
