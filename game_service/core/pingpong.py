@@ -108,19 +108,25 @@ class Paddle:
     LOWEST_POSITION = Screen.HEIGHT.value - HEIGHT
 
     def __init__(self, x_pos, y_pos):
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        self.__x_posos = x_pos
+        self.__y_pos = y_pos
+
+    @property
+    def x_pos(self):
+        return self.__x_pos
+
+    @property
+    def y_pos(self):
+        return self.__y_pos
 
     def move_up(self):
-        # print("move up")
-        if self.y_pos > Screen.HIGHEST_POS.value:
+        if self.__y_pos > Screen.HIGHEST_POS.value:
             # 0以下になってほしくない
-            self.y_pos = max(Screen.HIGHEST_POS.value, self.y_pos - self.SPEED)
+            self.__y_pos = max(Screen.HIGHEST_POS.value, self.__y_pos - self.SPEED)
 
     def move_down(self):
-        # print("move down")
-        if self.y_pos < self.LOWEST_POSITION:
-            self.y_pos = min(self.LOWEST_POSITION, self.y_pos + self.SPEED)
+        if self.__y_pos < self.LOWEST_POSITION:
+            self.__y_pos = min(self.LOWEST_POSITION, self.__y_pos + self.SPEED)
 
 
 class Player:
@@ -193,11 +199,11 @@ class PingPong:
         return {
             "ball": {"x": self.ball.__x_pos, "y": self.ball.__y_pos},
             self.left_player.name: {
-                "y": self.left_player.paddle.y_pos,
+                "y": self.left_player.paddle.__y_pos,
                 "score": self.left_player.score,
             },
             self.right_player.name: {
-                "y": self.right_player.paddle.y_pos,
+                "y": self.right_player.paddle.__y_pos,
                 "score": self.left_player.score,
             },
         }
