@@ -36,7 +36,8 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         # Lockを用いて1人ずつ処理(パフォーマンスを犠牲に整合性を保つ)
-        async with TournamentMatchingManager.get_lock():
+        lock = await TournamentMatchingManager.get_lock()
+        async with lock:
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
             count = TournamentMatchingManager.add_user(
                 self.scope["client"][1], self.channel_name
@@ -58,7 +59,8 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 await self.__start_tournament()
 
     async def disconnect(self, _):
-        async with TournamentMatchingManager.get_lock():
+        lock = await TournamentMatchingManager.get_lock()
+        async with lock:
             await self.channel_layer.group_discard(
                 self.MATCHING_ROOM, self.channel_name
             )

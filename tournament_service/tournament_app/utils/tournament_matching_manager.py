@@ -16,7 +16,7 @@ class TournamentMatchingManager:
     # トーナメント強制開始用タイマーオブジェクト
     __task_timer = None
     # 非同期排他制御用のlockオブジェクト
-    __lock = asyncio.Lock()
+    __lock: Optional[asyncio.Lock] = None  # 初期化を遅延させるためNoneを設定
 
     @classmethod
     def get_waiting_users(cls) -> dict[int, str]:
@@ -61,5 +61,7 @@ class TournamentMatchingManager:
         return None
 
     @classmethod
-    def get_lock(cls) -> asyncio.Lock:
+    async def get_lock(cls) -> asyncio.Lock:
+        if cls.__lock is None:
+            cls.__lock = asyncio.Lock()  # イベントループ内で初期化
         return cls.__lock
