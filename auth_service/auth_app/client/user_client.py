@@ -1,6 +1,21 @@
 import requests
 from unittest.mock import Mock
 
+class MockResponse:
+    """
+    A mock response object to mimic requests.Response.
+    """
+    def __init__(self, json_data, status_code):
+        self._json_data = json_data
+        self.status_code = status_code
+
+    def json(self):
+        return self._json_data
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise requests.HTTPError(f"HTTP {self.status_code}")
+
 class UserClient:
     def __init__(self, base_url, use_mock=False):
         """
@@ -22,23 +37,17 @@ class UserClient:
         self.mock_get_user = Mock()
 
         # Mock for successful user creation
-        self.mock_post_user.return_value = {
-            "status_code": 201,
-            "json": lambda: {
-                "userId": "12345",
-                "username": "mockuser"
-            }
-        }
+        self.mock_post_user.return_value = MockResponse(
+            json_data={"userId": "12345", "username": "mockuser"},
+            status_code=201,
+        )
 
-        self.mock_get_user.return_value = {
-            "status_code": 200,
-            "json": lambda: [
-                {
-                    "userId": "12345",
-                    "username": "mockuser"
-                }
-            ]
-        }
+        self.mock_get_user.return_value = MockResponse(
+            json_data=[
+                {"userId": "12345", "username": "mockuser"}
+            ],
+            status_code=200,
+        )
 
     def create_user(self, username):
         """
