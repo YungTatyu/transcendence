@@ -29,3 +29,13 @@ class MatchFinishSerializer(serializers.Serializer):
 
     matchId = serializers.IntegerField(min_value=0)
     results = serializers.ListField(child=ResultSerializer())
+
+
+class MatchesSerializer(serializers.Serializer):
+    matchId = serializers.IntegerField(min_value=0, required=False)
+    winnerUserId = serializers.IntegerField(min_value=0, required=False)
+    mode = serializers.ChoiceField(choices=["QuickPlay", "Tournament"], required=False)
+    tournamentId = serializers.IntegerField(min_value=0, required=False)
+    round = serializers.IntegerField(min_value=1, required=False)
+    offset = serializers.IntegerField(min_value=0, required=False, default=0)
+    limit = serializers.IntegerField(min_value=1, required=False, default=10)

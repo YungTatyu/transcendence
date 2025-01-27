@@ -8,13 +8,71 @@ from .serializers import (
     TournamentMatchSerializer,
     MatchHistorySerializer,
     MatchFinishSerializer,
+    MatchesSerializer,
 )
 from .models import Matches, MatchParticipants
 
 
 class MatchView(APIView):
     def get(self, request):
-        pass
+        serializer = MatchesSerializer(data=request.query_params)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        filters = self.__create_filters(serializer.validated_data)
+        matches = list(Matches.objects.filter(**filters))
+
+        offset = serializer.validated_data["offset"]
+        limit = serializer.validated_data["limit"]
+        results = self.__convert_matches_to_results(matches[offset : offset + limit])
+
+        data = {
+            "total": len(matches),
+            "offset": offset,
+            "limit": len(results),
+            "results": results,
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def __create_filters(self, validated_data) -> dict:
+        filters = {}
+        if validated_data.get("matchId", None) is not None:
+            filters["matchId"] = validated_data["matchId"]
+        if validated_data.get("winnerUserId", None) is not None:
+            filters["winnerUserId"] = validated_data["winnerUserId"]
+        if validated_data.get("mode", None) is not None:
+            filters["mode"] = validated_data["mode"]
+        if validated_data.get("tournamentId", None) is not None:
+            filters["tournamentId"] = validated_data["tournamentId"]
+        if validated_data.get("round", None) is not None:
+            filters["round"] = validated_data["round"]
+        return filters
+
+    def __convert_matches_to_results(self, matches: list[Matches]) -> list[dict]:
+        """N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています"""
+        if matches == []:
+            return []
+        return [self.__convert_match_to_result(match) for match in matches]
+
+    def __convert_match_to_result(self, match: Matches) -> dict:
+        participants = MatchParticipants.objects.filter(match_id=match.match_id)
+        participant_data = [
+            {"id": participant.user_id, "score": participant.score}
+            for participant in participants
+        ]
+        parent_match = match.parent_match_id
+        parent_match_id = None if parent_match is None else parent_match.match_id
+
+        result = {
+            "matchId": match.match_id,
+            "winnerUserId": match.winner_user_id,
+            "mode": match.mode,
+            "tournamentId": match.tournament_id,
+            "parentMatchId": parent_match_id,
+            "round": match.round,
+            "participants": participant_data,
+        }
+        return result
 
 
 class TournamentMatchView(APIView):
