@@ -27,6 +27,21 @@ services:
     networks:
       - app_network
 
+  game:
+    build: ./game_service
+    container_name: game
+    tty: true
+    ports:
+      - "8001:8001"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://game:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
 networks:
   app_network:
     driver: bridge

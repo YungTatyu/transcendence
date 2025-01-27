@@ -20,22 +20,46 @@ jobs:
     - name: Wait for services to be ready
       run: |
         echo "Waiting for services to be ready..."
+
+        declare -A services
+        readonly CHECK="python manage.py check"
+        readonly TRUE="true"
+        readonly FALSE="false"
+
+        services=(
+          ["auth"]=$CHECK
+          ["game"]=$CHECK
+        )
+
         for i in {1..30}; do
           docker ps
+          all_services_ready=$TRUE
+
           sleep 5
-          if docker compose exec auth python manage.py check; then
-            echo "Services are ready!"
-            sleep 20
+          for service in "${!services[@]}"; do
+            if ! docker compose exec $service ${services[$service]}; then
+              echo "$service is not ready yet."
+              all_services_ready=$FALSE
+              break
+            fi
+          done
+
+          if [[ "$all_services_ready" == "$TRUE" ]]; then
             exit 0
           fi
+
           sleep 5
-          docker compose logs auth
+          for service in "${!services[@]}"; do
+            docker compose logs $service
+          done
         done
         echo "Services did not become ready in time."
         exit 1
 
     - name: Run tests
-      run: docker compose exec auth python manage.py test
+      run: |
+        docker compose exec auth python manage.py test
+        docker compose exec game python manage.py test
 
     - name: Tear down
       if: always()
