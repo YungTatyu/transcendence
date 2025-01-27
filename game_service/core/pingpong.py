@@ -178,14 +178,14 @@ class PingPong:
         IN_PROGRESS = auto()
         GAME_OVER = auto()
 
-    def __init__(self, name1=None, name2=None):
+    def __init__(self, player1=None, playerr2=None):
         self.state = self.GameState.WAITING_FOR_FIRST_PLAYER
         self.ball = Ball()
-        self.left_player = self.add_player(name1)
-        self.right_player = self.add_player(name2)
+        self.left_player = self.add_player(player1)
+        self.right_player = self.add_player(playerr2)
 
-    def add_player(self, name):
-        if name is None:
+    def add_player(self, player_id):
+        if player_id is None:
             return None  # Noneでplayerを初期化
         if (
             self.state != self.GameState.WAITING_FOR_FIRST_PLAYER
@@ -194,33 +194,33 @@ class PingPong:
             raise RuntimeError("this game is already ready to play.")
         if self.state == self.GameState.WAITING_FOR_FIRST_PLAYER:
             self.left_player = Player(
-                name, Paddle(Screen.HIGHEST_POS.value, Screen.HEIGHT.value / 2)
+                player_id, Paddle(Screen.HIGHEST_POS.value, Screen.HEIGHT.value / 2)
             )
             self.state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
         self.right_player = Player(
-            name, Paddle(Screen.WIDTH.value, Screen.HEIGHT.value / 2)
+            player_id, Paddle(Screen.WIDTH.value, Screen.HEIGHT.value / 2)
         )
         self.state = self.GameState.READY_TO_START
 
-    def player_action(self, name, key):
-        # print("player action called")
-        # print(name, key)
-        if name == self.left_player.__id:
+    def player_action(self, id, key):
+        if id == self.left_player.id:
             self.left_player.move_paddle(key)
-        elif name == self.right_player.__id:
+        elif id == self.right_player.id:
             self.right_player.move_paddle(key)
 
     def get_state(self):
         return {
-            "ball": {"x": self.ball.__x_pos, "y": self.ball.__y_pos},
-            self.left_player.__id: {
-                "y": self.left_player.__paddle.__y_pos,
-                "score": self.left_player.__score,
+            "ball": {"x": self.ball.x_pos, "y": self.ball.y_pos},
+            "left_player": {
+                "id": self.left_player.id,
+                "y": self.left_player.paddle.y_pos,
+                "score": self.left_player.score,
             },
-            self.right_player.__id: {
-                "y": self.right_player.__paddle.__y_pos,
-                "score": self.left_player.__score,
+            "right_player": {
+                "id": self.right_player.id,
+                "y": self.right_player.paddle.y_pos,
+                "score": self.right_player.score,
             },
         }
 
