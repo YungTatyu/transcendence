@@ -1,6 +1,6 @@
 from typing import Optional
 from django.utils.timezone import now
-from rest_framework import status
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -19,7 +19,7 @@ class MatchView(APIView):
     def get(self, request):
         serializer = MatchesSerializer(data=request.query_params)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         filters = self.__create_filters(serializer.validated_data)
         matches: list[Matches] = list(
@@ -40,7 +40,7 @@ class MatchView(APIView):
             "limit": len(results),
             "results": results,
         }
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data=data, status=HTTP_200_OK)
 
     def __create_filters(self, validated_data: dict) -> dict:
         """複数条件でDBレコードを検索するための辞書を作成"""
@@ -86,14 +86,14 @@ class TournamentMatchView(APIView):
     def post(self, request):
         serializer = TournamentMatchSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         parent_match_id: Optional[int] = serializer.validated_data["parentMatchId"]
         parent_match, is_err = self.__fetch_parent_match(parent_match_id)
 
         if is_err:
             return Response(
-                {"error": "Parent match not found"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Parent match not found"}, status=HTTP_400_BAD_REQUEST
             )
 
         # Matchesレコードの作成
@@ -108,9 +108,7 @@ class TournamentMatchView(APIView):
         for user_id in serializer.validated_data["userIdList"]:
             MatchParticipants.objects.create(match_id=tournament_match, user_id=user_id)
 
-        return Response(
-            data={"matchId": tournament_match.match_id}, status=status.HTTP_200_OK
-        )
+        return Response(data={"matchId": tournament_match.match_id}, status=HTTP_200_OK)
 
     def __fetch_parent_match(
         self, parent_match_id: Optional[int]
@@ -134,7 +132,7 @@ class MatchFinishView(APIView):
     def post(self, request):
         serializer = MatchFinishSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         match_id: int = serializer.validated_data["matchId"]
         results: list[dict] = serializer.validated_data["results"]
@@ -143,18 +141,18 @@ class MatchFinishView(APIView):
         if not self.__check_match_integrity(match_id, results):
             return Response(
                 {"error": "The match data has integrity issues."},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=HTTP_400_BAD_REQUEST,
             )
 
         # 先にトーナメントAPIを叩く(整合性維持のため)
         if not self.__send_match_result_to_tournament_api(match_id):
             return Response(
                 {"error": "Tournament API was not consistent"},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=HTTP_400_BAD_REQUEST,
             )
 
         finish_date = self.__update_match_data(match_id, results)
-        return Response({"finishDate": str(finish_date)}, status=status.HTTP_200_OK)
+        return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
 
     def __check_match_integrity(self, match_id: int, results: list[dict]) -> bool:
         """リクエストデータとDB内データの整合性を確認"""
@@ -211,13 +209,17 @@ class MatchFinishView(APIView):
 class MatchStatisticView(APIView):
     """user_idに対応する統計情報を取得する"""
 
-    def get(self, _, user_id):
+    def get(self, _, user_id: str):
+        if not user_id.isdigit():
+            return Response({"error": "UserID is invalid"}, status=HTTP_400_BAD_REQUEST)
+
+        user_id_int = int(user_id)
         data = {
-            "matchWinCount": self.__fetch_match_win_count(user_id),
-            "matchLoseCount": self.__fetch_match_lose_count(user_id),
-            "tournamentWinnerCount": self.__fetch_tournament_winner_count(user_id),
+            "matchWinCount": self.__fetch_match_win_count(user_id_int),
+            "matchLoseCount": self.__fetch_match_lose_count(user_id_int),
+            "tournamentWinnerCount": self.__fetch_tournament_winner_count(user_id_int),
         }
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data=data, status=HTTP_200_OK)
 
     def __fetch_match_win_count(self, user_id: int) -> int:
         match_win_count = Matches.objects.filter(winner_user_id=user_id).count()
@@ -247,12 +249,16 @@ class MatchStatisticView(APIView):
 class MatchHistoryView(APIView):
     """user_idに対応する試合履歴情報を取得する"""
 
-    def get(self, request, user_id):
+    def get(self, request, user_id: str):
         serializer = MatchHistorySerializer(data=request.query_params)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-        matches = self.__fetch_finished_matches(user_id)
+        if not user_id.isdigit():
+            return Response({"error": "UserID is invalid"}, status=HTTP_400_BAD_REQUEST)
+        user_id_int = int(user_id)
+
+        matches = self.__fetch_finished_matches(user_id_int)
 
         offset = serializer.validated_data["offset"]
         limit = serializer.validated_data["limit"]
@@ -260,7 +266,8 @@ class MatchHistoryView(APIView):
         # N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています
         sliced_matches = matches[offset : offset + limit]
         results = [
-            self.__convert_match_to_result(match, user_id) for match in sliced_matches
+            self.__convert_match_to_result(match, user_id_int)
+            for match in sliced_matches
         ]
 
         data = {
@@ -269,7 +276,7 @@ class MatchHistoryView(APIView):
             "limit": len(results),
             "results": results,
         }
-        return Response(data=data, status=status.HTTP_200_OK)
+        return Response(data=data, status=HTTP_200_OK)
 
     def __fetch_finished_matches(self, user_id: int) -> list[Matches]:
         """特定のユーザーが参加し、試合が終了している試合を並び順を固定して取得"""
@@ -305,4 +312,4 @@ class MatchHistoryView(APIView):
 
 @api_view(["GET"])
 def health_check(_):
-    return Response(data={"status": "healthy"}, status=status.HTTP_200_OK)
+    return Response(data={"status": "healthy"}, status=HTTP_200_OK)

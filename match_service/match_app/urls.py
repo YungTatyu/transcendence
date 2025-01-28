@@ -17,12 +17,12 @@ urlpatterns = [
     ),
     path("matches/finish/", MatchFinishView.as_view(), name="finish"),
     path(
-        "matches/statistics/<int:user_id>/",
+        "matches/statistics/<str:user_id>/",
         MatchStatisticView.as_view(),
         name="statistic",
     ),
     path(
-        "matches/histories/<int:user_id>/",
+        "matches/histories/<str:user_id>/",
         MatchHistoryView.as_view(),
         name="history",
     ),
