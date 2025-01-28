@@ -1,11 +1,5 @@
 "use client";
-// import Image from "next/image";
-// import styles from "./page.module.css";
-// import { useRouter } from "next/navigation";
-// import { useUsername } from "./UsernameContext";
-// import { useState } from "react";
-// import Link from "next/link";
-//
+
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,8 +17,12 @@ export default function Home() {
     const username = e.target.username.value;
     const matchId = e.target.matchId.value;
     if (!username || !matchId) {
-      setError("username or match id can not be empty.");
+      setError("user id or match id can not be empty.");
       return;
+    }
+    if (!parseInt(username) || !parseInt(matchId)) {
+      setError("user id and match id have to be a number.");
+      return
     }
     setUsername(username);
     router.push(`/game/${matchId}`);
@@ -80,7 +78,7 @@ export default function Home() {
             type="text"
             id="username"
             name="username"
-            placeholder="username"
+            placeholder="1"
             style={{ width: "100%", padding: "8px", fontSize: "16px" }}
           />
         </div>
