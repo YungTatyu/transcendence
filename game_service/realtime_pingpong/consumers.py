@@ -85,7 +85,7 @@ class ActionHandler:
             return
         try:
             id = int(json.get("userid"))
-        except ValueError as e:
+        except ValueError:
             return
         if type == ActionHandler.ACTION_PADDLE:
             game.player_action(id, key)
