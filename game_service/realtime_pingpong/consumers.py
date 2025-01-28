@@ -107,6 +107,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     class MessageType(Enum):
         MSG_UPDATE = "update"
         MSG_ERROR = "error"
+        MSG_TIMER = "timer"
         MSG_GAME_OVER = "gameover"
 
     async def connect(self):
