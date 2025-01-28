@@ -20,9 +20,9 @@ export default function Home() {
       setError("user id or match id can not be empty.");
       return;
     }
-    if (!parseInt(username) || !parseInt(matchId)) {
+    if (!Number.parseInt(username) || !Number.parseInt(matchId)) {
       setError("user id and match id have to be a number.");
-      return
+      return;
     }
     setUsername(username);
     router.push(`/game/${matchId}`);

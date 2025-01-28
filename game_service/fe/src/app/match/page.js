@@ -15,9 +15,13 @@ export default function Match() {
       setError("match id or player fields cannot be empty.");
       return;
     }
-    if (!parseInt(matchId) || !parseInt(player1) || !parseInt(player2)) {
+    if (
+      !Number.parseInt(matchId) ||
+      !Number.parseInt(player1) ||
+      !Number.parseInt(player2)
+    ) {
       setError("user id and match id have to be a number.");
-      return
+      return;
     }
     if (player1 === player2) {
       setError("player fields cannot be same.");

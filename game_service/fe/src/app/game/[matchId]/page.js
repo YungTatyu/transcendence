@@ -32,7 +32,7 @@ export default function Game() {
         `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}/${userid}`,
       );
 
-      const socketRef = socket
+      const socketRef = socket;
 
       socket.onopen = () => {
         console.log(`Connected to match: ${matchId}`);
