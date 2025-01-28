@@ -12,7 +12,7 @@ const PADDLE_HEIGHT = 100;
 
 export default function Game() {
   const { matchId } = useParams();
-  const { userid } = useUsername();
+  const { username: userid } = useUsername();
   const [gameState, setGameState] = useState({
     ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
     left_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
@@ -22,7 +22,7 @@ export default function Game() {
 
   useEffect(() => {
     const createWebSocketManager = (matchId) => {
-      const REDIS_SERVER = "127.0.0.1:3000";
+      const REDIS_SERVER = "127.0.0.1:8001";
       const socket = new WebSocket(
         `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}/${userid}`,
       );
