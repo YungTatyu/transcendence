@@ -196,6 +196,8 @@ class MatchFinishView(APIView):
 
 
 class MatchStatisticView(APIView):
+    """user_idに対応する統計情報を取得する"""
+
     def get(self, _, user_id):
         data = {
             "matchWinCount": self.__fetch_match_win_count(user_id),
@@ -230,12 +232,12 @@ class MatchStatisticView(APIView):
 
 
 class MatchHistoryView(APIView):
+    """user_idに対応する試合履歴情報を取得する"""
+
     def get(self, request, user_id):
         serializer = MatchHistorySerializer(data=request.query_params)
         if not serializer.is_valid():
-            return Response(
-                {"error": "Bad QueryString"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         matches = self.__fetch_finished_matches(user_id)
 
@@ -257,9 +259,10 @@ class MatchHistoryView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def __fetch_finished_matches(self, user_id: int) -> list[Matches]:
+        """特定のユーザーが参加し、試合が終了している試合を並び順を固定して取得"""
         finished_matches = (
             MatchParticipants.objects.filter(
-                user_id=user_id,  # 指定したuser_idを持つ参加者である
+                user_id=user_id,  # 試合参加者である
                 match_id__finish_date__isnull=False,  # 終了した試合である
             )
             .select_related("match_id")  # 逆参照
@@ -268,11 +271,12 @@ class MatchHistoryView(APIView):
         return [participant.match_id for participant in finished_matches]
 
     def __convert_match_to_result(self, match: Matches, user_id: int) -> dict:
+        """MatchesとMatchParticipantsレコードをを用いて試合履歴データを作成"""
         win_or_lose = "win" if match.winner_user_id == user_id else "lose"
         participants = MatchParticipants.objects.filter(match_id=match.match_id)
         user = participants.filter(user_id=user_id).first()
         opponents = participants.exclude(user_id=user_id)
-        opponent_data = [
+        opponents_data = [
             {"id": opponent.user_id, "score": opponent.score} for opponent in opponents
         ]
 
@@ -281,7 +285,7 @@ class MatchHistoryView(APIView):
             "result": win_or_lose,
             "date": match.start_date,
             "userScore": user.score,
-            "opponents": opponent_data,
+            "opponents": opponents_data,
         }
         return result
 
