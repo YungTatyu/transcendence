@@ -1,44 +1,43 @@
 import json
 from enum import Enum
 
-import jwt
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from core.match_manager import MatchManager
 from core.pingpong import PingPong
 
-
-class AuthHandler:
-    """
-    TODO: wsでjwt認証をどうするか？
-    headerで渡すには、フロントのライブラリを使用しなければいけないみたい
-    """
-
-    @staticmethod
-    def search_jwt(headers):
-        for header in headers:
-            if header[0] == b"cookie":
-                cookies = header[1].decode()
-                # JWTが含まれるCookie名を指定して取り出す
-                for cookie in cookies.split(";"):
-                    if "jwt_token=" in cookie:
-                        return cookie.split("jwt_token=")[1]
-        return None
-
-    def verify_jwt(self, token):
-        # JWTの検証ロジック
-        try:
-            jwt.decode(token, "your-secret-key", algorithms=["HS256"])
-            return True
-        except jwt.ExpiredSignatureError:
-            return False
-        except jwt.InvalidTokenError:
-            return False
-
-    def get_user_id_from_jwt(self, token):
-        # JWTからユーザーIDを取得
-        decoded = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
-        return decoded.get("sub")  # 例: "sub"にユーザーIDを保存している場合
+# class AuthHandler:
+#     """
+#     TODO: wsでjwt認証をどうするか？
+#     headerで渡すには、フロントのライブラリを使用しなければいけないみたい
+#     """
+#
+#     @staticmethod
+#     def search_jwt(headers):
+#         for header in headers:
+#             if header[0] == b"cookie":
+#                 cookies = header[1].decode()
+#                 # JWTが含まれるCookie名を指定して取り出す
+#                 for cookie in cookies.split(";"):
+#                     if "jwt_token=" in cookie:
+#                         return cookie.split("jwt_token=")[1]
+#         return None
+#
+#     def verify_jwt(self, token):
+#         # JWTの検証ロジック
+#         try:
+#             jwt.decode(token, "your-secret-key", algorithms=["HS256"])
+#             return True
+#         except jwt.ExpiredSignatureError:
+#             return False
+#         except jwt.InvalidTokenError:
+#             return False
+#
+#     def get_user_id_from_jwt(self, token):
+#         # JWTからユーザーIDを取得
+#         decoded = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
+#         return decoded.get("sub")  # 例: "sub"にユーザーIDを保存している場合
+#
 
 
 class ActionHandler:
