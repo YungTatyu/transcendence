@@ -37,7 +37,7 @@ export default function Game() {
 
           if (
             parsedMessage.type === "game.message" &&
-            parsedMessage.message === "MSG_UPDATE"
+            parsedMessage.message === "update"
           ) {
             const updatedState = parsedMessage.data.state;
 
