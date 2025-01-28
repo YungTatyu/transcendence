@@ -107,10 +107,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         MSG_GAME_OVER = "game over"
 
     async def connect(self):
-        self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
+        self.match_id = self.scope["url_route"]["kwargs"]["matchId"]
         # TODO
         # 本来はuriに含めないが認証の処理に影響するため、一旦仕様を変える
-        self.user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        self.user_id = self.scope["url_route"]["kwargs"]["userId"]
 
         re, status_code = ActionHandler.handle_new_connection(
             self.match_id, self.user_id
