@@ -88,7 +88,7 @@ class TournamentMatchView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        parent_match_id = serializer.validated_data["parentMatchId"]
+        parent_match_id: Optional[int] = serializer.validated_data["parentMatchId"]
         parent_match, is_err = self.__fetch_parent_match(parent_match_id)
 
         if is_err:
@@ -96,6 +96,7 @@ class TournamentMatchView(APIView):
                 {"error": "Parent match not found"}, status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Matchesレコードの作成
         tournament_match = Matches.objects.create(
             mode="Tournament",
             tournament_id=serializer.validated_data["tournamentId"],
@@ -103,6 +104,7 @@ class TournamentMatchView(APIView):
             round=serializer.validated_data["round"],
         )
 
+        # MatchParticipantsレコードの作成
         for user_id in serializer.validated_data["userIdList"]:
             MatchParticipants.objects.create(match_id=tournament_match, user_id=user_id)
 
@@ -113,13 +115,16 @@ class TournamentMatchView(APIView):
     def __fetch_parent_match(
         self, parent_match_id: Optional[int]
     ) -> tuple[Optional[Matches], bool]:
+        # parentMatchIdがnullならNoneを返す(エラーとみなさない)
         if parent_match_id is None:
             return (None, False)
 
         try:
             parent_match = Matches.objects.get(match_id=parent_match_id)
+            # parentMatchが存在すればparentMatchを返す
             return (parent_match, False)
         except Matches.DoesNotExist:
+            # parentMatchが存在しなければエラーとする
             return (None, True)
 
 
