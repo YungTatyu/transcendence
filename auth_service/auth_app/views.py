@@ -10,6 +10,9 @@ from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
 from .serializers import SignupSerializer
+from auth_app.client.user_client import UserClient
+
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +118,9 @@ class OTPVerificationView(APIView):
         :param user_data: 仮登録データ
         :return: 保存成功ならTrue、失敗ならFalse
         """
+        client = UserClient(
+            base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
+        )
         try:
             user = User.objects.create_user(
                 username=user_data["username"],
@@ -122,6 +128,10 @@ class OTPVerificationView(APIView):
                 password=user_data["password_hash"],
             )
             user.save()
+
+            res = client.create_user(user_data["username"])
+            user_id = res.json()["userId"]
+
             return True
         except Exception as e:
             logger.error(f"Error saving user: {str(e)}")
