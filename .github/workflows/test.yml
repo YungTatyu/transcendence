@@ -20,7 +20,6 @@ jobs:
     - name: Wait for services to be ready
       run: |
         echo "Waiting for services to be ready..."
-
         declare -A services
         readonly CHECK="python manage.py check"
         readonly TRUE="true"
@@ -29,6 +28,7 @@ jobs:
         services=(
           ["auth"]=$CHECK
           ["game"]=$CHECK
+          ["tournament"]=$CHECK
         )
 
         for i in {1..30}; do
@@ -60,6 +60,7 @@ jobs:
       run: |
         docker compose exec auth python manage.py test
         docker compose exec game python manage.py test
+        docker compose exec tournament pytest
 
     - name: Tear down
       if: always()
