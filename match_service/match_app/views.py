@@ -14,13 +14,18 @@ from .models import Matches, MatchParticipants
 
 
 class MatchView(APIView):
+    """QueryStringに指定された条件を用いてMatchesを検索"""
+
     def get(self, request):
         serializer = MatchesSerializer(data=request.query_params)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         filters = self.__create_filters(serializer.validated_data)
-        matches = list(Matches.objects.filter(**filters))
+        matches: list[Matches] = list(
+            # 並び順を固定(offsetとlimitを使うため)
+            Matches.objects.filter(**filters).order_by("match_id")
+        )
 
         offset = serializer.validated_data["offset"]
         limit = serializer.validated_data["limit"]
@@ -37,23 +42,26 @@ class MatchView(APIView):
         }
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def __create_filters(self, validated_data) -> dict:
+    def __create_filters(self, validated_data: dict) -> dict:
+        """複数条件でDBレコードを検索するための辞書を作成"""
         filters = {}
-        if validated_data.get("matchId", None) is not None:
+        # INFO Dict.get(key)はDict内にkeyが存在しない場合にNoneを返します
+        if validated_data.get("matchId") is not None:
             filters["match_id"] = validated_data["matchId"]
-        if validated_data.get("winnerUserId", None) is not None:
+        if validated_data.get("winnerUserId") is not None:
             filters["winner_user_id"] = validated_data["winnerUserId"]
-        if validated_data.get("mode", None) is not None:
+        if validated_data.get("mode") is not None:
             filters["mode"] = validated_data["mode"]
-        if validated_data.get("tournamentId", None) is not None:
+        if validated_data.get("tournamentId") is not None:
             filters["tournament_id"] = validated_data["tournamentId"]
-        if validated_data.get("round", None) is not None:
+        if validated_data.get("round") is not None:
             filters["round"] = validated_data["round"]
         return filters
 
     def __convert_match_to_result(self, match: Matches) -> dict:
+        """MatchesとMatchParticipantsレコードをを用いて試合結果データを作成"""
         participants = MatchParticipants.objects.filter(match_id=match.match_id)
-        participant_data = [
+        participants_data = [
             {"id": participant.user_id, "score": participant.score}
             for participant in participants
         ]
@@ -67,7 +75,7 @@ class MatchView(APIView):
             "tournamentId": match.tournament_id,
             "parentMatchId": parent_match_id,
             "round": match.round,
-            "participants": participant_data,
+            "participants": participants_data,
         }
         return result
 
