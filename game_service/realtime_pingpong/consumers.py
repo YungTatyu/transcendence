@@ -81,11 +81,14 @@ class ActionHandler:
     def handle_player_action(json, game):
         type = json.get("type")
         key = json.get("key")
-        name = json.get("userid")
         if type is None:
             return
+        try:
+            id = int(json.get("userid"))
+        except ValueError as e:
+            return
         if type == ActionHandler.ACTION_PADDLE:
-            game.player_action(name, key)
+            game.player_action(id, key)
 
     @staticmethod
     def start_game_if_ready(match_id):
