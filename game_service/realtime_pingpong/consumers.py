@@ -63,7 +63,7 @@ class ActionHandler:
             return (False, 1003)
 
         match = match_dict[MatchManager.KEY_MATCH]
-        if user_id not in match.users:
+        if user_id not in match.players:
             return (False, 1008)
 
         # TODO: user認証
@@ -88,7 +88,7 @@ class ActionHandler:
             game.player_action(name, key)
 
     @staticmethod
-    def start_game(match_id):
+    def start_game_if_ready(match_id):
         match_dict = MatchManager.get_match(match_id)
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_contoroller.game
@@ -107,21 +107,23 @@ class GameConsumer(AsyncWebsocketConsumer):
         MSG_GAME_OVER = "game over"
 
     async def connect(self):
-        self.match_id = self.scope["url_route"]["kwargs"]["matchId"]
+        self.match_id = int(self.scope["url_route"]["kwargs"]["matchId"])
         # TODO
         # 本来はuriに含めないが認証の処理に影響するため、一旦仕様を変える
-        self.user_id = self.scope["url_route"]["kwargs"]["userId"]
+        self.user_id = int(self.scope["url_route"]["kwargs"]["userId"])
 
         re, status_code = ActionHandler.handle_new_connection(
             self.match_id, self.user_id
         )
+        print(f"new connection {re}")
         if not re:
+            print(f"error code {status_code}")
             await self.close(code=status_code)
             return
 
         await self.channel_layer.group_add(self.match_id, self.channel_name)
         await self.accept()
-        ActionHandler.start_game(self.match_id)
+        ActionHandler.start_game_if_ready(self.match_id)
 
     async def disconnect(self, close_code):
         # Leave room group
