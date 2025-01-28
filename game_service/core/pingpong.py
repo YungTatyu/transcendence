@@ -248,3 +248,6 @@ class PingPong:
         scored, player = self.__ball.move(self.__left_player, self.__right_player)
         if scored:
             player.increment_score()
+
+    def is_match_over(self):
+        return self.__left_player.score != self.__right_player.score
