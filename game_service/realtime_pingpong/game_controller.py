@@ -2,8 +2,6 @@ import asyncio
 
 from core.pingpong import PingPong
 
-from realtime_pingpong.consumers import GameConsumer
-
 
 class GameContoroller:
     """
@@ -25,6 +23,9 @@ class GameContoroller:
             self.task = None
 
     async def game_loop(self, match_id):
+        # 遅延インポートで循環インポートを防ぐ
+        from realtime_pingpong.consumers import GameConsumer
+
         try:
             while self.game.__state != PingPong.GameState.GAME_OVER:
                 self.game.update()
