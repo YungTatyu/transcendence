@@ -110,7 +110,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         # TODO
         # 本来はuriに含めないが認証の処理に影響するため、一旦仕様を変える
-        self.user_id = self.scope["url_route"]["kwargs"]["userid"]
+        self.user_id = self.scope["url_route"]["kwargs"]["user_id"]
 
         re, status_code = ActionHandler.handle_new_connection(
             self.match_id, self.user_id
