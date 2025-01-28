@@ -19,13 +19,20 @@ export default function Game() {
     right_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
   });
   const canvasRef = useRef(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
+    if (socketRef.current) {
+      console.log("WebSocket is already connected");
+      return; // WebSocketが既に存在する場合は再接続しない
+    }
     const createWebSocketManager = (matchId) => {
       const REDIS_SERVER = "127.0.0.1:8001";
       const socket = new WebSocket(
         `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}/${userid}`,
       );
+
+      const socketRef = socket
 
       socket.onopen = () => {
         console.log(`Connected to match: ${matchId}`);
@@ -78,8 +85,8 @@ export default function Game() {
     const wsManager = createWebSocketManager(matchId);
 
     const registerEventHandler = (eventCallback) => {
-      const upKey = "WKey";
-      const downKey = "SKey";
+      const upKey = "KeyW";
+      const downKey = "KeyS";
 
       const handler = (e) => {
         if (e.code !== upKey && e.code !== downKey) {
@@ -88,7 +95,7 @@ export default function Game() {
         const message = JSON.stringify({
           type: "game.paddle_move",
           key: e.code,
-          username: userid,
+          userid: userid,
         });
         eventCallback(message);
       };
