@@ -75,7 +75,7 @@ class ActionHandler:
         except RuntimeError:
             # 1007(矛盾するデータ)
             return (False, 1007)
-        return (True,)
+        return (True, 200)
 
     @staticmethod
     def handle_player_action(json, game):
@@ -93,7 +93,7 @@ class ActionHandler:
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_contoroller.game
         if game.state == PingPong.GameState.READY_TO_START:
-            game_contoroller.start_game(match_id)
+            game_contoroller.start_game(str(match_id))
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -102,12 +102,14 @@ class GameConsumer(AsyncWebsocketConsumer):
     """
 
     class MessageType(Enum):
-        MSG_UPDATE = "game update"
+        MSG_UPDATE = "update"
         MSG_ERROR = "error"
-        MSG_GAME_OVER = "game over"
+        MSG_GAME_OVER = "gameover"
 
     async def connect(self):
-        self.match_id = int(self.scope["url_route"]["kwargs"]["matchId"])
+        # group nameはstrである必要がある
+        self.group_name = self.scope["url_route"]["kwargs"]["matchId"]
+        self.match_id = int(self.group_name)
         # TODO
         # 本来はuriに含めないが認証の処理に影響するため、一旦仕様を変える
         self.user_id = int(self.scope["url_route"]["kwargs"]["userId"])
@@ -115,19 +117,17 @@ class GameConsumer(AsyncWebsocketConsumer):
         re, status_code = ActionHandler.handle_new_connection(
             self.match_id, self.user_id
         )
-        print(f"new connection {re}")
         if not re:
-            print(f"error code {status_code}")
             await self.close(code=status_code)
             return
 
-        await self.channel_layer.group_add(self.match_id, self.channel_name)
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
         ActionHandler.start_game_if_ready(self.match_id)
 
     async def disconnect(self, close_code):
         # Leave room group
-        await self.channel_layer.group_discard(self.match_id, self.channel_name)
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
         MatchManager.remove_match(self.match_id)
         await self.close(close_code)
 
@@ -142,7 +142,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     @staticmethod
-    async def group_send(event, match_id):
+    async def group_send(event, group_name):
         channel_layer = get_channel_layer()
         event["type"] = "game.message"
-        await channel_layer.group_send(match_id, event)
+        await channel_layer.group_send(group_name, event)
