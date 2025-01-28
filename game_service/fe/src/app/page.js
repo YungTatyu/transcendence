@@ -1,10 +1,17 @@
 "use client";
+// import Image from "next/image";
+// import styles from "./page.module.css";
+// import { useRouter } from "next/navigation";
+// import { useUsername } from "./UsernameContext";
+// import { useState } from "react";
+// import Link from "next/link";
+//
 import Image from "next/image";
-import styles from "./page.module.css";
-import { useRouter } from "next/navigation";
-import { useUsername } from "./UsernameContext";
-import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useUsername } from "./UsernameContext";
+import styles from "./page.module.css";
 
 export default function Home() {
   const { username, setUsername } = useUsername();
@@ -20,7 +27,7 @@ export default function Home() {
       return;
     }
     setUsername(username);
-    router.push("/game");
+    router.push(`/game/${matchId}`);
   };
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>

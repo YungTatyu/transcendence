@@ -1,10 +1,12 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Match() {
   const [error, setError] = useState("");
+  const router = useRouter();
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     const matchId = e.target.matchId.value;
     const player1 = e.target.username1.value;
@@ -17,6 +19,23 @@ export default function Match() {
       setError("player fields cannot be same.");
       return;
     }
+
+    const response = await fetch("http://127.0.0.1:8001/games", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // データの形式を指定
+      },
+      body: JSON.stringify({
+        matchId: matchId,
+        userIdList: [player1, player2],
+      }),
+    });
+    if (!response.ok) {
+      const json = await response.json();
+      console.error(json.error);
+      alert(json.error);
+    }
+    router.push("/");
   };
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>

@@ -24,7 +24,7 @@ export default function Game() {
     const createWebSocketManager = (matchId) => {
       const REDIS_SERVER = "127.0.0.1:3000";
       const socket = new WebSocket(
-        `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}`,
+        `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}/${userid}`,
       );
 
       socket.onopen = () => {
