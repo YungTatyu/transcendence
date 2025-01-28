@@ -129,50 +129,60 @@ class TournamentMatchView(APIView):
 
 
 class MatchFinishView(APIView):
+    """試合終了時のトーナメントAPIへの通知とDBレコードの更新"""
+
     def post(self, request):
         serializer = MatchFinishSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        match_id = serializer.validated_data["matchId"]
-        results = serializer.validated_data["results"]
+        match_id: int = serializer.validated_data["matchId"]
+        results: list[dict] = serializer.validated_data["results"]
+
+        # リクエストとデータベースとの整合性を確認
         if not self.__check_match_integrity(match_id, results):
             return Response(
                 {"error": "The match data has integrity issues."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # 先にトーナメントAPIを叩く(整合性維持のため)
+        if not self.__send_match_result_to_tournament_api(match_id):
+            return Response(
+                {"error": "Tournament API was not consistent"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         finish_date = self.__update_match_data(match_id, results)
-
-        self.__send_match_result_to_tournament_api(match_id)
-
         return Response({"finishDate": str(finish_date)}, status=status.HTTP_200_OK)
 
     def __check_match_integrity(self, match_id: int, results: list[dict]) -> bool:
+        """リクエストデータとDB内データの整合性を確認"""
         match = Matches.objects.filter(match_id=match_id).first()
 
-        # 試合が存在しない
+        # 試合が存在するか
         if match is None:
             return False
 
-        # 試合は既に終了している
+        # 試合終了の処理済みではないか
         if match.finish_date is not None:
             return False
 
-        # 勝者が複数存在する
+        # 勝者は１人か
         scores = [result["score"] for result in results]
         winner_score = max(scores)
         if scores.count(winner_score) != 1:
             return False
 
-        # リクエストボディとDB内のuser_idsに整合性が無い
-        user_ids = [result["userId"] for result in results]
-        participants_ids = MatchParticipants.objects.filter(
+        # リクエストボディとDB内のuser_idsに整合性があるか
+        request_user_ids = [result["userId"] for result in results]
+        stored_user_ids = MatchParticipants.objects.filter(
             match_id=match_id
         ).values_list("user_id", flat=True)
-        return set(user_ids) == set(participants_ids)
+        return set(request_user_ids) == set(stored_user_ids)
 
     def __update_match_data(self, match_id: int, results: list[dict]) -> now:
+        # MatchParticipantsのscoreをユーザーそれぞれに対して更新
         for result in results:
             user_id = result["user_id"]
             score = result["score"]
@@ -180,6 +190,7 @@ class MatchFinishView(APIView):
                 score=score
             )
 
+        # Matchesのwinner_user_idとfinish_dateを更新
         winner_user_id = max(results, key=lambda x: x["score"])
         finish_date = now()
         Matches.objects.filter(match_id=match_id).update(
@@ -188,11 +199,13 @@ class MatchFinishView(APIView):
 
         return finish_date
 
-    def __send_match_result_to_tournament_api(self, match_id: int):
+    def __send_match_result_to_tournament_api(self, match_id: int) -> bool:
         """
         /tournaments/finish-match エンドポイントを叩き、TournamentAPIに試合が終了したことを通知
         """
-        pass
+        # TODO 実際にトーナメントAPIを叩き、試合の終了を通知する処理を追加
+        # match_idが1のときだけ失敗する(仮の処理)
+        return match_id != 1
 
 
 class MatchStatisticView(APIView):
