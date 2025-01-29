@@ -154,7 +154,7 @@ class MatchFinishView(APIView):
             )
 
         # 先にトーナメントAPIを叩く(整合性維持のため)
-        if not self.__send_match_result_to_tournament_api(match_id):
+        if not self.__send_match_result_if_tournament_match(match_id):
             return Response(
                 {"error": "Tournament API was not consistent"},
                 status=HTTP_400_BAD_REQUEST,
@@ -181,8 +181,13 @@ class MatchFinishView(APIView):
         if scores.count(winner_score) != 1:
             return False
 
-        # リクエストボディとDB内のuser_idsに整合性があるか
         request_user_ids = [result["userId"] for result in results]
+
+        # リクエストデータのuser_idが重複していないか
+        if len(request_user_ids) != len(set(request_user_ids)):
+            return False
+
+        # リクエストボディとDB内のuser_idsに整合性があるか
         stored_user_ids = MatchParticipants.objects.filter(
             match_id=match_id
         ).values_list("user_id", flat=True)
@@ -191,14 +196,14 @@ class MatchFinishView(APIView):
     def __update_match_data(self, match_id: int, results: list[dict]) -> now:
         # MatchParticipantsのscoreをユーザーそれぞれに対して更新
         for result in results:
-            user_id = result["user_id"]
+            user_id = result["userId"]
             score = result["score"]
             MatchParticipants.objects.filter(match_id=match_id, user_id=user_id).update(
                 score=score
             )
 
         # Matchesのwinner_user_idとfinish_dateを更新
-        winner_user_id = max(results, key=lambda x: x["score"])
+        winner_user_id = max(results, key=lambda x: x["score"])["userId"]
         finish_date = now()
         Matches.objects.filter(match_id=match_id).update(
             winner_user_id=winner_user_id, finish_date=finish_date
@@ -206,13 +211,16 @@ class MatchFinishView(APIView):
 
         return finish_date
 
-    def __send_match_result_to_tournament_api(self, match_id: int) -> bool:
+    def __send_match_result_if_tournament_match(self, match_id: int) -> bool:
         """
-        /tournaments/finish-match エンドポイントを叩き、TournamentAPIに試合が終了したことを通知
+        if (mode == Tournament):
+            /tournaments/finish-matchを叩き、試合終了を通知
+        else:
+            何もしない
         """
         # TODO 実際にトーナメントAPIを叩き、試合の終了を通知する処理を追加
-        # match_idが1のときだけ失敗する(仮の処理)
-        return match_id != 1
+        # TODO 新たなParticipantsレコードを作成する処理を追加する
+        return True
 
 
 class MatchStatisticView(APIView):

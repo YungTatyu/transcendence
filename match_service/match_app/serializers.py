@@ -30,6 +30,11 @@ class MatchFinishSerializer(serializers.Serializer):
     matchId = serializers.IntegerField(min_value=0)
     results = serializers.ListField(child=ResultSerializer())
 
+    def validate_results(self, value):
+        if not value:
+            raise serializers.ValidationError("Results cannot be empty.")
+        return value
+
 
 class MatchesSerializer(serializers.Serializer):
     matchId = serializers.IntegerField(min_value=0, required=False)
