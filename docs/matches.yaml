@@ -102,12 +102,6 @@ paths:
                 "error": "Bad Request"
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
-        '404':
-          description: 該当する試合が存在しない
-          content:
-            application/json:
-              example:
-                "error": "Match Not Found"
 
   /matches/tournament-match:
     post:
