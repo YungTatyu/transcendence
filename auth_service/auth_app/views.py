@@ -128,7 +128,7 @@ class OTPVerificationView(APIView):
             user = CustomUser.objects.create_user(
                 user_id=user_id,
                 mail_address=user_data["email"],
-                password=user_data["password_hash"]
+                password=user_data["password_hash"],
             )
             user.save()
 

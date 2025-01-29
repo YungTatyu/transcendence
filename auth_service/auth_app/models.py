@@ -31,16 +31,9 @@ class CustomUser(AbstractBaseUser):
     user_id = models.CharField(
         max_length=36, primary_key=True, unique=True
     )  # 自動付与しない主キー
-    email = models.EmailField(
-        unique=True,
-        max_length=255,
-        verbose_name="Email Address"
-    )
+    email = models.EmailField(unique=True, max_length=255, verbose_name="Email Address")
     secret_key = models.CharField(
-        max_length=128,
-        blank=True,
-        null=True,
-        verbose_name="Secret Key"
+        max_length=128, blank=True, null=True, verbose_name="Secret Key"
     )
     date_joined = models.DateTimeField(auto_now_add=True)
 
