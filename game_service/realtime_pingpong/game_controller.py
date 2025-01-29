@@ -1,8 +1,7 @@
 import asyncio
+from datetime import datetime, timedelta
 
 from core.pingpong import PingPong
-
-from datetime import datetime, timedelta
 
 
 class GameContoroller:
@@ -31,21 +30,9 @@ class GameContoroller:
         from realtime_pingpong.consumers import GameConsumer
 
         try:
-            end_time = self.__calc_unix_time(
-                datetime.now() + timedelta(seconds=self.GAME_TIME_SEC)
-            )
-            await GameConsumer.group_send(
-                {
-                    "message": GameConsumer.MessageType.MSG_TIMER.value,
-                    "end_time": end_time,
-                },
-                group_name,
-            )
+            end_time = await self.__announce_game_end_time(group_name)
 
-            while (
-                self.__calc_unix_time(datetime.now()) < end_time
-                and self.game.is_match_over()
-            ):
+            while not self.__is_game_over(end_time):
                 self.game.update()
                 await GameConsumer.group_send(
                     {
@@ -62,3 +49,24 @@ class GameContoroller:
 
     def __calc_unix_time(self, time):
         return int(time.timestamp())
+
+    async def __announce_game_end_time(self, group_name):
+        from realtime_pingpong.consumers import GameConsumer
+
+        end_time = self.__calc_unix_time(
+            datetime.now() + timedelta(seconds=self.GAME_TIME_SEC)
+        )
+        await GameConsumer.group_send(
+            {
+                "message": GameConsumer.MessageType.MSG_TIMER.value,
+                "end_time": end_time,
+            },
+            group_name,
+        )
+        return end_time
+
+    def __is_game_over(self, end_time):
+        return (
+            self.__calc_unix_time(datetime.now()) >= end_time
+            and self.game.is_match_over()
+        )
