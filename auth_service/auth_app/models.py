@@ -7,17 +7,17 @@ class CustomUserManager(BaseUserManager):
     Custom manager for the CustomUser model.
     """
 
-    def create_user(self, user_id, mail_address, password=None, **extra_fields):
+    def create_user(self, user_id, email, password=None, **extra_fields):
         """
         Create and return a regular user.
         """
         if not user_id:
             raise ValueError("The user_id field must be set.")
-        if not mail_address:
-            raise ValueError("The mail_address field must be set.")
+        if not email:
+            raise ValueError("The email field must be set.")
 
-        mail_address = self.normalize_email(mail_address)
-        user = self.model(user_id=user_id, mail_address=mail_address, **extra_fields)
+        email = self.normalize_email(email)
+        user = self.model(user_id=user_id, email=email, **extra_fields)
         user.set_password(password)  # Djangoの `password` フィールドを使う
         user.save(using=self._db)
         return user
@@ -31,7 +31,7 @@ class CustomUser(AbstractBaseUser):
     user_id = models.CharField(
         max_length=36, primary_key=True, unique=True
     )  # 自動付与しない主キー
-    mail_address = models.EmailField(
+    email = models.EmailField(
         unique=True,
         max_length=255,
         verbose_name="Email Address"
@@ -48,8 +48,8 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
 
     # For authentication
-    USERNAME_FIELD = "mail_address"
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["user_id"]
 
     def __str__(self):
-        return self.mail_address
+        return self.email
