@@ -5,6 +5,11 @@ from match_app.models import Matches, MatchParticipants
 
 @pytest.fixture
 def set_up_records() -> int:
+    """
+    WARN SetUp時により多くのレコードをinsertしてテストしたい場合、
+         別のSetUp関数を作成してください
+         このSetUp関数の変更は多数のテストに影響する可能性があります
+    """
     # 試合が終了していないQuickPlay
     match1 = insert_quick_play_record(None)
     insert_match_participants_record(match1, 1)
@@ -72,3 +77,13 @@ def insert_tournament_record(winner_user_id, tournament_id, parent_match_id, rou
 
 def insert_match_participants_record(match_id, user_id, score=None):
     MatchParticipants.objects.create(match_id=match_id, user_id=user_id, score=score)
+
+
+def create_query_string(**params):
+    """paramsに指定した変数がNone出ない場合、QueryStringに追加する"""
+    query_params = [
+        f"{key}={value}" for key, value in params.items() if value is not None
+    ]
+    if query_params == []:
+        return ""
+    return "?" + "&".join(query_params)
