@@ -1,5 +1,6 @@
-import requests
 from unittest.mock import Mock
+
+import requests
 
 
 class MockResponse:

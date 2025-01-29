@@ -1,18 +1,17 @@
 import json
 import logging
 
-from auth_app.models import CustomUser
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.client.user_client import UserClient
+from auth_app.models import CustomUser
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
 from .serializers import SignupSerializer
-from auth_app.client.user_client import UserClient
-
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
