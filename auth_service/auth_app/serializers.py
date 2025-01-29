@@ -2,7 +2,7 @@ import json
 
 import pyotp
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
+from auth_app.models import CustomUser
 from rest_framework import serializers
 
 from auth_app.utils.redis_handler import RedisHandler
@@ -17,11 +17,11 @@ class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ("username", "email", "password")
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        if CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email address is already in use.")
         # Redisで仮登録状態を確認
         redis_key = f"pending_email:{value}"

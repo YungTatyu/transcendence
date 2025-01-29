@@ -1,7 +1,7 @@
 import json
 import logging
 
-from django.contrib.auth.models import User
+from auth_app.models import CustomUser
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -122,15 +122,15 @@ class OTPVerificationView(APIView):
             base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
         )
         try:
-            user = User.objects.create_user(
-                username=user_data["username"],
-                email=user_data["email"],
-                password=user_data["password_hash"],
-            )
-            user.save()
-
             res = client.create_user(user_data["username"])
             user_id = res.json()["userId"]
+
+            user = CustomUser.objects.create_user(
+                user_id=user_id,
+                mail_address=user_data["email"],
+                password=user_data["password_hash"]
+            )
+            user.save()
 
             return True
         except Exception as e:
