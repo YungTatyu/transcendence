@@ -10,6 +10,12 @@ const BALL_HEIGHT = 20;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 
+const calcRemaingTime = (endTime) => {
+  const now = Date.now(); // 現在時刻（ミリ秒）
+  const re = Math.max(0, Math.floor((endTime - now) / 1000)); // 残り時間（秒単位）
+  return re;
+};
+
 export default function Game() {
   const { matchId } = useParams();
   const { username: userid } = useUsername();
@@ -18,6 +24,8 @@ export default function Game() {
     left_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
     right_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
   });
+  const endTimeRef = useRef(0);
+  const [remainingTime, setRemainingTime] = useState(0);
   const canvasRef = useRef(null);
   const socketRef = useRef(null);
 
@@ -33,6 +41,16 @@ export default function Game() {
       );
 
       const socketRef = socket;
+
+      const startTimer = () => {
+        const interval = setInterval(() => {
+          const time = calcRemaingTime(endTimeRef.current);
+          setRemainingTime(time);
+          if (time <= 0) {
+            clearInterval(interval);
+          }
+        }, 1000); // 1秒ごとに実行
+      };
 
       socket.onopen = () => {
         console.log(`Connected to match: ${matchId}`);
@@ -53,6 +71,14 @@ export default function Game() {
               left_player: updatedState.left_player,
               right_player: updatedState.right_player,
             });
+          }
+          if (
+            parsedMessage.type === "game.message" &&
+            parsedMessage.message === "timer"
+          ) {
+            endTimeRef.current = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
+            setRemainingTime(calcRemaingTime(endTimeRef.current));
+            startTimer();
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
@@ -195,6 +221,17 @@ export default function Game() {
       >
         Game Room: {matchId}
       </h1>
+      <h2
+        style={{
+          fontSize: "24px",
+          fontWeight: "bold",
+          marginBottom: "10px",
+          color: "#FFD700",
+        }}
+      >
+        {remainingTime} sec
+      </h2>
+
       <div
         style={{
           position: "relative",
