@@ -20,22 +20,23 @@ def request_tournament_match(
     # StatusCode == 200 -> 正常にレコードが作成されたかを確認
     if response.status_code == HTTP_200_OK:
         match = Matches.objects.filter(tournament_id=tournament_id).first()
-        assert match.match_id >= 0
-        assert match.winner_user_id is None
+        assert match.match_id >= 0  # match_idは0以上の値が自動で採番される
+        assert match.winner_user_id is None  # nullがセットされる
         assert match.mode == "Tournament"
-        assert match.start_date is not None
-        assert match.finish_date is None
+        assert match.start_date is not None  # 現在時刻がセットされる
+        assert match.finish_date is None  # nullがセットされる
         if parent_match_id is None:
-            assert match.parent_match_id == parent_match_id
+            assert match.parent_match_id is None
         else:
             assert match.parent_match_id.match_id == parent_match_id
         assert match.round == round
 
         participants = MatchParticipants.objects.filter(match_id=match)
+        # RequestBodyのuser_id_listとMatchParticipantsのuser_idのリストが同じか
         assert len(user_id_list) == len(participants)
         for participant in participants:
             assert participant.user_id in user_id_list
-            assert participant.score is None
+            assert participant.score is None  # nullがセットされる
 
     return response.json()
 
