@@ -19,7 +19,9 @@ class TournamentMatchSerializer(serializers.Serializer):
 
 class MatchHistorySerializer(serializers.Serializer):
     offset = serializers.IntegerField(min_value=0, required=False, default=0)
-    limit = serializers.IntegerField(min_value=1, required=False, default=10)
+    limit = serializers.IntegerField(
+        min_value=1, max_value=100, required=False, default=10
+    )
 
 
 class MatchFinishSerializer(serializers.Serializer):
@@ -43,4 +45,6 @@ class MatchesSerializer(serializers.Serializer):
     tournamentId = serializers.IntegerField(min_value=0, required=False)
     round = serializers.IntegerField(min_value=1, required=False)
     offset = serializers.IntegerField(min_value=0, required=False, default=0)
-    limit = serializers.IntegerField(min_value=1, required=False, default=10)
+    limit = serializers.IntegerField(
+        min_value=1, max_value=100, required=False, default=10
+    )
