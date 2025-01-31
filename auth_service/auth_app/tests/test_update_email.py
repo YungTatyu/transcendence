@@ -44,7 +44,7 @@ class UpdateEmailViewTest(TestCase):
 
         # DB の値が更新されているか確認
         self.user.refresh_from_db()
-        self.assertEqual(self.user.mail_address, "new@example.com")
+        self.assertEqual(self.user.email, "new@example.com")
 
     def test_update_email_missing(self):
         """

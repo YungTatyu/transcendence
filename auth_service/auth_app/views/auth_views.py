@@ -40,7 +40,7 @@ class UpdateEmailView(View):
                 return JsonResponse({"error": "This email address is already in use."}, status=409)
 
             # メールアドレスを更新
-            user.mail_address = new_email
+            user.email = new_email
             user.save()
 
             return JsonResponse({"message": "Email updated successfully."}, status=200)
