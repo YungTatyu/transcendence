@@ -36,7 +36,7 @@ class UpdateEmailView(View):
             user = CustomUser.objects.get(user_id=request.user_id)
 
             # メールアドレスの重複チェック
-            if CustomUser.objects.filter(mail_address=new_email).exclude(user_id=user.user_id).exists():
+            if CustomUser.objects.filter(email=new_email).exclude(user_id=user.user_id).exists():
                 return JsonResponse({"error": "This email address is already in use."}, status=409)
 
             # メールアドレスを更新
