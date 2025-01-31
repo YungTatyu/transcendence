@@ -17,9 +17,11 @@ Including another URLconf
 
 from django.urls import path
 
-from .views import OTPVerificationView, SignupView
+from auth_app.views import OTPVerificationView, SignupView
+from auth_app.views.auth_views import UpdateEmailView
 
 urlpatterns = [
     path("auth/otp/signup", SignupView.as_view(), name="otp-signup"),
     path("auth/otp/signup/verify", OTPVerificationView.as_view(), name="otp-verify"),
+    path("auth/me/email", UpdateEmailView.as_view(), name="update_email"),
 ]
