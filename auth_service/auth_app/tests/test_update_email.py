@@ -18,7 +18,7 @@ class UpdateEmailViewTest(TestCase):
         # テスト用ユーザ作成
         self.user = CustomUser.objects.create_user(
             user_id="test-user-123",
-            mail_address="old@example.com",
+            email="old@example.com",
             password="securepassword",
         )
 
@@ -74,7 +74,7 @@ class UpdateEmailViewTest(TestCase):
         # 競合する別のユーザを作成
         CustomUser.objects.create_user(
             user_id="other-user-456",
-            mail_address="existing@example.com",
+            email="existing@example.com",
             password="securepassword",
         )
 
