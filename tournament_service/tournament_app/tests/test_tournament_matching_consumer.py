@@ -4,9 +4,9 @@ import time
 import pytest
 from channels.testing import WebsocketCommunicator
 
-from tournament_app.consumers import TournamentMatchingConsumer as TMC
+from tournament_app.consumers import TournamentMatchingConsumer as Tmc
 from tournament_app.utils.tournament_matching_manager import (
-    TournamentMatchingManager as TMM,
+    TournamentMatchingManager as Tmm,
 )
 from tournament_app.utils.tournament_session import TournamentSession
 
@@ -22,7 +22,7 @@ class CustomWebsocketCommunicator(WebsocketCommunicator):
 
 async def create_communicator(port: int):
     communicator = CustomWebsocketCommunicator(
-        TMC.as_asgi(),
+        Tmc.as_asgi(),
         PATH,
         scope_override={"client": ("127.0.0.1", port)},
     )
@@ -55,8 +55,8 @@ async def test_enter_room_with_second_user():
     start_time1 = float(data1["tournament_start_time"])
     start_time2 = float(data2["tournament_start_time"])
     now = time.time()
-    assert now <= start_time1 <= (now + TMC.FORCED_START_TIME)
-    assert now <= start_time2 <= (now + TMC.FORCED_START_TIME)
+    assert now <= start_time1 <= (now + Tmc.FORCED_START_TIME)
+    assert now <= start_time2 <= (now + Tmc.FORCED_START_TIME)
 
     await communicator1.disconnect()
     await communicator2.disconnect()
@@ -89,7 +89,7 @@ async def test_same_port():
     communicator1 = await create_communicator(port)
     await communicator1.receive_json_from()
     communicator2 = CustomWebsocketCommunicator(
-        TMC.as_asgi(),
+        Tmc.as_asgi(),
         PATH,
         scope_override={"client": ("127.0.0.1", port)},
     )
@@ -106,7 +106,7 @@ async def test_same_port():
 async def test_start_tournament_by_room_capacity():
     """ROOM_CAPACITYに達した時にtournament_idが送信されるか"""
     communicators = []
-    for i in range(TMC.ROOM_CAPACITY):
+    for i in range(Tmc.ROOM_CAPACITY):
         communicators.append(await create_communicator(10000 + i))
         # tournament_start_timeの通知はWebSocketが作成されるたびにルーム内の全員にSendされる
         [await communicator.receive_json_from() for communicator in communicators]
@@ -126,12 +126,12 @@ async def test_start_tournament_by_force_start_time():
     communicators = []
 
     # ROOM_CAPACITYに満たない数のWebSocketを作成する
-    for i in range(TMC.ROOM_CAPACITY - 1):
+    for i in range(Tmc.ROOM_CAPACITY - 1):
         communicators.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators]
 
     # FORCED_START_TIME秒以上待機
-    await asyncio.sleep(TMC.FORCED_START_TIME + 1)
+    await asyncio.sleep(Tmc.FORCED_START_TIME + 1)
 
     for communicator in communicators:
         data = await communicator.receive_json_from()
@@ -148,12 +148,12 @@ async def test_not_start_tournament():
     communicators = []
 
     # ROOM_CAPACITYに満たない数のWebSocketを作成する
-    for i in range(TMC.ROOM_CAPACITY - 1):
+    for i in range(Tmc.ROOM_CAPACITY - 1):
         communicators.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators]
 
     # FORCED_START_TIMEに満たない秒数待機
-    await asyncio.sleep(TMC.FORCED_START_TIME - 1)
+    await asyncio.sleep(Tmc.FORCED_START_TIME - 1)
 
     for communicator in communicators:
         # サーバから送信されたデータが無いことを確認
@@ -173,7 +173,7 @@ async def test_init_matching_room_after_start_tournament():
     communicators_2 -> communicators_1がトーナメント開始後にマッチングルームに入り、トーナメントを開始するグループ
     """
     communicators_1 = []
-    for i in range(TMC.ROOM_CAPACITY):
+    for i in range(Tmc.ROOM_CAPACITY):
         communicators_1.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators_1]
 
@@ -182,10 +182,10 @@ async def test_init_matching_room_after_start_tournament():
         assert "tournament_id" in data
 
     # トーナメント開始後、トーナメントマッチングルームにユーザーが存在しないか
-    assert len(TMM.get_waiting_users()) == 0
+    assert len(Tmm.get_waiting_users()) == 0
 
     communicators_2 = []
-    for i in range(TMC.ROOM_CAPACITY):
+    for i in range(Tmc.ROOM_CAPACITY):
         communicators_2.append(await create_communicator(20000 + i))
         [await communicator.receive_json_from() for communicator in communicators_2]
 
@@ -209,7 +209,7 @@ async def test_init_matching_room_after_start_tournament():
 async def test_create_resource():
     """トーナメント開始後、リソースが作成されたか"""
     communicators = []
-    for i in range(TMC.ROOM_CAPACITY):
+    for i in range(Tmc.ROOM_CAPACITY):
         communicators.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators]
 
@@ -242,7 +242,7 @@ async def test_start_after_timer_cancel():
     await communicators[0].receive_json_from()
 
     # トーナメント開始できるまでWebSocketを作成
-    for i in range(1, TMC.ROOM_CAPACITY):
+    for i in range(1, Tmc.ROOM_CAPACITY):
         communicators.append(await create_communicator(10000 + i))
         [await communicator.receive_json_from() for communicator in communicators]
 
