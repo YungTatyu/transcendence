@@ -1,8 +1,10 @@
+import jwt
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
+
 from auth_app.models import CustomUser
-import jwt
+
 
 class UpdateEmailViewTest(TestCase):
     """
@@ -34,10 +36,7 @@ class UpdateEmailViewTest(TestCase):
         正常にメールアドレスを更新できることを確認
         """
         response = self.client.put(
-            self.url, 
-            {"email": "new@example.com"}, 
-            format="json", 
-            **self.headers
+            self.url, {"email": "new@example.com"}, format="json", **self.headers
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Email updated successfully.")
@@ -59,10 +58,7 @@ class UpdateEmailViewTest(TestCase):
         不正なフォーマットのメールアドレスを指定した場合 400 エラー
         """
         response = self.client.put(
-            self.url, 
-            {"email": "invalid-email"}, 
-            format="json", 
-            **self.headers
+            self.url, {"email": "invalid-email"}, format="json", **self.headers
         )
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["error"], "Invalid email format.")
@@ -79,19 +75,19 @@ class UpdateEmailViewTest(TestCase):
         )
 
         response = self.client.put(
-            self.url, 
-            {"email": "existing@example.com"}, 
-            format="json", 
-            **self.headers
+            self.url, {"email": "existing@example.com"}, format="json", **self.headers
         )
         self.assertEqual(response.status_code, 409)
-        self.assertEqual(response.json()["error"], "This email address is already in use.")
+        self.assertEqual(
+            response.json()["error"], "This email address is already in use."
+        )
 
     def test_update_email_unauthorized(self):
         """
         Authorization ヘッダーなしでリクエストした場合 401 エラー
         """
-        response = self.client.put(self.url, {"email": "new@example.com"}, format="json")
+        response = self.client.put(
+            self.url, {"email": "new@example.com"}, format="json"
+        )
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json()["error"], "Authorization header missing")
-

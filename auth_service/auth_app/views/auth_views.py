@@ -1,12 +1,14 @@
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.http import JsonResponse
-from django.views import View
-from django.utils.decorators import method_decorator
-
-from auth_app.models import CustomUser
-from auth_app.jwt_decorators import jwt_required
 import json
+
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+
+from auth_app.jwt_decorators import jwt_required
+from auth_app.models import CustomUser
+
 
 class UpdateEmailView(View):
     """
@@ -36,8 +38,14 @@ class UpdateEmailView(View):
             user = CustomUser.objects.get(user_id=request.user_id)
 
             # メールアドレスの重複チェック
-            if CustomUser.objects.filter(email=new_email).exclude(user_id=user.user_id).exists():
-                return JsonResponse({"error": "This email address is already in use."}, status=409)
+            if (
+                CustomUser.objects.filter(email=new_email)
+                .exclude(user_id=user.user_id)
+                .exists()
+            ):
+                return JsonResponse(
+                    {"error": "This email address is already in use."}, status=409
+                )
 
             # メールアドレスを更新
             user.email = new_email
