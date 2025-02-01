@@ -1,17 +1,18 @@
 from rest_framework import serializers
+
 from .models import Matches, MatchParticipants
 
 
 class TournamentMatchSerializer(serializers.Serializer):
-    userIdList = serializers.ListField(
+    userIdList = serializers.ListField(  # noqa: N815
         child=serializers.IntegerField(min_value=0),
         allow_empty=True,  # 参加ユーザーが決まっていない試合は存在する
     )
-    tournamentId = serializers.IntegerField(min_value=0)
-    parentMatchId = serializers.IntegerField(min_value=0, allow_null=True)
+    tournamentId = serializers.IntegerField(min_value=0)  # noqa: N815
+    parentMatchId = serializers.IntegerField(min_value=0, allow_null=True)  # noqa: N815
     round = serializers.IntegerField(min_value=1)
 
-    def validate_userIdList(self, value):
+    def validate_userIdList(self, value):  # noqa: N802
         # 重複するuserIdはエラーとする
         if len(value) != len(set(value)):
             raise serializers.ValidationError("Duplicate user ID")
@@ -26,7 +27,7 @@ class TournamentMatchSerializer(serializers.Serializer):
 
         return attrs
 
-    def validate_parentMatchId(self, value):
+    def validate_parentMatchId(self, value):  # noqa: N802
         # parentMatchIdがnullでなく、parentMatchが存在しない場合はエラー
         if value is not None and Matches.objects.filter(match_id=value).first() is None:
             raise serializers.ValidationError("parentMatch is not exist")
@@ -43,10 +44,10 @@ class MatchHistorySerializer(serializers.Serializer):
 
 class MatchFinishSerializer(serializers.Serializer):
     class ResultSerializer(serializers.Serializer):
-        userId = serializers.IntegerField(min_value=0)
+        userId = serializers.IntegerField(min_value=0)  # noqa: N815
         score = serializers.IntegerField(min_value=0)
 
-    matchId = serializers.IntegerField(min_value=0)
+    matchId = serializers.IntegerField(min_value=0)  # noqa: N815
     results = serializers.ListField(child=ResultSerializer())
 
     def validate_results(self, value):
@@ -67,7 +68,7 @@ class MatchFinishSerializer(serializers.Serializer):
 
         return value
 
-    def validate_matchId(self, value):
+    def validate_matchId(self, value):  # noqa: N802
         match = Matches.objects.filter(match_id=value).first()
 
         # 試合が存在するか
@@ -95,10 +96,10 @@ class MatchFinishSerializer(serializers.Serializer):
 
 
 class MatchesSerializer(serializers.Serializer):
-    matchId = serializers.IntegerField(min_value=0, required=False)
-    winnerUserId = serializers.IntegerField(min_value=0, required=False)
+    matchId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
+    winnerUserId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
     mode = serializers.ChoiceField(choices=["QuickPlay", "Tournament"], required=False)
-    tournamentId = serializers.IntegerField(min_value=0, required=False)
+    tournamentId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
     round = serializers.IntegerField(min_value=1, required=False)
     offset = serializers.IntegerField(min_value=0, required=False, default=0)
     limit = serializers.IntegerField(

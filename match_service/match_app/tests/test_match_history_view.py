@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+
 from .set_up_utils import create_query_string
-from .set_up_records import set_up_records
 
 # INFO docs/matches.ymlで/matches/histories/エンドポイントのlimitのdefault値は10と定義しています
 DEFAULT_LIMIT = 10

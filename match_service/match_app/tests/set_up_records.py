@@ -1,10 +1,12 @@
 import pytest
+
+from match_app.models import Matches
+
 from .set_up_utils import (
+    insert_match_participants_record,
     insert_quick_play_record,
     insert_tournament_record,
-    insert_match_participants_record,
 )
-from match_app.models import Matches
 
 
 @pytest.fixture

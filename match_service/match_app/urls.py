@@ -1,12 +1,13 @@
+from django.urls import path
+
 from .views import (
+    MatchFinishView,
+    MatchHistoryView,
+    MatchStatisticView,
     MatchView,
     TournamentMatchView,
-    MatchFinishView,
-    MatchStatisticView,
-    MatchHistoryView,
     health_check,
 )
-from django.urls import path
 
 urlpatterns = [
     path("matches/", MatchView.as_view(), name="matches"),

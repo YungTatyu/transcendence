@@ -1,7 +1,5 @@
 import pytest
-
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from .set_up_records import set_up_records
 
 
 def request_match_statistics(client, status, user_id) -> dict:

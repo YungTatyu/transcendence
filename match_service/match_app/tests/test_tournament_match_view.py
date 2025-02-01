@@ -1,5 +1,6 @@
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+
 from match_app.models import Matches, MatchParticipants
 
 
@@ -13,7 +14,7 @@ def request_tournament_match(
         "round": round,
     }
     response = client.post(
-        f"/matches/tournament-match/", data=data, content_type="application/json"
+        "/matches/tournament-match/", data=data, content_type="application/json"
     )
     assert response.status_code == status
 

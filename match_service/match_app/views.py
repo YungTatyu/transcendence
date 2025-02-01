@@ -1,18 +1,20 @@
 from typing import Optional
+
+import requests
 from django.utils.timezone import now
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import (
-    TournamentMatchSerializer,
-    MatchHistorySerializer,
-    MatchFinishSerializer,
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.views import APIView
+
+from match_service.match_app.models import Matches, MatchParticipants
+from match_service.match_app.serializers import (
     MatchesSerializer,
+    MatchFinishSerializer,
+    MatchHistorySerializer,
+    TournamentMatchSerializer,
     UserIdValidator,
 )
-from .models import Matches, MatchParticipants
-import requests
 
 
 class MatchView(APIView):
