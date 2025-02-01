@@ -6,6 +6,16 @@ from .set_up_utils import (
     insert_tournament_record,
     insert_match_participants_record,
 )
+import requests
+from unittest.mock import MagicMock
+
+
+@pytest.fixture()
+def requests_post_mocker(mocker):
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"message": "Match ended normally"}
+    return mocker.patch("requests.post", return_value=mock_response)
 
 
 def request_match_finish(client, status, match_id, results) -> dict:
@@ -66,8 +76,9 @@ def test_simple_quick_play_match_finish(client):
 
 
 @pytest.mark.django_db
-def test_simple_tournament_match_finish(client):
+def test_simple_tournament_match_finish(requests_post_mocker, client):
     """Tournamentモードの試合が終了"""
+
     results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
     user_ids = [result["userId"] for result in results]
     match_id = __insert_tournament_match(user_ids)

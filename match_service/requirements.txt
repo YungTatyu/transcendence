@@ -6,3 +6,5 @@ psycopg2>=2.9
 pytest
 pytest-django
 pytest-asyncio
+requests
+pytest-mock

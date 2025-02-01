@@ -12,6 +12,7 @@ from .serializers import (
     UserIdValidator,
 )
 from .models import Matches, MatchParticipants
+import requests
 
 
 class MatchView(APIView):
@@ -153,9 +154,15 @@ class MatchFinishView(APIView):
         else:
             何もしない
         """
-        # TODO 実際にトーナメントAPIを叩き、試合の終了を通知する処理を追加
-        # TODO 新たなParticipantsレコードを作成する処理を追加する
-        return True
+        match = Matches.objects.filter(match_id=match_id).first()
+        # modeがTournament以外なら何もしない
+        if match.mode != "Tournament":
+            return True
+
+        url = "https://tournaments.42.fr/tournaments/finish-match/"
+        payload = {"tournamentId": match.tournament_id, "round": match.round}
+        response = requests.post(url, json=payload)
+        return response.status_code == 200
 
 
 class MatchStatisticView(APIView):
