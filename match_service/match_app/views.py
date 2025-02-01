@@ -90,12 +90,7 @@ class TournamentMatchView(APIView):
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         parent_match_id: Optional[int] = serializer.validated_data["parentMatchId"]
-        parent_match, is_err = self.__fetch_parent_match(parent_match_id)
-
-        if is_err:
-            return Response(
-                {"error": "Parent match not found"}, status=HTTP_400_BAD_REQUEST
-            )
+        parent_match = Matches.objects.filter(match_id=parent_match_id).first()
 
         # Matchesレコードの作成
         tournament_match = Matches.objects.create(
@@ -111,21 +106,6 @@ class TournamentMatchView(APIView):
 
         return Response(data={"matchId": tournament_match.match_id}, status=HTTP_200_OK)
 
-    def __fetch_parent_match(
-        self, parent_match_id: Optional[int]
-    ) -> tuple[Optional[Matches], bool]:
-        # parentMatchIdがnullならNoneを返す(エラーとみなさない)
-        if parent_match_id is None:
-            return (None, False)
-
-        try:
-            parent_match = Matches.objects.get(match_id=parent_match_id)
-            # parentMatchが存在すればparentMatchを返す
-            return (parent_match, False)
-        except Matches.DoesNotExist:
-            # parentMatchが存在しなければエラーとする
-            return (None, True)
-
 
 class MatchFinishView(APIView):
     """試合終了時のトーナメントAPIへの通知とDBレコードの更新"""
@@ -138,13 +118,6 @@ class MatchFinishView(APIView):
         match_id: int = serializer.validated_data["matchId"]
         results: list[dict] = serializer.validated_data["results"]
 
-        # リクエストとデータベースとの整合性を確認
-        if not self.__check_match_integrity(match_id, results):
-            return Response(
-                {"error": "The match data has integrity issues."},
-                status=HTTP_400_BAD_REQUEST,
-            )
-
         # 先にトーナメントAPIを叩く(整合性維持のため)
         if not self.__send_match_result_if_tournament_match(match_id):
             return Response(
@@ -154,36 +127,6 @@ class MatchFinishView(APIView):
 
         finish_date = self.__update_match_data(match_id, results)
         return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
-
-    def __check_match_integrity(self, match_id: int, results: list[dict]) -> bool:
-        """リクエストデータとDB内データの整合性を確認"""
-        match = Matches.objects.filter(match_id=match_id).first()
-
-        # 試合が存在するか
-        if match is None:
-            return False
-
-        # 試合終了の処理済みではないか
-        if match.finish_date is not None:
-            return False
-
-        # 勝者は１人か
-        scores = [result["score"] for result in results]
-        winner_score = max(scores)
-        if scores.count(winner_score) != 1:
-            return False
-
-        request_user_ids = [result["userId"] for result in results]
-
-        # リクエストデータのuser_idが重複していないか
-        if len(request_user_ids) != len(set(request_user_ids)):
-            return False
-
-        # リクエストボディとDB内のuser_idsに整合性があるか
-        stored_user_ids = MatchParticipants.objects.filter(
-            match_id=match_id
-        ).values_list("user_id", flat=True)
-        return set(request_user_ids) == set(stored_user_ids)
 
     def __update_match_data(self, match_id: int, results: list[dict]) -> now:
         # MatchParticipantsのscoreをユーザーそれぞれに対して更新
