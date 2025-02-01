@@ -18,7 +18,8 @@ const calcRemaingTime = (endTime) => {
 
 export default function Game() {
   const { matchId } = useParams();
-  const { username: userid } = useUsername();
+  // const { username: userid } = useUsername();
+  const userid = sessionStorage.getItem("username");
   const [gameState, setGameState] = useState({
     ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
     left_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },

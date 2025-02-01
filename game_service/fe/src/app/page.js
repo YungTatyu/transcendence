@@ -25,6 +25,7 @@ export default function Home() {
       return;
     }
     setUsername(username);
+    sessionStorage.setItem("username", username);
     router.push(`/game/${matchId}`);
   };
   return (
