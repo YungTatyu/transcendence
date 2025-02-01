@@ -71,11 +71,7 @@ class ActionHandler:
 
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_contoroller.game
-        try:
-            game.add_player(user_id)
-        except RuntimeError:
-            # 1007(矛盾するデータ)
-            return (False, 1007)
+        game.add_player(user_id)
         return (True, 200)
 
     @staticmethod
@@ -100,6 +96,15 @@ class ActionHandler:
             return game_contoroller.start_game(str(match_id))
         elif game.state == PingPong.GameState.IN_PROGRESS:  # game再接続
             return game_controller.reconnect_event(str(match_id), player_id)
+
+    @staticmethod
+    def handle_disconnection(match_id, player_id):
+        match_dict = MatchManager.get_match(match_id)
+        game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
+        game = game_contoroller.game
+        if game.state == PingPong.GameState.IN_PROGRESS:  # gameは終了しない
+            return game_controller.disconnect_event(player_id)
+        MatchManager.remove_match(match_id)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -133,9 +138,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         ActionHandler.handle_game_connection(self.match_id, self.user_id)
 
     async def disconnect(self, close_code):
-        # Leave room group
+        ActionHandler.handle_disconnection(self.match_id, self.user_id)
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
-        MatchManager.remove_match(self.match_id)
         await self.close(close_code)
 
     async def receive(self, text_data):
