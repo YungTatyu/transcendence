@@ -5,7 +5,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from core.match_manager import MatchManager
 from core.pingpong import PingPong
-from realtime_pingpong import game_controller
 
 # class AuthHandler:
 #     """
