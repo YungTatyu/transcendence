@@ -9,6 +9,7 @@ from .serializers import (
     MatchHistorySerializer,
     MatchFinishSerializer,
     MatchesSerializer,
+    UserIdValidator,
 )
 from .models import Matches, MatchParticipants
 
@@ -217,15 +218,17 @@ class MatchFinishView(APIView):
 class MatchStatisticView(APIView):
     """user_idに対応する統計情報を取得する"""
 
-    def get(self, _, user_id: str):
-        if not user_id.isdigit():
-            return Response({"error": "UserID is invalid"}, status=HTTP_400_BAD_REQUEST)
+    def get(self, _, user_id):
+        user_id_validator = UserIdValidator(data={"user_id": user_id})
+        if not user_id_validator.is_valid():
+            return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
 
-        user_id_int = int(user_id)
+        user_id = int(user_id_validator.validated_data["user_id"])
+
         data = {
-            "matchWinCount": self.__fetch_match_win_count(user_id_int),
-            "matchLoseCount": self.__fetch_match_lose_count(user_id_int),
-            "tournamentWinnerCount": self.__fetch_tournament_winner_count(user_id_int),
+            "matchWinCount": self.__fetch_match_win_count(user_id),
+            "matchLoseCount": self.__fetch_match_lose_count(user_id),
+            "tournamentWinnerCount": self.__fetch_tournament_winner_count(user_id),
         }
         return Response(data=data, status=HTTP_200_OK)
 
@@ -257,16 +260,16 @@ class MatchStatisticView(APIView):
 class MatchHistoryView(APIView):
     """user_idに対応する試合履歴情報を取得する"""
 
-    def get(self, request, user_id: str):
+    def get(self, request, user_id):
         serializer = MatchHistorySerializer(data=request.query_params)
+        user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        elif not user_id_validator.is_valid():
+            return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
 
-        if not user_id.isdigit():
-            return Response({"error": "UserID is invalid"}, status=HTTP_400_BAD_REQUEST)
-        user_id_int = int(user_id)
-
-        matches = self.__fetch_finished_matches(user_id_int)
+        user_id = int(user_id_validator.validated_data["user_id"])
+        matches = self.__fetch_finished_matches(user_id)
 
         offset = serializer.validated_data["offset"]
         limit = serializer.validated_data["limit"]
@@ -274,8 +277,7 @@ class MatchHistoryView(APIView):
         # N+1によるパフォーマンス低下はoffset&limitで軽減できると考えています
         sliced_matches = matches[offset : offset + limit]
         results = [
-            self.__convert_match_to_result(match, user_id_int)
-            for match in sliced_matches
+            self.__convert_match_to_result(match, user_id) for match in sliced_matches
         ]
 
         data = {

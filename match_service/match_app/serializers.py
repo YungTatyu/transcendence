@@ -58,3 +58,13 @@ class MatchesSerializer(serializers.Serializer):
     limit = serializers.IntegerField(
         min_value=1, max_value=100, required=False, default=10
     )
+
+
+class UserIdValidator(serializers.Serializer):
+    user_id = serializers.CharField()
+
+    def validate_user_id(self, value):
+        # user_id が数値であるかどうかをチェック
+        if not value.isdigit():
+            raise serializers.ValidationError("UserID is invalid")
+        return value
