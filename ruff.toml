@@ -46,7 +46,7 @@ target-version = "py39"
 # flake8-simplify SIM
 # Pylint - PLC, PLE, PLW
 # isort - I
-select = ["E", "F", "UP", "B", "SIM", "I", "W", "PLC", "PLE", "PLW"]
+select = ["E", "F", "UP", "B", "SIM", "I", "W", "PLC", "PLE", "PLW", "N"]
 
 # E501は無視: line too long
 # 特定の条件でフォーマットされないことがあるから.formatterで長いラインはちゃんとフォーマットはする

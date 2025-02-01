@@ -27,9 +27,54 @@ services:
     networks:
       - app_network
 
+  game:
+    build: ./game_service
+    container_name: game
+    tty: true
+    ports:
+      - "8001:8001"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://game:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  tournament:
+    build: ./tournament_service
+    container_name: tournament
+    ports:
+      - "8002:8002"
+    env_file: ./docker_env/tournament.env
+    networks:
+      - app_network
+    depends_on:
+      - tournament_db
+      - tournament_redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+
+  tournament_db:
+    image: postgres:15
+    container_name: tournament_db
+    env_file: ./docker_env/tournament_db.env
+    networks:
+      - app_network
+    volumes:
+      - tournament_db_data:/var/lib/postgresql/data
+
+  tournament_redis:
+    image: redis:alpine
+    container_name: tournament_redis
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge
 
 volumes:
   auth_db_data:
+  tournament_db_data:
