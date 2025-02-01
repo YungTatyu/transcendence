@@ -59,9 +59,9 @@ class GameController:
         self.__task = asyncio.create_task(self.game_loop(group_name))
 
     def stop_game(self):
-        if self.task is not None:
-            self.task.cancel()
-            self.task = None
+        if self.__task is not None:
+            self.__task.cancel()
+            self.__task = None
 
     async def reconnect_event(self, group_name, player_id):
         self.__player_manager.reconnect_player(player_id)
