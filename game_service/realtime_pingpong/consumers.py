@@ -88,14 +88,14 @@ class ActionHandler:
             game.player_action(id, key)
 
     @staticmethod
-    def handle_game_connection(match_id, player_id):
+    async def handle_game_connection(match_id, player_id):
         match_dict = MatchManager.get_match(match_id)
         game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_controller.game
         if game.state == PingPong.GameState.READY_TO_START:
             return game_controller.start_game(str(match_id))
         elif game.state == PingPong.GameState.IN_PROGRESS:  # game再接続
-            return game_controller.reconnect_event(str(match_id), player_id)
+            return await game_controller.reconnect_event(str(match_id), player_id)
 
     @staticmethod
     def handle_disconnection(match_id, player_id):
@@ -135,7 +135,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
-        ActionHandler.handle_game_connection(self.match_id, self.user_id)
+        await ActionHandler.handle_game_connection(self.match_id, self.user_id)
 
     async def disconnect(self, close_code):
         ActionHandler.handle_disconnection(self.match_id, self.user_id)
