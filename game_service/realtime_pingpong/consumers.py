@@ -90,18 +90,18 @@ class ActionHandler:
     @staticmethod
     def handle_game_connection(match_id, player_id):
         match_dict = MatchManager.get_match(match_id)
-        game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
-        game = game_contoroller.game
+        game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
+        game = game_controller.game
         if game.state == PingPong.GameState.READY_TO_START:
-            return game_contoroller.start_game(str(match_id))
+            return game_controller.start_game(str(match_id))
         elif game.state == PingPong.GameState.IN_PROGRESS:  # game再接続
             return game_controller.reconnect_event(str(match_id), player_id)
 
     @staticmethod
     def handle_disconnection(match_id, player_id):
         match_dict = MatchManager.get_match(match_id)
-        game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
-        game = game_contoroller.game
+        game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
+        game = game_controller.game
         if game.state == PingPong.GameState.IN_PROGRESS:  # gameは終了しない
             return game_controller.disconnect_event(player_id)
         MatchManager.remove_match(match_id)
