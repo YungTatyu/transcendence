@@ -192,6 +192,10 @@ class PingPong:
     def state(self):
         return self.__state
 
+    @state.setter
+    def state(self, value):
+        self.__state = value
+
     @property
     def ball(self):
         return self.__ball
