@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .models import Matches
 
 
 class TournamentMatchSerializer(serializers.Serializer):
@@ -15,6 +16,15 @@ class TournamentMatchSerializer(serializers.Serializer):
         if len(value) != len(set(value)):
             raise serializers.ValidationError("Duplicate user ID")
         return value
+
+    def validate(self, attrs):
+        """tournament_idとroundが同じ試合が存在するか"""
+        tournament_id = attrs.get("tournamentId")
+        round = attrs.get("round")
+        if Matches.objects.filter(tournament_id=tournament_id, round=round).exists():
+            raise serializers.ValidationError("Tournament match already exist")
+
+        return attrs
 
 
 class MatchHistorySerializer(serializers.Serializer):

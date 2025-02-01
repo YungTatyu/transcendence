@@ -96,15 +96,6 @@ class TournamentMatchView(APIView):
                 {"error": "Parent match not found"}, status=HTTP_400_BAD_REQUEST
             )
 
-        # tournament_idとroundが同じ試合が存在するか
-        tournament_id = serializer.validated_data["tournamentId"]
-        round = serializer.validated_data["round"]
-        if Matches.objects.filter(tournament_id=tournament_id, round=round).exists():
-            return Response(
-                {"error", "Tournament matches already exist."},
-                status=HTTP_400_BAD_REQUEST,
-            )
-
         # Matchesレコードの作成
         tournament_match = Matches.objects.create(
             mode="Tournament",
