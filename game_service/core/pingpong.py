@@ -212,10 +212,11 @@ class PingPong:
         if player_id is None:
             return None  # Noneでplayerを初期化
         if (
-            self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER
-            and self.__state == self.GameState.WAITING_FOR_SECOND_PLAYER
+            self.__state != self.GameState.WAITING_FOR_FIRST_PLAYER
+            and self.__state != self.GameState.WAITING_FOR_SECOND_PLAYER
         ):
-            raise RuntimeError("this game is already ready to play.")
+            # すでにプレイヤーが作成されている時はなにもしない
+            return
         if self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER:
             self.__left_player = Player(
                 player_id, Paddle(Screen.HIGHEST_POS.value, Screen.HEIGHT.value / 2)
