@@ -19,9 +19,11 @@ from django.urls import path
 
 from auth_app.views.update_email_view import UpdateEmailView
 from auth_app.views.signup_views import OTPVerificationView, SignupView
+from auth_app.views.update_password_view import UpdatePasswordView
 
 urlpatterns = [
     path("auth/otp/signup", SignupView.as_view(), name="otp-signup"),
     path("auth/otp/signup/verify", OTPVerificationView.as_view(), name="otp-verify"),
     path("auth/me/email", UpdateEmailView.as_view(), name="update_email"),
+    path("auth/me/password", UpdatePasswordView.as_view(), name="update_password"),
 ]
