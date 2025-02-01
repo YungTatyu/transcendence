@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from core.match_manager import MatchManager
 from core.pingpong import PingPong
+from realtime_pingpong import game_controller
 
 # class AuthHandler:
 #     """
@@ -91,12 +92,14 @@ class ActionHandler:
             game.player_action(id, key)
 
     @staticmethod
-    def start_game_if_ready(match_id):
+    def handle_game_connection(match_id, player_id):
         match_dict = MatchManager.get_match(match_id)
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_contoroller.game
         if game.state == PingPong.GameState.READY_TO_START:
-            game_contoroller.start_game(str(match_id))
+            return game_contoroller.start_game(str(match_id))
+        elif game.state == PingPong.GameState.IN_PROGRESS:  # game再接続
+            return game_controller.reconnect_event(str(match_id), player_id)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -127,7 +130,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
-        ActionHandler.start_game_if_ready(self.match_id)
+        ActionHandler.handle_game_connection(self.match_id, self.user_id)
 
     async def disconnect(self, close_code):
         # Leave room group
