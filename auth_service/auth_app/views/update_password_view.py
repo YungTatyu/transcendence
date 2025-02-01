@@ -1,6 +1,5 @@
 import json
 
-from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import check_password, make_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -27,20 +26,27 @@ class UpdatePasswordView(View):
             new_password = data.get("new_password")
 
             if not current_password or not new_password:
-                return JsonResponse({"error": "Both current and new passwords are required."}, status=400)
+                return JsonResponse(
+                    {"error": "Both current and new passwords are required."},
+                    status=400,
+                )
 
             # 現在のユーザを取得
             user = CustomUser.objects.get(user_id=request.user_id)
 
             # 現在のパスワードの確認
             if not check_password(current_password, user.password):
-                return JsonResponse({"error": "Current password is incorrect."}, status=400)
+                return JsonResponse(
+                    {"error": "Current password is incorrect."}, status=400
+                )
 
             # 新しいパスワードをハッシュ化して更新
             user.password = make_password(new_password)
             user.save()
 
-            return JsonResponse({"message": "Password updated successfully."}, status=200)
+            return JsonResponse(
+                {"message": "Password updated successfully."}, status=200
+            )
 
         except CustomUser.DoesNotExist:
             return JsonResponse({"error": "User not found."}, status=404)

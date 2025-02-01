@@ -65,9 +65,16 @@ class UpdatePasswordViewTest(TestCase):
         """
         current_password または new_password がリクエストボディに存在しない場合 400 エラー
         """
-        response = self.client.put(self.url, {"new_password": "newsecurepassword"}, format="json", **self.headers)
+        response = self.client.put(
+            self.url,
+            {"new_password": "newsecurepassword"},
+            format="json",
+            **self.headers,
+        )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["error"], "Both current and new passwords are required.")
+        self.assertEqual(
+            response.json()["error"], "Both current and new passwords are required."
+        )
 
     def test_update_password_unauthorized(self):
         """

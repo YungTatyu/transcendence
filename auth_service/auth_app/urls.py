@@ -17,8 +17,8 @@ Including another URLconf
 
 from django.urls import path
 
-from auth_app.views.update_email_view import UpdateEmailView
 from auth_app.views.signup_views import OTPVerificationView, SignupView
+from auth_app.views.update_email_view import UpdateEmailView
 from auth_app.views.update_password_view import UpdatePasswordView
 
 urlpatterns = [
