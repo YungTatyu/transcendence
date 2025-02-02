@@ -1,17 +1,17 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User 
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User 
 
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
 from rest_framework.generics import GenericAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny
 from .models import  User, AccessToken
-from .serializers import RegisterSerializer,LoginSerializer, UserUpdateSerializer
+from .serializers import RegisterSerializer,LoginSerializer, UpdateUsernameSerializer
 
-# Create your views here.
 
 class RegisterView(APIView):
     @staticmethod
@@ -22,19 +22,19 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         
         if serializer.is_valid(raise_exception=True):
-            # パスワードと確認パスワードの一致を確認
-            password_confirmation = request.data.get('password_confirmation')
-            if serializer.validated_data['password'] != password_confirmation:
-                return Response(
-                    {"error": 2, "message": "Passwords do not match"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            # # パスワードと確認パスワードの一致を確認
+            # password_confirmation = request.data.get('password_confirmation')
+            # if serializer.validated_data['password'] != password_confirmation:
+            #     return Response(
+            #         {"error": 2, "message": "Passwords do not match"},
+            #         status=status.HTTP_400_BAD_REQUEST
+            #     )
 
             # ユーザーIDの重複確認
-            user_id = serializer.validated_data.get('user_id')
-            if User.objects.filter(user_id=user_id).exists():
+            username = serializer.validated_data.get('username')
+            if User.objects.filter(username=username).exists():
                 return Response(
-                    {"error": 3, "message": "User ID already exists"},
+                    {"error": 3, "message": "User name already exists"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -68,73 +68,77 @@ class LoginView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user = User.objects.get(user_id=serializer.validated_data["user_id"])
-            user_id = serializer.validated_data['user_id']
-            token = AccessToken.create(user)
-            return Response({'detail': "ログインが成功しました。", 'error': 0, 'token': token.token, 'user_id': user_id})
+
+            user = serializer.validated_data['user']  # `LoginSerializer` が認証済みユーザーを返す
+            
+            try:
+                token = AccessToken.create(user)
+            except Exception as e:
+                return Response({'error': 1, 'detail': f'トークン生成エラー: {str(e)}'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            return Response({
+                'detail': "ログインが成功しました。",
+                'error': 0,
+                'token': token.token,
+                'username': user.username,
+            })
         return Response({'error': 1}, status=HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(APIView):
-    def get(self, request, user_id):
+    def get(self, request, username):
         # ユーザ情報の取得
-        user = User.objects.filter(user_id=user_id).first()
-
-        if not user:
-            # ユーザが存在しない場合
-            return Response({"message": "No User found"}, status=404)
+        user = get_object_or_404(User, username=username)
 
         response_data = {
-            "message": "User details by user_id",
+            "message": "User details by username",
             "user": {
-                "user_id": user.user_id,
-                "nickname": user.nickname,
-                "comment": user.comment
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
             }
         }
 
-        return Response(response_data, status=200)
+        return Response(response_data, status=status.HTTP_200_OK)
     
 
-class UserUpdateView(APIView):
-    def patch(self, request, user_id):
+class UpdateUsernameView(APIView):
+    # permission_classes = [AllowAny]
+
+    def patch(self, request, username):
         # ユーザ情報の取得
-        user = User.objects.filter(user_id=user_id).first()
+        user = get_object_or_404(User, username=username)
 
-        if not user:
-            # ユーザが存在しない場合
-            return Response({"message": "No User found"}, status=404)
-
-        if user_id != user.user_id:
+        if request.user.id != user.id:
             # 認証と異なるIDのユーザを指定した場合
             return Response({"message": "No Permission for Update"}, status=403)
 
-        serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+        serializer = UpdateUsernameSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            updated_user = serializer.save()
 
             response_data = {
                 "message": "User successfully updated",
                 "user": {
-                    "nickname": user.nickname,
-                    "comment": user.comment
+                    "username": updated_user.username,  # 更新された username をレスポンスに含める
                 }
             }
             return Response(response_data, status=200)
         else:
-            error_message = serializer.errors.get('non_field_errors', ['User updation failed'])[0]
-            return Response({"message": "User updation failed", "cause": error_message}, status=400)
+            return Response({
+                "message": "User update failed",
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, user_id):
-        return Response({"message": "Method not allowed"}, status=405)
-    
+        return Response({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class DeleteAccountView(APIView):
     def post(self, request,user_id):
         ## アカウントの削除処理
         try:
-            user = User.objects.filter(user_id=user_id).first()
+            user = User.objects.filter(id=user_id).first()
             user.delete()
         except User.DoesNotExist:
             raise Response("No User found")

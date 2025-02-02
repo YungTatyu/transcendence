@@ -4,16 +4,33 @@ import hashlib
 from datetime import timedelta
 from django.utils import timezone
    
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
 
-# Create your models here.
-class User(models.Model):
-    user_id = models.CharField(max_length=20, unique=True)
-    password = models.CharField(max_length=20)
-    nickname = models.CharField(max_length=50)
-    comment = models.CharField(max_length=100, blank=True)
+class CustomUserManager(BaseUserManager):
     
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not username:
+            raise ValueError('The Username field must be set')
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)  # パスワードをハッシュ化
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=20, unique=True)
+    
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'username'  # 認証に使用するフィールド
+  
     def __str__(self):
-        return self.user_id
+        return self.email
 
 
 def in_30_days():
@@ -30,7 +47,7 @@ class AccessToken(models.Model):
     def str(self):
         # メールアドレスとアクセス日時、トークンが見えるように設定
         dt = timezone.localtime(self.access_datetime).strftime("%Y/%m/%d %H:%M:%S")
-        return self.user.user_id + '(' + dt + ') - ' + self.token
+        return self.user.username + '(' + dt + ') - ' + self.token
     
     @staticmethod
     def create(user: User):
@@ -41,7 +58,7 @@ class AccessToken(models.Model):
 
         # トークン作成（UserID + Password + システム日付のハッシュ値とする）
         dt = timezone.now()
-        str = user.user_id + user.password + dt.strftime('%Y%m%d%H%M%S%f')
+        str = user.username + user.password + dt.strftime('%Y%m%d%H%M%S%f')
         hash = hashlib.sha1(str.encode('utf-8')).hexdigest()
 
         # トークンをDBに追加
