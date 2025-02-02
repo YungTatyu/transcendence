@@ -62,9 +62,9 @@ def test_simple_select(client, set_up_records):
     検索条件無し
     totalは作成したMatchesレコードの数とおなじになる
     """
-    num_of_matches = set_up_records
+    num_of_matches = len(set_up_records)
     expect_total = num_of_matches
-    expect_limit = min(num_of_matches, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, DEFAULT_LIMIT)
     request_matches(client, HTTP_200_OK, expect_total, expect_limit)
 
 
@@ -73,7 +73,8 @@ def test_finished_quick_play_results(client, set_up_records):
     """
     .set_up_records.__insert_finished_quick_playで作成されるレコードを対象にテスト
     """
-    match1_id = 1
+    match_id_dict = set_up_records
+    match1_id = match_id_dict["match1_id"]
     expect_total = 1
     expect_limit = min(expect_total, DEFAULT_LIMIT)
     res_data = request_matches(
@@ -82,7 +83,7 @@ def test_finished_quick_play_results(client, set_up_records):
     results = res_data["results"]
     expect_results = [
         {
-            "matchId": 1,
+            "matchId": match_id_dict["match1_id"],
             "winnerUserId": 3,
             "mode": "QuickPlay",
             "tournamentId": None,
@@ -102,7 +103,8 @@ def test_not_finished_quick_play_results(client, set_up_records):
     """
     .set_up_records.__insert_not_finished_quick_playで作成されるレコードを対象にテスト
     """
-    match2_id = 2
+    match_id_dict = set_up_records
+    match2_id = match_id_dict["match2_id"]
     expect_total = 1
     expect_limit = min(expect_total, DEFAULT_LIMIT)
     res_data = request_matches(
@@ -111,7 +113,7 @@ def test_not_finished_quick_play_results(client, set_up_records):
     results = res_data["results"]
     expect_results = [
         {
-            "matchId": 2,
+            "matchId": match2_id,
             "winnerUserId": None,
             "mode": "QuickPlay",
             "tournamentId": None,
@@ -131,6 +133,7 @@ def test_not_finished_tournament_results(client, set_up_records):
     """
     .set_up_records.__insert_not_finished_tournamentで作成されるレコードを対象にテスト
     """
+    match_id_dict = set_up_records
     tournament_id = 1
     expect_total = 3
     expect_limit = min(expect_total, DEFAULT_LIMIT)
@@ -140,7 +143,7 @@ def test_not_finished_tournament_results(client, set_up_records):
     results = res_data["results"]
     expect_results = [
         {
-            "matchId": 3,
+            "matchId": match_id_dict["match3_id"],
             "winnerUserId": None,
             "mode": "Tournament",
             "tournamentId": tournament_id,
@@ -149,11 +152,11 @@ def test_not_finished_tournament_results(client, set_up_records):
             "participants": [],
         },
         {
-            "matchId": 4,
+            "matchId": match_id_dict["match4_id"],
             "winnerUserId": None,
             "mode": "Tournament",
             "tournamentId": tournament_id,
-            "parentMatchId": 3,
+            "parentMatchId": match_id_dict["match3_id"],
             "round": 2,
             "participants": [
                 {"id": 3, "score": None},
@@ -161,11 +164,11 @@ def test_not_finished_tournament_results(client, set_up_records):
             ],
         },
         {
-            "matchId": 5,
+            "matchId": match_id_dict["match5_id"],
             "winnerUserId": None,
             "mode": "Tournament",
             "tournamentId": tournament_id,
-            "parentMatchId": 3,
+            "parentMatchId": match_id_dict["match3_id"],
             "round": 1,
             "participants": [
                 {"id": 1, "score": None},
@@ -181,6 +184,7 @@ def test_finished_tournament_results(client, set_up_records):
     """
     .set_up_records.__insert_finished_tournamentで作成されるレコードを対象にテスト
     """
+    match_id_dict = set_up_records
     tournament_id = 2
     expect_total = 1
     expect_limit = min(expect_total, DEFAULT_LIMIT)
@@ -190,7 +194,7 @@ def test_finished_tournament_results(client, set_up_records):
     results = res_data["results"]
     expect_results = [
         {
-            "matchId": 6,
+            "matchId": match_id_dict["match6_id"],
             "winnerUserId": 1,
             "mode": "Tournament",
             "tournamentId": tournament_id,
@@ -210,6 +214,7 @@ def test_only_one_round_finished_tournament_results(client, set_up_records):
     """
     .set_up_records.__insert_only_one_round_finished_tournamentで作成されるレコードを対象にテスト
     """
+    match_id_dict = set_up_records
     tournament_id = 3
     expect_total = 2
     expect_limit = min(expect_total, DEFAULT_LIMIT)
@@ -219,7 +224,7 @@ def test_only_one_round_finished_tournament_results(client, set_up_records):
     results = res_data["results"]
     expect_results = [
         {
-            "matchId": 7,
+            "matchId": match_id_dict["match7_id"],
             "winnerUserId": None,
             "mode": "Tournament",
             "tournamentId": tournament_id,
@@ -231,11 +236,11 @@ def test_only_one_round_finished_tournament_results(client, set_up_records):
             ],
         },
         {
-            "matchId": 8,
+            "matchId": match_id_dict["match8_id"],
             "winnerUserId": 1,
             "mode": "Tournament",
             "tournamentId": tournament_id,
-            "parentMatchId": 7,
+            "parentMatchId": match_id_dict["match7_id"],
             "round": 1,
             "participants": [
                 {"id": 1, "score": 11},
@@ -366,7 +371,7 @@ def test_offset(client, set_up_records):
     expect_total == 作成したMatchesレコードの数(QueryStringでoffset以外の条件を入れていないため)
     expect_limit == 全体のレコード数からoffset分ずらした値
     """
-    num_of_matches = set_up_records
+    num_of_matches = len(set_up_records)
     offset = 2
     expect_total = num_of_matches
     expect_limit = max(num_of_matches - offset, 0)
@@ -378,7 +383,7 @@ def test_offset_over_total(client, set_up_records):
     """
     全体のレコード数よりもoffsetが大きいため、resultsは空
     """
-    num_of_matches = set_up_records
+    num_of_matches = len(set_up_records)
     offset = num_of_matches + 1
     expect_total = num_of_matches
     expect_limit = max(num_of_matches - offset, 0)
@@ -391,7 +396,7 @@ def test_offset_over_total(client, set_up_records):
 @pytest.mark.django_db
 def test_limit(client, set_up_records):
     """全体のレコード数がlimitを超える場合、limitの値がlimitとして返される"""
-    num_of_matches = set_up_records
+    num_of_matches = len(set_up_records)
     limit = 2
     expect_total = num_of_matches
     expect_limit = min(num_of_matches, limit)
@@ -401,7 +406,7 @@ def test_limit(client, set_up_records):
 @pytest.mark.django_db
 def test_limit_over_total(client, set_up_records):
     """limitが全体のレコード数を超える場合、全体のレコード数がlimitとして返る"""
-    num_of_matches = set_up_records
+    num_of_matches = len(set_up_records)
     limit = num_of_matches + 1
     expect_total = num_of_matches
     expect_limit = min(num_of_matches, limit)
