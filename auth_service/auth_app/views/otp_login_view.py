@@ -8,6 +8,7 @@ from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
 from django.conf import settings
 
+
 logger = logging.getLogger(__name__)
 
 class OTPLoginView(APIView):
