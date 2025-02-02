@@ -5,11 +5,11 @@ from io import BytesIO
 
 import pyotp
 import qrcode
-
-from auth_app.utils.redis_handler import RedisHandler
-from auth_app.models import CustomUser
-from auth_app.client.user_client import UserClient
 from django.conf import settings
+
+from auth_app.client.user_client import UserClient
+from auth_app.models import CustomUser
+from auth_app.utils.redis_handler import RedisHandler
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +73,9 @@ class OTPService:
             try:
                 # DBからユーザー情報を取得
                 client = UserClient(
-                    base_url=settings.USER_API_BASE_URL, \
-                        use_mock=settings.USER_API_USE_MOCK, \
-                            mock_search_data={"userId": "12345", "username": "mockuser"}
+                    base_url=settings.USER_API_BASE_URL,
+                    use_mock=settings.USER_API_USE_MOCK,
+                    mock_search_data={"userId": "12345", "username": "mockuser"},
                 )
 
                 # `username` でユーザーを検索
@@ -97,6 +97,7 @@ class OTPService:
                     return False
 
             except:
-                logger.error(f"User with username {username} does not exist in the database.")
+                logger.error(
+                    f"User with username {username} does not exist in the database."
+                )
                 return False  # ユーザーがDBに存在しない場合
-

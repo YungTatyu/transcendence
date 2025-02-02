@@ -1,15 +1,16 @@
 import logging
-from django.contrib.auth import authenticate
+
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from auth_app.services.otp_service import OTPService
+
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
-from django.conf import settings
-
+from auth_app.services.otp_service import OTPService
 
 logger = logging.getLogger(__name__)
+
 
 class OTPLoginView(APIView):
     """
@@ -33,9 +34,9 @@ class OTPLoginView(APIView):
 
         # 認証を試みる
         client = UserClient(
-            base_url=settings.USER_API_BASE_URL, \
-                use_mock=settings.USER_API_USE_MOCK, \
-                    mock_search_data={"userId": "12345", "username": "mockuser"}
+            base_url=settings.USER_API_BASE_URL,
+            use_mock=settings.USER_API_USE_MOCK,
+            mock_search_data={"userId": "12345", "username": "mockuser"},
         )
         try:
             # `username` でユーザーを検索
@@ -75,6 +76,7 @@ class OTPLoginView(APIView):
 
         logger.info(f"OTP login initiated for user: {username}")
         return response
+
 
 class OTPVerificationView(APIView):
     """
