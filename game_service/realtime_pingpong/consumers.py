@@ -20,7 +20,6 @@ class ActionHandler:
         returns: True|False, status code
         """
         if match_id is None or user_id is None:
-            # acceptしていないので、エラーメッセージは送信不可
             # 1008 (Policy Violation)
             return (False, 1008)
 
@@ -96,6 +95,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.match_id, self.user_id
         )
         if not re:
+            # acceptしていないので、エラーメッセージは送信不可
             await self.close(code=status_code)
             return
 
