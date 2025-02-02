@@ -50,7 +50,7 @@ class OTPAuthTests(APITestCase):
         response = self.client.post(self.login_url, {"username": self.username, "password": "wrongpassword"})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn("error", response.data)
-        self.assertEqual(response.data["error"], "Invalid email or password.")
+        self.assertEqual(response.data["error"], "Invalid username or password.")
 
     def test_login_missing_fields(self):
         """
