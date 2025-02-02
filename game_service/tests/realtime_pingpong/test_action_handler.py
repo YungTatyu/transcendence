@@ -1,11 +1,12 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import AsyncMock, patch, MagicMock
 
 from core.match_manager import MatchManager
+from core.pingpong import PingPong
 from realtime_pingpong.consumers import ActionHandler
 
 
-class ActionHandlerTestCase(unittest.TestCase):
+class ActionHandlerTestCase(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         # MatchManager.get_match をモックする
         patcher = patch("realtime_pingpong.consumers.MatchManager.get_match")
@@ -20,7 +21,7 @@ class ActionHandlerTestCase(unittest.TestCase):
         self.mock_game = MagicMock()
         self.mock_game_controller.game = self.mock_game
         self.mock_game_controller.start_game = MagicMock(return_value=None)
-        self.mock_game_controller.reconnect_event = MagicMock(return_value=None)
+        self.mock_game_controller.reconnect_event = AsyncMock(return_value=None)
 
         self.mock_get_match.return_value = {
             MatchManager.KEY_MATCH: self.mock_match,
@@ -104,3 +105,13 @@ class ActionHandlerTestCase(unittest.TestCase):
             self.mock_game,
         )
         self.mock_game.player_action.assert_not_called()
+
+    async def test_handle_game_connection_start_game(self):
+        self.mock_game.state = PingPong.GameState.READY_TO_START
+        await ActionHandler.handle_game_connection(1, 2)
+        self.mock_game_controller.start_game.assert_called_once_with(str(1))
+
+    async def test_handle_game_connection_reconnect_event(self):
+        self.mock_game.state = PingPong.GameState.IN_PROGRESS
+        await ActionHandler.handle_game_connection(1, 2)
+        self.mock_game_controller.reconnect_event.assert_called_once_with(str(1), 2)
