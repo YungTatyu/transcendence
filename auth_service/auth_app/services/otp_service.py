@@ -96,8 +96,14 @@ class OTPService:
                     logger.debug(f"No OTP secret found for user {username}.")
                     return False
 
-            except:
-                logger.error(
-                    f"User with username {username} does not exist in the database."
-                )
-                return False  # ユーザーがDBに存在しない場合
+            except ValueError as ve:
+                logger.error(f"Error: {str(ve)}")
+                return False  # ユーザーが見つからない場合
+
+            except CustomUser.DoesNotExist:
+                logger.error(f"User with username {username} does not exist in the database.")
+                return False  # DB内にユーザーが存在しない場合
+
+            except Exception as e:
+                logger.error(f"Unexpected error occurred: {str(e)}")
+                return False  # その他の予期しないエラー
