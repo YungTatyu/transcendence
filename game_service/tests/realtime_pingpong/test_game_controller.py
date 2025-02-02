@@ -9,10 +9,10 @@ from core.pingpong import PingPong
 class TestGameController(unittest.IsolatedAsyncioTestCase):
     """GameController のテスト"""
 
-    @patch.object(GameController, "GAME_TIME_SEC", 1)  # testはにGAME_TIME_SECを1に変更
     def setUp(self):
         """テスト前のセットアップ"""
         self.controller = GameController()
+        self.controller.GAME_TIME_SEC = 1
 
         # PingPong ゲームのモックを設定
         self.mock_game = MagicMock()
@@ -73,9 +73,6 @@ class TestGameController(unittest.IsolatedAsyncioTestCase):
 
     async def test_game_loop(self):
         """ゲームループのテスト"""
-        self.controller._GameController__game_end_time = int(
-            (datetime.now() + timedelta(seconds=2)).timestamp()
-        )
         self.mock_game.is_match_over.return_value = True
 
         with patch(
