@@ -9,7 +9,6 @@ from auth_app.services.otp_service import OTPService
 class OTPServiceTestCase(TestCase):
     @patch("auth_app.utils.redis_handler.RedisHandler.set")
     def test_generate_qr_code(self, mock_redis_set):
-        # username = "testuser"
         email = "testuser@example.com"
         otp_secret = pyotp.random_base32()
 
@@ -21,7 +20,6 @@ class OTPServiceTestCase(TestCase):
 
     @patch("auth_app.utils.redis_handler.RedisHandler.get")
     def test_verify_otp(self, mock_redis_get):
-        username = "testuser"
         secret = pyotp.random_base32()
         otp = pyotp.TOTP(secret)
 
