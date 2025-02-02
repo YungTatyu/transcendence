@@ -79,7 +79,7 @@ class OTPAuthTests(APITestCase):
         response = self.client.post(
             self.verify_url, {"username": self.username, "otp": otp_token}
         )
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
@@ -92,7 +92,7 @@ class OTPAuthTests(APITestCase):
             self.verify_url, {"username": self.username, "otp": "123456"}
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["error"], "Invalid OTP or username.")
+        self.assertEqual(response.data["error"], "Invalid OTP.")
 
     def test_otp_verification_missing_fields(self):
         """
