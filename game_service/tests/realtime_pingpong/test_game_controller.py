@@ -26,8 +26,9 @@ class TestGameController(unittest.IsolatedAsyncioTestCase):
 
     async def test_start_game(self):
         """ゲームを開始できるかのテスト"""
+        self.controller.game_loop = MagicMock()
         with patch("asyncio.create_task", return_value=MagicMock()) as mock_create_task:
-            await self.controller.start_game("test_group")
+            self.controller.start_game("test_group")
 
             # ゲーム状態が IN_PROGRESS に変更される
             self.assertEqual(self.controller.game.state, PingPong.GameState.IN_PROGRESS)
