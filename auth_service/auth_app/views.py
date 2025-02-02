@@ -1,11 +1,13 @@
 import json
 import logging
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.client.user_client import UserClient
+from auth_app.models import CustomUser
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
@@ -115,13 +117,19 @@ class OTPVerificationView(APIView):
         :param user_data: 仮登録データ
         :return: 保存成功ならTrue、失敗ならFalse
         """
+        client = UserClient(
+            base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
+        )
         try:
-            user = User.objects.create_user(
-                username=user_data["username"],
-                email=user_data["email"],
+            res = client.create_user(user_data["username"])
+            user_id = res.json()["userId"]
+
+            CustomUser.objects.create_user(
+                user_id=user_id,
+                mail_address=user_data["email"],
                 password=user_data["password_hash"],
             )
-            user.save()
+
             return True
         except Exception as e:
             logger.error(f"Error saving user: {str(e)}")
