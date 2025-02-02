@@ -72,7 +72,7 @@ class UpdateEmailViewTest(TestCase):
         CustomUser.objects.create_user(
             user_id="other-user-456",
             email="existing@example.com",
-            secret_key=pyotp.random_base32()
+            secret_key=pyotp.random_base32(),
             password="securepassword",
         )
 
