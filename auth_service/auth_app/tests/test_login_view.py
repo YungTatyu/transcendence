@@ -66,7 +66,8 @@ class OTPAuthTests(APITestCase):
         ✅ 正しい OTP で認証成功
         """
         # OTP の生成
-        otp_token = OTPService.generate_otp(self.user)
+        otp_generator = pyotp.TOTP(self.user.secret_key)
+        otp_token = otp_generator.now()
 
         response = self.client.post(self.verify_url, {"email": self.email, "otp": otp_token})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
