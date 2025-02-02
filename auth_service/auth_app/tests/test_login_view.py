@@ -28,7 +28,7 @@ class OTPAuthTests(APITestCase):
 
         # ログインエンドポイント
         self.login_url = reverse("otp-login")  # `/auth/otp/login/`
-        self.verify_url = reverse("otp-verify")  # `/auth/otp/verify/`
+        self.verify_url = reverse("otp-login-verify")  # `/auth/otp/verify/`
 
     def test_login_success(self):
         """
