@@ -35,13 +35,6 @@ class TournamentMatchSerializer(serializers.Serializer):
         return value
 
 
-class MatchHistorySerializer(serializers.Serializer):
-    offset = serializers.IntegerField(min_value=0, required=False, default=0)
-    limit = serializers.IntegerField(
-        min_value=1, max_value=100, required=False, default=10
-    )
-
-
 class MatchFinishSerializer(serializers.Serializer):
     class ResultSerializer(serializers.Serializer):
         userId = serializers.IntegerField(min_value=0)  # noqa: N815
@@ -93,18 +86,6 @@ class MatchFinishSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid user_ids")
 
         return attrs
-
-
-class MatchesSerializer(serializers.Serializer):
-    matchId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
-    winnerUserId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
-    mode = serializers.ChoiceField(choices=["QuickPlay", "Tournament"], required=False)
-    tournamentId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
-    round = serializers.IntegerField(min_value=1, required=False)
-    offset = serializers.IntegerField(min_value=0, required=False, default=0)
-    limit = serializers.IntegerField(
-        min_value=1, max_value=100, required=False, default=10
-    )
 
 
 class UserIdValidator(serializers.Serializer):
