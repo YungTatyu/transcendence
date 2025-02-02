@@ -62,12 +62,6 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not OTPService.verify_otp(username, otp_token):
-            logger.warn("Invalid OTP or username.")
-            return Response(
-                {"error": "Invalid OTP or username."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         # Redisから仮登録データを取得
         user_data = self.__get_pending_user_data(username)
         if not user_data:
@@ -76,6 +70,21 @@ class OTPVerificationView(APIView):
                 {"error": "No pending user data found."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        secret = user_data.get("otp_secret")
+        if not secret:
+            logger.debug("there no secret")
+            return Response(
+                {"error": "Failed to fetch user secret"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        if not OTPService.verify_otp(secret, otp_token):
+            logger.warn("Invalid OTP or secret.")
+            return Response(
+                {"error": "Invalid OTP or secret."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
         if not self.__register_user(user_data):
             logger.fatal("Failed to register user.")
             return Response(

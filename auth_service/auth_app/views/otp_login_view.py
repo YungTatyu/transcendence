@@ -22,38 +22,26 @@ class OTPLoginView(APIView):
         1. ユーザー名とパスワードで認証
         2. 認証成功後、OTP 検証ステップへ進む
         """
-        username = request.data.get("username")
+        email = request.data.get("email")
         password = request.data.get("password")
 
-        if not username or not password:
-            logger.warn("Invalid request: missing username or password")
+        if not email or not password:
+            logger.warn("Invalid request: missing email or password")
             return Response(
                 {"error": "Username and password are required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         # 認証を試みる
-        client = UserClient(
-            base_url=settings.USER_API_BASE_URL,
-            use_mock=settings.USER_API_USE_MOCK,
-            mock_search_data={"userId": "12345", "username": "mockuser"},
-        )
         try:
-            # `username` でユーザーを検索
-            res = client.search_users({"username": username})
-            user_data = res.json()
-            if not user_data or "userId" not in user_data:
-                raise ValueError("User not found")
-            user_id = user_data["userId"]
-
-            user = CustomUser.objects.get(user_id=user_id)
+            user = CustomUser.objects.get(email=email)
             if not user.check_password(password):  # パスワードをチェック
                 raise ValueError("Invalid password")
 
         except Exception as e:
             logger.error(f"Authentication failed: {str(e)}")
             return Response(
-                {"error": "Invalid username or password."},
+                {"error": "Invalid email or password."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         # OTP 認証の開始メッセージを返す
@@ -64,17 +52,17 @@ class OTPLoginView(APIView):
             status=status.HTTP_200_OK,
         )
 
-        # `username` を Cookie に保存
+        # `email` を Cookie に保存
         response.set_cookie(
-            key="username",
-            value=username,
+            key="email",
+            value=email,
             httponly=True,
             secure=True,
             path="/",
             max_age=300,
         )
 
-        logger.info(f"OTP login initiated for user: {username}")
+        logger.info(f"OTP login initiated for user: {email}")
         return response
 
 
@@ -84,18 +72,26 @@ class OTPLoginVerificationView(APIView):
     """
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get("username")
+        email = request.data.get("email")
         otp_token = request.data.get("otp")
 
-        if not username or not otp_token:
-            logger.warn("Invalid request body: missing username or otp")
+        if not email or not otp_token:
+            logger.warn("Invalid request body: missing email or otp")
             return Response(
                 {"error": "Username and OTP are required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        try:
+            user = CustomUser.objects.get(email=email)
+        except Exception as e:
+            logger.error(f"Authentication failed: {str(e)}")
+            return Response(
+                {"error": "Invalid email or password."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
-        if not OTPService.verify_otp(username, otp_token):
-            logger.warn(f"Invalid OTP for user: {username}")
+        if not OTPService.verify_otp(user.secret_key, otp_token):
+            logger.warn(f"Invalid OTP for user: {email}")
             return Response(
                 {"error": "Invalid OTP."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -110,8 +106,8 @@ class OTPLoginVerificationView(APIView):
             status=status.HTTP_200_OK,
         )
 
-        # `username` Cookie を削除
-        response.delete_cookie("username", path="/")
+        # `email` Cookie を削除
+        response.delete_cookie("email", path="/")
 
-        logger.info(f"OTP verified successfully for user: {username}")
+        logger.info(f"OTP verified successfully for user: {email}")
         return response

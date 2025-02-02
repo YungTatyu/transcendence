@@ -26,24 +26,12 @@ class OTPServiceTestCase(TestCase):
         secret = pyotp.random_base32()
         otp = pyotp.TOTP(secret)
 
-        # 仮登録情報をRedisに模倣したデータとして設定
-        redis_data = json.dumps(
-            {
-                "username": username,
-                "email": "testuser@example.com",
-                "otp_secret": secret,
-            }
-        )
-
-        # Redisから秘密鍵を含む仮登録データを取得するモックを設定
-        mock_redis_get.return_value = redis_data
-
         # 正しいOTPトークンを検証
         valid_token = otp.now()
-        self.assertTrue(OTPService.verify_otp(username=username, otp_token=valid_token))
+        self.assertTrue(OTPService.verify_otp(otp_secret=secret, otp_token=valid_token))
 
         # 無効なOTPトークンを検証
         invalid_token = "000000"
         self.assertFalse(
-            OTPService.verify_otp(username=username, otp_token=invalid_token)
+            OTPService.verify_otp(otp_secret=secret, otp_token=invalid_token)
         )
