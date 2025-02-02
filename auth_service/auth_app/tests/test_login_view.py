@@ -21,12 +21,9 @@ class OTPAuthTests(APITestCase):
         self.email = "test@example.com"
         self.password = "securepassword"
         self.user = CustomUser.objects.create_user(
-            user_id=self.user_id, email=self.email, password=self.password
+            user_id=self.user_id, email=self.email, secret_key=pyotp.random_base32(), password=self.password
         )
 
-        # OTP 秘密鍵をユーザーに保存
-        self.user.secret_key = pyotp.random_base32()
-        self.user.save()
 
         # ログインエンドポイント
         self.login_url = reverse("otp-login")  # `/auth/otp/login/`

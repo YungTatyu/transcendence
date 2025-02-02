@@ -126,6 +126,7 @@ class OTPVerificationView(APIView):
             CustomUser.objects.create_user(
                 user_id=user_id,
                 email=user_data["email"],
+                secret_key=user_data["otp_secret"],
                 password=user_data["password_hash"],
             )
 

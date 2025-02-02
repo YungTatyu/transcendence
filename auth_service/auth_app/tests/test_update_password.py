@@ -2,7 +2,7 @@ import jwt
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
-
+import pyotp
 from auth_app.models import CustomUser
 
 
@@ -21,6 +21,7 @@ class UpdatePasswordViewTest(TestCase):
         self.user = CustomUser.objects.create_user(
             user_id="test-user-123",
             email="test@example.com",
+            secret_key=pyotp.random_base32()
             password="securepassword",
         )
 
