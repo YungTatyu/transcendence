@@ -1,4 +1,3 @@
-
 import pyotp
 from django.urls import reverse
 from rest_framework import status
@@ -22,9 +21,11 @@ class OTPAuthTests(APITestCase):
         self.password = "securepassword"
         self.secret_key = pyotp.random_base32()
         self.user = CustomUser.objects.create_user(
-            user_id=self.user_id, email=self.email, secret_key=self.secret_key, password=self.password
+            user_id=self.user_id,
+            email=self.email,
+            secret_key=self.secret_key,
+            password=self.password,
         )
-
 
         # ログインエンドポイント
         self.login_url = reverse("otp-login")  # `/auth/otp/login/`

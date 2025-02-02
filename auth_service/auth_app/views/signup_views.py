@@ -84,7 +84,7 @@ class OTPVerificationView(APIView):
                 {"error": "Invalid OTP or secret."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         if not self.__register_user(user_data):
             logger.fatal("Failed to register user.")
             return Response(

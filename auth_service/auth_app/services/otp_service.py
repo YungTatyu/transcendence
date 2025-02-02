@@ -1,15 +1,9 @@
 import base64
-import json
 import logging
 from io import BytesIO
 
 import pyotp
 import qrcode
-from django.conf import settings
-
-from auth_app.client.user_client import UserClient
-from auth_app.models import CustomUser
-from auth_app.utils.redis_handler import RedisHandler
 
 logger = logging.getLogger(__name__)
 

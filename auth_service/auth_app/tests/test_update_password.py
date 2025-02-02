@@ -1,8 +1,9 @@
 import jwt
+import pyotp
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
-import pyotp
+
 from auth_app.models import CustomUser
 
 
