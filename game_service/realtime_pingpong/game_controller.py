@@ -48,10 +48,6 @@ class GameController:
         return self.__game
 
     def start_game(self, group_name):
-        if self.__task is not None:
-            raise RuntimeError("task alredy exists.")
-        if self.__game.state != PingPong.GameState.READY_TO_START:
-            raise RuntimeError("Cannot start game.")
         self.__player_manager.add_players(
             [self.__game.left_player.id, self.__game.right_player.id]
         )
