@@ -3,8 +3,8 @@ from realtime_pingpong.game_controller import GameController
 
 class Match:
     def __init__(self, match_id, players):
-        self.match_id = match_id
-        self.players = players
+        self.match_id: int = match_id
+        self.players: list[int] = players
 
 
 class MatchManager:
