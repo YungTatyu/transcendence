@@ -17,7 +17,8 @@ class ActionHandlerTestCase(unittest.TestCase):
         self.mock_match.players = [1, 2]
 
         self.mock_game_controller = MagicMock()
-        self.mock_game_controller.game = MagicMock()
+        self.mock_game = MagicMock()
+        self.mock_game_controller.game = self.mock_game
         self.mock_game_controller.start_game = MagicMock(return_value=None)
         self.mock_game_controller.reconnect_event = MagicMock(return_value=None)
 
@@ -30,9 +31,9 @@ class ActionHandlerTestCase(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def test_handle_new_connection_success(self):
-        result, status_code = ActionHandler.handle_new_connection(1, 1)
+        result, status_code = ActionHandler.handle_new_connection(1, 2)
 
-        self.mock_game_controller.game.add_player.assert_called_once()
+        self.mock_game_controller.game.add_player.assert_called_once_with(2)
         self.assertTrue(result)
         self.assertEqual(status_code, 200)
 
@@ -60,3 +61,46 @@ class ActionHandlerTestCase(unittest.TestCase):
 
         self.assertFalse(result)
         self.assertEqual(status_code, 1008)
+
+    def test_handle_player_action_success(self):
+        ActionHandler.handle_player_action(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": "KeyW",
+                "userid": "1",
+            },
+            self.mock_game,
+        )
+        self.mock_game.player_action.assert_called_once_with(1, "KeyW")
+
+    def test_handle_player_action_unknown_key(self):
+        ActionHandler.handle_player_action(
+            {
+                "type": "test",
+                "key": "KeyW",
+                "userid": "1",
+            },
+            self.mock_game,
+        )
+        self.mock_game.player_action.assert_not_called()
+
+    def test_handle_player_action_missing_key(self):
+        ActionHandler.handle_player_action(
+            {
+                "key": "KeyW",
+                "userid": "1",
+            },
+            self.mock_game,
+        )
+        self.mock_game.player_action.assert_not_called()
+
+    def test_handle_player_action_invalid_userid(self):
+        ActionHandler.handle_player_action(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": "KeyW",
+                "userid": "test",
+            },
+            self.mock_game,
+        )
+        self.mock_game.player_action.assert_not_called()
