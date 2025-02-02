@@ -4,6 +4,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from auth_app.services.otp_service import OTPService
+from auth_app.client.user_client import UserClient
+from auth_app.models import CustomUser
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +31,29 @@ class OTPLoginView(APIView):
             )
 
         # 認証を試みる
-        user = authenticate(username=username, password=password)
-        if not user:
-            logger.warn(f"Authentication failed for username: {username}")
+        client = UserClient(
+            base_url=settings.USER_API_BASE_URL, \
+                use_mock=settings.USER_API_USE_MOCK, \
+                    mock_search_data={"userId": "12345", "username": "mockuser"}
+        )
+        try:
+            # `username` でユーザーを検索
+            res = client.search_users({"username": username})
+            user_data = res.json()
+            if not user_data or "userId" not in user_data:
+                raise ValueError("User not found")
+            user_id = user_data["userId"]
+
+            user = CustomUser.objects.get(user_id=user_id)
+            if not user.check_password(password):  # パスワードをチェック
+                raise ValueError("Invalid password")
+
+        except Exception as e:
+            logger.error(f"Authentication failed: {str(e)}")
             return Response(
                 {"error": "Invalid username or password."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
         # OTP 認証の開始メッセージを返す
         response = Response(
             {
