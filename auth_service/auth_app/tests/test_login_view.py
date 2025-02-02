@@ -79,6 +79,7 @@ class OTPAuthTests(APITestCase):
         response = self.client.post(
             self.verify_url, {"username": self.username, "otp": otp_token}
         )
+        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)

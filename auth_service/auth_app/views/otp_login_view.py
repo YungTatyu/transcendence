@@ -78,7 +78,7 @@ class OTPLoginView(APIView):
         return response
 
 
-class OTPVerificationView(APIView):
+class OTPLoginVerificationView(APIView):
     """
     OTP の検証
     """
