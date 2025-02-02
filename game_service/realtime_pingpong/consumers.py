@@ -67,9 +67,10 @@ class ActionHandler:
         match_dict = MatchManager.get_match(match_id)
         game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_controller.game
-        if game.state == PingPong.GameState.IN_PROGRESS:  # gameは終了しない
-            return game_controller.disconnect_event(player_id)
-        MatchManager.remove_match(match_id)
+        if game.state == PingPong.GameState.GAME_OVER:
+            return MatchManager.remove_match(match_id)
+        # gameが終了していない限り、matchは終了しない
+        return game_controller.disconnect_event(player_id)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
