@@ -21,7 +21,7 @@ class UpdatePasswordViewTest(TestCase):
         self.user = CustomUser.objects.create_user(
             user_id="test-user-123",
             email="test@example.com",
-            secret_key=pyotp.random_base32()
+            secret_key=pyotp.random_base32(),
             password="securepassword",
         )
 
