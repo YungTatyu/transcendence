@@ -4,7 +4,7 @@ from auth_app.models import CustomUser
 from auth_app.services.otp_service import OTPService
 from django.urls import reverse
 import uuid
-
+import pyotp
 
 class OTPAuthTests(APITestCase):
     """
@@ -23,7 +23,7 @@ class OTPAuthTests(APITestCase):
         )
 
         # OTP 秘密鍵をユーザーに保存
-        self.user.secret_key = OTPService.generate_otp_secret()
+        self.user.secret_key = pyotp.random_base32()
         self.user.save()
 
         # ログインエンドポイント
