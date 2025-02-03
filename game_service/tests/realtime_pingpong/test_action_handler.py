@@ -124,16 +124,22 @@ class ActionHandlerTestCase(unittest.IsolatedAsyncioTestCase):
             mock_remove_match.assert_called_once_with(1)
 
     async def test_handle_disconnection_disconnect_event_in_progress(self):
-        self.mock_game.state = PingPong.GameState.IN_PROGRESS
-        ActionHandler.handle_disconnection(1, 2)
-        self.mock_game_controller.disconnect_event.assert_called_once_with(2)
+        with patch("core.match_manager.MatchManager.remove_match") as mock_remove_match:
+            self.mock_game.state = PingPong.GameState.IN_PROGRESS
+            ActionHandler.handle_disconnection(1, 2)
+            self.mock_game_controller.disconnect_event.assert_called_once_with(2)
+            mock_remove_match.assert_not_called()
 
     async def test_handle_disconnection_disconnect_event_ready(self):
-        self.mock_game.state = PingPong.GameState.READY_TO_START
-        ActionHandler.handle_disconnection(1, 2)
-        self.mock_game_controller.disconnect_event.assert_called_once_with(2)
+        with patch("core.match_manager.MatchManager.remove_match") as mock_remove_match:
+            self.mock_game.state = PingPong.GameState.READY_TO_START
+            ActionHandler.handle_disconnection(1, 2)
+            self.mock_game_controller.disconnect_event.assert_called_once_with(2)
+            mock_remove_match.assert_not_called()
 
     async def test_handle_disconnection_disconnect_waiting(self):
-        self.mock_game.state = PingPong.GameState.WAITING_FOR_SECOND_PLAYER
-        ActionHandler.handle_disconnection(1, 2)
-        self.mock_game_controller.disconnect_event.assert_called_once_with(2)
+        with patch("core.match_manager.MatchManager.remove_match") as mock_remove_match:
+            self.mock_game.state = PingPong.GameState.WAITING_FOR_SECOND_PLAYER
+            ActionHandler.handle_disconnection(1, 2)
+            self.mock_game_controller.disconnect_event.assert_called_once_with(2)
+            mock_remove_match.assert_not_called()
