@@ -193,3 +193,18 @@ class TestPaddle(unittest.TestCase):
         self.paddle.y_pos = Screen.HIGHEST_POS.value
         self.paddle.move_up()
         self.assertEqual(self.paddle.y_pos, Screen.HIGHEST_POS.value)
+
+    def test_move_down(self):
+        old_pos = self.paddle.y_pos
+        self.paddle.move_down()
+        self.assertEqual(self.paddle.y_pos, old_pos + self.paddle.SPEED)
+
+    def test_move_down_limit(self):
+        self.paddle.y_pos = Paddle.LOWEST_POSITION - 5
+        self.paddle.move_down()
+        self.assertEqual(self.paddle.y_pos, Paddle.LOWEST_POSITION)
+
+    def test_move_down_already_bottom(self):
+        self.paddle.y_pos = Paddle.LOWEST_POSITION
+        self.paddle.move_down()
+        self.assertEqual(self.paddle.y_pos, Paddle.LOWEST_POSITION)
