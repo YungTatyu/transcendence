@@ -24,3 +24,21 @@ class TestBall(unittest.TestCase):
         old_speed = self.ball.y_speed
         self.ball.hit_wall()
         self.assertEqual(self.ball.y_speed, -old_speed)
+
+    def test_hit_wall_does_not_hit1(self):
+        self.ball.y_pos = Screen.HEIGHT.value - Ball.HEIGHT - 1
+        old_speed = self.ball.y_speed
+        self.ball.hit_wall()
+        self.assertEqual(self.ball.y_speed, old_speed)
+
+    def test_hit_wall_does_not_hit2(self):
+        self.ball.y_pos = Screen.HIGHEST_POS.value + 1
+        old_speed = self.ball.y_speed
+        self.ball.hit_wall()
+        self.assertEqual(self.ball.y_speed, old_speed)
+
+    def test_hit_wall_does_not_hit3(self):
+        self.ball.y_pos = Screen.HEIGHT.value / 2
+        old_speed = self.ball.y_speed
+        self.ball.hit_wall()
+        self.assertEqual(self.ball.y_speed, old_speed)
