@@ -44,7 +44,7 @@ class TestBall(unittest.TestCase):
         self.assertEqual(self.ball.y_speed, old_speed)
 
     def test_hit_left_paddle(self):
-        self.ball.x_pos = Screen.LEFTEST_POS.value
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
         self.ball.y_pos = self.left_player.paddle.y_pos + (
             self.left_player.paddle.HEIGHT / 2
         )
@@ -54,7 +54,7 @@ class TestBall(unittest.TestCase):
 
     def test_hit_left_paddle_edge_top(self):
         """ボールが左パドルの上端に当たるケース"""
-        self.ball.x_pos = Screen.LEFTEST_POS.value
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
         # パドルの上端ぎりぎり
         self.ball.y_pos = self.left_player.paddle.y_pos - self.ball.HEIGHT + 1
         old_speed = self.ball.x_speed
@@ -64,7 +64,7 @@ class TestBall(unittest.TestCase):
 
     def test_hit_left_paddle_edge_bottom(self):
         """ボールが左パドルの下端に当たるケース"""
-        self.ball.x_pos = Screen.LEFTEST_POS.value  # ボールを左端に配置
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
         # パドルの下端ぎりぎり
         self.ball.y_pos = (
             self.left_player.paddle.y_pos + self.left_player.paddle.HEIGHT - 1
@@ -73,3 +73,19 @@ class TestBall(unittest.TestCase):
 
         self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
         self.assertEqual(self.ball.x_speed, -old_speed * self.ball.ACCELERATION)
+
+    def test_hit_left_paddle_no_hit1(self):
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.left_player.paddle.y_pos - self.ball.HEIGHT
+        old_speed = self.ball.x_speed
+
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, old_speed)
+
+    def test_hit_left_paddle_edge_no_hit2(self):
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.left_player.paddle.y_pos + self.left_player.paddle.HEIGHT
+        old_speed = self.ball.x_speed
+
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, old_speed)
