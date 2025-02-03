@@ -70,6 +70,26 @@ services:
     container_name: tournament_redis
     networks:
       - app_network
+  
+  user:
+    build: ./user_service
+    container_name: user_app
+    ports:
+      - "9000:9000"
+    networks:
+      - app_network
+    depends_on:
+      - user_db
+    env_file: ./docker_env/user.env
+
+  user_db:
+    image: postgres:15
+    container_name: user_db
+    env_file: ./docker_env/user_db.env
+    networks:
+      - app_network
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
 
 networks:
   app_network:
@@ -78,3 +98,4 @@ networks:
 volumes:
   auth_db_data:
   tournament_db_data:
+  user_db_data:
