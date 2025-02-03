@@ -208,3 +208,21 @@ class TestPaddle(unittest.TestCase):
         self.paddle.y_pos = Paddle.LOWEST_POSITION
         self.paddle.move_down()
         self.assertEqual(self.paddle.y_pos, Paddle.LOWEST_POSITION)
+
+
+class TestPingPong(unittest.TestCase):
+    def setUp(self):
+        self.game = PingPong()
+
+    def test_add_player(self):
+        self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_FIRST_PLAYER)
+        self.game.add_player(1)
+        self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_SECOND_PLAYER)
+        self.game.add_player(2)
+        self.assertEqual(self.game.state, PingPong.GameState.READY_TO_START)
+
+        # 再接続時
+        self.game.add_player(1)
+        self.assertEqual(self.game.state, PingPong.GameState.READY_TO_START)
+        self.game.add_player(2)
+        self.assertEqual(self.game.state, PingPong.GameState.READY_TO_START)
