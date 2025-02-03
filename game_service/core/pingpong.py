@@ -45,9 +45,17 @@ class Ball:
     def x_speed(self):
         return self.__x_speed
 
+    @x_speed.setter
+    def x_speed(self, value):
+        self.__x_speed = value
+
     @property
     def y_speed(self):
         return self.__y_speed
+
+    @y_speed.setter
+    def y_speed(self, value):
+        self.__y_speed = value
 
     def hit_paddle(self, left_paddle, right_paddle):
         if (
