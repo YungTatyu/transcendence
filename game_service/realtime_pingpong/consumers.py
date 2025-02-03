@@ -65,6 +65,9 @@ class ActionHandler:
     @staticmethod
     def handle_disconnection(match_id, player_id):
         match_dict = MatchManager.get_match(match_id)
+        # 既にmatchが削除されている
+        if match_dict is None:
+            return
         game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_controller.game
         if game.state == PingPong.GameState.GAME_OVER:
