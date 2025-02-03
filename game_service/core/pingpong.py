@@ -29,9 +29,17 @@ class Ball:
     def x_pos(self):
         return self.__x_pos
 
+    @x_pos.setter
+    def x_pos(self, value):
+        self.__x_pos = value
+
     @property
     def y_pos(self):
         return self.__y_pos
+
+    @y_pos.setter
+    def y_pos(self, value):
+        self.__y_pos = value
 
     @property
     def x_speed(self):
@@ -53,7 +61,6 @@ class Ball:
             and self.__y_pos + self.HEIGHT >= right_paddle.y_pos
             and self.__y_pos <= right_paddle.y_pos + right_paddle.HEIGHT
         ):
-            print("hit paddle")
             self.__x_speed *= -1 * self.ACCELERATION
 
     def hit_wall(self):
@@ -61,7 +68,6 @@ class Ball:
             self.__y_pos <= Screen.HIGHEST_POS.value
             or self.__y_pos >= Screen.HEIGHT.value - self.HEIGHT
         ):
-            print("hit wall")
             self.__y_speed *= -1
 
     def move(self, left_player, right_player):
