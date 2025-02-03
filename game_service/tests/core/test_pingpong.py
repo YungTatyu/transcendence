@@ -75,6 +75,7 @@ class TestBall(unittest.TestCase):
         self.assertEqual(self.ball.x_speed, -old_speed * self.ball.ACCELERATION)
 
     def test_hit_left_paddle_no_hit1(self):
+        """ボールが左パドルに当たらないケース"""
         self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
         self.ball.y_pos = self.left_player.paddle.y_pos - self.ball.HEIGHT
         old_speed = self.ball.x_speed
@@ -83,9 +84,51 @@ class TestBall(unittest.TestCase):
         self.assertEqual(self.ball.x_speed, old_speed)
 
     def test_hit_left_paddle_edge_no_hit2(self):
+        """ボールが左パドルに当たらないケース"""
         self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
         self.ball.y_pos = self.left_player.paddle.y_pos + self.left_player.paddle.HEIGHT
         old_speed = self.ball.x_speed
 
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, old_speed)
+
+    def test_hit_right_paddle(self):
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.right_player.paddle.y_pos + (
+            self.right_player.paddle.HEIGHT / 2
+        )
+        old_speed = self.ball.x_speed
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, -old_speed * self.ball.ACCELERATION)
+
+    def test_hit_right_paddle_edge_top(self):
+        """ボールが右パドルの上端に当たるケース"""
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.right_player.paddle.y_pos + Ball.HEIGHT + 1
+        old_speed = self.ball.x_speed
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, -old_speed * self.ball.ACCELERATION)
+
+    def test_hit_right_paddle_edge_bottom(self):
+        """ボールが右パドルの下端に当たるケース"""
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.right_player.paddle.y_pos + Paddle.HEIGHT - 1
+        old_speed = self.ball.x_speed
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, -old_speed * self.ball.ACCELERATION)
+
+    def test_hit_right_paddle_no_hit1(self):
+        """ボールが右パドルに当たらないケース"""
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.right_player.paddle.y_pos + Paddle.HEIGHT
+        old_speed = self.ball.x_speed
+        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertEqual(self.ball.x_speed, old_speed)
+
+    def test_hit_right_paddle_no_hit2(self):
+        """ボールが右パドルに当たらないケース"""
+        self.ball.x_pos = Screen.LEFTEST_POS.value + Paddle.WIDTH
+        self.ball.y_pos = self.right_player.paddle.y_pos - Ball.HEIGHT
+        old_speed = self.ball.x_speed
         self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
         self.assertEqual(self.ball.x_speed, old_speed)
