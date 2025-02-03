@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -22,6 +23,7 @@ class CustomUserManager(BaseUserManager):
         )
 
         user.password = password
+        user.date_joined = timezone.now()
         user.save(using=self._db)
         return user
 
