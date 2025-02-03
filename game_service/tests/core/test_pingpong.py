@@ -132,3 +132,16 @@ class TestBall(unittest.TestCase):
         old_speed = self.ball.x_speed
         self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
         self.assertEqual(self.ball.x_speed, old_speed)
+
+    def test_move_no_goal(self):
+        """ボールが中央付近を移動する場合、ゴールしない"""
+        self.ball.x_pos = Screen.WIDTH.value // 2
+        self.ball.y_pos = Screen.HEIGHT.value // 2
+        old_x_pos = self.ball.x_pos
+        old_y_pos = self.ball.y_pos
+
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertEqual(self.ball.x_pos, old_x_pos + self.ball.x_speed)
+        self.assertEqual(self.ball.y_pos, old_y_pos + self.ball.y_speed)
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
