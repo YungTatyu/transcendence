@@ -121,9 +121,17 @@ class Paddle:
     def x_pos(self):
         return self.__x_pos
 
+    @x_pos.setter
+    def x_pos(self, value):
+        self.__x_pos = value
+
     @property
     def y_pos(self):
         return self.__y_pos
+
+    @y_pos.setter
+    def y_pos(self, value):
+        self.__y_pos = value
 
     def move_up(self):
         if self.__y_pos > Screen.HIGHEST_POS.value:
