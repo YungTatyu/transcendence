@@ -74,6 +74,15 @@ class Ball:
         """
         ゴールしたら、Trueとゴールしたplayerを返す
         """
+        # ゴールした瞬間も描画したいからballを動かしたすぐ後にゴール判定しない
+        if self.__x_pos >= Screen.WIDTH.value - self.WIDTH:
+            self.reset_ball_status()
+            return (True, left_player)
+        elif self.__x_pos <= Screen.LEFTEST_POS.value:
+            self.reset_ball_status()
+            return (True, right_player)
+
+        # ballを動かす
         self.__x_pos = self.adjust_limit(
             self.__x_pos + self.__x_speed, Screen.WIDTH.value - self.WIDTH
         )
@@ -82,12 +91,6 @@ class Ball:
         )
         self.hit_paddle(left_player.paddle, right_player.paddle)
         self.hit_wall()
-        if self.__x_pos >= Screen.WIDTH.value - self.WIDTH:
-            self.reset_ball_status()
-            return (True, left_player)
-        elif self.__x_pos <= Screen.LEFTEST_POS.value:
-            self.reset_ball_status()
-            return (True, right_player)
         return (False, None)
 
     def adjust_limit(self, pos, limit):
