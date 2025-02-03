@@ -20,7 +20,8 @@ class CustomUserManager(BaseUserManager):
         user = self.model(
             user_id=user_id, email=email, secret_key=secret_key, **extra_fields
         )
-        user.set_password(password)  # Djangoの `password` フィールドを使う
+
+        user.password = password
         user.save(using=self._db)
         return user
 
