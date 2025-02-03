@@ -53,13 +53,13 @@ class Ball:
         if (
             self.__x_pos <= left_paddle.WIDTH
             and self.__x_pos + self.WIDTH >= self.LEFTEST_POS
-            and self.__y_pos + self.HEIGHT >= left_paddle.y_pos
-            and self.__y_pos <= left_paddle.y_pos + left_paddle.HEIGHT
+            and self.__y_pos + self.HEIGHT > left_paddle.y_pos
+            and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
             self.__x_pos + self.WIDTH >= Screen.WIDTH.value - right_paddle.WIDTH
             and self.__x_pos <= Screen.WIDTH.value
-            and self.__y_pos + self.HEIGHT >= right_paddle.y_pos
-            and self.__y_pos <= right_paddle.y_pos + right_paddle.HEIGHT
+            and self.__y_pos + self.HEIGHT > right_paddle.y_pos
+            and self.__y_pos < right_paddle.y_pos + right_paddle.HEIGHT
         ):
             self.__x_speed *= -1 * self.ACCELERATION
 
