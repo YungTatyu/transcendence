@@ -145,3 +145,31 @@ class TestBall(unittest.TestCase):
         self.assertEqual(self.ball.y_pos, old_y_pos + self.ball.y_speed)
         self.assertFalse(goal)
         self.assertIsNone(scorer)
+
+    def test_move_goal_right(self):
+        """ボールが右端に到達し、左プレイヤーの得点になる"""
+        self.ball.x_pos = Screen.WIDTH.value - self.ball.WIDTH - 1
+        self.ball.x_speed = 4
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        # goalしても描画のため、falseになる
+        # 次のmoveでgoalになる
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
+
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertTrue(goal)
+        self.assertEqual(scorer, self.left_player)
+
+    def test_move_goal_left(self):
+        """ボールが左端に到達し、左プレイヤーの得点になる"""
+        self.ball.x_pos = Screen.LEFTEST_POS.value + 4
+        self.ball.x_speed = -4
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        # goalしても描画のため、falseになる
+        # 次のmoveでgoalになる
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
+
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertTrue(goal)
+        self.assertEqual(scorer, self.right_player)
