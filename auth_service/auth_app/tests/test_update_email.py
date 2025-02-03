@@ -1,11 +1,12 @@
 import jwt
 import pyotp
+from django.contrib.auth.hashers import make_password
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 
 from auth_app.models import CustomUser
-from django.contrib.auth.hashers import make_password
+
 
 class UpdateEmailViewTest(TestCase):
     """

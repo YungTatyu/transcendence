@@ -8,7 +8,9 @@ class CustomUserManager(BaseUserManager):
     Custom manager for the CustomUser model.
     """
 
-    def create_user(self, user_id, email, secret_key, hashed_password=None, **extra_fields):
+    def create_user(
+        self, user_id, email, secret_key, hashed_password=None, **extra_fields
+    ):
         """
         Create and return a regular user.
         """
