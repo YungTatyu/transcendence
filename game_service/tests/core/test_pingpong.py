@@ -7,7 +7,7 @@ class TestBall(unittest.TestCase):
     def setUp(self):
         self.ball = Ball()
         self.left_player = Player(
-            1, Paddle(Screen.HIGHEST_POS.value, Screen.HEIGHT.value / 2)
+            1, Paddle(Screen.LEFTEST_POS.value, Screen.HEIGHT.value / 2)
         )
         self.right_player = Player(
             2, Paddle(Screen.WIDTH.value, Screen.HEIGHT.value / 2)
@@ -173,3 +173,23 @@ class TestBall(unittest.TestCase):
         goal, scorer = self.ball.move(self.left_player, self.right_player)
         self.assertTrue(goal)
         self.assertEqual(scorer, self.right_player)
+
+
+class TestPaddle(unittest.TestCase):
+    def setUp(self):
+        self.paddle = Paddle(Screen.LEFTEST_POS.value, Screen.HEIGHT.value / 2)
+
+    def test_move_up(self):
+        old_pos = self.paddle.y_pos
+        self.paddle.move_up()
+        self.assertEqual(self.paddle.y_pos, old_pos - self.paddle.SPEED)
+
+    def test_move_up_limit(self):
+        self.paddle.y_pos = Screen.HIGHEST_POS.value + 5
+        self.paddle.move_up()
+        self.assertEqual(self.paddle.y_pos, Screen.HIGHEST_POS.value)
+
+    def test_move_up_already_top(self):
+        self.paddle.y_pos = Screen.HIGHEST_POS.value
+        self.paddle.move_up()
+        self.assertEqual(self.paddle.y_pos, Screen.HIGHEST_POS.value)

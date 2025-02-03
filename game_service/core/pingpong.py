@@ -244,7 +244,7 @@ class PingPong:
             return
         if self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER:
             self.__left_player = Player(
-                player_id, Paddle(Screen.HIGHEST_POS.value, Screen.HEIGHT.value / 2)
+                player_id, Paddle(Screen.LEFTEST_POS.value, Screen.HEIGHT.value / 2)
             )
             self.__state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
