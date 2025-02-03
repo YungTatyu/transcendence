@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from auth_app.models import CustomUser
-
+from django.contrib.auth.hashers import make_password
 
 class UpdatePasswordViewTest(TestCase):
     """
@@ -23,7 +23,7 @@ class UpdatePasswordViewTest(TestCase):
             user_id="test-user-123",
             email="test@example.com",
             secret_key=pyotp.random_base32(),
-            password="securepassword",
+            hashed_password=make_password("securepassword"),
         )
 
         # JWT トークンの作成

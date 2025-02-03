@@ -136,7 +136,7 @@ class OTPVerificationView(APIView):
                 user_id=user_id,
                 email=user_data["email"],
                 secret_key=user_data["otp_secret"],
-                password=user_data["password_hash"],
+                hashed_password=user_data["password_hash"],
             )
 
             return True

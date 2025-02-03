@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from auth_app.models import CustomUser
-
+from django.contrib.auth.hashers import make_password
 
 class OTPAuthTests(APITestCase):
     """
@@ -19,12 +19,13 @@ class OTPAuthTests(APITestCase):
         self.username = "mockuser"
         self.email = "test@example.com"
         self.password = "securepassword"
+        hashed_password = make_password(self.password)
         self.secret_key = pyotp.random_base32()
         self.user = CustomUser.objects.create_user(
             user_id=self.user_id,
             email=self.email,
             secret_key=self.secret_key,
-            password=self.password,
+            hashed_password=hashed_password,
         )
 
         # ログインエンドポイント
