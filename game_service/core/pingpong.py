@@ -105,8 +105,8 @@ class Ball:
         """
         ballがgameの範囲を越えないように調整する
         """
-        if pos <= 0:
-            return 0
+        if pos <= Screen.LEFTEST_POS.value:
+            return Screen.LEFTEST_POS.value
         if pos >= limit:
             return limit
         return pos
