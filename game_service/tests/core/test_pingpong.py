@@ -226,3 +226,23 @@ class TestPingPong(unittest.TestCase):
         self.assertEqual(self.game.state, PingPong.GameState.READY_TO_START)
         self.game.add_player(2)
         self.assertEqual(self.game.state, PingPong.GameState.READY_TO_START)
+
+    def test_add_player_reconncect(self):
+        self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_FIRST_PLAYER)
+        self.game.add_player(1)
+        self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_SECOND_PLAYER)
+
+        # 再接続時
+        self.game.add_player(1)
+        self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_SECOND_PLAYER)
+
+    def test_add_player_reconncect_in_progress(self):
+        self.game.add_player(1)
+        self.game.add_player(2)
+        self.game.state = PingPong.GameState.IN_PROGRESS
+
+        # 再接続時
+        self.game.add_player(1)
+        self.assertEqual(self.game.state, PingPong.GameState.IN_PROGRESS)
+        self.game.add_player(2)
+        self.assertEqual(self.game.state, PingPong.GameState.IN_PROGRESS)
