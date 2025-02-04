@@ -114,6 +114,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         match_dict = MatchManager.get_match(self.match_id)
+        # 既にmatchが削除されている
+        if match_dict is None:
+            return
         game = match_dict[MatchManager.KEY_GAME_CONTROLLER].game
         text_data_json = json.loads(text_data)
         ActionHandler.handle_player_action(text_data_json, game)
