@@ -214,6 +214,19 @@ class TestPingPong(unittest.TestCase):
     def setUp(self):
         self.game = PingPong()
 
+    def setup_game(self, ball: dict, left_player: dict, right_player: dict):
+        self.game.ball.x_pos = ball.get("x")
+        self.game.ball.y_pos = ball.get("y")
+
+        self.game.add_player(left_player.get("id"))
+        self.game.add_player(right_player.get("id"))
+
+        self.game.left_player.paddle.y_pos = left_player.get("y")
+        self.game.left_player.score = left_player.get("score")
+
+        self.game.right_player.paddle.y_pos = right_player.get("y")
+        self.game.right_player.score = right_player.get("score")
+
     def test_add_player(self):
         self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_FIRST_PLAYER)
 
@@ -276,3 +289,19 @@ class TestPingPong(unittest.TestCase):
         # paddleの位置が下に移動しているはず
         self.game.player_action(2, downkey)
         self.assertTrue(self.game.right_player.paddle.y_pos > right_pos)
+
+    def test_get_state(self):
+        self.setup_game(
+            {"x": 24, "y": 42},
+            {"id": 1, "y": 7, "score": 2},
+            {"id": 77, "y": 100, "score": 10},
+        )
+
+        self.assertEqual(
+            self.game.get_state(),
+            {
+                "ball": {"x": 24, "y": 42},
+                "left_player": {"id": 1, "y": 7, "score": 2},
+                "right_player": {"id": 77, "y": 100, "score": 10},
+            },
+        )
