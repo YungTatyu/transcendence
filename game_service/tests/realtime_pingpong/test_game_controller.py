@@ -1,9 +1,8 @@
 import unittest
-from unittest.mock import patch, MagicMock, AsyncMock
-from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
 
-from realtime_pingpong.game_controller import GameController
 from core.pingpong import PingPong
+from realtime_pingpong.game_controller import GameController
 
 
 class TestGameController(unittest.IsolatedAsyncioTestCase):

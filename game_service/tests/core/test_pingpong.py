@@ -1,6 +1,6 @@
 import unittest
 
-from core.pingpong import PingPong, Player, Paddle, Ball, Screen
+from core.pingpong import Ball, Paddle, PingPong, Player, Screen
 
 
 class TestBall(unittest.TestCase):
