@@ -58,7 +58,7 @@ class OTPAuthTests(APITestCase):
             self.login_url, {"email": self.email, "password": "wrongpassword"}
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIn("Invalid email or password.", response.data)
+        self.assertIn("Invalid email or password.", response.data.get("non_field_errors", []))
 
     def test_login_missing_fields(self):
         """
@@ -94,7 +94,8 @@ class OTPAuthTests(APITestCase):
             self.verify_url, {"email": self.email, "otp": "123456"}
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("Invalid OTP.", response.data)
+        self.assertIn("Invalid OTP.", response.data.get("non_field_errors", []))
+
 
     def test_otp_verification_missing_fields(self):
         """
