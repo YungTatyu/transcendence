@@ -20,9 +20,7 @@ class OTPLoginView(APIView):
         2. 認証成功後、OTP 検証ステップへ進む
         """
         serializer = OTPLoginSerializer(data=request.data)
-        if not serializer.is_valid():
-            logger.warn("Invalid login request")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data["user"]
         response = Response(

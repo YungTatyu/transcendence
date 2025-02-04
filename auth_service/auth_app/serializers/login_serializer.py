@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from auth_app.models import CustomUser
 from auth_app.services.otp_service import OTPService
-
+from rest_framework.exceptions import AuthenticationFailed
 
 class OTPLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -14,7 +14,7 @@ class OTPLoginSerializer(serializers.Serializer):
         try:
             user = CustomUser.objects.get(email=email)
             if not user.check_password(password):
-                raise serializers.ValidationError("Invalid email or password.")
+                raise AuthenticationFailed("Invalid password.")
         except CustomUser.DoesNotExist:
             raise serializers.ValidationError("Invalid email or password.")
 
