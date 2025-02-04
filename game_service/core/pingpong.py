@@ -181,6 +181,10 @@ class Player:
     def score(self):
         return self.__score
 
+    @score.setter
+    def score(self, value):
+        self.__score = value
+
     def move_paddle(self, key):
         actions = {
             self.__keys[self.UP]: self.__paddle.move_up,
