@@ -17,9 +17,9 @@ class UserView(APIView):
             return Response({"error": "User arledy exists"}, status=HTTP_409_CONFLICT)
         
 
-        user = User.objects.create(username=username)
+        user = User.objects.create(name=username)
 
-        data = {"userI": user.user_id, "username": user.username}
+        data = {"userId": user.user_id, "username": user.name}
 
         return Response(data, status=HTTP_201_CREATED)
 
