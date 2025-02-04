@@ -90,7 +90,7 @@ class GameController:
                 await asyncio.sleep(1 / 60)  # 60FPS (約16.67ミリ秒間隔)
             self.__game.state = PingPong.GameState.GAME_OVER
         except asyncio.CancelledError:
-            print("Game loop was cancelled.")
+            pass
 
     def __calc_unix_time(self, time):
         return int(time.timestamp())
