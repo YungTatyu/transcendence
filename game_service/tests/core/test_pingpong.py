@@ -258,3 +258,21 @@ class TestPingPong(unittest.TestCase):
         self.assertEqual(self.game.state, PingPong.GameState.IN_PROGRESS)
         self.game.add_player(2)
         self.assertEqual(self.game.state, PingPong.GameState.IN_PROGRESS)
+
+    def test_player_action(self):
+        self.game = PingPong()
+        self.game.add_player(1)
+        self.game.add_player(2)
+
+        keys = self.game.left_player.keys
+        upkey = keys.get(Player.UP)
+        downkey = keys.get(Player.DOWN)
+        left_pos = self.game.left_player.paddle.y_pos
+        right_pos = self.game.right_player.paddle.y_pos
+
+        # paddleの位置が上に移動しているはず
+        self.game.player_action(1, upkey)
+        self.assertTrue(self.game.left_player.paddle.y_pos < left_pos)
+        # paddleの位置が下に移動しているはず
+        self.game.player_action(2, downkey)
+        self.assertTrue(self.game.right_player.paddle.y_pos > right_pos)
