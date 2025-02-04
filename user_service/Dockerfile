@@ -7,4 +7,5 @@ RUN pip install -r requirements.txt
 COPY wait-for-it.sh .
 RUN chmod +x ./wait-for-it.sh
 COPY . .
-CMD ["./wait-for-it.sh", "user_db:5432", "--", "sh", "-c", "python manage.py runserver 0.0.0.0:9000"]
+CMD ["sh"]
+# CMD ["./wait-for-it.sh", "user_db:5432", "--", "sh", "-c", "python manage.py makemigrations && python manage.py migrate &&  python manage.py runserver 0.0.0.0:9000"]
