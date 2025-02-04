@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from auth_app.serializers.login_serializer import OTPLoginSerializer, OTPVerificationSerializer
+from rest_framework.exceptions import AuthenticationFailed
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +20,16 @@ class OTPLoginView(APIView):
         1. ユーザー名とパスワードで認証
         2. 認証成功後、OTP 検証ステップへ進む
         """
-        serializer = OTPLoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+
+        try:
+            serializer = OTPLoginSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+        except AuthenticationFailed as e:
+            logger.error(f"Authentication failed: {str(e)}")
+            return Response({"detail": "Authentication failed."}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            logger.error(f"Error occurred: {str(e)}")
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.validated_data["user"]
         response = Response(
