@@ -26,10 +26,10 @@ class OTPLoginView(APIView):
             serializer.is_valid(raise_exception=True)
         except AuthenticationFailed as e:
             logger.error(f"Authentication failed: {str(e)}")
-            return Response({"detail": "Authentication failed."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Authentication failed."}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             logger.error(f"Error occurred: {str(e)}")
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.validated_data["user"]
         response = Response(
