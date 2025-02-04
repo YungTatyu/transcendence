@@ -248,6 +248,9 @@ class PingPong:
             )
             self.__state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
+        # プレイヤーの再接続
+        if self.__left_player.id == player_id:
+            return
         self.__right_player = Player(
             player_id, Paddle(Screen.WIDTH.value, Screen.HEIGHT.value / 2)
         )
