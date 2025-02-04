@@ -48,6 +48,8 @@ services:
   game_redis:
     image: redis:alpine
     container_name: game_redis_server
+    networks:
+      - app_network
 
   tournament:
     build: ./tournament_service
