@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
-from auth_app.serializers import SignupSerializer
+from auth_app.serializers.signup_serializer import SignupSerializer
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
