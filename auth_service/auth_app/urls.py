@@ -32,7 +32,7 @@ urlpatterns = [
     ),
     path("auth/me/email", UpdateEmailView.as_view(), name="update_email"),
     path("auth/me/password", UpdatePasswordView.as_view(), name="update_password"),
-    path("auth/otp/login/", OTPLoginView.as_view(), name="otp-login"),
+    path("auth/otp/login", OTPLoginView.as_view(), name="otp-login"),
     path(
         "auth/otp/login/verify",
         OTPLoginVerificationView.as_view(),
