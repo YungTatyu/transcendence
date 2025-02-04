@@ -216,10 +216,16 @@ class TestPingPong(unittest.TestCase):
 
     def test_add_player(self):
         self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_FIRST_PLAYER)
+
         self.game.add_player(1)
+        self.assertIsNotNone(self.game.left_player)
+        self.assertIsNone(self.game.right_player)
+
         self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_SECOND_PLAYER)
         self.game.add_player(2)
         self.assertEqual(self.game.state, PingPong.GameState.READY_TO_START)
+        self.assertIsNotNone(self.game.left_player)
+        self.assertIsNotNone(self.game.right_player)
 
         # 再接続時
         self.game.add_player(1)
@@ -231,14 +237,20 @@ class TestPingPong(unittest.TestCase):
         self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_FIRST_PLAYER)
         self.game.add_player(1)
         self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_SECOND_PLAYER)
+        self.assertIsNotNone(self.game.left_player)
+        self.assertIsNone(self.game.right_player)
 
         # 再接続時
         self.game.add_player(1)
         self.assertEqual(self.game.state, PingPong.GameState.WAITING_FOR_SECOND_PLAYER)
+        self.assertIsNotNone(self.game.left_player)
+        self.assertIsNone(self.game.right_player)
 
     def test_add_player_reconncect_in_progress(self):
         self.game.add_player(1)
         self.game.add_player(2)
+        self.assertIsNotNone(self.game.left_player)
+        self.assertIsNotNone(self.game.right_player)
         self.game.state = PingPong.GameState.IN_PROGRESS
 
         # 再接続時
