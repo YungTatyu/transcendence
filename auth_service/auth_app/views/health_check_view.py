@@ -7,7 +7,4 @@ class HealthCheckView(View):
         """
         ヘルスチェック用エンドポイント
         """
-        try:
-            return JsonResponse({"status": "healthy"}, status=200)
-        except Exception:
-            return JsonResponse({"status": "unhealthy"}, status=500)
+        return JsonResponse({"status": "healthy"}, status=200)
