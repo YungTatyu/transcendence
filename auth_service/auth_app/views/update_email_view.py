@@ -1,11 +1,14 @@
 import json
+import logging
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from auth_app.jwt_decorators import jwt_required
 from auth_app.models import CustomUser
 from auth_app.serializers.update_email_serializer import UpdateEmailSerializer
+from rest_framework.exceptions import APIException
 
+logger = logging.getLogger(__name__)
 
 class UpdateEmailView(View):
     """
@@ -24,10 +27,11 @@ class UpdateEmailView(View):
             except CustomUser.DoesNotExist:
                 return JsonResponse({"error": "User not found."}, status=404)
 
-            # シリアライザでバリデーション & 更新
-            serializer = UpdateEmailSerializer(instance=user, data=data, context={"user": user})
-            if not serializer.is_valid():
-                return JsonResponse({"error": serializer.errors}, status=400)
+            try:
+                serializer = UpdateEmailSerializer(instance=user, data=data, context={"user": user})
+                serializer.is_valid(raise_exception=True)
+            except APIException as e:
+                return JsonResponse({"error": str(e)}, status=e.status_code)
 
             serializer.save()
             return JsonResponse({"message": "Email updated successfully."}, status=200)
