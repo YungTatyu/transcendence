@@ -54,7 +54,7 @@ class UpdateEmailViewTest(TestCase):
         """
         response = self.client.put(self.url, {}, format="json", **self.headers)
         self.assertEqual(response.status_code, 400)
-        self.assertIn(response.json()["error"], "This field is required.")
+        self.assertIn("This field is required.", response.json()["error"])
 
     def test_update_email_invalid_format(self):
         """
@@ -64,7 +64,7 @@ class UpdateEmailViewTest(TestCase):
             self.url, {"email": "invalid-email"}, format="json", **self.headers
         )
         self.assertEqual(response.status_code, 400)
-        self.assertIn(response.json()["error"], "Enter a valid email address.")
+        self.assertIn("Enter a valid email address.", response.json()["error"])
 
     def test_update_email_conflict(self):
         """
