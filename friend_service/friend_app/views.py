@@ -31,17 +31,19 @@ class FriendRequestView(APIView):
 		to_user_id = int(user_id_validator.validated_data["user_id"])
 		from_user_id = 1
 		friend = Friends.objects.filter(from_user_id = from_user_id, to_user_id = to_user_id).first()
+		rev_friend = Friends.objects.filter(from_user_id = to_user_id, to_user_id = from_user_id).first()
 		# is_friend = Friends.objects.filter(from_user_id = from_user_id, to_user_id = to_user_id).exists()
 		# friend_status = friend.status
-		if friend:
-			friend_status = friend.status
+		if friend or rev_friend:
+			friend_status = friend.status if friend else None
+			rev_friend_status = rev_friend.status if rev_friend else None
+
 			if friend_status == "pending":
 				return Response ({"error": "Friend request already sent."}, status=HTTP_409_CONFLICT)
-			if friend_status == "approved":#すでにfriend
+			if friend_status == "approved" or rev_friend_status == "approved":#すでにfriend
 				return Response ({"error": "Already friend."}, status=HTTP_400_BAD_REQUEST)
-		if Friends.objects.filter(from_user_id = to_user_id, to_user_id = from_user_id).exists():
-			return  Response ({"error": "Friend requests have already been received."}, status=HTTP_409_CONFLICT)
-		
+			if rev_friend_status == "pending":
+				return  Response ({"error": "Friend requests have already been received."}, status=HTTP_409_CONFLICT)
 		if from_user_id == to_user_id:
 			return Response ({"error": "You cannot send a request to yourself."}, status=HTTP_400_BAD_REQUEST)
 		
@@ -54,13 +56,14 @@ class FriendRequestView(APIView):
 			return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
 		to_user_id = int(user_id_validator.validated_data["user_id"])
 		from_user_id = 1
+		#TODO
 		if from_user_id == to_user_id:
 			return Response ({"error": "You cannot send a request to yourself."}, status=HTTP_400_BAD_REQUEST)
 		friend = Friends.objects.filter(from_user_id=from_user_id, to_user_id=to_user_id).first()
 		rev_friend = Friends.objects.filter(from_user_id=to_user_id, to_user_id=from_user_id).first()
 		if not friend:
 			return Response({ "error": "No friend request exists from the specified user."}, status=HTTP_404_NOT_FOUND)
-		if friend.status == "pending" or (rev_friend and rev_friend.status == "pending"):
+		if friend.status == "pending":
 			Friends.objects.filter(from_user_id = from_user_id, to_user_id = to_user_id).delete()
 			return Response(status=HTTP_204_NO_CONTENT)
 		else:
@@ -77,9 +80,13 @@ class	FriendView(APIView):
 			return Response ({"error": "You cannot send a request to yourself."}, status=HTTP_400_BAD_REQUEST)
 		
 		friend = Friends.objects.filter(from_user_id=from_user_id, to_user_id=to_user_id).first()
-		if not friend or friend.status == "pending":
+		rev_friend = Friends.objects.filter(from_user_id = to_user_id, to_user_id = from_user_id).first()
+		if not friend and not rev_friend:
 			return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
+		if friend and friend.status == "approved":
+			friend.delete()
+		elif rev_friend and rev_friend.status == "approved":
+			rev_friend.delete()
 		else:
-			Friends.objects.filter(from_user_id = from_user_id, to_user_id = to_user_id).delete()
-			return Response(status=HTTP_204_NO_CONTENT)
-			
+			return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
+		return Response(status=HTTP_204_NO_CONTENT)  #
