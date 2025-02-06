@@ -7,7 +7,7 @@ from django.views import View
 
 from auth_app.jwt_decorators import jwt_required
 from auth_app.models import CustomUser
-
+from auth_app.serializers.update_password_serializer import UpdatePasswordSerializer
 
 class UpdatePasswordView(View):
     """
@@ -22,33 +22,22 @@ class UpdatePasswordView(View):
         try:
             # JSONデータを取得
             data = json.loads(request.body)
-            current_password = data.get("current_password")
-            new_password = data.get("new_password")
-
-            if not current_password or not new_password:
-                return JsonResponse(
-                    {"error": "Both current and new passwords are required."},
-                    status=400,
-                )
 
             # 現在のユーザを取得
-            user = CustomUser.objects.get(user_id=request.user_id)
+            try:
+                user = CustomUser.objects.get(user_id=request.user_id)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({"error": "User not found."}, status=404)
 
-            # 現在のパスワードの確認
-            if not check_password(current_password, user.password):
-                return JsonResponse(
-                    {"error": "Current password is incorrect."}, status=400
-                )
+            serializer = UpdatePasswordSerializer(data=data, context={"user": user})
+            if not serializer.is_valid():
+                return JsonResponse({"error": serializer.errors}, status=400)
 
-            # 新しいパスワードをハッシュ化して更新
-            user.password = make_password(new_password)
+            user.password = make_password(serializer.validated_data["new_password"])
             user.save()
 
             return JsonResponse(
                 {"message": "Password updated successfully."}, status=200
             )
-
-        except CustomUser.DoesNotExist:
-            return JsonResponse({"error": "User not found."}, status=404)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
