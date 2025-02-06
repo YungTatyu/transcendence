@@ -7,9 +7,18 @@ class UpdatePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(required=True, write_only=True, min_length=8)
     new_password = serializers.CharField(required=True, write_only=True, min_length=8)
 
-    def validate_new_password(self, value):
+    def validate(self, data):
+        """現在のパスワードをチェック & 新しいパスワードと比較"""
         user = self.context["user"]
+        current_password = data.get("current_password")
+        new_password = data.get("new_password")
 
-        if not user.check_password(self.current_password):
+        # 現在のパスワードが正しいか検証
+        if not user.check_password(current_password):
             raise serializers.ValidationError({"current_password": "Current password is incorrect."})
-        return value
+
+        # 新しいパスワードが現在のパスワードと同じでないかチェック
+        if current_password == new_password:
+            raise serializers.ValidationError({"new_password": "New password must be different from the current password."})
+
+        return data
