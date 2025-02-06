@@ -7,7 +7,7 @@ class UpdatePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(required=True, write_only=True, min_length=8)
     new_password = serializers.CharField(required=True, write_only=True, min_length=8)
 
-    def validate_password(self, value):
+    def validate_new_password(self, value):
         user = self.context["user"]
 
         if not user.check_password(self.current_password):
