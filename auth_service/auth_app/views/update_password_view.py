@@ -32,7 +32,7 @@ class UpdatePasswordView(View):
             serializer = UpdatePasswordSerializer(data=data, context={"user": user})
             
             try:
-                serializer.is_valid(serializer.is_valid(raise_exception=True))
+                serializer.is_valid(raise_exception=True)
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
 
