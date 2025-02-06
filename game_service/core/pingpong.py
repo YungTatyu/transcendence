@@ -58,13 +58,17 @@ class Ball:
         self.__y_speed = value
 
     def hit_paddle(self, left_paddle, right_paddle):
+        next_x = self.__x_pos + self.__x_speed
+
         if (
-            self.__x_pos <= left_paddle.WIDTH
+            self.__x_pos >= left_paddle.WIDTH >= next_x  # 過去→未来でパドルを通過
             and self.__x_pos + self.WIDTH >= self.LEFTEST_POS
             and self.__y_pos + self.HEIGHT > left_paddle.y_pos
             and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            self.__x_pos + self.WIDTH >= Screen.WIDTH.value - right_paddle.WIDTH
+            self.__x_pos + self.WIDTH
+            <= Screen.WIDTH.value - right_paddle.WIDTH
+            <= next_x + self.WIDTH
             and self.__x_pos <= Screen.WIDTH.value
             and self.__y_pos + self.HEIGHT > right_paddle.y_pos
             and self.__y_pos < right_paddle.y_pos + right_paddle.HEIGHT
