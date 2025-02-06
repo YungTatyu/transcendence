@@ -3,26 +3,26 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from match_app.models import Matches, MatchParticipants
+from match_app.models import Match, MatchParticipants
 from match_app.serializers import (
-    MatchesSerializer,
+    MatchSerializer,
     MatchHistorySerializer,
     UserIdValidator,
 )
 
 
 class MatchView(APIView):
-    """QueryStringに指定された条件を用いてMatchesを検索"""
+    """QueryStringに指定された条件を用いてMatchを検索"""
 
     def get(self, request):
-        serializer = MatchesSerializer(data=request.query_params)
+        serializer = MatchSerializer(data=request.query_params)
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         filters = self.__create_filters(serializer.validated_data)
-        matches: list[Matches] = list(
+        matches: list[Match] = list(
             # 並び順を固定(offsetとlimitを使うため)
-            Matches.objects.filter(**filters).order_by("match_id")
+            Match.objects.filter(**filters).order_by("match_id")
         )
 
         offset = serializer.validated_data["offset"]
@@ -56,8 +56,8 @@ class MatchView(APIView):
             filters["round"] = validated_data["round"]
         return filters
 
-    def __convert_match_to_result(self, match: Matches) -> dict:
-        """MatchesとMatchParticipantsレコードをを用いて試合結果データを作成"""
+    def __convert_match_to_result(self, match: Match) -> dict:
+        """MatchとMatchParticipantsレコードをを用いて試合結果データを作成"""
         participants = MatchParticipants.objects.filter(match_id=match.match_id)
         participants_data = [
             {"id": participant.user_id, "score": participant.score}
@@ -109,7 +109,7 @@ class MatchHistoryView(APIView):
         }
         return Response(data=data, status=HTTP_200_OK)
 
-    def __fetch_finished_matches(self, user_id: int) -> list[Matches]:
+    def __fetch_finished_matches(self, user_id: int) -> list[Match]:
         """特定のユーザーが参加し、試合が終了している試合を並び順を固定して取得"""
         finished_matches = (
             MatchParticipants.objects.filter(
@@ -121,8 +121,8 @@ class MatchHistoryView(APIView):
         )
         return [participant.match_id for participant in finished_matches]
 
-    def __convert_match_to_result(self, match: Matches, user_id: int) -> dict:
-        """MatchesとMatchParticipantsレコードをを用いて試合履歴データを作成"""
+    def __convert_match_to_result(self, match: Match, user_id: int) -> dict:
+        """MatchとMatchParticipantsレコードをを用いて試合履歴データを作成"""
         win_or_lose = "win" if match.winner_user_id == user_id else "lose"
         participants = MatchParticipants.objects.filter(match_id=match.match_id)
         user = participants.filter(user_id=user_id).first()

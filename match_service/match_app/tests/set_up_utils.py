@@ -1,10 +1,10 @@
-from match_app.models import Matches, MatchParticipants
+from match_app.models import Match, MatchParticipants
 
 
 def insert_quick_play_record(winner_user_id):
     finish_date = None if winner_user_id is None else "2024-01-02"
 
-    return Matches.objects.create(
+    return Match.objects.create(
         winner_user_id=winner_user_id,
         mode="QuickPlay",
         start_date="2024-01-01",
@@ -14,7 +14,7 @@ def insert_quick_play_record(winner_user_id):
 
 def insert_tournament_record(winner_user_id, tournament_id, parent_match_id, round):
     finish_date = None if winner_user_id is None else "2024-01-02"
-    return Matches.objects.create(
+    return Match.objects.create(
         winner_user_id=winner_user_id,
         mode="Tournament",
         start_date="2024-01-01",

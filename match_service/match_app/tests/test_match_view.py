@@ -58,9 +58,9 @@ def request_matches(
 @pytest.mark.django_db
 def test_simple_select(client, set_up_records):
     """
-    INFO set_up_recordsにはMatchesレコードの数が格納される
+    INFO set_up_recordsにはMatchレコードの数が格納される
     検索条件無し
-    totalは作成したMatchesレコードの数とおなじになる
+    totalは作成したMatchレコードの数とおなじになる
     """
     num_of_matches = len(set_up_records)
     expect_total = num_of_matches
@@ -367,8 +367,8 @@ def test_round(client, set_up_records):
 @pytest.mark.django_db
 def test_offset(client, set_up_records):
     """
-    num_of_matches == 作成したMatchesレコードの数
-    expect_total == 作成したMatchesレコードの数(QueryStringでoffset以外の条件を入れていないため)
+    num_of_matches == 作成したMatchレコードの数
+    expect_total == 作成したMatchレコードの数(QueryStringでoffset以外の条件を入れていないため)
     expect_limit == 全体のレコード数からoffset分ずらした値
     """
     num_of_matches = len(set_up_records)

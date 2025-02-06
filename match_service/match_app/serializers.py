@@ -8,7 +8,7 @@ class MatchHistorySerializer(serializers.Serializer):
     )
 
 
-class MatchesSerializer(serializers.Serializer):
+class MatchSerializer(serializers.Serializer):
     matchId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
     winnerUserId = serializers.IntegerField(min_value=0, required=False)  # noqa: N815
     mode = serializers.ChoiceField(choices=["QuickPlay", "Tournament"], required=False)
