@@ -18,7 +18,7 @@ class Match(models.Model):
     round = models.PositiveIntegerField(null=True, blank=True)
 
 
-class MatchParticipants(models.Model):
+class MatchParticipant(models.Model):
     match_id = models.ForeignKey(Match, on_delete=models.CASCADE)
     user_id = models.IntegerField()
     score = models.IntegerField(null=True, blank=True)

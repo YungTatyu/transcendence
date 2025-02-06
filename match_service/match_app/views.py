@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from match_app.models import Match, MatchParticipants
+from match_app.models import Match, MatchParticipant
 from match_app.serializers import (
     MatchSerializer,
     MatchHistorySerializer,
@@ -57,8 +57,8 @@ class MatchView(APIView):
         return filters
 
     def __convert_match_to_result(self, match: Match) -> dict:
-        """MatchとMatchParticipantsレコードをを用いて試合結果データを作成"""
-        participants = MatchParticipants.objects.filter(match_id=match.match_id)
+        """MatchとMatchParticipantレコードをを用いて試合結果データを作成"""
+        participants = MatchParticipant.objects.filter(match_id=match.match_id)
         participants_data = [
             {"id": participant.user_id, "score": participant.score}
             for participant in participants
@@ -112,7 +112,7 @@ class MatchHistoryView(APIView):
     def __fetch_finished_matches(self, user_id: int) -> list[Match]:
         """特定のユーザーが参加し、試合が終了している試合を並び順を固定して取得"""
         finished_matches = (
-            MatchParticipants.objects.filter(
+            MatchParticipant.objects.filter(
                 user_id=user_id,  # 試合参加者である
                 match_id__finish_date__isnull=False,  # 終了した試合である
             )
@@ -122,9 +122,9 @@ class MatchHistoryView(APIView):
         return [participant.match_id for participant in finished_matches]
 
     def __convert_match_to_result(self, match: Match, user_id: int) -> dict:
-        """MatchとMatchParticipantsレコードをを用いて試合履歴データを作成"""
+        """MatchとMatchParticipantレコードをを用いて試合履歴データを作成"""
         win_or_lose = "win" if match.winner_user_id == user_id else "lose"
-        participants = MatchParticipants.objects.filter(match_id=match.match_id)
+        participants = MatchParticipant.objects.filter(match_id=match.match_id)
         user = participants.filter(user_id=user_id).first()
         opponents = participants.exclude(user_id=user_id)
         opponents_data = [

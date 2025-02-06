@@ -1,4 +1,4 @@
-from match_app.models import Match, MatchParticipants
+from match_app.models import Match, MatchParticipant
 
 
 def insert_quick_play_record(winner_user_id):
@@ -26,7 +26,7 @@ def insert_tournament_record(winner_user_id, tournament_id, parent_match_id, rou
 
 
 def insert_match_participants_record(match_id, user_id, score=None):
-    MatchParticipants.objects.create(match_id=match_id, user_id=user_id, score=score)
+    MatchParticipant.objects.create(match_id=match_id, user_id=user_id, score=score)
 
 
 def create_query_string(**params):
