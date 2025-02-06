@@ -75,9 +75,7 @@ class UpdatePasswordViewTest(TestCase):
             **self.headers,
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.json()["error"], "Both current and new passwords are required."
-        )
+        self.assertIn("This field is required.", response.json()["error"])
 
     def test_update_password_unauthorized(self):
         """

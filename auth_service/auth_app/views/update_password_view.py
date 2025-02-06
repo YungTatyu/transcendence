@@ -30,8 +30,11 @@ class UpdatePasswordView(View):
                 return JsonResponse({"error": "User not found."}, status=404)
 
             serializer = UpdatePasswordSerializer(data=data, context={"user": user})
-            if not serializer.is_valid():
-                return JsonResponse({"error": serializer.errors}, status=400)
+            
+            try:
+                serializer.is_valid(serializer.is_valid(raise_exception=True))
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=400)
 
             user.password = make_password(serializer.validated_data["new_password"])
             user.save()
