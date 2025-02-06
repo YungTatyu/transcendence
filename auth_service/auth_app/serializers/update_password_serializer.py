@@ -8,9 +8,8 @@ class UpdatePasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True, write_only=True, min_length=8)
 
     def validate_password(self, value):
-        """メールアドレスの重複チェック"""
         user = self.context["user"]
 
-        if not check_password(self.current_password, user.password):
+        if not user.check_password(self.current_password):
             raise serializers.ValidationError({"current_password": "Current password is incorrect."})
         return value
