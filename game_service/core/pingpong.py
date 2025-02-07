@@ -67,7 +67,7 @@ class Ball:
             and self.__y_pos + self.HEIGHT > left_paddle.y_pos
             and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            self.__x_pos + self.WIDTH >= Screen.WIDTH - right_paddle.WIDTH
+            Screen.WIDTH - right_paddle.WIDTH <= self.__x_pos + self.WIDTH
             and self.__x_pos <= Screen.WIDTH
             and self.__y_pos + self.HEIGHT > right_paddle.y_pos
             and self.__y_pos < right_paddle.y_pos + right_paddle.HEIGHT
@@ -217,11 +217,11 @@ class PingPong:
         IN_PROGRESS = auto()
         GAME_OVER = auto()
 
-    def __init__(self, player1=None, playerr2=None):
+    def __init__(self):
         self.__state = self.GameState.WAITING_FOR_FIRST_PLAYER
         self.__ball = Ball()
-        self.__left_player = self.add_player(player1)
-        self.__right_player = self.add_player(playerr2)
+        self.__left_player = None
+        self.__right_player = None
 
     @property
     def state(self):
@@ -244,8 +244,6 @@ class PingPong:
         return self.__right_player
 
     def add_player(self, player_id):
-        if player_id is None:
-            return None  # Noneでplayerを初期化
         if (
             self.__state != self.GameState.WAITING_FOR_FIRST_PLAYER
             and self.__state != self.GameState.WAITING_FOR_SECOND_PLAYER
