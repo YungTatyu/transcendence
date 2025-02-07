@@ -6,8 +6,50 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_409_CO
 	 							 HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
-from .serializers import UserIdValidator
+from .serializers import UserIdValidator,FriendsSerializer
 from .models import Friends
+from django.db.models import Q
+#修正の必要あり. DBの変更
+
+class FriendListView(APIView):
+	'''
+	usernameはどこから？
+	'''
+	def get(self, request):
+		from_user_id = 1
+		user_name = "kazuki"
+		# friends = Friends.objects.filter((Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)) & Q(status="approved"))
+		friends = Friends.objects.filter(Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id))
+		if not friends:
+			return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
+		serializer = FriendsSerializer(friends, many=True)
+		friends_data = []
+		for friend in serializer.data:
+			if friend['from_user_id'] == 1:
+				tmp = {
+                    "userId": friend['to_user_id'],  # 'from_user_id' を使ってアクセス
+                    "username": "test",  # 仮のユーザー名（例えば 'test'）
+                    "status": friend['status'],
+                    "request_sent_at": friend['request_sent_at'],
+                    "approved_at": friend['approved_at']
+                }
+			else:
+				'''
+				pendingの時、表示する必要はあるか
+				'''
+				tmp = {
+                    "userId": friend['from_user_id'],  # 'from_user_id' を使ってアクセス
+                    "username": "test",  # 仮のユーザー名（例えば 'test'）
+                    "status": friend['status'],
+                    "request_sent_at": friend['request_sent_at'],
+                    "approved_at": friend['approved_at']
+                }
+			friends_data.append(tmp)
+		response_data = {
+    		"friends": friends_data,
+    		"total": friends.count()
+		}
+		return Response(response_data, status=HTTP_200_OK)
 
 class FriendRequestView(APIView):
 	'''
@@ -48,6 +90,9 @@ class FriendRequestView(APIView):
 			return Response ({"error": "You cannot send a request to yourself."}, status=HTTP_400_BAD_REQUEST)
 		
 		Friends.objects.create(from_user_id = from_user_id, to_user_id = to_user_id, status = "pending")
+		# patchのテストで使用
+		#Friends.objects.create(from_user_id = 100, to_user_id = 1, status = "pending")
+		#
 		return Response({"message": "Friend request sent successfully."}, status=HTTP_201_CREATED)
 
 	def delete(self, _, user_id):
@@ -69,6 +114,25 @@ class FriendRequestView(APIView):
 		else:
 			return Response ({"error": "Already friend."}, status=HTTP_400_BAD_REQUEST)#すでにfriend
 		
+	def patch(self, _, user_id):
+		my_user_id = 1
+		user_id_validator = UserIdValidator(data={"user_id": user_id})
+		if not user_id_validator.is_valid():
+			return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
+		from_user_id = int(user_id_validator.validated_data["user_id"])
+		to_user_id = my_user_id
+
+		if from_user_id == to_user_id:
+			return Response ({"error": "You cannot send a request to yourself."}, status=HTTP_400_BAD_REQUEST)
+		friend = Friends.objects.filter(from_user_id=from_user_id, to_user_id=to_user_id).first()
+		if not friend:
+			return Response({"error": "Friend request not found."}, status=HTTP_404_NOT_FOUND)
+		friend_status = friend.status
+		if friend_status == "approved":
+			return Response({"error": "Friend request already approved."}, status=HTTP_409_CONFLICT)
+		friend.status = "approved"
+		return Response({"userId":from_user_id}, status=HTTP_200_OK)
+	
 class	FriendView(APIView):
 	def delete(self, _, friend_id):
 		friend_id_validator = UserIdValidator(data={"user_id": friend_id})
@@ -89,4 +153,5 @@ class	FriendView(APIView):
 			rev_friend.delete()
 		else:
 			return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
-		return Response(status=HTTP_204_NO_CONTENT)  #
+		return Response(status=HTTP_204_NO_CONTENT)
+	

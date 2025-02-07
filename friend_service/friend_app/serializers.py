@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-# from .models import Friends
+from .models import Friends
 
 class UserIdValidator(serializers.Serializer):
 	user_id = serializers.CharField()
@@ -9,3 +9,8 @@ class UserIdValidator(serializers.Serializer):
 		if not value.isdigit():
 			raise serializers.ValidationError("UserID is invalid")
 		return (value)
+	
+class FriendsSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Friends
+		fields = '__all__'
