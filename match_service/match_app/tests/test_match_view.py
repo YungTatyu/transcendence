@@ -41,7 +41,7 @@ def request_matches(
         offset=offset,
         limit=limit,
     )
-    response = client.get(f"/matches/{query_string}")
+    response = client.get(f"/matches{query_string}")
 
     assert response.status_code == status
 

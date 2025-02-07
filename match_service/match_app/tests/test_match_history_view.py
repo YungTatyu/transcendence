@@ -17,7 +17,7 @@ def request_match_histories(
     client, status, user_id, expect_total, expect_limit, offset=None, limit=None
 ) -> dict:
     query_string = create_query_string(offset=offset, limit=limit)
-    response = client.get(f"/matches/histories/{user_id}/{query_string}")
+    response = client.get(f"/matches/histories/{user_id}{query_string}")
     assert response.status_code == status
 
     if response.status_code == HTTP_200_OK:
