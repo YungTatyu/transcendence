@@ -4,20 +4,24 @@ from enum import Enum, auto
 Position = namedtuple("Position", ["x", "y"])
 
 
-class Screen(Enum):
-    HEIGHT = 500
-    WIDTH = 800
-    HIGHEST_POS = 0
-    LEFTEST_POS = 0
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Screen:
+    HEIGHT: int = 500
+    WIDTH: int = 800
+    HIGHEST_POS: int = 0
+    LEFTEST_POS: int = 0
 
 
 class Ball:
     HEIGHT = 20
     WIDTH = 20
-    INITIAL_POS = Position(x=Screen.WIDTH.value / 2, y=Screen.HEIGHT.value / 2)
+    INITIAL_POS = Position(x=Screen.WIDTH / 2, y=Screen.HEIGHT / 2)
     INITIAL_SPEED = Position(x=4, y=4)
     ACCELERATION = 1.2
-    LEFTEST_POS = Screen.LEFTEST_POS.value
+    LEFTEST_POS = Screen.LEFTEST_POS
 
     def __init__(self):
         self.__x_pos = self.INITIAL_POS.x
@@ -63,8 +67,8 @@ class Ball:
             and self.__y_pos + self.HEIGHT > left_paddle.y_pos
             and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            Screen.WIDTH.value - right_paddle.WIDTH <= self.__x_pos + self.WIDTH
-            and self.__x_pos <= Screen.WIDTH.value
+            Screen.WIDTH - right_paddle.WIDTH <= self.__x_pos + self.WIDTH
+            and self.__x_pos <= Screen.WIDTH
             and self.__y_pos + self.HEIGHT > right_paddle.y_pos
             and self.__y_pos < right_paddle.y_pos + right_paddle.HEIGHT
         ):
@@ -74,8 +78,8 @@ class Ball:
 
     def hit_wall(self):
         if (
-            self.__y_pos <= Screen.HIGHEST_POS.value
-            or self.__y_pos >= Screen.HEIGHT.value - self.HEIGHT
+            self.__y_pos <= Screen.HIGHEST_POS
+            or self.__y_pos >= Screen.HEIGHT - self.HEIGHT
         ):
             self.__y_speed *= -1
 
@@ -84,19 +88,19 @@ class Ball:
         ゴールしたら、Trueとゴールしたplayerを返す
         """
         # ゴールした瞬間も描画したいからballを動かしたすぐ後にゴール判定しない
-        if self.__x_pos >= Screen.WIDTH.value - self.WIDTH:
+        if self.__x_pos >= Screen.WIDTH - self.WIDTH:
             self.reset_ball_status()
             return (True, left_player)
-        elif self.__x_pos <= Screen.LEFTEST_POS.value:
+        elif self.__x_pos <= Screen.LEFTEST_POS:
             self.reset_ball_status()
             return (True, right_player)
 
         # ballを動かす
         self.__x_pos = self.adjust_limit(
-            self.__x_pos + self.__x_speed, Screen.WIDTH.value - self.WIDTH
+            self.__x_pos + self.__x_speed, Screen.WIDTH - self.WIDTH
         )
         self.__y_pos = self.adjust_limit(
-            self.__y_pos + self.__y_speed, Screen.HEIGHT.value - self.HEIGHT
+            self.__y_pos + self.__y_speed, Screen.HEIGHT - self.HEIGHT
         )
         if self.hit_paddle(left_player.paddle, right_player.paddle):
             # goal判定されないように少しずらす
@@ -109,8 +113,8 @@ class Ball:
         """
         ballがgameの範囲を越えないように調整する
         """
-        if pos <= Screen.LEFTEST_POS.value:
-            return Screen.LEFTEST_POS.value
+        if pos <= Screen.LEFTEST_POS:
+            return Screen.LEFTEST_POS
         if pos >= limit:
             return limit
         return pos
@@ -126,7 +130,7 @@ class Paddle:
     SPEED = 10
     HEIGHT = 100
     WIDTH = 10
-    LOWEST_POSITION = Screen.HEIGHT.value - HEIGHT
+    LOWEST_POSITION = Screen.HEIGHT - HEIGHT
 
     def __init__(self, x_pos, y_pos):
         self.__x_pos = x_pos
@@ -150,7 +154,7 @@ class Paddle:
 
     def move_up(self):
         # 0以下になってほしくない
-        self.__y_pos = max(Screen.HIGHEST_POS.value, self.__y_pos - self.SPEED)
+        self.__y_pos = max(Screen.HIGHEST_POS, self.__y_pos - self.SPEED)
 
     def move_down(self):
         self.__y_pos = min(self.LOWEST_POSITION, self.__y_pos + self.SPEED)
@@ -250,16 +254,14 @@ class PingPong:
             return
         if self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER:
             self.__left_player = Player(
-                player_id, Paddle(Screen.LEFTEST_POS.value, Screen.HEIGHT.value / 2)
+                player_id, Paddle(Screen.LEFTEST_POS, Screen.HEIGHT / 2)
             )
             self.__state = self.GameState.WAITING_FOR_SECOND_PLAYER
             return
         # プレイヤーの再接続
         if self.__left_player.id == player_id:
             return
-        self.__right_player = Player(
-            player_id, Paddle(Screen.WIDTH.value, Screen.HEIGHT.value / 2)
-        )
+        self.__right_player = Player(player_id, Paddle(Screen.WIDTH, Screen.HEIGHT / 2))
         self.__state = self.GameState.READY_TO_START
 
     def player_action(self, id, key):
