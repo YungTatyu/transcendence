@@ -2,15 +2,7 @@ import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from .set_up_utils import create_query_string
-
-# INFO docs/matches.ymlで/matches/エンドポイントのlimitのdefault値は10と定義しています
-DEFAULT_LIMIT = 10
-
-# INFO docs/matches.ymlで/matches/エンドポイントのlimitのmax値は100と定義しています
-MAX_LIMIT = 100
-
-# INFO docs/matches.ymlで/matches/エンドポイントのoffsetのdefault値は0と定義しています
-DEFAULT_OFFSET = 0
+from match_app.serializers import MatchSerializer
 
 
 def request_matches(
@@ -48,7 +40,7 @@ def request_matches(
     if response.status_code == HTTP_200_OK:
         res_data = response.json()
         assert res_data["total"] == expect_total
-        expect_offset = DEFAULT_OFFSET if offset is None else offset
+        expect_offset = MatchSerializer.DEFAULT_OFFSET if offset is None else offset
         assert res_data["offset"] == expect_offset
         assert res_data["limit"] == expect_limit
 
@@ -64,7 +56,7 @@ def test_simple_select(client, set_up_records):
     """
     num_of_matches = len(set_up_records)
     expect_total = num_of_matches
-    expect_limit = min(expect_total, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
     request_matches(client, HTTP_200_OK, expect_total, expect_limit)
 
 
@@ -76,7 +68,7 @@ def test_finished_quick_play_results(client, set_up_records):
     match_id_dict = set_up_records
     match1_id = match_id_dict["match1_id"]
     expect_total = 1
-    expect_limit = min(expect_total, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
     res_data = request_matches(
         client, HTTP_200_OK, expect_total, expect_limit, match_id=match1_id
     )
@@ -106,7 +98,7 @@ def test_not_finished_quick_play_results(client, set_up_records):
     match_id_dict = set_up_records
     match2_id = match_id_dict["match2_id"]
     expect_total = 1
-    expect_limit = min(expect_total, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
     res_data = request_matches(
         client, HTTP_200_OK, expect_total, expect_limit, match_id=match2_id
     )
@@ -136,7 +128,7 @@ def test_not_finished_tournament_results(client, set_up_records):
     match_id_dict = set_up_records
     tournament_id = 1
     expect_total = 3
-    expect_limit = min(expect_total, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
     res_data = request_matches(
         client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
     )
@@ -187,7 +179,7 @@ def test_finished_tournament_results(client, set_up_records):
     match_id_dict = set_up_records
     tournament_id = 2
     expect_total = 1
-    expect_limit = min(expect_total, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
     res_data = request_matches(
         client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
     )
@@ -217,7 +209,7 @@ def test_only_one_round_finished_tournament_results(client, set_up_records):
     match_id_dict = set_up_records
     tournament_id = 3
     expect_total = 2
-    expect_limit = min(expect_total, DEFAULT_LIMIT)
+    expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
     res_data = request_matches(
         client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
     )
@@ -416,5 +408,5 @@ def test_limit_over_total(client, set_up_records):
 @pytest.mark.django_db
 def test_limit_over_max_limit(client, set_up_records):
     """limitに指定可能な値よりも大きい値の場合、エラー"""
-    limit = MAX_LIMIT + 1
+    limit = MatchSerializer.MAX_LIMIT + 1
     request_matches(client, HTTP_400_BAD_REQUEST, None, None, limit=limit)
