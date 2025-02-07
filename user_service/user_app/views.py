@@ -13,13 +13,13 @@ class UserView(APIView):
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         username = serializer.validated_data["username"]
-        if User.objects.filter(name="username").exists():
+        if User.objects.filter(username="username").exists():
             return Response({"error": "User arledy exists"}, status=HTTP_409_CONFLICT)
         
 
-        user = User.objects.create(name=username)
+        user = User.objects.create(username=username)
 
-        data = {"userId": user.user_id, "username": user.name}
+        data = {"userId": user.user_id, "username": user.username}
 
         return Response(data, status=HTTP_201_CREATED)
     
@@ -34,7 +34,7 @@ class UserView(APIView):
             return Response({"error": "query parameter 'username' or 'userid' is required."}, status=HTTP_400_BAD_REQUEST)
         
         if username:
-            user = User.objects.filter(name=username).first()
+            user = User.objects.filter(username=username).first()
         elif userid:
             user = User.objects.filter(user_id=userid).first()
 
@@ -52,4 +52,4 @@ def health_check(request):
     healthチェック
     user serverが機能している際は200を返す
     """
-    return Response(data={"status": "healthy"}, status=status.HTTP_200_OK)
+    return Response(data={"status": "healthy"}, status=HTTP_200_OK)
