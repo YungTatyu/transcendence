@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from match_app.models import Match, MatchParticipants
+from match_app.models import Match, MatchParticipant
 from match_app.serializers import (
     MatchFinishSerializer,
     TournamentMatchSerializer,
@@ -35,9 +35,9 @@ class TournamentMatchView(APIView):
             round=serializer.validated_data["round"],
         )
 
-        # MatchParticipantsレコードの作成
+        # MatchParticipantレコードの作成
         for user_id in serializer.validated_data["userIdList"]:
-            MatchParticipants.objects.create(match_id=tournament_match, user_id=user_id)
+            MatchParticipant.objects.create(match_id=tournament_match, user_id=user_id)
 
         return Response(data={"matchId": tournament_match.match_id}, status=HTTP_200_OK)
 
@@ -64,11 +64,11 @@ class MatchFinishView(APIView):
         return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
 
     def __update_match_data(self, match_id: int, results: list[dict]) -> now:
-        # MatchParticipantsのscoreをユーザーそれぞれに対して更新
+        # MatchParticipantのscoreをユーザーそれぞれに対して更新
         for result in results:
             user_id = result["userId"]
             score = result["score"]
-            MatchParticipants.objects.filter(match_id=match_id, user_id=user_id).update(
+            MatchParticipant.objects.filter(match_id=match_id, user_id=user_id).update(
                 score=score
             )
 
@@ -122,7 +122,7 @@ class MatchStatisticView(APIView):
 
     def __fetch_match_lose_count(self, user_id: int) -> int:
         lose_matches_count = (
-            MatchParticipants.objects.filter(
+            MatchParticipant.objects.filter(
                 user_id=user_id,  # 試合参加者である
                 match_id__finish_date__isnull=False,  # 試合が終了している
             )

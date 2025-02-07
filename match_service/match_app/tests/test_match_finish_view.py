@@ -4,7 +4,7 @@ import pytest
 import requests
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from match_app.models import Match, MatchParticipants
+from match_app.models import Match, MatchParticipant
 
 from .set_up_utils import (
     insert_match_participants_record,
@@ -24,7 +24,7 @@ def requests_post_mocker(mocker):
 def request_match_finish(client, status, match_id, results) -> dict:
     """
     RequestBodyを作成し/matches/finish/エンドポイントを叩く
-    正常系レスポンスならMatchとMatchParticipantsレコードが作成されているかを確認
+    正常系レスポンスならMatchとMatchParticipantレコードが作成されているかを確認
     """
     data = {"matchId": match_id, "results": results}
     response = client.post(
@@ -37,23 +37,23 @@ def request_match_finish(client, status, match_id, results) -> dict:
         # トーナメント終了時、finish_dateは必ずセットされる
         assert match.finish_date is not None
 
-        participants = MatchParticipants.objects.filter(match_id=match)
+        participants = MatchParticipant.objects.filter(match_id=match)
         user_ids = [result["userId"] for result in results]
         for participant in participants:
             user_id = participant.user_id
-            # RequestBodyに含まれるuserIdでMatchParticipantsレコードが作成されたか
+            # RequestBodyに含まれるuserIdでMatchParticipantレコードが作成されたか
             assert user_id in user_ids
             score = [
                 result["score"] for result in results if result["userId"] == user_id
             ][0]
-            # RequestBodyに含まれるscoreでMatchParticipantsレコードが作成されたか
+            # RequestBodyに含まれるscoreでMatchParticipantレコードが作成されたか
             assert participant.score == score
 
     return response.json()
 
 
 def __insert_quick_play_match(user_ids: list[int]) -> int:
-    """Matchレコードを1つ作成し、user_ids分のMatchParticipantsレコードを作成"""
+    """Matchレコードを1つ作成し、user_ids分のMatchParticipantレコードを作成"""
     match = insert_quick_play_record(None)
     match_id = match.match_id
     [insert_match_participants_record(match, user_id) for user_id in user_ids]
@@ -61,7 +61,7 @@ def __insert_quick_play_match(user_ids: list[int]) -> int:
 
 
 def __insert_tournament_match(user_ids: list[int]):
-    """Matchレコードを1つ作成し、user_ids分のMatchParticipantsレコードを作成"""
+    """Matchレコードを1つ作成し、user_ids分のMatchParticipantレコードを作成"""
     match = insert_tournament_record(None, 1, None, 1)
     match_id = match.match_id
     [insert_match_participants_record(match, user_id) for user_id in user_ids]

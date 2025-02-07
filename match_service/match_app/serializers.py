@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Match, MatchParticipants
+from .models import Match, MatchParticipant
 
 
 class TournamentMatchSerializer(serializers.Serializer):
@@ -78,7 +78,7 @@ class MatchFinishSerializer(serializers.Serializer):
         match_id = attrs.get("matchId")
         results = attrs.get("results")
         request_user_ids = [result["userId"] for result in results]
-        stored_user_ids = MatchParticipants.objects.filter(
+        stored_user_ids = MatchParticipant.objects.filter(
             match_id=match_id
         ).values_list("user_id", flat=True)
 

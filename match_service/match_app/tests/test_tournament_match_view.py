@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from match_app.models import Match, MatchParticipants
+from match_app.models import Match, MatchParticipant
 
 
 def request_tournament_match(
@@ -32,8 +32,8 @@ def request_tournament_match(
             assert match.parent_match_id.match_id == parent_match_id
         assert match.round == round
 
-        participants = MatchParticipants.objects.filter(match_id=match)
-        # RequestBodyのuser_id_listとMatchParticipantsのuser_idのリストが同じか
+        participants = MatchParticipant.objects.filter(match_id=match)
+        # RequestBodyのuser_id_listとMatchParticipantのuser_idのリストが同じか
         assert len(user_id_list) == len(participants)
         for participant in participants:
             assert participant.user_id in user_id_list
