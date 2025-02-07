@@ -14,7 +14,7 @@ def request_tournament_match(
         "round": round,
     }
     response = client.post(
-        "/matches/tournament-match/", data=data, content_type="application/json"
+        "/matches/tournament-match", data=data, content_type="application/json"
     )
     assert response.status_code == status
 

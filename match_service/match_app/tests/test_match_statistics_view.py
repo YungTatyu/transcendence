@@ -3,7 +3,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 
 def request_match_statistics(client, status, user_id) -> dict:
-    response = client.get(f"/matches/statistics/{user_id}/")
+    response = client.get(f"/matches/statistics/{user_id}")
     assert response.status_code == status
     return response.json()
 

@@ -28,7 +28,7 @@ def request_match_finish(client, status, match_id, results) -> dict:
     """
     data = {"matchId": match_id, "results": results}
     response = client.post(
-        "/matches/finish/", data=data, content_type="application/json"
+        "/matches/finish", data=data, content_type="application/json"
     )
     assert response.status_code == status
 
