@@ -15,7 +15,7 @@ class Ball:
     HEIGHT = 20
     WIDTH = 20
     INITIAL_POS = Position(x=Screen.WIDTH.value / 2, y=Screen.HEIGHT.value / 2)
-    INITIAL_SPEED = Position(x=40, y=4)
+    INITIAL_SPEED = Position(x=4, y=4)
     ACCELERATION = 1.2
     LEFTEST_POS = Screen.LEFTEST_POS.value
 
@@ -149,13 +149,11 @@ class Paddle:
         self.__y_pos = value
 
     def move_up(self):
-        if self.__y_pos > Screen.HIGHEST_POS.value:
-            # 0以下になってほしくない
-            self.__y_pos = max(Screen.HIGHEST_POS.value, self.__y_pos - self.SPEED)
+        # 0以下になってほしくない
+        self.__y_pos = max(Screen.HIGHEST_POS.value, self.__y_pos - self.SPEED)
 
     def move_down(self):
-        if self.__y_pos < self.LOWEST_POSITION:
-            self.__y_pos = min(self.LOWEST_POSITION, self.__y_pos + self.SPEED)
+        self.__y_pos = min(self.LOWEST_POSITION, self.__y_pos + self.SPEED)
 
 
 class Player:
