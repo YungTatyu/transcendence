@@ -59,7 +59,7 @@ class Ball:
 
     def hit_paddle(self, left_paddle, right_paddle):
         if (
-            left_paddle.WIDTH >= self.__x_pos
+            self.__x_pos <= left_paddle.WIDTH
             and self.__y_pos + self.HEIGHT > left_paddle.y_pos
             and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
