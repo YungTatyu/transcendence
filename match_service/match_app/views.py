@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
-from match_app.models import Matches, MatchParticipants
+from match_app.models import Match, MatchParticipants
 from match_app.serializers import (
     MatchFinishSerializer,
     TournamentMatchSerializer,
@@ -25,10 +25,10 @@ class TournamentMatchView(APIView):
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
         parent_match_id: Optional[int] = serializer.validated_data["parentMatchId"]
-        parent_match = Matches.objects.filter(match_id=parent_match_id).first()
+        parent_match = Match.objects.filter(match_id=parent_match_id).first()
 
-        # Matchesレコードの作成
-        tournament_match = Matches.objects.create(
+        # Matchレコードの作成
+        tournament_match = Match.objects.create(
             mode="Tournament",
             tournament_id=serializer.validated_data["tournamentId"],
             parent_match_id=parent_match,
@@ -72,10 +72,10 @@ class MatchFinishView(APIView):
                 score=score
             )
 
-        # Matchesのwinner_user_idとfinish_dateを更新
+        # Matchのwinner_user_idとfinish_dateを更新
         winner_user_id = max(results, key=lambda x: x["score"])["userId"]
         finish_date = now()
-        Matches.objects.filter(match_id=match_id).update(
+        Match.objects.filter(match_id=match_id).update(
             winner_user_id=winner_user_id, finish_date=finish_date
         )
 
@@ -88,7 +88,7 @@ class MatchFinishView(APIView):
         else:
             何もしない
         """
-        match = Matches.objects.filter(match_id=match_id).first()
+        match = Match.objects.filter(match_id=match_id).first()
         # modeがTournament以外なら何もしない
         if match.mode != "Tournament":
             return True
@@ -117,7 +117,7 @@ class MatchStatisticView(APIView):
         return Response(data=data, status=HTTP_200_OK)
 
     def __fetch_match_win_count(self, user_id: int) -> int:
-        match_win_count = Matches.objects.filter(winner_user_id=user_id).count()
+        match_win_count = Match.objects.filter(winner_user_id=user_id).count()
         return match_win_count
 
     def __fetch_match_lose_count(self, user_id: int) -> int:
@@ -132,7 +132,7 @@ class MatchStatisticView(APIView):
         return lose_matches_count
 
     def __fetch_tournament_winner_count(self, user_id: int) -> int:
-        tournament_win_count = Matches.objects.filter(
+        tournament_win_count = Match.objects.filter(
             finish_date__isnull=False,  # 試合が終了している
             mode="Tournament",  # トーナメントの試合である
             winner_user_id=user_id,  # `勝者である

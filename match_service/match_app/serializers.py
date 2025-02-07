@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Matches, MatchParticipants
+from .models import Match, MatchParticipants
 
 
 class TournamentMatchSerializer(serializers.Serializer):
@@ -22,14 +22,14 @@ class TournamentMatchSerializer(serializers.Serializer):
         """tournament_idとroundが同じ試合が存在するか"""
         tournament_id = attrs.get("tournamentId")
         round = attrs.get("round")
-        if Matches.objects.filter(tournament_id=tournament_id, round=round).exists():
+        if Match.objects.filter(tournament_id=tournament_id, round=round).exists():
             raise serializers.ValidationError("Tournament match already exist")
 
         return attrs
 
     def validate_parentMatchId(self, value):  # noqa: N802
         # parentMatchIdがnullでなく、parentMatchが存在しない場合はエラー
-        if value is not None and Matches.objects.filter(match_id=value).first() is None:
+        if value is not None and Match.objects.filter(match_id=value).first() is None:
             raise serializers.ValidationError("parentMatch is not exist")
 
         return value
@@ -62,7 +62,7 @@ class MatchFinishSerializer(serializers.Serializer):
         return value
 
     def validate_matchId(self, value):  # noqa: N802
-        match = Matches.objects.filter(match_id=value).first()
+        match = Match.objects.filter(match_id=value).first()
 
         # 試合が存在するか
         if match is None:

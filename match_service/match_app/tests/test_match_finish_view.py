@@ -4,7 +4,7 @@ import pytest
 import requests
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from match_app.models import Matches, MatchParticipants
+from match_app.models import Match, MatchParticipants
 
 from .set_up_utils import (
     insert_match_participants_record,
@@ -24,7 +24,7 @@ def requests_post_mocker(mocker):
 def request_match_finish(client, status, match_id, results) -> dict:
     """
     RequestBodyを作成し/matches/finish/エンドポイントを叩く
-    正常系レスポンスならMatchesとMatchParticipantsレコードが作成されているかを確認
+    正常系レスポンスならMatchとMatchParticipantsレコードが作成されているかを確認
     """
     data = {"matchId": match_id, "results": results}
     response = client.post(
@@ -33,7 +33,7 @@ def request_match_finish(client, status, match_id, results) -> dict:
     assert response.status_code == status
 
     if response.status_code == HTTP_200_OK:
-        match = Matches.objects.filter(match_id=match_id).first()
+        match = Match.objects.filter(match_id=match_id).first()
         # トーナメント終了時、finish_dateは必ずセットされる
         assert match.finish_date is not None
 
@@ -53,7 +53,7 @@ def request_match_finish(client, status, match_id, results) -> dict:
 
 
 def __insert_quick_play_match(user_ids: list[int]) -> int:
-    """Matchesレコードを1つ作成し、user_ids分のMatchParticipantsレコードを作成"""
+    """Matchレコードを1つ作成し、user_ids分のMatchParticipantsレコードを作成"""
     match = insert_quick_play_record(None)
     match_id = match.match_id
     [insert_match_participants_record(match, user_id) for user_id in user_ids]
@@ -61,7 +61,7 @@ def __insert_quick_play_match(user_ids: list[int]) -> int:
 
 
 def __insert_tournament_match(user_ids: list[int]):
-    """Matchesレコードを1つ作成し、user_ids分のMatchParticipantsレコードを作成"""
+    """Matchレコードを1つ作成し、user_ids分のMatchParticipantsレコードを作成"""
     match = insert_tournament_record(None, 1, None, 1)
     match_id = match.match_id
     [insert_match_participants_record(match, user_id) for user_id in user_ids]

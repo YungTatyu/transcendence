@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 
 
-class Matches(models.Model):
+class Match(models.Model):
     match_id = models.AutoField(primary_key=True)
     winner_user_id = models.IntegerField(null=True, blank=True)
 
@@ -19,7 +19,7 @@ class Matches(models.Model):
 
 
 class MatchParticipants(models.Model):
-    match_id = models.ForeignKey(Matches, on_delete=models.CASCADE)
+    match_id = models.ForeignKey(Match, on_delete=models.CASCADE)
     user_id = models.IntegerField()
     score = models.IntegerField(null=True, blank=True)
 

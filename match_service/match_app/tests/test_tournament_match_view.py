@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from match_app.models import Matches, MatchParticipants
+from match_app.models import Match, MatchParticipants
 
 
 def request_tournament_match(
@@ -20,7 +20,7 @@ def request_tournament_match(
 
     # StatusCode == 200 -> 正常にレコードが作成されたかを確認
     if response.status_code == HTTP_200_OK:
-        match = Matches.objects.filter(tournament_id=tournament_id).first()
+        match = Match.objects.filter(tournament_id=tournament_id).first()
         assert match.match_id >= 0  # match_idは0以上の値が自動で採番される
         assert match.winner_user_id is None  # nullがセットされる
         assert match.mode == "Tournament"
