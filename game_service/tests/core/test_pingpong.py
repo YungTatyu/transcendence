@@ -149,6 +149,7 @@ class TestBall(unittest.TestCase):
     def test_move_goal_right(self):
         """ボールが右端に到達し、左プレイヤーの得点になる"""
         self.ball.x_pos = Screen.WIDTH.value - self.ball.WIDTH - 1
+        self.ball.y_pos = 0
         self.ball.x_speed = 4
         goal, scorer = self.ball.move(self.left_player, self.right_player)
         # goalしても描画のため、falseになる
@@ -163,6 +164,7 @@ class TestBall(unittest.TestCase):
     def test_move_goal_left(self):
         """ボールが左端に到達し、左プレイヤーの得点になる"""
         self.ball.x_pos = Screen.LEFTEST_POS.value + 4
+        self.ball.y_pos = 0
         self.ball.x_speed = -4
         goal, scorer = self.ball.move(self.left_player, self.right_player)
         # goalしても描画のため、falseになる
