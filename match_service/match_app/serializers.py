@@ -30,7 +30,7 @@ class TournamentMatchSerializer(serializers.Serializer):
     def validate_parentMatchId(self, value):  # noqa: N802
         # parentMatchIdがnullでなく、parentMatchが存在しない場合はエラー
         if value is not None and Match.objects.filter(match_id=value).first() is None:
-            raise serializers.ValidationError("parentMatch is not exist")
+            raise serializers.ValidationError("The ParentMatch does not exist")
 
         return value
 
@@ -66,7 +66,7 @@ class MatchFinishSerializer(serializers.Serializer):
 
         # 試合が存在するか
         if match is None:
-            raise serializers.ValidationError("Not exist match")
+            raise serializers.ValidationError("The match does not exist")
         # 試合終了の処理済みではないか
         if match.finish_date is not None:
             raise serializers.ValidationError("Match is already finished")
