@@ -2,7 +2,11 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 
 from match_app.models import Match, MatchParticipant
 
@@ -18,6 +22,21 @@ def requests_post_mocker(mocker):
     mock_response = MagicMock(spec=requests.Response)
     mock_response.status_code = 200
     mock_response.json.return_value = {"message": "Match ended normally"}
+    return mocker.patch("requests.post", return_value=mock_response)
+
+
+@pytest.fixture()
+def requests_post_faild_mocker(mocker):
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.status_code = 500
+    mock_response.json.return_value = {"error": "Error post request"}
+
+    # response.raise_for_statusをモックする
+    def mock_raise_for_status():
+        raise requests.exceptions.HTTPError("Custom error during POST")
+
+    mock_response.raise_for_status.side_effect = mock_raise_for_status
+
     return mocker.patch("requests.post", return_value=mock_response)
 
 
@@ -60,12 +79,15 @@ def __insert_quick_play_match(user_ids: list[int]) -> int:
     return match_id
 
 
-def __insert_tournament_match(user_ids: list[int]):
-    """Matchレコードを1つ作成し、user_ids分のMatchParticipantレコードを作成"""
-    match = insert_tournament_record(None, 1, None, 1)
-    match_id = match.match_id
+def __insert_tournament_match(user_ids: list[int]) -> Match:
+    """
+    親試合を作成後、
+    もう一つのMatchレコードを作成し、user_ids分のMatchParticipantレコードを作成
+    """
+    parent_match = insert_tournament_record(None, 1, None, 1)
+    match = insert_tournament_record(None, 1, parent_match, 2)
     [insert_match_participants_record(match, user_id) for user_id in user_ids]
-    return match_id
+    return match
 
 
 @pytest.mark.django_db
@@ -84,9 +106,16 @@ def test_simple_tournament_match_finish(requests_post_mocker, client):
 
     results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
     user_ids = [result["userId"] for result in results]
-    match_id = __insert_tournament_match(user_ids)
+    match = __insert_tournament_match(user_ids)
+    match_id = match.match_id
     res_data = request_match_finish(client, HTTP_200_OK, match_id, results)
     assert res_data.get("finishDate", None) is not None
+
+    # トーナメント試合が終了した際に勝者が親試合に登録されるか
+    winner_user_id = max(results, key=lambda x: x["score"])["userId"]
+    assert MatchParticipant.objects.filter(
+        match_id=match.parent_match_id, user_id=winner_user_id
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -263,3 +292,14 @@ def test_already_finished(client):
     request_match_finish(client, HTTP_200_OK, match_id, results)
     # ２回目のfinish処理は不正
     request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
+
+
+@pytest.mark.django_db
+def test_faild_tournament_api_request(requests_post_faild_mocker, client):
+    """TournamentAPIを叩く処理が失敗"""
+
+    results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
+    user_ids = [result["userId"] for result in results]
+    match = __insert_tournament_match(user_ids)
+    match_id = match.match_id
+    request_match_finish(client, HTTP_500_INTERNAL_SERVER_ERROR, match_id, results)
