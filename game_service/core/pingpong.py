@@ -15,9 +15,9 @@ class Ball:
     HEIGHT = 20
     WIDTH = 20
     INITIAL_POS = Position(x=Screen.WIDTH.value / 2, y=Screen.HEIGHT.value / 2)
-    INITIAL_SPEED = Position(x=4, y=4)
+    INITIAL_SPEED = Position(x=40, y=4)
     ACCELERATION = 1.2
-    LEFTEST_POS = WIDTH
+    LEFTEST_POS = Screen.LEFTEST_POS.value
 
     def __init__(self):
         self.__x_pos = self.INITIAL_POS.x
@@ -58,22 +58,19 @@ class Ball:
         self.__y_speed = value
 
     def hit_paddle(self, left_paddle, right_paddle):
-        next_x = self.__x_pos + self.__x_speed
-
         if (
-            self.__x_pos >= left_paddle.WIDTH >= next_x  # 過去→未来でパドルを通過
-            and self.__x_pos + self.WIDTH >= self.LEFTEST_POS
+            left_paddle.WIDTH >= self.__x_pos
             and self.__y_pos + self.HEIGHT > left_paddle.y_pos
             and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            self.__x_pos + self.WIDTH
-            <= Screen.WIDTH.value - right_paddle.WIDTH
-            <= next_x + self.WIDTH
+            Screen.WIDTH.value - right_paddle.WIDTH <= self.__x_pos + self.WIDTH
             and self.__x_pos <= Screen.WIDTH.value
             and self.__y_pos + self.HEIGHT > right_paddle.y_pos
             and self.__y_pos < right_paddle.y_pos + right_paddle.HEIGHT
         ):
             self.__x_speed *= -1 * self.ACCELERATION
+            return True
+        return False
 
     def hit_wall(self):
         if (
@@ -101,7 +98,10 @@ class Ball:
         self.__y_pos = self.adjust_limit(
             self.__y_pos + self.__y_speed, Screen.HEIGHT.value - self.HEIGHT
         )
-        self.hit_paddle(left_player.paddle, right_player.paddle)
+        if self.hit_paddle(left_player.paddle, right_player.paddle):
+            # goal判定されないように少しずらす
+            self.__x_pos += 0.1 if self.__x_speed > 0 else -0.1
+
         self.hit_wall()
         return (False, None)
 
