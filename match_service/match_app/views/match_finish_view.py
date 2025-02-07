@@ -1,8 +1,14 @@
+from typing import Optional
 import requests
+from requests.exceptions import RequestException
 from django.conf import settings
 from django.utils.timezone import now
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 from rest_framework.views import APIView
 
 from match_app.models import Match, MatchParticipant
@@ -21,11 +27,9 @@ class MatchFinishView(APIView):
         results: list[dict] = serializer.validated_data["results"]
 
         # 先にトーナメントAPIを叩く(整合性維持のため)
-        if not self.__send_match_result_if_tournament_match(match_id):
-            return Response(
-                {"error": "Tournament API was not consistent"},
-                status=HTTP_400_BAD_REQUEST,
-            )
+        errcode, message = self.__send_match_result_if_tournament_match(match_id)
+        if errcode is not None:
+            return Response({"error": message}, status=errcode)
 
         finish_date = self.__update_match_data(match_id, results)
         return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
@@ -48,7 +52,9 @@ class MatchFinishView(APIView):
 
         return finish_date
 
-    def __send_match_result_if_tournament_match(self, match_id: int) -> bool:
+    def __send_match_result_if_tournament_match(
+        self, match_id: int
+    ) -> tuple[Optional[int], str]:
         """
         if (mode == Tournament):
             /tournaments/finish-matchを叩き、試合終了を通知
@@ -58,9 +64,15 @@ class MatchFinishView(APIView):
         match = Match.objects.filter(match_id=match_id).first()
         # modeがTournament以外なら何もしない
         if match.mode != "Tournament":
-            return True
+            return (None, "")
 
         url = f"{settings.TOURNAMENT_API_BASE_URL}/tournaments/finish-match"
         payload = {"tournamentId": match.tournament_id, "round": match.round}
-        response = requests.post(url, json=payload)
-        return response.status_code == 200
+
+        try:
+            response = requests.post(url, json=payload, timeout=10)
+            #  HTTPステータスコードが200番台以外であれば例外を発生させる
+            response.raise_for_status()
+        except Exception as e:
+            return HTTP_500_INTERNAL_SERVER_ERROR, str(e)
+        return None, ""
