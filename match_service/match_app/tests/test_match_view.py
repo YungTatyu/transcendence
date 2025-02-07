@@ -1,8 +1,9 @@
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from .set_up_utils import create_query_string
 from match_app.serializers import MatchSerializer
+
+from .set_up_utils import create_query_string
 
 
 def request_matches(
