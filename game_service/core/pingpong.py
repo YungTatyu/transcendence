@@ -67,7 +67,7 @@ class Ball:
             and self.__y_pos + self.HEIGHT > left_paddle.y_pos
             and self.__y_pos < left_paddle.y_pos + left_paddle.HEIGHT
         ) or (
-            Screen.WIDTH - right_paddle.WIDTH <= self.__x_pos + self.WIDTH
+            self.__x_pos + self.WIDTH >= Screen.WIDTH - right_paddle.WIDTH
             and self.__x_pos <= Screen.WIDTH
             and self.__y_pos + self.HEIGHT > right_paddle.y_pos
             and self.__y_pos < right_paddle.y_pos + right_paddle.HEIGHT
