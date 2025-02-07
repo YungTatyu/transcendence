@@ -1,9 +1,8 @@
+from match_app.models import Match, MatchParticipant
+from match_app.serializers import UserIdValidator
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
-
-from match_app.models import Match, MatchParticipant
-from match_app.serializers import UserIdValidator
 
 
 class MatchStatisticView(APIView):

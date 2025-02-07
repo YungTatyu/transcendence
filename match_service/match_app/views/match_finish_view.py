@@ -1,8 +1,10 @@
 from typing import Optional
+
 import requests
-from requests.exceptions import RequestException
 from django.conf import settings
 from django.utils.timezone import now
+from match_app.models import Match, MatchParticipant
+from match_app.serializers import MatchFinishSerializer
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
@@ -10,9 +12,6 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.views import APIView
-
-from match_app.models import Match, MatchParticipant
-from match_app.serializers import MatchFinishSerializer
 
 
 class MatchFinishView(APIView):

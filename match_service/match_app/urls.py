@@ -1,9 +1,9 @@
 from django.urls import path
 
+from match_app.views.health_check import health_check
 from match_app.views.match_finish_view import MatchFinishView
 from match_app.views.match_statistic_view import MatchStatisticView
 from match_app.views.tournament_match_view import TournamentMatchView
-from match_app.views.health_check import health_check
 
 urlpatterns = [
     path(
