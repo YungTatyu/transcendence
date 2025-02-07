@@ -36,6 +36,7 @@ class GameController:
     """
 
     GAME_TIME_SEC = 60
+    FRAME_DURATION = 1 / 60
 
     def __init__(self):
         self.__game = PingPong()
@@ -87,7 +88,7 @@ class GameController:
                     },
                     group_name,
                 )
-                await asyncio.sleep(1 / 60)  # 60FPS (約16.67ミリ秒間隔)
+                await asyncio.sleep(self.FRAME_DURATION)
             self.__game.state = PingPong.GameState.GAME_OVER
         except asyncio.CancelledError:
             pass
