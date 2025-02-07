@@ -229,3 +229,155 @@ class FriendTest_delete(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn("Friend not found.", response.data.get("error"))
         
+
+#add_functionのテスト
+
+class FriendRequestTests_PATCH(APITestCase):
+    def set_pending(self, from_user_id, to_user_id):
+        '''
+        フレンド申請をしている状態にする
+        '''
+        Friends.objects.create(from_user_id=from_user_id, to_user_id=to_user_id, status="pending")
+    
+    def set_approved(self, from_user_id, to_user_id):
+        '''
+        フレンド状態にする
+        '''
+        Friends.objects.create(from_user_id=from_user_id, to_user_id=to_user_id, status="approved")
+
+    def test_approved_friend(self):
+        '''
+        id=2からのフレンド申請の承認
+        '''
+        from_user_id=2
+        self.set_pending(from_user_id, 1)
+        url = reverse("friend-request", kwargs={"user_id": from_user_id})
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(from_user_id, response.data.get("userId"))
+    
+    def test_same_account(self):
+        '''
+        自分自身にフレンド申請の削除をした場合
+        '''
+        url = reverse("friend-request", kwargs={"user_id": 1})
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("You cannot send a request to yourself.", response.data.get("error"))
+
+    def test_from_me_request(self):
+        '''
+        自身からid=3へのフレンド申請を承認しようとした場合
+        '''
+        from_user_id=3
+        self.set_pending(1,from_user_id)
+        url = reverse("friend-request", kwargs={"user_id": from_user_id})
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("Friend request not found.", response.data.get("error"))
+
+    def test_no_request(self):
+        '''
+        リクエストが来ていない場合
+        '''
+        from_user_id=4
+        url = reverse("friend-request", kwargs={"user_id": from_user_id})
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("Friend request not found.", response.data.get("error"))
+
+    def test_already_friend(self):
+        '''
+        すでにフレンドの場合
+        '''
+        from_user_id=5
+        self.set_approved(from_user_id, 1)
+        url = reverse("friend-request", kwargs={"user_id": from_user_id})
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertIn("Friend request already approved.", response.data.get("error"))
+
+from datetime import datetime
+from django.utils.timezone import now 
+import pytz
+
+class FriendListTest(APITestCase):
+    '''
+    getのテスト
+    自分のid=1とする
+    '''
+    def set_pending(self, from_user_id, to_user_id, current_time):
+        '''
+        フレンド申請をしている状態にする
+        '''
+        Friends.objects.create(from_user_id=from_user_id, to_user_id=to_user_id, status="pending", request_sent_at=current_time)
+    
+    def set_approved(self, from_user_id, to_user_id, current_time):
+        '''
+        フレンド状態にする
+        '''
+        Friends.objects.create(from_user_id=from_user_id, to_user_id=to_user_id, status="approved", request_sent_at=current_time, approved_at=current_time)
+
+    def test_no_friend(self):
+        '''
+        フレンドがいない場合
+        '''
+        url = reverse("friend-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("Friend not found", response.data.get("error"))
+
+    def test_all(self):
+        my_id = 1
+        from_user_id = my_id
+        to_user_id2 = 2
+        to_user_id3 = 3
+        to_user_id4 = 4
+        to_user_id5 = 5
+
+        japan_timezone = pytz.timezone('Asia/Tokyo')
+        current_time = now().astimezone(japan_timezone)
+        self.set_pending(from_user_id, to_user_id2, current_time)
+        self.set_pending(to_user_id3, from_user_id, current_time)
+        self.set_approved(from_user_id, to_user_id4, current_time)
+        self.set_approved(to_user_id5, from_user_id,current_time)
+        url = url = reverse("friend-list")
+        response = self.client.get(url)
+        expect_answer = {
+        "friends": [
+            {
+                "userId": 2,
+                "username": "test",
+                "status": "pending",
+                "request_sent_at":current_time.isoformat(),
+                "approved_at": None
+            },
+            {
+                "userId": 3,
+                "username": "test",
+                "status": "pending",
+                "request_sent_at":current_time.isoformat(),
+                "approved_at": None
+            },
+            {
+                "userId": 4,
+                "username": "test",
+                "status": "approved",
+                "request_sent_at":current_time.isoformat(),
+                "approved_at":current_time.isoformat()
+            },
+            {
+                "userId": 5,
+                "username": "test",
+                "status": "approved",
+                "request_sent_at":current_time.isoformat(),
+                "approved_at":current_time.isoformat()
+            }
+        ],
+         "total": 4
+    }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+    
+

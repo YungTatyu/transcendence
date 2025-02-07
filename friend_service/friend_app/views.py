@@ -11,6 +11,9 @@ from .models import Friends
 from django.db.models import Q
 #修正の必要あり. DBの変更
 
+from datetime import datetime
+from django.utils.timezone import now 
+
 class FriendListView(APIView):
 	'''
 	usernameはどこから？
@@ -91,7 +94,7 @@ class FriendRequestView(APIView):
 		
 		Friends.objects.create(from_user_id = from_user_id, to_user_id = to_user_id, status = "pending")
 		# patchのテストで使用
-		#Friends.objects.create(from_user_id = 100, to_user_id = 1, status = "pending")
+		Friends.objects.create(from_user_id = 100, to_user_id = 1, status = "pending")
 		#
 		return Response({"message": "Friend request sent successfully."}, status=HTTP_201_CREATED)
 
@@ -131,6 +134,8 @@ class FriendRequestView(APIView):
 		if friend_status == "approved":
 			return Response({"error": "Friend request already approved."}, status=HTTP_409_CONFLICT)
 		friend.status = "approved"
+		friend.approved_at = now()
+		friend.save()
 		return Response({"userId":from_user_id}, status=HTTP_200_OK)
 	
 class	FriendView(APIView):

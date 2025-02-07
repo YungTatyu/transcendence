@@ -8,8 +8,8 @@ class Friends(models.Model):
 	to_user_id = models.IntegerField()
 	MODEL_CHOICES = [("approved", "approved"), ("pending", "pending")]
 	status = models.CharField(choices=MODEL_CHOICES, max_length=20)
-	request_sent_at = models.DateField(default=now)
-	approved_at = models.DateField(null=True, blank=True)
+	request_sent_at = models.DateTimeField(default=now)
+	approved_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
 		constraints = [
