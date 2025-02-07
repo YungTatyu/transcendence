@@ -43,14 +43,13 @@ class ActionHandler:
     def handle_player_action(json, game):
         type = json.get("type")
         key = json.get("key")
-        if type is None:
+        user_id = json.get("userid")
+        if type is None or key is None or user_id is None:
             return
-        try:
-            id = int(json.get("userid"))
-        except ValueError:
+        if not user_id.isdigit():
             return
         if type == ActionHandler.ACTION_PADDLE:
-            game.player_action(id, key)
+            game.player_action(int(user_id), key)
 
     @staticmethod
     async def handle_game_connection(match_id, player_id):
