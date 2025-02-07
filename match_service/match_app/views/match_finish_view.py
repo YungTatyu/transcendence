@@ -25,11 +25,14 @@ class MatchFinishView(APIView):
 
         match_id: int = serializer.validated_data["matchId"]
         results: list[dict] = serializer.validated_data["results"]
+        match = Match.objects.filter(match_id=match_id).first()
 
         # 先にトーナメントAPIを叩く(整合性維持のため)
-        errcode, message = self.__send_match_result_if_tournament_match(match_id)
-        if errcode is not None:
-            return Response({"error": message}, status=errcode)
+        if match.mode == "Tournament":
+            errcode, message = self.__send_match_result_to_tournament(match)
+            if errcode is not None:
+                return Response({"error": message}, status=errcode)
+            self.__register_winner_in_parent_match(match, results)
 
         finish_date = self.__update_match_data(match_id, results)
         return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
@@ -52,20 +55,18 @@ class MatchFinishView(APIView):
 
         return finish_date
 
-    def __send_match_result_if_tournament_match(
-        self, match_id: int
-    ) -> tuple[Optional[int], str]:
-        """
-        if (mode == Tournament):
-            /tournaments/finish-matchを叩き、試合終了を通知
-        else:
-            何もしない
-        """
-        match = Match.objects.filter(match_id=match_id).first()
-        # modeがTournament以外なら何もしない
-        if match.mode != "Tournament":
-            return (None, "")
+    def __register_winner_in_parent_match(self, match: Match, results: list[dict]):
+        parent_match = match.parent_match_id
+        if parent_match is None:  # 親試合が無い == 決勝戦
+            return
 
+        winner_user_id = max(results, key=lambda x: x["score"])["userId"]
+        MatchParticipant.objects.create(match_id=parent_match, user_id=winner_user_id)
+
+    def __send_match_result_to_tournament(
+        self, match: Match
+    ) -> tuple[Optional[int], str]:
+        """/tournaments/finish-matchを叩き、試合終了を通知"""
         url = f"{settings.TOURNAMENT_API_BASE_URL}/tournaments/finish-match"
         payload = {"tournamentId": match.tournament_id, "round": match.round}
 
