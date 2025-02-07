@@ -96,6 +96,16 @@ class ActionHandlerTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.mock_game.player_action.assert_not_called()
 
+    def test_handle_player_action_missing_userid(self):
+        ActionHandler.handle_player_action(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": "KeyW",
+            },
+            self.mock_game,
+        )
+        self.mock_game.player_action.assert_not_called()
+
     def test_handle_player_action_invalid_userid(self):
         ActionHandler.handle_player_action(
             {
