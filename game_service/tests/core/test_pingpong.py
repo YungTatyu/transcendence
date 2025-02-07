@@ -146,6 +146,28 @@ class TestBall(unittest.TestCase):
         self.assertFalse(goal)
         self.assertIsNone(scorer)
 
+    def test_move_hit_right_paddle(self):
+        self.ball.x_pos = Screen.WIDTH.value - self.ball.WIDTH - 1
+        self.ball.x_speed = 4
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
+
+        # 次のmoveでgoal判定
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+
+    def test_move_hit_right_paddle_with_fast_ball(self):
+        self.ball.x_pos = Screen.WIDTH.value - self.ball.WIDTH - 1
+        self.ball.x_speed = 40
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
+
+        # 次のmoveでgoal判定
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+
     def test_move_goal_right(self):
         """ボールが右端に到達し、左プレイヤーの得点になる"""
         self.ball.x_pos = Screen.WIDTH.value - self.ball.WIDTH - 1
@@ -175,6 +197,28 @@ class TestBall(unittest.TestCase):
         goal, scorer = self.ball.move(self.left_player, self.right_player)
         self.assertTrue(goal)
         self.assertEqual(scorer, self.right_player)
+
+    def test_move_hit_left_paddle(self):
+        self.ball.x_pos = Screen.LEFTEST_POS.value + 4
+        self.ball.x_speed = -4
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
+
+        # 次のmoveでgoal判定
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+
+    def test_move_hit_left_paddle_with_fast_ball(self):
+        self.ball.x_pos = Screen.LEFTEST_POS.value + 4
+        self.ball.x_speed = -40
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
+        self.assertIsNone(scorer)
+
+        # 次のmoveでgoal判定
+        goal, scorer = self.ball.move(self.left_player, self.right_player)
+        self.assertFalse(goal)
 
 
 class TestPaddle(unittest.TestCase):
