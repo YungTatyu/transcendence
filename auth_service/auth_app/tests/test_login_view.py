@@ -83,7 +83,7 @@ class OTPAuthTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("OTP verification successful.", response.data)
+        self.assertIn("OTP verification successful.", response.data["message"])
 
     def test_otp_verification_invalid_otp(self):
         """
