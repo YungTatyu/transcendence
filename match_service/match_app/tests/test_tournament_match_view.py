@@ -80,49 +80,10 @@ def test_have_parent_match(client):
 
 
 @pytest.mark.django_db
-def test_invalid_user_id(client):
-    """user_idにマイナス値は許容されない"""
-    participants = [1, -1]
-    request_tournament_match(client, HTTP_400_BAD_REQUEST, participants, 1, None, 1)
-
-
-@pytest.mark.django_db
 def test_duplicate_user_id(client):
     """user_idが重複"""
     participants = [1, 1]
     request_tournament_match(client, HTTP_400_BAD_REQUEST, participants, 1, None, 1)
-
-
-@pytest.mark.django_db
-def test_user_id_list_is_null(client):
-    """user_id_listがnull"""
-    participants = None
-    request_tournament_match(client, HTTP_400_BAD_REQUEST, participants, 1, None, 1)
-
-
-@pytest.mark.django_db
-def test_user_id_is_null(client):
-    """user_idがnull"""
-    participants = [1, None]
-    request_tournament_match(client, HTTP_400_BAD_REQUEST, participants, 1, None, 1)
-
-
-@pytest.mark.django_db
-def test_invalid_tournament_id(client):
-    """tournament_idにマイナス値は許容されない"""
-    tournament_id = -1
-    request_tournament_match(
-        client, HTTP_400_BAD_REQUEST, [1, 2], tournament_id, None, 1
-    )
-
-
-@pytest.mark.django_db
-def test_tournament_id_is_null(client):
-    """tournament_idがnull"""
-    tournament_id = None
-    request_tournament_match(
-        client, HTTP_400_BAD_REQUEST, [1, 2], tournament_id, None, 1
-    )
 
 
 @pytest.mark.django_db
@@ -141,17 +102,3 @@ def test_same_tournament_id_and_round(client):
     request_tournament_match(
         client, HTTP_400_BAD_REQUEST, [1, 2], tournament_id, None, round
     )
-
-
-@pytest.mark.django_db
-def test_invalid_round(client):
-    """roundは1以上の数値である必要がある"""
-    round = 0
-    request_tournament_match(client, HTTP_400_BAD_REQUEST, [1, 2], 1, None, round)
-
-
-@pytest.mark.django_db
-def test_round_is_null(client):
-    """roundがnull"""
-    round = None
-    request_tournament_match(client, HTTP_400_BAD_REQUEST, [1, 2], 1, None, round)

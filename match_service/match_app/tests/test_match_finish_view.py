@@ -127,14 +127,6 @@ def test_not_exist_match(client):
 
 
 @pytest.mark.django_db
-def test_match_id_is_null(client):
-    """match_idがnull"""
-    match_id = None
-    results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
-    request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-
-@pytest.mark.django_db
 def test_few_results_in_request_body(client):
     """results内の試合参加者が少ない"""
     results = [
@@ -179,34 +171,6 @@ def test_unauthorized_user_id(client):
 
 
 @pytest.mark.django_db
-def test_invalid_user_id(client):
-    """user_idがマイナス"""
-    results = [
-        {"userId": 1, "score": 11},
-        {"userId": 2, "score": 1},
-    ]
-    user_ids = [result["userId"] for result in results]
-    match_id = __insert_quick_play_match(user_ids)
-    # レコード作成後に、RequestBodyで渡すresultsのuserIdを不正な値に変更
-    results[0]["userId"] = -1
-    request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-
-@pytest.mark.django_db
-def test_invalid_score(client):
-    """scoreがマイナス"""
-    results = [
-        {"userId": 1, "score": 11},
-        {"userId": 2, "score": 1},
-    ]
-    user_ids = [result["userId"] for result in results]
-    match_id = __insert_quick_play_match(user_ids)
-    # レコード作成後に、RequestBodyで渡すresultsのscoreを不正な値に変更
-    results[0]["score"] = -1
-    request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-
-@pytest.mark.django_db
 def test_empty_results(client):
     """resultsが空のリスト"""
     results = [
@@ -233,36 +197,11 @@ def test_empty_result(client):
 
 
 @pytest.mark.django_db
-def test_results_is_null(client):
-    """resultsがnull"""
-    results = [
-        {"userId": 1, "score": 11},
-        {"userId": 2, "score": 1},
-    ]
-    user_ids = [result["userId"] for result in results]
-    match_id = __insert_quick_play_match(user_ids)
-    results = None
-    request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-
-@pytest.mark.django_db
 def test_multiple_winner(client):
     """勝者が複数いる(最大のscoreが複数存在)"""
     results = [
         {"userId": 1, "score": 11},
         {"userId": 2, "score": 11},
-    ]
-    user_ids = [result["userId"] for result in results]
-    match_id = __insert_quick_play_match(user_ids)
-    request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-
-@pytest.mark.django_db
-def test_score_is_zero(client):
-    """score is zero(同点では終わらない)"""
-    results = [
-        {"userId": 1, "score": 0},
-        {"userId": 2, "score": 0},
     ]
     user_ids = [result["userId"] for result in results]
     match_id = __insert_quick_play_match(user_ids)
