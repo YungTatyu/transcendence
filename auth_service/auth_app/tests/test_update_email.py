@@ -89,10 +89,11 @@ class UpdateEmailViewTest(TestCase):
 
     def test_update_email_unauthorized(self):
         """
-        Authorization ヘッダーなしでリクエストした場合 401 エラー
+        Cookie に JWT が設定されていない場合 401 エラー
         """
+        self.client.cookies.clear()
         response = self.client.put(
             self.url, {"email": "new@example.com"}, format="json"
         )
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json()["error"], "Authorization header missing")
+        self.assertEqual(response.json()["error"], "Access token missing")

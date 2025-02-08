@@ -76,12 +76,13 @@ class UpdatePasswordViewTest(TestCase):
 
     def test_update_password_unauthorized(self):
         """
-        Authorization ヘッダーなしでリクエストした場合 401 エラー
+        Cookie に JWT が設定されていない場合 401 エラー
         """
+        self.client.cookies.clear()
         response = self.client.put(
             self.url,
             {"current_password": "securepassword", "new_password": "newsecurepassword"},
             format="json",
         )
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json()["error"], "Authorization header missing")
+        self.assertEqual(response.json()["error"], "Access token missing")
