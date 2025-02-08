@@ -7,17 +7,9 @@ from django.http import JsonResponse
 def jwt_required(func):
     @wraps(func)
     def wrapper(request, *args, **kwargs):
-        auth_header = request.headers.get("Authorization")
-        if not auth_header:
-            return JsonResponse({"error": "Authorization header missing"}, status=401)
-
-        parts = auth_header.split(" ")
-        if len(parts) != 2 or parts[0] != "Bearer":
-            return JsonResponse(
-                {"error": "Invalid Authorization header format"}, status=401
-            )
-
-        token = parts[1]
+        token = request.COOKIES.get("access_token")
+        if not token:
+            return JsonResponse({"error": "Access token missing"}, status=401)
 
         try:
             # TODO 署名検証なしでデコード

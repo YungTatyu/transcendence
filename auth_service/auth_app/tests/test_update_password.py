@@ -31,7 +31,7 @@ class UpdatePasswordViewTest(TestCase):
         self.token_payload = {"user_id": self.user.user_id}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
 
-        self.headers = {"HTTP_AUTHORIZATION": f"Bearer {self.token}"}
+        self.client.cookies["access_token"] = self.token
         self.url = reverse("update_password")
 
     def test_update_password_success(self):

@@ -31,7 +31,8 @@ class UpdateEmailViewTest(TestCase):
         self.token_payload = {"user_id": self.user.user_id}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
 
-        self.headers = {"HTTP_AUTHORIZATION": f"Bearer {self.token}"}
+        self.client.cookies["access_token"] = self.token
+
         self.url = reverse("update_email")
 
     def test_update_email_success(self):
