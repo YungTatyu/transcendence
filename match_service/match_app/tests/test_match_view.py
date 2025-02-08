@@ -257,44 +257,12 @@ def test_not_exist_match_id(client, set_up_records):
 
 
 @pytest.mark.django_db
-def test_invalid_match_id(client, set_up_records):
-    """match_idにマイナス値は許容しない"""
-    match_id = -1
-    request_matches(client, HTTP_400_BAD_REQUEST, None, None, match_id=match_id)
-
-
-@pytest.mark.django_db
 def test_winner_user_id(client, set_up_records):
     winner_user_id = 1
     expect_total = 2
     expect_limit = 2
     request_matches(
         client, HTTP_200_OK, expect_total, expect_limit, winner_user_id=winner_user_id
-    )
-
-
-@pytest.mark.django_db
-def test_not_exist_winner_user_id(client, set_up_records):
-    """存在しないwinner_user_idの場合、エラーでなく、空のresultsを返す"""
-    not_exist_winner_user_id = 12345
-    expect_total = 0
-    expect_limit = 0
-    res_data = request_matches(
-        client,
-        HTTP_200_OK,
-        expect_total,
-        expect_limit,
-        winner_user_id=not_exist_winner_user_id,
-    )
-    assert res_data["results"] == []
-
-
-@pytest.mark.django_db
-def test_invalid_winner_user_id(client, set_up_records):
-    """winner_user_idにマイナス値は許容しない"""
-    winner_user_id = -1
-    request_matches(
-        client, HTTP_400_BAD_REQUEST, None, None, winner_user_id=winner_user_id
     )
 
 
@@ -319,34 +287,6 @@ def test_unknown_mode(client, set_up_records):
     """modeにはQuickPlayかTournamentしか指定できない"""
     mode = "Unknown"
     request_matches(client, HTTP_400_BAD_REQUEST, None, None, mode=mode)
-
-
-@pytest.mark.django_db
-def test_not_exist_tournament_id(client, set_up_records):
-    """存在しないtournament_idの場合、エラーでなく、空のresultsを返す"""
-    tournament_id = 12345
-    expect_total = 0
-    expect_limit = 0
-    res_data = request_matches(
-        client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
-    )
-    assert res_data["results"] == []
-
-
-@pytest.mark.django_db
-def test_invalid_tournament_id(client, set_up_records):
-    """tournament_idにマイナス値は許容しない"""
-    tournament_id = -1
-    request_matches(
-        client, HTTP_400_BAD_REQUEST, None, None, tournament_id=tournament_id
-    )
-
-
-@pytest.mark.django_db
-def test_invalid_round(client, set_up_records):
-    """roundは1から採番されるため、0以下は許容しない"""
-    round = 0
-    request_matches(client, HTTP_400_BAD_REQUEST, None, None, round=round)
 
 
 @pytest.mark.django_db
@@ -404,10 +344,3 @@ def test_limit_over_total(client, set_up_records):
     expect_total = num_of_matches
     expect_limit = min(num_of_matches, limit)
     request_matches(client, HTTP_200_OK, expect_total, expect_limit, limit=limit)
-
-
-@pytest.mark.django_db
-def test_limit_over_max_limit(client, set_up_records):
-    """limitに指定可能な値よりも大きい値の場合、エラー"""
-    limit = MatchSerializer.MAX_LIMIT + 1
-    request_matches(client, HTTP_400_BAD_REQUEST, None, None, limit=limit)

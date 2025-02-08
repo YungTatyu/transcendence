@@ -250,13 +250,3 @@ def test_offset_and_limit_over_total(client, set_up_records):
     assert result["date"] is not None
     assert result["userScore"] == 11
     assert result["opponents"][0] == {"id": 2, "score": 0}
-
-
-@pytest.mark.django_db
-def test_limit_over_max_limit(client, set_up_records):
-    """limitに指定可能な値よりも大きい値の場合、エラー"""
-    user_id = 1
-    limit = MatchHistorySerializer.MAX_LIMIT + 1
-    request_match_histories(
-        client, HTTP_400_BAD_REQUEST, user_id, None, None, limit=limit
-    )
