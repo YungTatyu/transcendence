@@ -117,7 +117,12 @@ class TestMatchView:
             client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
         )
         results = res_data["results"]
-        tournament_matches = Match.objects.filter(tournament_id=tournament_id)
+        match_dict = set_up_records
+        tournament_matches = [
+            match
+            for match in match_dict.values()
+            if match.tournament_id == tournament_id
+        ]
         expect_results = [
             self.create_expect_result(match) for match in tournament_matches
         ]
