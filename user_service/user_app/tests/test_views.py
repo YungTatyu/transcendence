@@ -1,12 +1,16 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from user_app.models import User
+
 
 class UserAPITest(APITestCase):
     def setUp(self):
         """テスト用のデータ作成"""
-        self.user = User.objects.create(username="testuser", avatar_path="/uploads/test.png")
+        self.user = User.objects.create(
+            username="testuser", avatar_path="/uploads/test.png"
+        )
         self.url = reverse("users")  # URLConf の名前
 
     def test_get_user_by_username(self):
