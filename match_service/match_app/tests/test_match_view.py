@@ -41,6 +41,7 @@ class TestMatchView:
 
         assert response.status_code == status
 
+        #  正常系の場合、レスポンスボディをassert
         if response.status_code == HTTP_200_OK:
             res_data = response.json()
             assert res_data["total"] == expect_total
@@ -83,90 +84,90 @@ class TestMatchView:
         self.request_matches(client, HTTP_200_OK, expect_total, expect_limit)
 
     @pytest.mark.django_db
-    def test_finished_quick_play_results(self, client, set_up_records):
+    @pytest.mark.parametrize(
+        "match_key, expect_total",
+        [
+            ("match1", 1),
+            ("match2", 1),
+        ],
+    )
+    def test_quick_play(self, client, set_up_records, match_key, expect_total):
+        match_dict = set_up_records
+        matchx = match_dict[match_key]
+        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
+        res_data = self.request_matches(
+            client, HTTP_200_OK, expect_total, expect_limit, match_id=matchx.match_id
+        )
+        results = res_data["results"]
+        expect_results = [self.create_expect_result(matchx)]
+        assert results == expect_results
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "tournament_id, expect_total",
+        [
+            (1, 3),
+            (2, 1),
+            (3, 2),
+        ],
+    )
+    def test_tournament(self, client, set_up_records, tournament_id, expect_total):
+        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
+        res_data = self.request_matches(
+            client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
+        )
+        results = res_data["results"]
+        tournament_matches = Match.objects.filter(tournament_id=tournament_id)
+        expect_results = [
+            self.create_expect_result(match) for match in tournament_matches
+        ]
+        assert results == expect_results
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "mode, expect_status",
+        [
+            ("QuickPlay", HTTP_200_OK),
+            ("Tournament", HTTP_200_OK),
+            ("Unknown", HTTP_400_BAD_REQUEST),  # modeが不正な値
+        ],
+    )
+    def test_mode(self, client, set_up_records, mode, expect_status):
         """
-        .set_up_records.__insert_finished_quick_playで作成されるレコードを対象にテスト
+        modeが指定したmodeと一致するレコードの数をテスト
         """
         match_dict = set_up_records
-        match1 = match_dict["match1"]
-        expect_total = 1
-        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
-        res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, match_id=match1.match_id
+        expect_total = len([
+            match for match in match_dict.values() if match.mode == mode
+        ])
+        expect_limit = expect_total
+        self.request_matches(
+            client, expect_status, expect_total, expect_limit, mode=mode
         )
-        results = res_data["results"]
-        expect_results = [self.create_expect_result(match1)]
-        assert results == expect_results
 
     @pytest.mark.django_db
-    def test_not_finished_quick_play_results(self, client, set_up_records):
+    @pytest.mark.parametrize(
+        "offset, limit",
+        [
+            (2, None),  # ?offset=2
+            (99, None),  # ?offset=99(offsetに指定する値がtotalよりも大きいケース)
+            (None, 2),  # ?limit=2
+            (None, 99),  # ?limit=99(limitに指定する値がtotalよりも大きいケース)
+        ],
+    )
+    def test_offset_and_limit(self, client, set_up_records, offset, limit):
         """
-        .set_up_records.__insert_not_finished_quick_playで作成されるレコードを対象にテスト
+        offsetとlimitを指定した際に正常に機能するかをテスト
         """
-        match_dict = set_up_records
-        match2 = match_dict["match2"]
-        expect_total = 1
-        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
-        res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, match_id=match2.match_id
+        num_of_matches = len(set_up_records)
+        expect_total = num_of_matches
+        if offset is not None:
+            expect_limit = max(num_of_matches - offset, 0)
+        else:
+            expect_limit = min(num_of_matches, limit)
+        self.request_matches(
+            client, HTTP_200_OK, expect_total, expect_limit, offset=offset, limit=limit
         )
-        results = res_data["results"]
-        expect_results = [self.create_expect_result(match2)]
-        assert results == expect_results
-
-    @pytest.mark.django_db
-    def test_not_finished_tournament_results(self, client, set_up_records):
-        """
-        .set_up_records.__insert_not_finished_tournamentで作成されるレコードを対象にテスト
-        """
-        tournament_id = 1
-        expect_total = 3
-        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
-        res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
-        )
-        results = res_data["results"]
-        tournament1_matches = Match.objects.filter(tournament_id=tournament_id)
-        expect_results = [
-            self.create_expect_result(match) for match in tournament1_matches
-        ]
-        assert results == expect_results
-
-    @pytest.mark.django_db
-    def test_finished_tournament_results(self, client, set_up_records):
-        """
-        .set_up_records.__insert_finished_tournamentで作成されるレコードを対象にテスト
-        """
-        tournament_id = 2
-        expect_total = 1
-        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
-        res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
-        )
-        results = res_data["results"]
-        tournament2_matches = Match.objects.filter(tournament_id=tournament_id)
-        expect_results = [
-            self.create_expect_result(match) for match in tournament2_matches
-        ]
-        assert results == expect_results
-
-    @pytest.mark.django_db
-    def test_only_one_round_finished_tournament_results(self, client, set_up_records):
-        """
-        .set_up_records.__insert_only_one_round_finished_tournamentで作成されるレコードを対象にテスト
-        """
-        tournament_id = 3
-        expect_total = 2
-        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
-        res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
-        )
-        results = res_data["results"]
-        tournament3_matches = Match.objects.filter(tournament_id=tournament_id)
-        expect_results = [
-            self.create_expect_result(match) for match in tournament3_matches
-        ]
-        assert results == expect_results
 
     @pytest.mark.django_db
     def test_not_exist_match_id(self, client, set_up_records):
@@ -180,10 +181,24 @@ class TestMatchView:
         assert res_data["results"] == []
 
     @pytest.mark.django_db
-    def test_winner_user_id(self, client, set_up_records):
-        winner_user_id = 1
-        expect_total = 2
-        expect_limit = 2
+    @pytest.mark.parametrize(
+        "winner_user_id",
+        [
+            (1),
+            (2),
+            (3),
+            (4),
+            (99),
+        ],
+    )
+    def test_winner_user_id(self, client, set_up_records, winner_user_id):
+        match_dict = set_up_records
+        expect_total = len([
+            match
+            for match in match_dict.values()
+            if match.winner_user_id == winner_user_id
+        ])
+        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
         self.request_matches(
             client,
             HTTP_200_OK,
@@ -193,90 +208,22 @@ class TestMatchView:
         )
 
     @pytest.mark.django_db
-    def test_quick_play_mode(self, client, set_up_records):
-        mode = "QuickPlay"
-        match_dict = set_up_records
-        expect_total = len([
-            match for match in match_dict.values() if match.mode == mode
-        ])
-        expect_limit = expect_total
-        self.request_matches(client, HTTP_200_OK, expect_total, expect_limit, mode=mode)
-
-    @pytest.mark.django_db
-    def test_tournament_mode(self, client, set_up_records):
-        mode = "Tournament"
-        match_dict = set_up_records
-        expect_total = len([
-            match for match in match_dict.values() if match.mode == mode
-        ])
-        expect_limit = expect_total
-        self.request_matches(client, HTTP_200_OK, expect_total, expect_limit, mode=mode)
-
-    @pytest.mark.django_db
-    def test_unknown_mode(self, client, set_up_records):
-        """modeにはQuickPlayかTournamentしか指定できない"""
-        mode = "Unknown"
-        self.request_matches(client, HTTP_400_BAD_REQUEST, None, None, mode=mode)
-
-    @pytest.mark.django_db
-    def test_round(self, client, set_up_records):
-        round = 1
+    @pytest.mark.parametrize(
+        "round",
+        [
+            (1),
+            (2),
+            (3),
+            (4),
+            (99),
+        ],
+    )
+    def test_round(self, client, set_up_records, round):
         match_dict = set_up_records
         expect_total = len([
             match for match in match_dict.values() if match.round == round
         ])
-        expect_limit = expect_total
+        expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
         self.request_matches(
             client, HTTP_200_OK, expect_total, expect_limit, round=round
-        )
-
-    @pytest.mark.django_db
-    def test_offset(self, client, set_up_records):
-        """
-        num_of_matches == 作成したMatchレコードの数
-        expect_total == 作成したMatchレコードの数(QueryStringでoffset以外の条件を入れていないため)
-        expect_limit == 全体のレコード数からoffset分ずらした値
-        """
-        num_of_matches = len(set_up_records)
-        offset = 2
-        expect_total = num_of_matches
-        expect_limit = max(num_of_matches - offset, 0)
-        self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, offset=offset
-        )
-
-    @pytest.mark.django_db
-    def test_offset_over_total(self, client, set_up_records):
-        """
-        全体のレコード数よりもoffsetが大きいため、resultsは空
-        """
-        num_of_matches = len(set_up_records)
-        offset = num_of_matches + 1
-        expect_total = num_of_matches
-        expect_limit = max(num_of_matches - offset, 0)
-        res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, offset=offset
-        )
-        assert res_data["results"] == []
-
-    @pytest.mark.django_db
-    def test_limit(self, client, set_up_records):
-        """全体のレコード数がlimitを超える場合、limitの値がlimitとして返される"""
-        num_of_matches = len(set_up_records)
-        limit = 2
-        expect_total = num_of_matches
-        expect_limit = min(num_of_matches, limit)
-        self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, limit=limit
-        )
-
-    @pytest.mark.django_db
-    def test_limit_over_total(self, client, set_up_records):
-        """limitが全体のレコード数を超える場合、全体のレコード数がlimitとして返る"""
-        num_of_matches = len(set_up_records)
-        limit = num_of_matches + 1
-        expect_total = num_of_matches
-        expect_limit = min(num_of_matches, limit)
-        self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, limit=limit
         )
