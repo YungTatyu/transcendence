@@ -9,7 +9,7 @@ class CustomUserManager(BaseUserManager):
     """
 
     def create_user(
-        self, user_id, email, secret_key, hashed_password=None, **extra_fields
+        self, user_id, email, secret_key, hashed_password, **extra_fields
     ):
         """
         Create and return a regular user.
