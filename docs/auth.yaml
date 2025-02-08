@@ -133,7 +133,7 @@ paths:
           description: "OTPが正常に生成"
           headers:
             Set-Cookie:
-              description: "OTP認証用に、ユーザー名をCookieに設定"
+              description: "OTP認証用に、emailをCookieに設定"
               schema:
                 type: string
                 example: "email=; HttpOnly; Secure; Path=/; Max-Age=300"
