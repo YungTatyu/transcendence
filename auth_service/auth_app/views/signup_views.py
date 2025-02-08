@@ -27,17 +27,16 @@ class SignupView(APIView):
 
         # 仮登録データ取得
         user_data = serializer.save()
-        username = user_data["username"]
 
         qr_code_base64 = OTPService.generate_qr_code(
             email=user_data["email"], secret=user_data["otp_secret"]
         )
 
-        # Cookieにユーザー名を設定しレスポンスを返す
+        # Cookieにemailを設定しレスポンスを返す
         response = Response({"qr_code": qr_code_base64}, status=status.HTTP_200_OK)
         response.set_cookie(
-            key="username",
-            value=username,
+            key="email",
+            value=user_data["email"],
             httponly=True,
             secure=True,
             path="/",
