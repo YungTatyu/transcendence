@@ -3,8 +3,8 @@ import logging
 
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from rest_framework.views import APIView
 from rest_framework.exceptions import APIException
+from rest_framework.views import APIView
 
 from auth_app.jwt_decorators import jwt_required
 from auth_app.models import CustomUser
