@@ -10,14 +10,8 @@ class SearchUserSerializerTest(TestCase):
         user = User(user_id=1, username="testuser", avatar_path="/uploads/test.png")
         serializer = SearchUserSerializer(user)
         expected_data = {
-<<<<<<< HEAD
-            "userId": 1,
-            "username": "testuser",
-            "avatarPath": "/uploads/test.png"
-=======
             "user_id": 1,
             "username": "testuser",
             "avatar_path": "/uploads/test.png",
->>>>>>> 867c35f ([fix] user serializer and model)
         }
         self.assertEqual(serializer.data, expected_data)
