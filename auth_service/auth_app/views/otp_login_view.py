@@ -70,12 +70,32 @@ class OTPLoginVerificationView(APIView):
 
         user = serializer.validated_data["user"]
 
+        tokens = {
+                "access": "tmp",
+                "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+        }
+
         response = Response(
-            {
-                "access": "generated_access_token",
-                "refresh": "generated_refresh_token",
-            },
+            {"message": "OTP verification successful."},
             status=status.HTTP_200_OK,
+        )
+
+        # JWT を HttpOnly Cookie に保存
+        response.set_cookie(
+            key="access_token",
+            value=tokens["access"],
+            httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
+            secure=True,  # HTTPS のみで送信 (本番環境では必須)
+            samesite="Lax",  # CSRF 対策 (Lax か Strict)
+            path="/",
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value=tokens["refresh"],
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            path="/",
         )
 
         response.delete_cookie("email", path="/")
