@@ -1,7 +1,8 @@
-from rest_framework import serializers
 from auth_app.models import CustomUser
 from auth_app.services.otp_service import OTPService
+from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+
 
 class OTPLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -15,8 +16,8 @@ class OTPLoginSerializer(serializers.Serializer):
             user = CustomUser.objects.get(email=email)
             if not user.check_password(password):
                 raise AuthenticationFailed("Invalid password.")
-        except CustomUser.DoesNotExist:
-            raise serializers.ValidationError("Invalid email or password.")
+        except CustomUser.DoesNotExist as err:
+            raise serializers.ValidationError("Invalid email or password.") from err
 
         data["user"] = user
         return data
@@ -32,8 +33,8 @@ class OTPVerificationSerializer(serializers.Serializer):
 
         try:
             user = CustomUser.objects.get(email=email)
-        except CustomUser.DoesNotExist:
-            raise serializers.ValidationError("Invalid email.")
+        except CustomUser.DoesNotExist as err:
+            raise serializers.ValidationError("Invalid email.") from err
 
         if not OTPService.verify_otp(user.secret_key, otp_token):
             raise serializers.ValidationError("Invalid OTP.")

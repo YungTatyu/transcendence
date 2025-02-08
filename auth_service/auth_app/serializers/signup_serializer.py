@@ -1,13 +1,12 @@
 import json
 
 import pyotp
-from django.conf import settings
-from django.contrib.auth.hashers import make_password
-from rest_framework import serializers
-
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
 from auth_app.utils.redis_handler import RedisHandler
+from django.conf import settings
+from django.contrib.auth.hashers import make_password
+from rest_framework import serializers
 
 
 class SignupSerializer(serializers.ModelSerializer):

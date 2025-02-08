@@ -1,6 +1,6 @@
 import json
 
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -8,6 +8,7 @@ from django.views import View
 from auth_app.jwt_decorators import jwt_required
 from auth_app.models import CustomUser
 from auth_app.serializers.update_password_serializer import UpdatePasswordSerializer
+
 
 class UpdatePasswordView(View):
     """
@@ -30,7 +31,7 @@ class UpdatePasswordView(View):
                 return JsonResponse({"error": "User not found."}, status=404)
 
             serializer = UpdatePasswordSerializer(data=data, context={"user": user})
-            
+
             try:
                 serializer.is_valid(raise_exception=True)
             except Exception as e:

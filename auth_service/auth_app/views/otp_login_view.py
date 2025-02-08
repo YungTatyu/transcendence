@@ -1,11 +1,14 @@
 import logging
 
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from auth_app.serializers.login_serializer import OTPLoginSerializer, OTPVerificationSerializer
-from rest_framework.exceptions import AuthenticationFailed
+from auth_app.serializers.login_serializer import (
+    OTPLoginSerializer,
+    OTPVerificationSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +29,9 @@ class OTPLoginView(APIView):
             serializer.is_valid(raise_exception=True)
         except AuthenticationFailed as e:
             logger.error(f"Authentication failed: {str(e)}")
-            return Response({"error": "Authentication failed."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Authentication failed."}, status=status.HTTP_401_UNAUTHORIZED
+            )
         except Exception as e:
             logger.error(f"Error occurred: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

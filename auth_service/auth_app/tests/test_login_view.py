@@ -96,7 +96,6 @@ class OTPAuthTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("Invalid OTP.", response.data.get("non_field_errors", []))
 
-
     def test_otp_verification_missing_fields(self):
         """
         ✅ OTP またはメールアドレスがない場合にエラー
