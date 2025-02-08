@@ -38,9 +38,9 @@ class SignupViewTestCase(APITestCase):
         self.assertIn("qr_code", response.data)
 
         # Cookieの設定確認
-        self.assertIn("username", response.cookies)
+        self.assertIn("email", response.cookies)
         self.assertEqual(
-            response.cookies["username"].value, self.valid_data["username"]
+            response.cookies["email"].value, self.valid_data["email"]
         )
 
         # Redisに仮登録情報が保存されたか確認
