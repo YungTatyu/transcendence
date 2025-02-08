@@ -42,7 +42,6 @@ class UpdatePasswordViewTest(TestCase):
             self.url,
             {"current_password": "securepassword", "new_password": "newsecurepassword"},
             format="json",
-            **self.headers,
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Password updated successfully.")
@@ -59,7 +58,6 @@ class UpdatePasswordViewTest(TestCase):
             self.url,
             {"current_password": "wrongpassword", "new_password": "newsecurepassword"},
             format="json",
-            **self.headers,
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("Current password is incorrect.", response.json()["error"])
@@ -72,7 +70,6 @@ class UpdatePasswordViewTest(TestCase):
             self.url,
             {"new_password": "newsecurepassword"},
             format="json",
-            **self.headers,
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("This field is required.", response.json()["error"])

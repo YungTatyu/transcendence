@@ -40,7 +40,7 @@ class UpdateEmailViewTest(TestCase):
         正常にメールアドレスを更新できることを確認
         """
         response = self.client.put(
-            self.url, {"email": "new@example.com"}, format="json", **self.headers
+            self.url, {"email": "new@example.com"}, format="json"
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Email updated successfully.")
@@ -53,7 +53,7 @@ class UpdateEmailViewTest(TestCase):
         """
         email がリクエストボディに存在しない場合 400 エラー
         """
-        response = self.client.put(self.url, {}, format="json", **self.headers)
+        response = self.client.put(self.url, {}, format="json")
         self.assertEqual(response.status_code, 400)
         self.assertIn("This field is required.", response.json()["error"])
 
@@ -62,7 +62,7 @@ class UpdateEmailViewTest(TestCase):
         不正なフォーマットのメールアドレスを指定した場合 400 エラー
         """
         response = self.client.put(
-            self.url, {"email": "invalid-email"}, format="json", **self.headers
+            self.url, {"email": "invalid-email"}, format="json"
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("Enter a valid email address.", response.json()["error"])
@@ -80,7 +80,7 @@ class UpdateEmailViewTest(TestCase):
         )
 
         response = self.client.put(
-            self.url, {"email": "existing@example.com"}, format="json", **self.headers
+            self.url, {"email": "existing@example.com"}, format="json"
         )
         self.assertEqual(response.status_code, 409)
         self.assertEqual(
