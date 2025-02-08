@@ -101,7 +101,7 @@ class OTPVerificationView(APIView):
         )
 
         # usernameクッキーを削除
-        response.delete_cookie("username", path="/")
+        response.delete_cookie("email", path="/")
         return response
 
     def __get_pending_user_data(self, username: str) -> dict:
