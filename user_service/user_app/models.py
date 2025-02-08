@@ -9,3 +9,6 @@ class User(models.Model):
     username = models.CharField(max_length=10)
     avatar_path = models.CharField(max_length=100, default=DEFAULT_AVATAR_PATH)
     created_at = models.DateField(default=now)
+
+    def __str__(self):
+        return self.username

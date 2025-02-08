@@ -6,6 +6,6 @@ class CreateUserSerializer(serializers.Serializer):
 
 
 class SearchUserSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField()
+    userId = serializers.IntegerField(source="user_id")
     username = serializers.CharField(max_length=10)
-    avatar_path = serializers.CharField(max_length=100)
+    avatarPath = serializers.CharField(max_length=100, source="avatar_path")
