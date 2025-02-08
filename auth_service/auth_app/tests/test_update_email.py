@@ -61,9 +61,7 @@ class UpdateEmailViewTest(TestCase):
         """
         不正なフォーマットのメールアドレスを指定した場合 400 エラー
         """
-        response = self.client.put(
-            self.url, {"email": "invalid-email"}, format="json"
-        )
+        response = self.client.put(self.url, {"email": "invalid-email"}, format="json")
         self.assertEqual(response.status_code, 400)
         self.assertIn("Enter a valid email address.", response.json()["error"])
 

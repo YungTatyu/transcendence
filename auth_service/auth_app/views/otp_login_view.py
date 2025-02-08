@@ -71,8 +71,8 @@ class OTPLoginVerificationView(APIView):
         user = serializer.validated_data["user"]
 
         tokens = {
-                "access": "tmp",
-                "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+            "access": "tmp",
+            "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
         }
 
         response = Response(
