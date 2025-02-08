@@ -27,6 +27,14 @@ class TestMatchHistory:
 
         return response.json()
 
+    @staticmethod
+    def assert_result(result, mode, win_or_lose, user_score, opponents):
+        assert result["mode"] == mode
+        assert result["result"] == win_or_lose
+        assert result["date"] is not None
+        assert result["userScore"] == user_score
+        assert result["opponents"][0] == opponents
+
     @pytest.mark.django_db
     def test_user1(self, client, set_up_records):
         user1_id = 1
@@ -37,11 +45,7 @@ class TestMatchHistory:
         )
 
         for result in res_data["results"]:
-            assert result["mode"] == "Tournament"
-            assert result["result"] == "win"
-            assert result["date"] is not None
-            assert result["userScore"] == 11
-            assert result["opponents"][0] == {"id": 2, "score": 0}
+            self.assert_result(result, "Tournament", "win", 11, {"id": 2, "score": 0})
 
     @pytest.mark.django_db
     def test_user2(self, client, set_up_records):
@@ -53,11 +57,7 @@ class TestMatchHistory:
         )
 
         for result in res_data["results"]:
-            assert result["mode"] == "Tournament"
-            assert result["result"] == "lose"
-            assert result["date"] is not None
-            assert result["userScore"] == 0
-            assert result["opponents"][0] == {"id": 1, "score": 11}
+            self.assert_result(result, "Tournament", "lose", 0, {"id": 1, "score": 11})
 
     @pytest.mark.django_db
     def test_user3(self, client, set_up_records):
@@ -69,11 +69,7 @@ class TestMatchHistory:
         )
 
         for result in res_data["results"]:
-            assert result["mode"] == "QuickPlay"
-            assert result["result"] == "win"
-            assert result["date"] is not None
-            assert result["userScore"] == 11
-            assert result["opponents"][0] == {"id": 4, "score": 5}
+            self.assert_result(result, "QuickPlay", "win", 11, {"id": 4, "score": 5})
 
     @pytest.mark.django_db
     def test_user4(self, client, set_up_records):
@@ -85,11 +81,7 @@ class TestMatchHistory:
         )
 
         for result in res_data["results"]:
-            assert result["mode"] == "QuickPlay"
-            assert result["result"] == "lose"
-            assert result["date"] is not None
-            assert result["userScore"] == 5
-            assert result["opponents"][0] == {"id": 3, "score": 11}
+            self.assert_result(result, "QuickPlay", "lose", 5, {"id": 3, "score": 11})
 
     @pytest.mark.django_db
     def test_user_not_exist(self, client, set_up_records):
@@ -125,11 +117,7 @@ class TestMatchHistory:
         )
 
         for result in res_data["results"]:
-            assert result["mode"] == "Tournament"
-            assert result["result"] == "win"
-            assert result["date"] is not None
-            assert result["userScore"] == 11
-            assert result["opponents"][0] == {"id": 2, "score": 0}
+            self.assert_result(result, "Tournament", "win", 11, {"id": 2, "score": 0})
 
     @pytest.mark.django_db
     def test_limit(self, client, set_up_records):
@@ -146,11 +134,7 @@ class TestMatchHistory:
         )
 
         result = res_data["results"][0]
-        assert result["mode"] == "Tournament"
-        assert result["result"] == "win"
-        assert result["date"] is not None
-        assert result["userScore"] == 11
-        assert result["opponents"][0] == {"id": 2, "score": 0}
+        self.assert_result(result, "Tournament", "win", 11, {"id": 2, "score": 0})
 
     @pytest.mark.django_db
     def test_offset_over_total(self, client, set_up_records):
@@ -183,11 +167,7 @@ class TestMatchHistory:
         )
 
         for result in res_data["results"]:
-            assert result["mode"] == "Tournament"
-            assert result["result"] == "win"
-            assert result["date"] is not None
-            assert result["userScore"] == 11
-            assert result["opponents"][0] == {"id": 2, "score": 0}
+            self.assert_result(result, "Tournament", "win", 11, {"id": 2, "score": 0})
 
     @pytest.mark.django_db
     def test_offset_and_limit(self, client, set_up_records):
@@ -210,11 +190,7 @@ class TestMatchHistory:
         )
 
         result = res_data["results"][0]
-        assert result["mode"] == "Tournament"
-        assert result["result"] == "win"
-        assert result["date"] is not None
-        assert result["userScore"] == 11
-        assert result["opponents"][0] == {"id": 2, "score": 0}
+        self.assert_result(result, "Tournament", "win", 11, {"id": 2, "score": 0})
 
     @pytest.mark.django_db
     def test_offset_and_limit_over_total(self, client, set_up_records):
@@ -238,8 +214,4 @@ class TestMatchHistory:
         )
 
         result = res_data["results"][0]
-        assert result["mode"] == "Tournament"
-        assert result["result"] == "win"
-        assert result["date"] is not None
-        assert result["userScore"] == 11
-        assert result["opponents"][0] == {"id": 2, "score": 0}
+        self.assert_result(result, "Tournament", "win", 11, {"id": 2, "score": 0})
