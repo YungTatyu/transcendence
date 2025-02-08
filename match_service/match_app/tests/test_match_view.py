@@ -1,7 +1,7 @@
-from match_app.models import Match, MatchParticipant
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
+from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchSerializer
 
 from .set_up_utils import create_query_string
@@ -137,9 +137,9 @@ class TestMatchView:
         modeが指定したmodeと一致するレコードの数をテスト
         """
         match_dict = set_up_records
-        expect_total = len([
-            match for match in match_dict.values() if match.mode == mode
-        ])
+        expect_total = len(
+            [match for match in match_dict.values() if match.mode == mode]
+        )
         expect_limit = expect_total
         self.request_matches(
             client, expect_status, expect_total, expect_limit, mode=mode
@@ -193,11 +193,13 @@ class TestMatchView:
     )
     def test_winner_user_id(self, client, set_up_records, winner_user_id):
         match_dict = set_up_records
-        expect_total = len([
-            match
-            for match in match_dict.values()
-            if match.winner_user_id == winner_user_id
-        ])
+        expect_total = len(
+            [
+                match
+                for match in match_dict.values()
+                if match.winner_user_id == winner_user_id
+            ]
+        )
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
         self.request_matches(
             client,
@@ -220,9 +222,9 @@ class TestMatchView:
     )
     def test_round(self, client, set_up_records, round):
         match_dict = set_up_records
-        expect_total = len([
-            match for match in match_dict.values() if match.round == round
-        ])
+        expect_total = len(
+            [match for match in match_dict.values() if match.round == round]
+        )
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
         self.request_matches(
             client, HTTP_200_OK, expect_total, expect_limit, round=round

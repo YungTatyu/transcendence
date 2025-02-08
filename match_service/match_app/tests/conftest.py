@@ -1,5 +1,6 @@
-from match_app.models import Match
 import pytest
+
+from match_app.models import Match
 
 from .set_up_utils import (
     insert_match_participants_record,
