@@ -241,24 +241,25 @@ paths:
                 - otp
       responses:
         "200":
-          description: "OTPが正常に検証され、ユーザをDBに登録"
+          description: "OTPが正常に検証され、ユーザをDBに登録し、JWTをCookieに保存"
           headers:
             Set-Cookie:
-              description: "usernameクッキーを削除"
+              description: "JWTをCookieに保存し、emailクッキーを削除"
               schema:
                 type: string
-                example: "username=; HttpOnly; Secure; Path=/; Max-Age=0"
+                example: |
+                  access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; Path=/; SameSite=Lax;
+                  refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; Path=/; SameSite=Lax;
+                  email=; HttpOnly; Secure; Path=/; Max-Age=0;
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  access:
+                  message:
                     type: string
-                    description: "accessトークン"
-                  refresh:
-                    type: string
-                    description: "refreshトークン"
+                    description: "OTP検証成功メッセージ"
+                    example: "OTP verification successful."
         "400":
           description: "Invalid OTP or username."
           content:
@@ -302,24 +303,25 @@ paths:
                 - otp
       responses:
         "200":
-          description: "OTPが正常に検証され、ログインが完了"
+          description: "OTPが正常に検証され、ログインが完了し、JWTをCookieに保存"
           headers:
             Set-Cookie:
-              description: "emailクッキーを削除"
+              description: "JWTをCookieに保存し、emailクッキーを削除"
               schema:
                 type: string
-                example: "email=; HttpOnly; Secure; Path=/; Max-Age=0"
+                example: |
+                  access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; Path=/; SameSite=Lax;
+                  refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; Path=/; SameSite=Lax;
+                  email=; HttpOnly; Secure; Path=/; Max-Age=0;
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  access:
+                  message:
                     type: string
-                    description: "アクセストークン"
-                  refresh:
-                    type: string
-                    description: "リフレッシュトークン"
+                    description: "ログイン成功メッセージ"
+                    example: "OTP verification successful."
         "400":
           description: "Invalid OTP or email."
           content:
