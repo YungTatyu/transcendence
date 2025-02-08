@@ -1,8 +1,8 @@
 from django.http import JsonResponse
-from django.views import View
+from rest_framework.views import APIView
 
 
-class HealthCheckView(View):
+class HealthCheckView(APIView):
     def get(self, request, *args, **kwargs):
         """
         ヘルスチェック用エンドポイント

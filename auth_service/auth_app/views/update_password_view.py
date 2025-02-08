@@ -3,14 +3,14 @@ import json
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views import View
+from rest_framework.views import APIView
 
 from auth_app.jwt_decorators import jwt_required
 from auth_app.models import CustomUser
 from auth_app.serializers.update_password_serializer import UpdatePasswordSerializer
 
 
-class UpdatePasswordView(View):
+class UpdatePasswordView(APIView):
     """
     認証済みユーザのパスワードを更新するエンドポイント
     """
