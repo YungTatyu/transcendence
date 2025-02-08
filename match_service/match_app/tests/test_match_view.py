@@ -1,3 +1,4 @@
+from match_app.models import Match, MatchParticipant
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
@@ -49,10 +50,30 @@ class TestMatchView:
 
         return response.json()
 
+    def create_expect_result(self, match: Match) -> dict:
+        participants = [
+            {"id": participant.user_id, "score": participant.score}
+            for participant in MatchParticipant.objects.filter(match_id=match)
+        ]
+        parent_match_id = (
+            None if match.parent_match_id is None else match.parent_match_id.match_id
+        )
+
+        expect_result = {
+            "matchId": match.match_id,
+            "winnerUserId": match.winner_user_id,
+            "mode": match.mode,
+            "tournamentId": match.tournament_id,
+            "parentMatchId": parent_match_id,
+            "round": match.round,
+            "participants": participants,
+        }
+        return expect_result
+
     @pytest.mark.django_db
     def test_simple_select(self, client, set_up_records):
         """
-        INFO set_up_recordsにはMatchレコードの数が格納される
+        INFO set_up_recordsにはMatchレコードが格納される
         検索条件無し
         totalは作成したMatchレコードの数とおなじになる
         """
@@ -66,28 +87,15 @@ class TestMatchView:
         """
         .set_up_records.__insert_finished_quick_playで作成されるレコードを対象にテスト
         """
-        match_id_dict = set_up_records
-        match1_id = match_id_dict["match1_id"]
+        match_dict = set_up_records
+        match1 = match_dict["match1"]
         expect_total = 1
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
         res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, match_id=match1_id
+            client, HTTP_200_OK, expect_total, expect_limit, match_id=match1.match_id
         )
         results = res_data["results"]
-        expect_results = [
-            {
-                "matchId": match_id_dict["match1_id"],
-                "winnerUserId": 3,
-                "mode": "QuickPlay",
-                "tournamentId": None,
-                "parentMatchId": None,
-                "round": None,
-                "participants": [
-                    {"id": 3, "score": 11},
-                    {"id": 4, "score": 5},
-                ],
-            },
-        ]
+        expect_results = [self.create_expect_result(match1)]
         assert results == expect_results
 
     @pytest.mark.django_db
@@ -95,28 +103,15 @@ class TestMatchView:
         """
         .set_up_records.__insert_not_finished_quick_playで作成されるレコードを対象にテスト
         """
-        match_id_dict = set_up_records
-        match2_id = match_id_dict["match2_id"]
+        match_dict = set_up_records
+        match2 = match_dict["match2"]
         expect_total = 1
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
         res_data = self.request_matches(
-            client, HTTP_200_OK, expect_total, expect_limit, match_id=match2_id
+            client, HTTP_200_OK, expect_total, expect_limit, match_id=match2.match_id
         )
         results = res_data["results"]
-        expect_results = [
-            {
-                "matchId": match2_id,
-                "winnerUserId": None,
-                "mode": "QuickPlay",
-                "tournamentId": None,
-                "parentMatchId": None,
-                "round": None,
-                "participants": [
-                    {"id": 1, "score": None},
-                    {"id": 2, "score": None},
-                ],
-            },
-        ]
+        expect_results = [self.create_expect_result(match2)]
         assert results == expect_results
 
     @pytest.mark.django_db
@@ -124,7 +119,6 @@ class TestMatchView:
         """
         .set_up_records.__insert_not_finished_tournamentで作成されるレコードを対象にテスト
         """
-        match_id_dict = set_up_records
         tournament_id = 1
         expect_total = 3
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
@@ -132,40 +126,9 @@ class TestMatchView:
             client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
         )
         results = res_data["results"]
+        tournament1_matches = Match.objects.filter(tournament_id=tournament_id)
         expect_results = [
-            {
-                "matchId": match_id_dict["match3_id"],
-                "winnerUserId": None,
-                "mode": "Tournament",
-                "tournamentId": tournament_id,
-                "parentMatchId": None,
-                "round": 3,
-                "participants": [],
-            },
-            {
-                "matchId": match_id_dict["match4_id"],
-                "winnerUserId": None,
-                "mode": "Tournament",
-                "tournamentId": tournament_id,
-                "parentMatchId": match_id_dict["match3_id"],
-                "round": 2,
-                "participants": [
-                    {"id": 3, "score": None},
-                    {"id": 4, "score": None},
-                ],
-            },
-            {
-                "matchId": match_id_dict["match5_id"],
-                "winnerUserId": None,
-                "mode": "Tournament",
-                "tournamentId": tournament_id,
-                "parentMatchId": match_id_dict["match3_id"],
-                "round": 1,
-                "participants": [
-                    {"id": 1, "score": None},
-                    {"id": 2, "score": None},
-                ],
-            },
+            self.create_expect_result(match) for match in tournament1_matches
         ]
         assert results == expect_results
 
@@ -174,7 +137,6 @@ class TestMatchView:
         """
         .set_up_records.__insert_finished_tournamentで作成されるレコードを対象にテスト
         """
-        match_id_dict = set_up_records
         tournament_id = 2
         expect_total = 1
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
@@ -182,19 +144,9 @@ class TestMatchView:
             client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
         )
         results = res_data["results"]
+        tournament2_matches = Match.objects.filter(tournament_id=tournament_id)
         expect_results = [
-            {
-                "matchId": match_id_dict["match6_id"],
-                "winnerUserId": 1,
-                "mode": "Tournament",
-                "tournamentId": tournament_id,
-                "parentMatchId": None,
-                "round": 1,
-                "participants": [
-                    {"id": 1, "score": 11},
-                    {"id": 2, "score": 0},
-                ],
-            },
+            self.create_expect_result(match) for match in tournament2_matches
         ]
         assert results == expect_results
 
@@ -203,7 +155,6 @@ class TestMatchView:
         """
         .set_up_records.__insert_only_one_round_finished_tournamentで作成されるレコードを対象にテスト
         """
-        match_id_dict = set_up_records
         tournament_id = 3
         expect_total = 2
         expect_limit = min(expect_total, MatchSerializer.DEFAULT_LIMIT)
@@ -211,31 +162,9 @@ class TestMatchView:
             client, HTTP_200_OK, expect_total, expect_limit, tournament_id=tournament_id
         )
         results = res_data["results"]
+        tournament3_matches = Match.objects.filter(tournament_id=tournament_id)
         expect_results = [
-            {
-                "matchId": match_id_dict["match7_id"],
-                "winnerUserId": None,
-                "mode": "Tournament",
-                "tournamentId": tournament_id,
-                "parentMatchId": None,
-                "round": 2,
-                "participants": [
-                    {"id": 1, "score": None},
-                    {"id": 3, "score": None},
-                ],
-            },
-            {
-                "matchId": match_id_dict["match8_id"],
-                "winnerUserId": 1,
-                "mode": "Tournament",
-                "tournamentId": tournament_id,
-                "parentMatchId": match_id_dict["match7_id"],
-                "round": 1,
-                "participants": [
-                    {"id": 1, "score": 11},
-                    {"id": 2, "score": 0},
-                ],
-            },
+            self.create_expect_result(match) for match in tournament3_matches
         ]
         assert results == expect_results
 
@@ -266,15 +195,21 @@ class TestMatchView:
     @pytest.mark.django_db
     def test_quick_play_mode(self, client, set_up_records):
         mode = "QuickPlay"
-        expect_total = 2
-        expect_limit = 2
+        match_dict = set_up_records
+        expect_total = len([
+            match for match in match_dict.values() if match.mode == mode
+        ])
+        expect_limit = expect_total
         self.request_matches(client, HTTP_200_OK, expect_total, expect_limit, mode=mode)
 
     @pytest.mark.django_db
     def test_tournament_mode(self, client, set_up_records):
         mode = "Tournament"
-        expect_total = 6
-        expect_limit = 6
+        match_dict = set_up_records
+        expect_total = len([
+            match for match in match_dict.values() if match.mode == mode
+        ])
+        expect_limit = expect_total
         self.request_matches(client, HTTP_200_OK, expect_total, expect_limit, mode=mode)
 
     @pytest.mark.django_db
@@ -286,8 +221,11 @@ class TestMatchView:
     @pytest.mark.django_db
     def test_round(self, client, set_up_records):
         round = 1
-        expect_total = 3
-        expect_limit = 3
+        match_dict = set_up_records
+        expect_total = len([
+            match for match in match_dict.values() if match.round == round
+        ])
+        expect_limit = expect_total
         self.request_matches(
             client, HTTP_200_OK, expect_total, expect_limit, round=round
         )
