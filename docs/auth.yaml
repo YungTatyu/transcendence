@@ -136,7 +136,7 @@ paths:
               description: "OTP認証用に、ユーザー名をCookieに設定"
               schema:
                 type: string
-                example: "username=johndoe; HttpOnly; Secure; Path=/; Max-Age=300"
+                example: "email=; HttpOnly; Secure; Path=/; Max-Age=300"
           content:
             # qrコードは軽量なのでjsonにした
             application/json:
@@ -197,7 +197,7 @@ paths:
               description: "OTP認証用のユーザー名をCookieに設定"
               schema:
                 type: string
-                example: "username=johndoe; HttpOnly; Secure; Path=/; Max-Age=300"
+                example: "email=; HttpOnly; Secure; Path=/; Max-Age=300"
           content:
             application/json:
               schema:
