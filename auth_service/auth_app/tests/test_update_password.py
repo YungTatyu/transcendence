@@ -62,7 +62,7 @@ class UpdatePasswordViewTest(TestCase):
             **self.headers,
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["error"], "Current password is incorrect.")
+        self.assertIn("Current password is incorrect.", response.json())
 
     def test_update_password_missing_fields(self):
         """
