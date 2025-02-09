@@ -96,4 +96,3 @@ def __insert_only_one_round_finished_tournament() -> dict[str, Match]:
     insert_match_participants_record(match_id=match8, user_id=1, score=11)
     insert_match_participants_record(match_id=match8, user_id=2, score=0)
     return {"match7": match7, "match8": match8}
-

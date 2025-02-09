@@ -1,6 +1,7 @@
-from match_app.models import Match, MatchParticipant
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+
+from match_app.models import Match, MatchParticipant
 
 
 class TestMatchStatistics:
