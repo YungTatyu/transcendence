@@ -54,8 +54,6 @@ paths:
                       properties:
                         userId:
                           type: integer
-                        username:
-                          type: string
                         status:
                           $ref: '#/components/schemas/FriendStatus'
                         request_sent_at:
