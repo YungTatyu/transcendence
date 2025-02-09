@@ -71,6 +71,26 @@ services:
     networks:
       - app_network
 
+  friends:
+    build: ./friends_service
+    container_name: friends
+    env_file: ./docker_env/friends.env
+    ports:
+      - "7500:7500"
+    networks:
+      - app_network
+    depends_on:
+      - friends_db
+
+  friends_db:
+    image: postgres:15
+    container_name: friends_db
+    env_file: ./docker_env/friends_db.env
+    networks:
+      - app_network
+    volumes:
+      - friends_db_data:/var/lib/postgresql/data
+
 networks:
   app_network:
     driver: bridge
@@ -78,3 +98,4 @@ networks:
 volumes:
   auth_db_data:
   tournament_db_data:
+  friends_db_data:

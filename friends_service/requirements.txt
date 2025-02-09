@@ -3,3 +3,4 @@ djangorestframework
 pytest
 pytest-django
 pytest-asyncio
+psycopg2==2.9.10
