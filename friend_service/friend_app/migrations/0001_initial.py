@@ -5,25 +5,45 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Friends',
+            name="Friends",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('from_user_id', models.IntegerField()),
-                ('to_user_id', models.IntegerField()),
-                ('status', models.CharField(choices=[('approved', 'approved'), ('pending', 'pending')], max_length=20)),
-                ('request_sent_at', models.DateField(default=django.utils.timezone.now)),
-                ('approved_at', models.DateField(blank=True, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("from_user_id", models.IntegerField()),
+                ("to_user_id", models.IntegerField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("approved", "approved"), ("pending", "pending")],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "request_sent_at",
+                    models.DateField(default=django.utils.timezone.now),
+                ),
+                ("approved_at", models.DateField(blank=True, null=True)),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('from_user_id', 'to_user_id'), name='unique_friend_request')],
+                "constraints": [
+                    models.UniqueConstraint(
+                        fields=("from_user_id", "to_user_id"),
+                        name="unique_friend_request",
+                    )
+                ],
             },
         ),
     ]
