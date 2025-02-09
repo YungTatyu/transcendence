@@ -91,6 +91,17 @@ services:
     volumes:
       - user_db_data:/var/lib/postgresql/data
 
+  vault:
+    build: ./vault_service
+    container_name: vault
+    ports:
+      - 8200:8200
+    networks:
+      - app_network
+    env_file: ./docker_env/vault.env
+    cap_add:
+      - IPC_LOCK
+
 networks:
   app_network:
     driver: bridge
