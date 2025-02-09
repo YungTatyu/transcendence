@@ -50,6 +50,7 @@ class TestMatchFinish:
         )
         assert response.status_code == status
 
+        #  正常系のレスポンスの場合、レスポンスボディもチェックする
         if response.status_code == HTTP_200_OK:
             match = Match.objects.filter(match_id=match_id).first()
             # トーナメント終了時、finish_dateは必ずセットされる
@@ -86,31 +87,86 @@ class TestMatchFinish:
         [insert_match_participants_record(match, user_id) for user_id in user_ids]
         return match
 
+    @pytest.mark.parametrize(
+        "user_ids, request_body",
+        [
+            ([1, 2], [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]),
+        ],
+    )
     @pytest.mark.django_db
-    def test_simple_quick_play_match_finish(self, client):
+    def test_simple_quick_play_match_finish(self, client, user_ids, request_body):
         """QuickPlayモードの試合が終了"""
-        results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
-        user_ids = [result["userId"] for result in results]
         match_id = self.__insert_quick_play_match(user_ids)
-        res_data = self.request_match_finish(client, HTTP_200_OK, match_id, results)
+        res_data = self.request_match_finish(
+            client, HTTP_200_OK, match_id, request_body
+        )
         assert res_data.get("finishDate", None) is not None
 
+    @pytest.mark.parametrize(
+        "user_ids, request_body",
+        [
+            ([1, 2], [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]),
+        ],
+    )
     @pytest.mark.django_db
-    def test_simple_tournament_match_finish(self, requests_post_mocker, client):
+    def test_simple_tournament_match_finish(
+        self, requests_post_mocker, client, user_ids, request_body
+    ):
         """Tournamentモードの試合が終了"""
-
-        results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
-        user_ids = [result["userId"] for result in results]
         match = self.__insert_tournament_match(user_ids)
         match_id = match.match_id
-        res_data = self.request_match_finish(client, HTTP_200_OK, match_id, results)
+        res_data = self.request_match_finish(
+            client, HTTP_200_OK, match_id, request_body
+        )
         assert res_data.get("finishDate", None) is not None
 
         # トーナメント試合が終了した際に勝者が親試合に登録されるか
-        winner_user_id = max(results, key=lambda x: x["score"])["userId"]
+        winner_user_id = max(request_body, key=lambda x: x["score"])["userId"]
         assert MatchParticipant.objects.filter(
             match_id=match.parent_match_id, user_id=winner_user_id
         ).exists()
+
+    @pytest.mark.parametrize(
+        "user_ids, request_body",
+        [
+            (  # 試合参加者が少ない
+                [1, 2, 3],
+                [{"userId": 2, "score": 1}, {"userId": 3, "score": 3}],
+            ),
+            (  # 試合参加者が多い
+                [1, 2],
+                [
+                    {"userId": 1, "score": 11},
+                    {"userId": 2, "score": 1},
+                    {"userId": 3, "score": 3},
+                ],
+            ),
+            (  # 試合参加者ではないユーザーが存在
+                [1, 2],
+                [{"userId": 100, "score": 11}, {"userId": 2, "score": 1}],
+            ),
+            (  # 空のリスト
+                [1, 2],
+                [],
+            ),
+            (  # 空のディクト
+                [1, 2],
+                [{}, {"userId": 2, "score": 1}],
+            ),
+            (  # 勝者が複数いる(最大のscoreが複数存在)
+                [1, 2],
+                [{"userId": 1, "score": 11}, {"userId": 2, "score": 11}],
+            ),
+            (  # １つの試合に同じユーザー参加してはいけない
+                [1],
+                [{"userId": 1, "score": 0}, {"userId": 1, "score": 11}],
+            ),
+        ],
+    )
+    @pytest.mark.django_db
+    def test_faild_case(self, client, user_ids, request_body):
+        match_id = self.__insert_quick_play_match(user_ids)
+        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, request_body)
 
     @pytest.mark.django_db
     def test_not_exist_match(self, client):
@@ -120,92 +176,6 @@ class TestMatchFinish:
         self.request_match_finish(
             client, HTTP_400_BAD_REQUEST, not_exist_match_id, results
         )
-
-    @pytest.mark.django_db
-    def test_few_results_in_request_body(self, client):
-        """results内の試合参加者が少ない"""
-        results = [
-            {"userId": 1, "score": 11},
-            {"userId": 2, "score": 1},
-            {"userId": 3, "score": 3},
-        ]
-        user_ids = [result["userId"] for result in results]
-        match_id = self.__insert_quick_play_match(user_ids)
-        # レコード作成後に、RequestBodyで渡すresultsのレコードを削除
-        del results[0]
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-    @pytest.mark.django_db
-    def test_many_results_in_request_body(self, client):
-        """results内の試合参加者が多い"""
-        results = [
-            {"userId": 1, "score": 11},
-            {"userId": 2, "score": 1},
-            {"userId": 3, "score": 3},
-        ]
-        user_ids = [result["userId"] for result in results]
-        match_id = self.__insert_quick_play_match(user_ids)
-        # レコード作成後に、RequestBodyで渡すresultsにレコードを追加
-        results.append({"userId": 4, "score": 8})
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-    @pytest.mark.django_db
-    def test_unauthorized_user_id(self, client):
-        """試合参加者ではないユーザーがresults内に存在する"""
-        results = [
-            {"userId": 1, "score": 11},
-            {"userId": 2, "score": 1},
-        ]
-        user_ids = [result["userId"] for result in results]
-        match_id = self.__insert_quick_play_match(user_ids)
-        # レコード作成後に、RequestBodyで渡すresultsのuserIdを変更
-        results[0]["userId"] = 100
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-    @pytest.mark.django_db
-    def test_empty_results(self, client):
-        """resultsが空のリスト"""
-        results = [
-            {"userId": 1, "score": 11},
-            {"userId": 2, "score": 1},
-        ]
-        user_ids = [result["userId"] for result in results]
-        match_id = self.__insert_quick_play_match(user_ids)
-        results = []
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-    @pytest.mark.django_db
-    def test_empty_result(self, client):
-        """resultが空のディクト"""
-        results = [
-            {"userId": 1, "score": 11},
-            {"userId": 2, "score": 1},
-        ]
-        user_ids = [result["userId"] for result in results]
-        match_id = self.__insert_quick_play_match(user_ids)
-        results[0] = {}
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-    @pytest.mark.django_db
-    def test_multiple_winner(self, client):
-        """勝者が複数いる(最大のscoreが複数存在)"""
-        results = [
-            {"userId": 1, "score": 11},
-            {"userId": 2, "score": 11},
-        ]
-        user_ids = [result["userId"] for result in results]
-        match_id = self.__insert_quick_play_match(user_ids)
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
-
-    @pytest.mark.django_db
-    def test_multiple_user_id(self, client):
-        """１つの試合に同じユーザー参加してはいけない"""
-        results = [
-            {"userId": 1, "score": 0},
-            {"userId": 1, "score": 11},
-        ]
-        match_id = self.__insert_quick_play_match([1])
-        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
 
     @pytest.mark.django_db
     def test_already_finished(self, client):

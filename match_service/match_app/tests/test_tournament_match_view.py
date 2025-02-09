@@ -19,7 +19,7 @@ class TestTournamentMatch:
         )
         assert response.status_code == status
 
-        # StatusCode == 200 -> 正常にレコードが作成されたかを確認
+        #  正常系のレスポンスの場合、レスポンスボディもチェックする
         if response.status_code == HTTP_200_OK:
             match = Match.objects.filter(tournament_id=tournament_id).first()
             assert match.match_id >= 0  # match_idは0以上の値が自動で採番される
@@ -42,31 +42,24 @@ class TestTournamentMatch:
 
         return response.json()
 
+    @pytest.mark.parametrize(
+        "expect_code, user_ids, parent_match_id",
+        [
+            (HTTP_200_OK, [], None),  # 参加者が決まっていない試合は存在する
+            (HTTP_200_OK, [1], None),  # 対戦相手が決まっていない試合は存在する
+            (HTTP_200_OK, [1, 2], None),  # ２人の参加者
+            (HTTP_200_OK, [1, 2, 3], None),  # 3人以上の参加者がいる試合は作成可能
+            (HTTP_400_BAD_REQUEST, [1, 1], None),  # user_idが重複
+            (HTTP_400_BAD_REQUEST, [1, 2], 12345),  # 指定した親試合が存在しない
+        ],
+    )
     @pytest.mark.django_db
-    def test_participants_0(self, client):
-        """トーナメント試合作成時に参加者が決まっていない試合は存在する"""
-        participants = []
-        res_data = self.request_tournament_match(
-            client, HTTP_200_OK, participants, 1, None, 1
+    def test_tournament_match(self, client, expect_code, user_ids, parent_match_id):
+        tournament_id = 1
+        round = 1
+        self.request_tournament_match(
+            client, expect_code, user_ids, tournament_id, parent_match_id, round
         )
-        assert res_data.get("matchId", None) is not None
-
-    @pytest.mark.django_db
-    def test_participants_1(self, client):
-        """トーナメント試合作成時、対戦相手が決まっていない試合は存在する"""
-        participants = [1]
-        self.request_tournament_match(client, HTTP_200_OK, participants, 1, None, 1)
-
-    @pytest.mark.django_db
-    def test_participants_2(self, client):
-        participants = [1, 2]
-        self.request_tournament_match(client, HTTP_200_OK, participants, 1, None, 1)
-
-    @pytest.mark.django_db
-    def test_participants_3(self, client):
-        """3人以上の参加者がいる試合は作成可能"""
-        participants = [1, 2, 3]
-        self.request_tournament_match(client, HTTP_200_OK, participants, 1, None, 1)
 
     @pytest.mark.django_db
     def test_have_parent_match(self, client):
@@ -78,22 +71,6 @@ class TestTournamentMatch:
         )
         self.request_tournament_match(
             client, HTTP_200_OK, [1, 2], 1, parent_match_id, 1
-        )
-
-    @pytest.mark.django_db
-    def test_duplicate_user_id(self, client):
-        """user_idが重複"""
-        participants = [1, 1]
-        self.request_tournament_match(
-            client, HTTP_400_BAD_REQUEST, participants, 1, None, 1
-        )
-
-    @pytest.mark.django_db
-    def test_parent_not_exist(self, client):
-        """parent_idに指定した試合が存在しない"""
-        parent_id = 12345
-        self.request_tournament_match(
-            client, HTTP_400_BAD_REQUEST, [1, 2], 1, parent_id, 1
         )
 
     @pytest.mark.django_db

@@ -1,71 +1,71 @@
+from match_app.models import Match, MatchParticipant
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 
 class TestMatchStatistics:
-    def request_match_statistics(self, client, status, user_id) -> dict:
+    def request_match_statistics(self, client, status, user_id):
         response = client.get(f"/matches/statistics/{user_id}")
         assert response.status_code == status
         return response.json()
 
+    @pytest.mark.parametrize(
+        "expect_code, user_id",
+        [
+            (HTTP_200_OK, 1),
+            (HTTP_200_OK, 2),
+            (HTTP_200_OK, 3),
+            (HTTP_200_OK, 4),
+            (HTTP_200_OK, 12345),  # 存在しないユーザーでも正常にレスポンスが返る
+            (HTTP_400_BAD_REQUEST, "abcde"),  # user_idが数値でないなら400が返る
+        ],
+    )
     @pytest.mark.django_db
-    def test_user1(self, client, set_up_records):
-        user1_id = 1
-        res_data = self.request_match_statistics(client, HTTP_200_OK, user1_id)
-        expect_data = {
-            "matchWinCount": 2,
-            "matchLoseCount": 0,
-            "tournamentWinnerCount": 1,
-        }
-        assert res_data == expect_data
+    def test_match_statistics(self, client, set_up_records, expect_code, user_id):
+        res_data = self.request_match_statistics(client, expect_code, user_id)
 
-    @pytest.mark.django_db
-    def test_user2(self, client, set_up_records):
-        user2_id = 2
-        res_data = self.request_match_statistics(client, HTTP_200_OK, user2_id)
-        expect_data = {
-            "matchWinCount": 0,
-            "matchLoseCount": 2,
-            "tournamentWinnerCount": 0,
-        }
-        assert res_data == expect_data
+        if expect_code == HTTP_200_OK:
+            match_dict = set_up_records
+            match_win_cnt = self.__get_match_win_count(match_dict, user_id)
+            match_lose_cnt = self.__get_match_lose_count(match_dict, user_id)
+            tournament_win_cnt = self.__get_tournament_winner_count(match_dict, user_id)
 
-    @pytest.mark.django_db
-    def test_user3(self, client, set_up_records):
-        user3_id = 3
-        res_data = self.request_match_statistics(client, HTTP_200_OK, user3_id)
-        expect_data = {
-            "matchWinCount": 1,
-            "matchLoseCount": 0,
-            "tournamentWinnerCount": 0,
-        }
-        assert res_data == expect_data
+            expect_data = {
+                "matchWinCount": match_win_cnt,
+                "matchLoseCount": match_lose_cnt,
+                "tournamentWinnerCount": tournament_win_cnt,
+            }
+            assert res_data == expect_data
 
-    @pytest.mark.django_db
-    def test_user4(self, client, set_up_records):
-        user4_id = 4
-        res_data = self.request_match_statistics(client, HTTP_200_OK, user4_id)
-        expect_data = {
-            "matchWinCount": 0,
-            "matchLoseCount": 1,
-            "tournamentWinnerCount": 0,
-        }
-        assert res_data == expect_data
+    def __get_match_win_count(self, match_dict: dict[str, Match], user_id) -> int:
+        cnt = 0
+        for match in match_dict.values():
+            if match.winner_user_id == user_id:
+                cnt += 1
+        return cnt
 
-    @pytest.mark.django_db
-    def test_user_not_exist(self, client, set_up_records):
-        """存在しないユーザーでも正常にレスポンスが返る"""
-        not_exist_user_id = 12345
-        res_data = self.request_match_statistics(client, HTTP_200_OK, not_exist_user_id)
-        expect_data = {
-            "matchWinCount": 0,
-            "matchLoseCount": 0,
-            "tournamentWinnerCount": 0,
-        }
-        assert res_data == expect_data
+    def __get_match_lose_count(self, match_dict: dict[str, Match], user_id) -> int:
+        cnt = 0
+        for match in match_dict.values():
+            if (
+                MatchParticipant.objects.filter(
+                    match_id=match, user_id=user_id
+                ).exists()
+                and match.winner_user_id is not None
+                and match.winner_user_id != user_id
+            ):
+                cnt += 1
+        return cnt
 
-    @pytest.mark.django_db
-    def test_user_id_is_not_digit(self, client, set_up_records):
-        """URLのPathのuser_idが数値でないなら400が返る"""
-        not_digit_user_id = "abcde"
-        self.request_match_statistics(client, HTTP_400_BAD_REQUEST, not_digit_user_id)
+    def __get_tournament_winner_count(
+        self, match_dict: dict[str, Match], user_id
+    ) -> int:
+        cnt = 0
+        for match in match_dict.values():
+            if (
+                match.winner_user_id == user_id
+                and match.mode == "Tournament"
+                and match.parent_match_id is None
+            ):
+                cnt += 1
+        return cnt
