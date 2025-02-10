@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
 from auth_app.serializers.signup_serializer import SignupSerializer
+from auth_app.serializers.login_serializer import OTPVerificationSerializer
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
@@ -51,15 +52,14 @@ class OTPVerificationView(APIView):
     """
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get("username")
-        otp_token = request.data.get("otp")
+        serializer = OTPVerificationSerializer(data=request.data)
 
-        if not username or not otp_token:
-            logger.warn("invalid request body")
-            return Response(
-                {"error": "username and otp are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if not serializer.is_valid():
+            logger.warn(f"OTP validation failed: {serializer.errors}")
+            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_data = serializer.validated_data["user_data"]
+        username = user_data["username"]
 
         # Redisから仮登録データを取得
         user_data = self.__get_pending_user_data(username)
