@@ -8,7 +8,10 @@ from rest_framework.views import APIView
 
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
-from auth_app.serializers.signup_serializer import SignupSerializer, OTPVerificationSerializer
+from auth_app.serializers.signup_serializer import (
+    OTPVerificationSerializer,
+    SignupSerializer,
+)
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
@@ -51,10 +54,11 @@ class OTPVerificationView(APIView):
     """
 
     def post(self, request, *args, **kwargs):
-
         serializer = OTPVerificationSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         username = serializer.validated_data["username"]
         otp_token = serializer.validated_data["otp_token"]
