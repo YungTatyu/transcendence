@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 
 class OTPLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(max_length=255)
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -24,7 +24,7 @@ class OTPLoginSerializer(serializers.Serializer):
 
 
 class OTPVerificationSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(max_length=255)
     otp = serializers.CharField()
 
     def validate(self, data):

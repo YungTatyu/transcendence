@@ -11,7 +11,7 @@ class EmailConflictException(APIException):
 
 
 class UpdateEmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(max_length=255)
 
     def validate_email(self, value):
         """メールアドレスの重複チェック"""
