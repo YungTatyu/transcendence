@@ -1,7 +1,7 @@
 from functools import wraps
 
 import jwt
-from django.http import JsonResponse
+from rest_framework.response import Response
 
 
 def jwt_required(func):
@@ -9,7 +9,7 @@ def jwt_required(func):
     def wrapper(request, *args, **kwargs):
         token = request.COOKIES.get("access_token")
         if not token:
-            return JsonResponse({"error": "Access token missing"}, status=401)
+            return Response({"error": "Access token missing"}, status=401)
 
         try:
             # TODO 署名検証なしでデコード
@@ -19,8 +19,8 @@ def jwt_required(func):
             return func(request, *args, **kwargs)
 
         except jwt.ExpiredSignatureError:
-            return JsonResponse({"error": "Token expired"}, status=401)
+            return Response({"error": "Token expired"}, status=401)
         except jwt.InvalidTokenError:
-            return JsonResponse({"error": "Invalid token"}, status=401)
+            return Response({"error": "Invalid token"}, status=401)
 
     return wrapper

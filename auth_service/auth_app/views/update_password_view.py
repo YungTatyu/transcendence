@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse
+from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 
@@ -28,20 +28,20 @@ class UpdatePasswordView(APIView):
             try:
                 user = CustomUser.objects.get(user_id=request.user_id)
             except CustomUser.DoesNotExist:
-                return JsonResponse({"error": "User not found."}, status=404)
+                return Response({"error": "User not found."}, status=404)
 
             serializer = UpdatePasswordSerializer(data=data, context={"user": user})
 
             try:
                 serializer.is_valid(raise_exception=True)
             except Exception as e:
-                return JsonResponse({"error": str(e)}, status=400)
+                return Response({"error": str(e)}, status=400)
 
             user.password = make_password(serializer.validated_data["new_password"])
             user.save()
 
-            return JsonResponse(
+            return Response(
                 {"message": "Password updated successfully."}, status=200
             )
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return Response({"error": str(e)}, status=500)

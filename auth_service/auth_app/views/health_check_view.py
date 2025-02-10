@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
@@ -7,4 +7,4 @@ class HealthCheckView(APIView):
         """
         ヘルスチェック用エンドポイント
         """
-        return JsonResponse({"status": "healthy"}, status=200)
+        return Response({"status": "healthy"}, status=200)

@@ -1,7 +1,7 @@
 import json
 import logging
 
-from django.http import JsonResponse
+from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from rest_framework.exceptions import APIException
 from rest_framework.views import APIView
@@ -28,7 +28,7 @@ class UpdateEmailView(APIView):
             try:
                 user = CustomUser.objects.get(user_id=request.user_id)
             except CustomUser.DoesNotExist:
-                return JsonResponse({"error": "User not found."}, status=404)
+                return Response({"error": "User not found."}, status=404)
 
             try:
                 serializer = UpdateEmailSerializer(
@@ -36,12 +36,12 @@ class UpdateEmailView(APIView):
                 )
                 serializer.is_valid(raise_exception=True)
             except APIException as e:
-                return JsonResponse({"error": str(e)}, status=e.status_code)
+                return Response({"error": str(e)}, status=e.status_code)
 
             serializer.save()
-            return JsonResponse({"message": "Email updated successfully."}, status=200)
+            return Response({"message": "Email updated successfully."}, status=200)
 
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+            return Response({"error": "Invalid JSON format."}, status=400)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return Response({"error": str(e)}, status=500)
