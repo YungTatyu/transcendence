@@ -1,8 +1,8 @@
 import json
 
 from django.contrib.auth.hashers import make_password
-from rest_framework.response import Response
 from django.utils.decorators import method_decorator
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from auth_app.jwt_decorators import jwt_required

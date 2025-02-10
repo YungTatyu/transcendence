@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
-from auth_app.serializers.signup_serializer import SignupSerializer
 from auth_app.serializers.login_serializer import OTPVerificationSerializer
+from auth_app.serializers.signup_serializer import SignupSerializer
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 
@@ -120,7 +120,7 @@ class OTPVerificationView(APIView):
             path="/",
         )
 
-        # usernameクッキーを削除
+        # emailクッキーを削除
         response.delete_cookie("email", path="/")
         return response
 
