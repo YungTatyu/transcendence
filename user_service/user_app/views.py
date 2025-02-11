@@ -22,7 +22,7 @@ class UserView(APIView):
 
         # 既存のユーザーがいるか確認
         username = serializer.validated_data["username"]
-        if User.objects.filter(username="username").exists():
+        if User.objects.filter(username=username).exists():
             return Response({"error": "User arledy exists"}, status=HTTP_409_CONFLICT)
 
         # user新規作成
@@ -40,14 +40,14 @@ class UserView(APIView):
 
         validated_data = serializer.validated_data
         username = validated_data.get("username")
-        userid = validated_data.get("userid")
+        user_id = validated_data.get("user_id")
 
         # ユーザー検索
         user = None
         if username:
-            user = User.objects.filter(username=username).exists()
-        elif userid:
-            user = User.objects.filter(user_id=userid).exists()
+            user = User.objects.filter(username=username).first()
+        elif user_id:
+            user = User.objects.filter(user_id=user_id).first()
 
         if not user:
             return Response({"error": "User not found."}, status=HTTP_404_NOT_FOUND)

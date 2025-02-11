@@ -21,59 +21,59 @@ def create_user():
 class TestUserViewPost:
     def test_post_validation_error(self, api_client):
         """POST: バリデーションエラー(usernameなし)"""
-        response = api_client.post(reverse("user"), data={})
+        response = api_client.post(reverse("users"), data={})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data  # usernameのエラーを確認
 
     def test_post_user_already_exists(self, api_client, create_user):
         """POST: 既に存在するユーザーの登録"""
-        response = api_client.post(reverse("user"), data={"username": "testuser"})
+        response = api_client.post(reverse("users"), data={"username": "testuser"})
         assert response.status_code == status.HTTP_409_CONFLICT
         assert response.data["error"] == "User arledy exists"
 
     def test_post_create_user_success(self, api_client):
         """POST: ユーザーを正常に作成"""
-        response = api_client.post(reverse("user"), data={"username": "newuser"})
+        response = api_client.post(reverse("users"), data={"username": "newuser"})
         assert response.status_code == status.HTTP_201_CREATED
         assert "userId" in response.data
         assert response.data["username"] == "newuser"
 
-
+@pytest.mark.django_db
 class TestUserViewGet:
     def test_get_validation_error(self, api_client):
         """GET: クエリパラメータなし（バリデーションエラー）"""
-        response = api_client.get(reverse("user"))
+        response = api_client.get(reverse("users"))
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "non_field_errors" in response.data
 
     def test_get_username_and_userid_specified(self, api_client, create_user):
         """GET: username と userid の両方を指定した場合（バリデーションエラー）"""
         response = api_client.get(
-            reverse("user"), {"username": "testuser", "userid": create_user.user_id}
+            reverse("users"), {"username": "testuser", "user_id": create_user.user_id}
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "non_field_errors" in response.data
 
     def test_get_user_by_username_success(self, api_client, create_user):
         """GET: username でユーザーを検索（成功）"""
-        response = api_client.get(reverse("user"), {"username": "testuser"})
+        response = api_client.get(reverse("users"), {"username": "testuser"})
         assert response.status_code == status.HTTP_200_OK
         assert response.data["username"] == "testuser"
 
     def test_get_user_by_userid_success(self, api_client, create_user):
         """GET: userid でユーザーを検索（成功）"""
-        response = api_client.get(reverse("user"), {"userid": create_user.user_id})
+        response = api_client.get(reverse("users"), {"user_id": create_user.user_id})
         assert response.status_code == status.HTTP_200_OK
         assert response.data["username"] == "testuser"
 
     def test_get_user_not_found_by_username(self, api_client):
-        """GET: 存在しないユーザーを検索"""
-        response = api_client.get(reverse("user"), {"username": "unknownuser"})
+        """GET: 存在しないユーザーを username で検索"""
+        response = api_client.get(reverse("users"), {"username": "unknownuser"})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
 
     def test_get_user_not_found_by_userid(self, api_client):
-        """GET: 存在しないユーザーを検索"""
-        response = api_client.get(reverse("user"), {"userid": 99999})
+        """GET: 存在しないユーザーを userid で検索"""
+        response = api_client.get(reverse("users"), {"user_id": 99999})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
