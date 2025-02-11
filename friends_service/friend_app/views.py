@@ -18,17 +18,17 @@ from .serializers import FriendsSerializer, UserIdValidator
 
 class FriendListView(APIView):
     def get(self, request):
-        from_user_id = 1
+        user_id = 1
         # friends = Friends.objects.filter((Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)) & Q(status="approved"))
         friends = Friends.objects.filter(
-            Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)
+            Q(from_user_id=user_id) | Q(to_user_id=user_id)
         )
         if not friends:
             return Response({"friends": [], "total": 0}, status=HTTP_200_OK)
         serializer = FriendsSerializer(friends, many=True)
         friends_data = []
         for friend in serializer.data:
-            if friend["from_user_id"] == from_user_id:
+            if friend["from_user_id"] == user_id:
                 friend_user_id = friend["to_user_id"]
             else:
                 friend_user_id = friend["from_user_id"]
