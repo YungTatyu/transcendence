@@ -20,24 +20,22 @@ from .set_up_utils import (
 class TestMatchFinish:
     @pytest.fixture()
     def requests_post_mocker(self, mocker):
+        """モック対象の処理は正常処理時にResponseを返すため、Responseをモックする"""
         mock_response = MagicMock(spec=requests.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = {"message": "Match ended normally"}
-        return mocker.patch("requests.post", return_value=mock_response)
+        return mocker.patch(
+            "match_app.client.user_client.UserClient.finish_match",
+            return_value=mock_response,
+        )
 
     @pytest.fixture()
     def requests_post_faild_mocker(self, mocker):
-        mock_response = MagicMock(spec=requests.Response)
-        mock_response.status_code = 500
-        mock_response.json.return_value = {"error": "Error post request"}
-
-        # response.raise_for_statusをモックする
-        def mock_raise_for_status():
-            raise requests.exceptions.HTTPError("Custom error during POST")
-
-        mock_response.raise_for_status.side_effect = mock_raise_for_status
-
-        return mocker.patch("requests.post", return_value=mock_response)
+        """モック対象の処理はエラー時に例外を投げるため、例外の発生をモックする"""
+        return mocker.patch(
+            "match_app.client.user_client.UserClient.finish_match",
+            side_effect=requests.exceptions.RequestException("Network Error"),
+        )
 
     def request_match_finish(self, client, status, match_id, results) -> dict:
         """

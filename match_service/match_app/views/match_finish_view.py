@@ -1,8 +1,8 @@
 from typing import Optional
 
-import requests
 from django.conf import settings
 from django.utils.timezone import now
+from match_app.client.user_client import UserClient
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchFinishSerializer
 from rest_framework.response import Response
@@ -28,9 +28,11 @@ class MatchFinishView(APIView):
 
         # 先にトーナメントAPIを叩く(整合性維持のため)
         if match.mode == "Tournament":
-            errcode, message = self.__send_match_result_to_tournament(match)
-            if errcode is not None:
-                return Response({"error": message}, status=errcode)
+            err_message = self.__send_match_result_to_tournament(match)
+            if err_message is not None:
+                return Response(
+                    {"error": err_message}, status=HTTP_500_INTERNAL_SERVER_ERROR
+                )
             self.__register_winner_in_parent_match(match, results)
 
         finish_date = self.__update_match_data(match_id, results)
@@ -62,17 +64,11 @@ class MatchFinishView(APIView):
         winner_user_id = max(results, key=lambda x: x["score"])["userId"]
         MatchParticipant.objects.create(match_id=parent_match, user_id=winner_user_id)
 
-    def __send_match_result_to_tournament(
-        self, match: Match
-    ) -> tuple[Optional[int], str]:
+    def __send_match_result_to_tournament(self, match: Match) -> Optional[str]:
         """/tournaments/finish-matchを叩き、試合終了を通知"""
-        url = f"{settings.TOURNAMENT_API_BASE_URL}/tournaments/finish-match"
-        payload = {"tournamentId": match.tournament_id, "round": match.round}
-
+        client = UserClient(settings.TOURNAMENT_API_BASE_URL)
         try:
-            response = requests.post(url, json=payload, timeout=10)
-            #  HTTPステータスコードが200番台以外であれば例外を発生させる
-            response.raise_for_status()
+            client.finish_match(match.tournament_id, match.round)
         except Exception as e:
-            return HTTP_500_INTERNAL_SERVER_ERROR, str(e)
-        return None, ""
+            return str(e)
+        return None
