@@ -359,8 +359,12 @@ class FriendListTest(APITestCase):
         """
         url = reverse("friend-list")
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("Friend not found", response.data.get("error"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expect_answer = {
+            "friends": [],
+            "total": 0,
+        }
+        self.assertEqual(expect_answer, response.data)
 
     def test_all(self):
         my_id = 1
@@ -382,28 +386,24 @@ class FriendListTest(APITestCase):
             "friends": [
                 {
                     "userId": 2,
-                    "username": "test",
                     "status": "pending",
                     "request_sent_at": current_time.isoformat(),
                     "approved_at": None,
                 },
                 {
                     "userId": 3,
-                    "username": "test",
                     "status": "pending",
                     "request_sent_at": current_time.isoformat(),
                     "approved_at": None,
                 },
                 {
                     "userId": 4,
-                    "username": "test",
                     "status": "approved",
                     "request_sent_at": current_time.isoformat(),
                     "approved_at": current_time.isoformat(),
                 },
                 {
                     "userId": 5,
-                    "username": "test",
                     "status": "approved",
                     "request_sent_at": current_time.isoformat(),
                     "approved_at": current_time.isoformat(),

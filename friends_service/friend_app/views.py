@@ -19,10 +19,6 @@ from .serializers import FriendsSerializer, UserIdValidator
 
 
 class FriendListView(APIView):
-    """
-    usernameはどこから？
-    """
-
     def get(self, request):
         from_user_id = 1
         # friends = Friends.objects.filter((Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)) & Q(status="approved"))
@@ -30,14 +26,13 @@ class FriendListView(APIView):
             Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)
         )
         if not friends:
-            return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
+            return Response({"friends": [], "total": 0}, status=HTTP_200_OK)
         serializer = FriendsSerializer(friends, many=True)
         friends_data = []
         for friend in serializer.data:
             if friend["from_user_id"] == 1:
                 tmp = {
                     "userId": friend["to_user_id"],  # 'from_user_id' を使ってアクセス
-                    "username": "test",  # 仮のユーザー名（例えば 'test'）
                     "status": friend["status"],
                     "request_sent_at": friend["request_sent_at"],
                     "approved_at": friend["approved_at"],
@@ -48,7 +43,6 @@ class FriendListView(APIView):
 				"""
                 tmp = {
                     "userId": friend["from_user_id"],  # 'from_user_id' を使ってアクセス
-                    "username": "test",  # 仮のユーザー名（例えば 'test'）
                     "status": friend["status"],
                     "request_sent_at": friend["request_sent_at"],
                     "approved_at": friend["approved_at"],
