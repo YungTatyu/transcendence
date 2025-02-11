@@ -30,24 +30,17 @@ class FriendListView(APIView):
         serializer = FriendsSerializer(friends, many=True)
         friends_data = []
         for friend in serializer.data:
-            if friend["from_user_id"] == 1:
-                tmp = {
-                    "userId": friend["to_user_id"],  # 'from_user_id' を使ってアクセス
-                    "status": friend["status"],
-                    "request_sent_at": friend["request_sent_at"],
-                    "approved_at": friend["approved_at"],
-                }
+            if friend["from_user_id"] == from_user_id:
+                friend_user_id = friend["to_user_id"]
             else:
-                """
-				pendingの時、表示する必要はあるか
-				"""
-                tmp = {
-                    "userId": friend["from_user_id"],  # 'from_user_id' を使ってアクセス
-                    "status": friend["status"],
-                    "request_sent_at": friend["request_sent_at"],
-                    "approved_at": friend["approved_at"],
-                }
-            friends_data.append(tmp)
+                friend_user_id = friend["from_user_id"]
+            friend_data = {
+                "userId": friend_user_id,
+                "status": friend["status"],
+                "request_sent_at": friend["request_sent_at"],
+                "approved_at": friend["approved_at"],
+            }
+            friends_data.append(friend_data)
         response_data = {"friends": friends_data, "total": friends.count()}
         return Response(response_data, status=HTTP_200_OK)
 
