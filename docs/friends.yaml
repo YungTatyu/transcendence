@@ -70,16 +70,7 @@ paths:
                     example: 1
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
-        "404":
-          description: "No friends found."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "No friends found."
+
   /friends/requests/{userId}:
     post:
       summary: "フレンドリクエストを送信"
