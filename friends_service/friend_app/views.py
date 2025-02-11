@@ -19,7 +19,6 @@ from .serializers import FriendsSerializer, UserIdValidator
 class FriendListView(APIView):
     def get(self, request):
         user_id = 1
-        # friends = Friends.objects.filter((Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)) & Q(status="approved"))
         friends = Friends.objects.filter(
             Q(from_user_id=user_id) | Q(to_user_id=user_id)
         )
