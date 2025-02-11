@@ -1,11 +1,13 @@
+import pytz
 from django.urls import reverse
+from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from friend_app.models import Friends
 
 
-class FriendRequestTests_POST(APITestCase):
+class FriendRequestTestsPost(APITestCase):
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -37,11 +39,10 @@ class FriendRequestTests_POST(APITestCase):
         """
         url = reverse("friend-request", kwargs={"user_id": 1})
         response = self.client.post(url)
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
             "You cannot send a request to yourself.", response.data.get("error")
-        )  # メッセージ確認
+        )
 
     def test_already_sent_request(self):
         """
@@ -50,7 +51,7 @@ class FriendRequestTests_POST(APITestCase):
         url = reverse("friend-request", kwargs={"user_id": 3})
 
         # 1回目のリクエスト（成功することを期待）
-        response1 = self.client.post(url)
+        self.client.post(url)
 
         # 2回目のリクエスト（エラーが返ることを期待）
         response2 = self.client.post(url)
@@ -65,8 +66,6 @@ class FriendRequestTests_POST(APITestCase):
         url = reverse("friend-request", kwargs={"user_id": 7})
         response = self.client.post(url)
 
-        print(response.data)  # レスポンス内容をデバッグ
-
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         self.assertIn(
             "Friend requests have already been received.",
@@ -78,11 +77,8 @@ class FriendRequestTests_POST(APITestCase):
         すでにフレンドの相手にフレンド申請した場合
         """
         self.set_approved(4, 1)
-        # self.set_pending()
         url = reverse("friend-request", kwargs={"user_id": 4})
         response = self.client.post(url)
-
-        print(response.data)  # レスポンス内容をデバッグ
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("Already friend.", response.data.get("error"))
@@ -92,17 +88,13 @@ class FriendRequestTests_POST(APITestCase):
         すでにフレンドの相手にフレンド申請した場合
         """
         self.set_approved(1, 5)
-        # self.set_pending()
         url = reverse("friend-request", kwargs={"user_id": 5})
         response = self.client.post(url)
-
-        print(response.data)  # レスポンス内容をデバッグ
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("Already friend.", response.data.get("error"))
 
 
-class FriendRequestTests_DELETE(APITestCase):
+class FriendRequestTestsDelete(APITestCase):
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -179,7 +171,7 @@ class FriendRequestTests_DELETE(APITestCase):
         )
 
 
-class FriendTest_delete(APITestCase):
+class FriendTestDelete(APITestCase):
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -260,7 +252,7 @@ class FriendTest_delete(APITestCase):
 # add_functionのテスト
 
 
-class FriendRequestTests_PATCH(APITestCase):
+class FriendRequestTestsPatch(APITestCase):
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -332,10 +324,6 @@ class FriendRequestTests_PATCH(APITestCase):
         self.assertIn("Friend request already approved.", response.data.get("error"))
 
 
-import pytz
-from django.utils.timezone import now
-
-
 class FriendListTest(APITestCase):
     """
     getのテスト
@@ -388,7 +376,7 @@ class FriendListTest(APITestCase):
         self.set_pending(to_user_id3, from_user_id, current_time)
         self.set_approved(from_user_id, to_user_id4, current_time)
         self.set_approved(to_user_id5, from_user_id, current_time)
-        url = url = reverse("friend-list")
+        url = reverse("friend-list")
         response = self.client.get(url)
         expect_answer = {
             "friends": [

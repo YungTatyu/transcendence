@@ -1,4 +1,3 @@
-
 # Create your views here.
 from django.db.models import Q
 
@@ -26,7 +25,6 @@ class FriendListView(APIView):
 
     def get(self, request):
         from_user_id = 1
-        user_name = "kazuki"
         # friends = Friends.objects.filter((Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)) & Q(status="approved"))
         friends = Friends.objects.filter(
             Q(from_user_id=from_user_id) | Q(to_user_id=from_user_id)
@@ -139,9 +137,6 @@ class FriendRequestView(APIView):
             )
         friend = Friends.objects.filter(
             from_user_id=from_user_id, to_user_id=to_user_id
-        ).first()
-        rev_friend = Friends.objects.filter(
-            from_user_id=to_user_id, to_user_id=from_user_id
         ).first()
         if not friend:
             return Response(
