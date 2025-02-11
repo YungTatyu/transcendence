@@ -52,15 +52,17 @@ paths:
                     items:
                       type: object
                       properties:
-                        userId:
+                        fromUserId:
+                          type: integer
+                        toUserId:
                           type: integer
                         status:
                           $ref: '#/components/schemas/FriendStatus'
-                        request_sent_at:
+                        requestSentAt:
                           type: string
                           format: date-time
                           description: "友達リクエストが送信された日時"
-                        approved_at:
+                        approvedAt:
                           type: string
                           format: date-time
                           description: "友達リクエストが承認された日時"

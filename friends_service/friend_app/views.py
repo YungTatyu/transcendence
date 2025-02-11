@@ -29,11 +29,11 @@ class FriendListView(APIView):
         friends_data = []
         for friend in serializer.data:
             friend_data = {
-                "from_user_Id": friend["from_user_id"],
-                "to_user_Id": friend["to_user_id"],
+                "fromUserId": friend["from_user_id"],
+                "toUserId": friend["to_user_id"],
                 "status": friend["status"],
-                "request_sent_at": friend["request_sent_at"],
-                "approved_at": friend["approved_at"],
+                "requestSentAt": friend["request_sent_at"],
+                "approvedAt": friend["approved_at"],
             }
             friends_data.append(friend_data)
         response_data = {"friends": friends_data, "total": friends.count()}
