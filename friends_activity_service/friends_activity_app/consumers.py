@@ -45,20 +45,13 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
         if self.user_id in self.user_list:
             self.user_list.remove(self.user_id)
 
-        # ユーザーリストをクライアントに送信
         await self.send(text_data=json.dumps({
             'status': 'User removed',
             'user_id': self.user_id,
             'current_users': self.user_list,
         }))
 
-    async def remove_user_after_timeout(self):
-        # 10秒後にユーザーを削除する
-        await asyncio.sleep(10)  # 10秒後
-        await self.remove_user_from_list()
-
     async def send_logged_in_users_periodically(self):
-        # 定期的にログインユーザーリストを送信（例: 5秒ごとに送信）
         while True:
             await asyncio.sleep(5)  # 5秒ごとに送信
             await self.send(text_data=json.dumps({
