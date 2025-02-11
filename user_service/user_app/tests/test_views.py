@@ -1,12 +1,15 @@
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
 from rest_framework import status
+from rest_framework.test import APIClient
+
 from ..models import User
+
 
 @pytest.fixture
 def api_client():
     return APIClient()
+
 
 @pytest.fixture
 def create_user():
@@ -16,7 +19,6 @@ def create_user():
 
 @pytest.mark.django_db
 class TestUserViewPost:
-
     def test_post_validation_error(self, api_client):
         """POST: バリデーションエラー(usernameなし)"""
         response = api_client.post(reverse("user"), data={})
@@ -38,7 +40,6 @@ class TestUserViewPost:
 
 
 class TestUserViewGet:
-
     def test_get_validation_error(self, api_client):
         """GET: クエリパラメータなし（バリデーションエラー）"""
         response = api_client.get(reverse("user"))
@@ -47,9 +48,11 @@ class TestUserViewGet:
 
     def test_get_username_and_userid_specified(self, api_client, create_user):
         """GET: username と userid の両方を指定した場合（バリデーションエラー）"""
-        response = api_client.get(reverse("user"), {"username": "testuser", "userid": create_user.user_id})
+        response = api_client.get(
+            reverse("user"), {"username": "testuser", "userid": create_user.user_id}
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "non_field_errors" in response.data  
+        assert "non_field_errors" in response.data
 
     def test_get_user_by_username_success(self, api_client, create_user):
         """GET: username でユーザーを検索（成功）"""
@@ -68,7 +71,7 @@ class TestUserViewGet:
         response = api_client.get(reverse("user"), {"username": "unknownuser"})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
-    
+
     def test_get_user_not_found_by_userid(self, api_client):
         """GET: 存在しないユーザーを検索"""
         response = api_client.get(reverse("user"), {"userid": 99999})
