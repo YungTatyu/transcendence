@@ -5,7 +5,7 @@ from django.utils.timezone import now
 # Create your models here.
 class Friends(models.Model):
     from_user_id = models.IntegerField()
-    # JWE から from_user_idは固定値
+    # JWT から from_user_idは固定値
     to_user_id = models.IntegerField()
     MODEL_CHOICES = [("approved", "approved"), ("pending", "pending")]
     status = models.CharField(choices=MODEL_CHOICES, max_length=20)

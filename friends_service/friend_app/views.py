@@ -1,7 +1,5 @@
 # Create your views here.
 from django.db.models import Q
-
-# 修正の必要あり. DBの変更
 from django.utils.timezone import now
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -73,8 +71,6 @@ class FriendRequestView(APIView):
         rev_friend = Friends.objects.filter(
             from_user_id=to_user_id, to_user_id=from_user_id
         ).first()
-        # is_friend = Friends.objects.filter(from_user_id = from_user_id, to_user_id = to_user_id).exists()
-        # friend_status = friend.status
         if friend or rev_friend:
             friend_status = friend.status if friend else None
             rev_friend_status = rev_friend.status if rev_friend else None
@@ -103,9 +99,6 @@ class FriendRequestView(APIView):
         Friends.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
-        # patchのテストで使用
-        Friends.objects.create(from_user_id=100, to_user_id=1, status="pending")
-        #
         return Response(
             {"message": "Friend request sent successfully."}, status=HTTP_201_CREATED
         )
@@ -130,15 +123,14 @@ class FriendRequestView(APIView):
                 {"error": "No friend request exists from the specified user."},
                 status=HTTP_404_NOT_FOUND,
             )
-        if friend.status == "pending":
-            Friends.objects.filter(
-                from_user_id=from_user_id, to_user_id=to_user_id
-            ).delete()
-            return Response(status=HTTP_204_NO_CONTENT)
-        else:
+        if friend.status != "pending":
             return Response(
                 {"error": "Already friend."}, status=HTTP_400_BAD_REQUEST
             )  # すでにfriend
+        Friends.objects.filter(
+            from_user_id=from_user_id, to_user_id=to_user_id
+        ).delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
     def patch(self, _, user_id):
         my_user_id = 1
