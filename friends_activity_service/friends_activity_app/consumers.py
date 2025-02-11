@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
 import random
+import jwt
 
 class LoggedInUsersConsumer(AsyncWebsocketConsumer):
     # ユーザーリストをメモリ内で管理
@@ -10,8 +11,21 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.channel_name = self.channel_name  # チャネル名の一意性を保つ
 
-        # 一時的にランダムな数字をidとする
-        self.user_id = str(random.randint(1, 1000))
+        # クッキーからJWTトークンを取得
+        token = self.scope.get("cookies", {}).get("access_token")
+        if not token:
+            await self.close()  # トークンが無い場合は接続を拒否
+            return
+        
+        try:
+            decoded_token = jwt.decode(token, options={"verify_signature": False})
+            self.user_id = str(decoded_token.get("user_id"))
+        except jwt.ExpiredSignatureError:
+            await self.close()
+            return
+        except jwt.InvalidTokenError:
+            await self.close()
+            return
 
         # WebSocket接続の確立
         await self.accept()
@@ -21,6 +35,7 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
 
         # 定期的にログインユーザーリストを送信
         await self.send_logged_in_users_periodically()
+        # await self.send_logged_in_users_periodically()
 
     async def disconnect(self, close_code):
         # WebSocket接続が切断されたときにユーザーをリストから削除
@@ -52,9 +67,7 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
         }))
 
     async def send_logged_in_users_periodically(self):
-        while True:
-            await asyncio.sleep(5)  # 5秒ごとに送信
-            await self.send(text_data=json.dumps({
-                'status': 'Current logged in users',
-                'current_users': self.user_list,
-            }))
+        await self.send(text_data=json.dumps({
+            'status': 'Current logged in users',
+            'current_users': self.user_list,
+        }))

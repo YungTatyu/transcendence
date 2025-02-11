@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'friends_activity_app.urls'
+ROOT_URLCONF = 'friends_activity_app.routing'
 
 TEMPLATES = [
     {
