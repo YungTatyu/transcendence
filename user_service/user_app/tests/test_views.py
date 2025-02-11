@@ -1,31 +1,76 @@
+import pytest
 from django.urls import reverse
+from rest_framework.test import APIClient
 from rest_framework import status
-from rest_framework.test import APITestCase
+from ..models import User
 
-from user_app.models import User
+@pytest.fixture
+def api_client():
+    return APIClient()
+
+@pytest.fixture
+def create_user():
+    """テスト用のユーザーを作成する"""
+    return User.objects.create(username="testuser")
 
 
-class UserAPITest(APITestCase):
-    def setUp(self):
-        """テスト用のデータ作成"""
-        self.user = User.objects.create(
-            username="testuser", avatar_path="/uploads/test.png"
-        )
-        self.url = reverse("users")  # URLConf の名前
+@pytest.mark.django_db
+class TestUserViewPost:
 
-    def test_get_user_by_username(self):
-        """GET /users?username=testuser が正しく動作するか"""
-        response = self.client.get(self.url, {"username": "testuser"})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["username"], "testuser")
+    def test_post_validation_error(self, api_client):
+        """POST: バリデーションエラー(usernameなし)"""
+        response = api_client.post(reverse("user"), data={})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "username" in response.data  # usernameのエラーを確認
 
-    def test_get_user_not_found(self):
-        """存在しないユーザーを検索すると 404 になるか"""
-        response = self.client.get(self.url, {"username": "unknown"})
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_post_user_already_exists(self, api_client, create_user):
+        """POST: 既に存在するユーザーの登録"""
+        response = api_client.post(reverse("user"), data={"username": "testuser"})
+        assert response.status_code == status.HTTP_409_CONFLICT
+        assert response.data["error"] == "User arledy exists"
 
-    def test_post_create_user(self):
-        """POST /users で新しいユーザーを作成"""
-        response = self.client.post(self.url, {"username": "newuser"})
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(User.objects.filter(username="newuser").exists())
+    def test_post_create_user_success(self, api_client):
+        """POST: ユーザーを正常に作成"""
+        response = api_client.post(reverse("user"), data={"username": "newuser"})
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "userId" in response.data
+        assert response.data["username"] == "newuser"
+
+
+class TestUserViewGet:
+
+    def test_get_validation_error(self, api_client):
+        """GET: クエリパラメータなし（バリデーションエラー）"""
+        response = api_client.get(reverse("user"))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "non_field_errors" in response.data
+
+    def test_get_username_and_userid_specified(self, api_client, create_user):
+        """GET: username と userid の両方を指定した場合（バリデーションエラー）"""
+        response = api_client.get(reverse("user"), {"username": "testuser", "userid": create_user.user_id})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "non_field_errors" in response.data  
+
+    def test_get_user_by_username_success(self, api_client, create_user):
+        """GET: username でユーザーを検索（成功）"""
+        response = api_client.get(reverse("user"), {"username": "testuser"})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["username"] == "testuser"
+
+    def test_get_user_by_userid_success(self, api_client, create_user):
+        """GET: userid でユーザーを検索（成功）"""
+        response = api_client.get(reverse("user"), {"userid": create_user.user_id})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["username"] == "testuser"
+
+    def test_get_user_not_found_by_username(self, api_client):
+        """GET: 存在しないユーザーを検索"""
+        response = api_client.get(reverse("user"), {"username": "unknownuser"})
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data["error"] == "User not found."
+    
+    def test_get_user_not_found_by_userid(self, api_client):
+        """GET: 存在しないユーザーを検索"""
+        response = api_client.get(reverse("user"), {"userid": 99999})
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data["error"] == "User not found."

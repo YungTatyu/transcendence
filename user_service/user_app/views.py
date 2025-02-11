@@ -10,50 +10,50 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import CreateUserSerializer, SearchUserSerializer
+from .serializers import CreateUserSerializer, QueryParamSerializer, UserDataSerializer
 
 
 class UserView(APIView):
     def post(self, request):
+        #リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
+        #既存のユーザーがいるか確認
         username = serializer.validated_data["username"]
         if User.objects.filter(username="username").exists():
             return Response({"error": "User arledy exists"}, status=HTTP_409_CONFLICT)
 
+        #user新規作成
         user = User.objects.create(username=username)
-
+        #レスポンスデータ作成
         data = {"userId": user.user_id, "username": user.username}
 
         return Response(data, status=HTTP_201_CREATED)
 
     def get(self, request):
-        username = request.GET.get("username")
-        userid = request.GET.get("userid")
+        #クエリパラメーターのvalidation
+        serializer = QueryParamSerializer(data=request.GET)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-        if not username and not userid:
-            return Response(
-                {"error": "query parameter 'username' or 'userid' is required."},
-                status=HTTP_400_BAD_REQUEST,
-            )
+        validated_data = serializer.validated_data
+        username = validated_data.get("username")
+        userid = validated_data.get("userid")
 
-        if username and userid:
-            return Response(
-                {"error": "query parameter 'username' or 'userid' is required."},
-                status=HTTP_400_BAD_REQUEST,
-            )
-
+        #ユーザー検索
+        user = None
         if username:
-            user = User.objects.filter(username=username).first()
+            user = User.objects.filter(username=username).exists()
         elif userid:
-            user = User.objects.filter(user_id=userid).first()
+            user = User.objects.filter(user_id=userid).exists()
 
         if not user:
             return Response({"error": "User not found."}, status=HTTP_404_NOT_FOUND)
 
-        serializer = SearchUserSerializer(user)
+        #レスポンスのシリアライズ
+        serializer = UserDataSerializer(user)
         return Response(serializer.data, status=HTTP_200_OK)
 
 

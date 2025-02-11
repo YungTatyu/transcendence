@@ -81,7 +81,6 @@ services:
     depends_on:
       - user_db
     env_file: ./docker_env/user.env
-    tty: true
 
   user_db:
     image: postgres:15
