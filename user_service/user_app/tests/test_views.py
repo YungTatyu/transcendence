@@ -38,6 +38,7 @@ class TestUserViewPost:
         assert "userId" in response.data
         assert response.data["username"] == "newuser"
 
+
 @pytest.mark.django_db
 class TestUserViewGet:
     def test_get_validation_error(self, api_client):
@@ -68,7 +69,7 @@ class TestUserViewGet:
 
     def test_get_user_not_found_by_username(self, api_client):
         """GET: 存在しないユーザーを username で検索"""
-        response = api_client.get(reverse("users"), {"username": "unknownuser"})
+        response = api_client.get(reverse("users"), {"username": "unknown"})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
 

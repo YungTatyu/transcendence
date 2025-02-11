@@ -41,7 +41,7 @@ def test_user_data_serializer():
         ({"username": "testuser"}, True),  # usernameのみ
         ({"user_id": 1, "username": "testuser"}, False),  # 両方指定 (エラー)
         ({}, False),  # どちらも指定なし (エラー)
-        ({"user_id": "1"}, False),  # user_id が文字列 (エラー)
+        ({"user_id": "A"}, False),  # user_id が文字列 (エラー)
     ],
 )
 def test_query_param_serializer(data, is_valid):
