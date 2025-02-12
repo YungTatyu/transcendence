@@ -1,7 +1,7 @@
-from game_app.settings import MATCH_SERVICE
-import requests
-
 import logging
+
+import requests
+from game_app.settings import MATCH_SERVICE
 
 logger = logging.getLogger(__name__)
 
