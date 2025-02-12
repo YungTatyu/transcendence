@@ -3,3 +3,4 @@ channels[daphne]
 channels_redis
 django-cors-headers
 pytest
+requests
