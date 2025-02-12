@@ -11,12 +11,12 @@ ST = Tokyo
 L  = Shinjuku
 O  = 42tokyo
 OU = IT
-CN = OREORE CA
+CN = localhost
 
 [ v3_ca ]
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always,issuer:always
-basicConstraints = critical,CA:true
+basicConstraints = critical,CA:TRUE
 keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign
 extendedKeyUsage       = serverAuth, clientAuth
 subjectAltName         = @alt_names

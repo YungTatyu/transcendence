@@ -3,7 +3,7 @@ default_bits       = 2048
 default_keyfile    = vault.key
 prompt             = no
 distinguished_name = req_distinguished_name
-x509_extensions    = v3_ca
+x509_extensions    = v3_usr
 req_extensions     = req_ext
 
 [req_distinguished_name]
@@ -12,7 +12,7 @@ ST = Tokyo
 L  = Shinjuku
 O  = 42tokyo
 OU = IT
-CN = vault
+CN = localhost
 
 [ req_ext ]
 subjectAltName = @alt_names
@@ -22,10 +22,10 @@ DNS.1 = localhost
 IP.1 = 127.0.0.1
 IP.2 = 0.0.0.0
 
-[ v3_ca ]
+[ v3_usr ]
 subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always,issuer:always
-basicConstraints = critical,CA:true
-keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign
-extendedKeyUsage       = serverAuth, clientAuth
-subjectAltName         = @alt_names
+basicConstraints = CA:FALSE
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth, serverAuth
+subjectAltName = @alt_names
