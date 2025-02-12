@@ -1,0 +1,27 @@
+[req]
+default_bits       = 2048
+default_keyfile    = ca.key
+prompt             = no
+distinguished_name = req_distinguished_name
+req_extensions     = v3_ca
+
+[req_distinguished_name]
+C  = JP
+ST = Tokyo
+L  = Shinjuku
+O  = 42tokyo
+OU = IT
+CN = OREORE CA
+
+[ v3_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+basicConstraints = critical,CA:true
+keyUsage = critical, digitalSignature, keyEncipherment, keyCertSign
+extendedKeyUsage       = serverAuth, clientAuth
+subjectAltName         = @alt_names
+
+[ alt_names ]
+DNS.1 = localhost
+IP.1 = 127.0.0.1
+IP.2 = 0.0.0.0

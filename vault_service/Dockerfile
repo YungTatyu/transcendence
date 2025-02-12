@@ -1,6 +1,12 @@
 FROM hashicorp/vault:latest
 
 COPY vault.hcl /vault/config/vault.hcl
+
+COPY ./create_cert/client.crt /vault/certs/client.crt
+COPY ./create_cert/vault.crt /vault/certs/vault.crt
+COPY ./create_cert/vault.key /vault/certs/vault.key
+COPY ./create_cert/ca.crt /vault/certs/ca.crt
+
 COPY ./init_vault.sh /usr/local/bin/init_vault.sh
 RUN chmod +x /usr/local/bin/init_vault.sh
 
