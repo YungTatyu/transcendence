@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class MatchApiClient:
-    def send_game_result(self, data):
+    @staticmethod
+    def send_game_result(data):
         url = f"{MATCH_SERVICE}/matches/finish"
         response = requests.post(url, json=data)
 
