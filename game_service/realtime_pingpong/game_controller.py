@@ -90,13 +90,16 @@ class GameController:
                     group_name,
                 )
                 await asyncio.sleep(self.FRAME_DURATION)
-            self.__game.state = PingPong.GameState.GAME_OVER
-            result = self.__get_game_result(group_name)
-            MatchApiClient.send_game_result(result)
-            result["message"] = GameConsumer.MessageType.MSG_GAME_OVER
-            GameConsumer.finish_game(result, group_name)
+            await self.process_game_result(group_name)
         except asyncio.CancelledError:
             pass
+
+    async def process_game_result(self, group_name):
+        self.__game.state = PingPong.GameState.GAME_OVER
+        result = self.__get_game_result(group_name)
+        MatchApiClient.send_game_result(result)
+        result["message"] = GameConsumer.MessageType.MSG_GAME_OVER
+        await GameConsumer.finish_game(result, group_name)
 
     def __calc_unix_time(self, time):
         return int(time.timestamp())
