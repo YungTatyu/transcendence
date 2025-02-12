@@ -81,7 +81,7 @@ class GameController:
                 self.__game.update()
                 await GameConsumer.group_send(
                     {
-                        "message": GameConsumer.MessageType.MSG_UPDATE.value,
+                        "message": GameConsumer.MessageType.MSG_UPDATE,
                         "data": {
                             "state": self.__game.get_state(),
                         },
@@ -90,6 +90,7 @@ class GameController:
                 )
                 await asyncio.sleep(self.FRAME_DURATION)
             self.__game.state = PingPong.GameState.GAME_OVER
+            GameConsumer.finish_game({}, group_name)
         except asyncio.CancelledError:
             pass
 
