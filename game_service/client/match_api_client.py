@@ -1,0 +1,21 @@
+from game_app.settings import MATCH_SERVICE
+import requests
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class MatchApiClient:
+    def send_game_result(self, data):
+        url = f"{MATCH_SERVICE}/matches/finish"
+        response = requests.post(url, json=data)
+
+        if response.status_code >= 400:
+            error_detail = response.json()
+            logger.critical(
+                f"POST {url}\n"
+                f"status: {response.status_code}\n"
+                f"respones: {error_detail}\n"
+                f"Sent Data: {data}"
+            )

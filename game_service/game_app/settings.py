@@ -55,6 +55,8 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
 ]
 
+MATCH_SERVICE = os.getenv("MATCH_SERVICE")
+
 CORS_ALLOWED_ORIGINS = [
     os.getenv("FE_SERVER"),  # フロントエンドのURL
 ]
