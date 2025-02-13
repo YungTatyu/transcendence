@@ -81,6 +81,14 @@ export default function Game() {
             setRemainingTime(calcRemaingTime(endTimeRef.current));
             startTimer();
           }
+          if (
+            parsedMessage.type === "game.finish.message" &&
+            parsedMessage.message === "gameover"
+          ) {
+            console.log(parsedMessage)
+            const results = parsedMessage.results;
+            alert("game over:\n" + results.map(r => `User ${r.userId}: ${r.score}`).join("\n"));
+          }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
         }
