@@ -14,6 +14,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Create certs
+      uses: cd certs && ./create_cert.sh
+
     - name: Build and start services
       run: docker compose up -d --build
 
