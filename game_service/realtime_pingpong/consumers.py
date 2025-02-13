@@ -68,11 +68,11 @@ class ActionHandler:
         if match_dict is None:
             return
         game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
-        game = game_controller.game
-        if game.state == PingPong.GameState.GAME_OVER:
-            return MatchManager.remove_match(match_id)
-        # gameが終了していない限り、matchは終了しない
         return game_controller.disconnect_event(player_id)
+
+    @staticmethod
+    def handle_game_end(match_id):
+        MatchManager.remove_match(match_id)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -143,3 +143,4 @@ class GameConsumer(AsyncWebsocketConsumer):
         channel_layer = get_channel_layer()
         event["type"] = "game.finish.message"
         await channel_layer.group_send(group_name, event)
+        ActionHandler.handle_game_end(self.match_id)
