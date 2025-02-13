@@ -19,15 +19,17 @@ def create_user():
 
 @pytest.mark.django_db
 class TestUserViewPost:
-    def test_post_validation_error(self, api_client):
+    def test_post_validation_error_no_username(self, api_client):
         """POST: バリデーションエラー(usernameなし)"""
         response = api_client.post(reverse("users"), data={})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data  # usernameのエラーを確認
 
-    def test_post_validation_error(self, api_client):
+    def test_post_validation_error_longerusernme(self, api_client):
         """POST: バリデーションエラー(username10文字以上)"""
-        response = api_client.post(reverse("users"), data={"username": "longerusername"})
+        response = api_client.post(
+            reverse("users"), data={"username": "longerusername"}
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data  # usernameのエラーを確認
 
@@ -84,12 +86,12 @@ class TestUserViewGet:
         response = api_client.get(reverse("users"), {"user_id": 99999})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
-    
+
     def test_get_user_with_long_username(self, api_client):
         """GET: 10文字以上の username で検索 (バリデーションエラー)"""
         response = api_client.get(reverse("users"), {"username": "longusername"})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data  # username のエラーが含まれているか確認
-        assert response.data["username"] == ["Ensure this field has no more than 10 characters."]
-
-
+        assert response.data["username"] == [
+            "Ensure this field has no more than 10 characters."
+        ]
