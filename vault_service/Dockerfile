@@ -1,8 +1,6 @@
 FROM hashicorp/vault:latest
 
-COPY vault_service/vault.hcl \
-	vault_service/toransit-policy.hcl \
-	/vault/config/
+COPY vault_service/config/ /vault/config/
 
 COPY certs/client.crt \
 	certs/client.key \
