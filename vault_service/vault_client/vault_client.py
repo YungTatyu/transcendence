@@ -12,10 +12,13 @@ class VaultClient:
         self.__ca_file = ca_file
 
     def fetch_token(self) -> Optional[str]:
+        """
+        TLSクライアント認証を用いてトークンを取得
+        INFO response.json()["auth"]["lease_duration"]はトークンの期限が切れるまでの秒数
+        """
         url = f"{self.__base_url}/v1/auth/cert/login"
 
         try:
-            # クライアント証明書を使ってVaultにログイン
             response = requests.post(url, cert=self.__cert, verify=self.__ca_file)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
@@ -25,10 +28,13 @@ class VaultClient:
         token = response.json().get("auth", {}).get("client_token")
         return token
 
-    def fetch_signature(self, token: str, jwt_data: bytes) -> Optional[PublicKeyType]:
+    def fetch_signature(
+        self, token: str, unsigned_jwt: bytes
+    ) -> Optional[PublicKeyType]:
+        """トークンを用いて署名なしJWTデータから署名を作成"""
         url = f"{self.__base_url}/v1/transit/sign/jwt-key"
         headers = {"X-Vault-Token": token}  # Vaultトークンを指定するヘッダ
-        b64_jwt_data = base64.b64encode(jwt_data).decode()  # バイナリを文字列に変換
+        b64_jwt_data = base64.b64encode(unsigned_jwt).decode()  # バイナリを文字列に変換
         body = {"input": b64_jwt_data}
 
         try:
@@ -45,6 +51,7 @@ class VaultClient:
         return signature
 
     def fetch_pubkey(self, token: str) -> Optional[bytes]:
+        """トークンを用いて最新の公開鍵を取得"""
         url = f"{self.__base_url}/v1/transit/keys/jwt-key"
         headers = {"X-Vault-Token": token}
 
@@ -71,6 +78,7 @@ if __name__ == "__main__":
     CA_CERT = "../../certs/ca.crt"
 
     client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    # INFO tokenは一定期間同じものを使用できます
     token = client.fetch_token()
     if token:
         jwt_header = {"alg": "RS256", "typ": "JWT"}
