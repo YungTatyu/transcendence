@@ -1,7 +1,7 @@
+import random
 from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum, auto
-import random
 
 Position = namedtuple("Position", ["x", "y"])
 
