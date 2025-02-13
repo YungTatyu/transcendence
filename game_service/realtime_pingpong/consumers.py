@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
@@ -143,4 +143,4 @@ class GameConsumer(AsyncWebsocketConsumer):
         channel_layer = get_channel_layer()
         event["type"] = "game.finish.message"
         await channel_layer.group_send(group_name, event)
-        ActionHandler.handle_game_end(self.match_id)
+        ActionHandler.handle_game_end(int(group_name))
