@@ -1,0 +1,82 @@
+from typing import Optional
+import requests
+import base64
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from jwt_utils import create_unsigned_jwt, verify_jwt, PublicKeyType
+
+
+class VaultClient:
+    def __init__(self, base_url, cert_file, key_file, ca_file):
+        self.__base_url = base_url
+        self.__cert = (cert_file, key_file)
+        self.__ca_file = ca_file
+
+    def fetch_token(self) -> Optional[str]:
+        url = f"{self.__base_url}/v1/auth/cert/login"
+
+        try:
+            # クライアント証明書を使ってVaultにログイン
+            response = requests.post(url, cert=self.__cert, verify=self.__ca_file)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"fetch token error: {e}")
+            return None
+
+        token = response.json().get("auth", {}).get("client_token")
+        return token
+
+    def fetch_signature(self, token: str, jwt_data: bytes) -> Optional[PublicKeyType]:
+        url = f"{self.__base_url}/v1/transit/sign/jwt-key"
+        headers = {"X-Vault-Token": token}  # Vaultトークンを指定するヘッダ
+        b64_jwt_data = base64.b64encode(jwt_data).decode()  # バイナリを文字列に変換
+        body = {"input": b64_jwt_data}
+
+        try:
+            response = requests.post(
+                url, json=body, headers=headers, cert=self.__cert, verify=self.__ca_file
+            )
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"fetch signature data error: {e}")
+            return None
+
+        signature_data = response.json()["data"]["signature"]
+        signature = base64.b64decode(signature_data.split(":")[-1])
+        return signature
+
+    def fetch_pubkey(self, token: str) -> Optional[bytes]:
+        url = f"{self.__base_url}/v1/transit/keys/jwt-key"
+        headers = {"X-Vault-Token": token}
+
+        try:
+            response = requests.get(
+                url, headers=headers, cert=self.__cert, verify=self.__ca_file
+            )
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"fetch pubkey list error: {e}")
+            return None
+
+        keys_dict = response.json()["data"]["keys"]
+        latest_version = max(map(int, keys_dict.keys()))  # 最新の公開鍵の番号
+        pubkey_pem = keys_dict[str(latest_version)]["public_key"]
+        pubkey = load_pem_public_key(pubkey_pem.encode())
+        return pubkey
+
+
+if __name__ == "__main__":
+    VAULT_ADDR = "https://localhost:8200"
+    CLIENT_CERT = "../../certs/client.crt"
+    CLIENT_KEY = "../../certs/client.key"
+    CA_CERT = "../../certs/ca.crt"
+
+    client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    token = client.fetch_token()
+    if token:
+        jwt_header = {"alg": "RS256", "typ": "JWT"}
+        jwt_payload = {"sub": "1234567890", "userId": "1"}
+        jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
+        signature = client.fetch_signature(token, jwt_data)
+        pubkey = client.fetch_pubkey(token)
+        if signature and pubkey:
+            print("Verify JWT: ", verify_jwt(pubkey, jwt_data, signature))
