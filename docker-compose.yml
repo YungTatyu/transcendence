@@ -92,7 +92,9 @@ services:
       - user_db_data:/var/lib/postgresql/data
 
   vault:
-    build: ./vault_service
+    build:
+      context: .
+      dockerfile: vault_service/Dockerfile
     container_name: vault
     ports:
       - 8200:8200

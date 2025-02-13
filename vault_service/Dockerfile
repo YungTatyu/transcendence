@@ -1,7 +1,8 @@
 FROM hashicorp/vault:latest
 
-COPY vault.hcl /vault/config/vault.hcl
-COPY toransit-policy.hcl /vault/config/transit-policy.hcl
+COPY vault_service/vault.hcl \
+	vault_service/toransit-policy.hcl \
+	/vault/config/
 
 COPY certs/client.crt \
 	certs/client.key \
@@ -10,7 +11,7 @@ COPY certs/client.crt \
 	certs/ca.crt \
 	/vault/certs/
 
-COPY ./init_vault.sh /usr/local/bin/init_vault.sh
+COPY vault_service/init_vault.sh /usr/local/bin/init_vault.sh
 RUN chmod +x /usr/local/bin/init_vault.sh
 
 ENTRYPOINT ["/usr/local/bin/init_vault.sh"]
