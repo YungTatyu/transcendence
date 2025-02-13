@@ -134,12 +134,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         event["type"] = "game.message"
         await channel_layer.group_send(group_name, event)
 
-    async def finish_message(self, event):
+    async def game_finish_message(self, event):
         await self.send(text_data=json.dumps(event))
         await self.disconnect()
 
     @staticmethod
     async def finish_game(event, group_name):
         channel_layer = get_channel_layer()
-        event["type"] = "finish.message"
+        event["type"] = "game.finish.message"
         await channel_layer.group_send(group_name, event)

@@ -95,6 +95,9 @@ class GameController:
             pass
 
     async def process_game_result(self, group_name):
+        # 遅延インポートで循環インポートを防ぐ
+        from realtime_pingpong.consumers import GameConsumer
+
         self.__game.state = PingPong.GameState.GAME_OVER
         result = self.__get_game_result(group_name)
         MatchApiClient.send_game_result(result)
