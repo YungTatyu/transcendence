@@ -1,8 +1,9 @@
-from typing import Optional
-import requests
 import base64
+from typing import Optional
+
+import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from jwt_utils import create_unsigned_jwt, verify_jwt, PublicKeyType
+from jwt_utils import PublicKeyType, create_unsigned_jwt, verify_jwt
 
 
 class VaultClient:

@@ -1,9 +1,16 @@
-import json
 import base64
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import rsa, dsa, ec, ed25519, ed448
+import json
 from typing import Union
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import (
+    dsa,
+    ec,
+    ed448,
+    ed25519,
+    padding,
+    rsa,
+)
 
 # 公開鍵のインターフェース
 PublicKeyType = Union[
