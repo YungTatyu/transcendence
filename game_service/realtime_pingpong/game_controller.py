@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime, timedelta
 
+from client.match_api_client import MatchApiClient
 from core.pingpong import PingPong
 
 
@@ -90,6 +91,7 @@ class GameController:
                 )
                 await asyncio.sleep(self.FRAME_DURATION)
             self.__game.state = PingPong.GameState.GAME_OVER
+            MatchApiClient.send_game_result(self.__get_game_result(group_name))
         except asyncio.CancelledError:
             pass
 
@@ -112,3 +114,18 @@ class GameController:
             self.__calc_unix_time(datetime.now()) >= end_time
             and self.__game.is_match_over()
         )
+
+    def __get_game_result(self, match_id):
+        return {
+            "matchId": match_id,
+            "results": [
+                {
+                    "userId": self.__game.left_player.id,
+                    "score": self.__game.left_player.score,
+                },
+                {
+                    "userId": self.__game.right_player.id,
+                    "score": self.__game.right_player.score,
+                },
+            ],
+        }

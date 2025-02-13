@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
+from client.match_api_client import MatchApiClient
 from core.pingpong import PingPong
 from realtime_pingpong.game_controller import GameController
 
@@ -22,6 +23,8 @@ class TestGameController(unittest.IsolatedAsyncioTestCase):
 
         # PlayerManager のモック
         self.controller._GameController__player_manager = MagicMock()
+
+        MatchApiClient.send_game_result = MagicMock(return_value=None)
 
     async def test_start_game(self):
         """ゲームを開始できるかのテスト"""
@@ -78,7 +81,7 @@ class TestGameController(unittest.IsolatedAsyncioTestCase):
             "realtime_pingpong.consumers.GameConsumer.group_send",
             new_callable=AsyncMock,
         ) as mock_group_send:
-            await self.controller.game_loop("test_group")
+            await self.controller.game_loop("1")
 
             # メッセージが送信され、ゲーム状態がGAME_OVERになる
             mock_group_send.assert_called()
