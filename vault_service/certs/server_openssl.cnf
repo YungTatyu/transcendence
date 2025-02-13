@@ -1,6 +1,6 @@
 [req]
 default_bits       = 2048
-default_keyfile    = vault.key
+default_keyfile    = server.key
 prompt             = no
 distinguished_name = req_distinguished_name
 x509_extensions    = v3_usr

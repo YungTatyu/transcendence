@@ -3,7 +3,7 @@ path "transit/sign/jwt-key" {
   capabilities = ["create", "update"]
 }
 
-# キーリストの取得許可（オプション）
+# 公開鍵リスト配信の取得許可
 path "transit/keys/jwt-key" {
   capabilities = ["read"]
 }
