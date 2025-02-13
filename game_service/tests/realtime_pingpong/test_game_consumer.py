@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from core.match_manager import MatchManager
 from realtime_pingpong.consumers import GameConsumer
 
 
-class TestGameController(unittest.IsolatedAsyncioTestCase):
+class TestGameConsumer(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         MatchManager.remove_match = MagicMock(return_value=None)
         self.patcher = patch(
