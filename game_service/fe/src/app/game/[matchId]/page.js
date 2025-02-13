@@ -86,7 +86,9 @@ export default function Game() {
             parsedMessage.message === "gameover"
           ) {
             const results = parsedMessage.results;
-            alert("game over:\n" + results.map(r => `User ${r.userId}: ${r.score}`).join("\n"));
+            alert(
+              `game·over:\n${results.map((r) => `User ${r.userId}: ${r.score}`).join("\n")}`,
+            );
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
