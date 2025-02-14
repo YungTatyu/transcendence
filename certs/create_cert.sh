@@ -1,19 +1,20 @@
 #!/bin/bash
 
-CA_KEY="ca.key"
-CA_CRT="ca.crt"
-CA_CSR="ca.csr"
-CA_CONFIG="ca_openssl.cnf"
+SCRIPT_DIR=$(dirname $0)
+CA_KEY="${SCRIPT_DIR}/ca.key"
+CA_CRT="${SCRIPT_DIR}/ca.crt"
+CA_CSR="${SCRIPT_DIR}/ca.csr"
+CA_CONFIG="${SCRIPT_DIR}/ca_openssl.cnf"
 
-CLIENT_KEY="client.key"
-CLIENT_CSR="client.csr"
-CLIENT_CRT="client.crt"
-CLIENT_CONFIG="client_openssl.cnf"
+CLIENT_KEY="${SCRIPT_DIR}/client.key"
+CLIENT_CSR="${SCRIPT_DIR}/client.csr"
+CLIENT_CRT="${SCRIPT_DIR}/client.crt"
+CLIENT_CONFIG="${SCRIPT_DIR}/client_openssl.cnf"
 
-SERVER_KEY="server.key"
-SERVER_CSR="server.csr"
-SERVER_CRT="server.crt"
-SERVER_CONFIG="server_openssl.cnf"
+SERVER_KEY="${SCRIPT_DIR}/server.key"
+SERVER_CSR="${SCRIPT_DIR}/server.csr"
+SERVER_CRT="${SCRIPT_DIR}/server.crt"
+SERVER_CONFIG="${SCRIPT_DIR}/server_openssl.cnf"
 
 KEY_LENGTH="2048"
 VALIDITY_DAYS="365"
