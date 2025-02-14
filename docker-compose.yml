@@ -92,9 +92,7 @@ services:
       - user_db_data:/var/lib/postgresql/data
 
   vault:
-    build:
-      context: .
-      dockerfile: vault_service/Dockerfile
+    build: ./vault_service
     container_name: vault
     ports:
       - 8200:8200
@@ -103,6 +101,12 @@ services:
     env_file: ./docker_env/vault.env
     cap_add:
       - IPC_LOCK
+    volumes:
+      - ./certs/client.crt:/vault/certs/client.crt:ro
+      - ./certs/client.key:/vault/certs/client.key:ro
+      - ./certs/server.crt:/vault/certs/server.crt:ro
+      - ./certs/server.key:/vault/certs/server.key:ro
+      - ./certs/ca.crt:/vault/certs/ca.crt:ro
 
 networks:
   app_network:
