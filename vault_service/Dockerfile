@@ -1,4 +1,4 @@
-FROM hashicorp/vault:latest
+FROM hashicorp/vault:1.18.4
 
 COPY vault_service/config/ /vault/config/
 
