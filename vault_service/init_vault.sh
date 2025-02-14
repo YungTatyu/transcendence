@@ -1,7 +1,4 @@
-#!/bin/sh
-
-# Vaultサーバ起動
-vault server -config=/vault/config/vault.hcl &
+#!/bin/bash
 
 # Vaultサーバの起動待機
 until vault status 2>&1 | grep -q "Initialized"; do
@@ -33,4 +30,3 @@ vault write auth/cert/certs/client \
     certificate="$(cat /vault/certs/ca.crt)"
 
 echo "Vault ルートトークン: $root_token"
-tail -f /dev/null

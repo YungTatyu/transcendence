@@ -107,6 +107,10 @@ services:
       - ./certs/server.crt:/vault/certs/server.crt:ro
       - ./certs/server.key:/vault/certs/server.key:ro
       - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./docker_env/vault.env:/etc/vault.env:ro
+    tmpfs: [/tmp, /run]
+    privileged: true
+    stop_signal: SIGRTMIN+3
 
 networks:
   app_network:
