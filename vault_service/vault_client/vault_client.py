@@ -1,9 +1,12 @@
 import base64
+import logging
 from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt_utils import PublicKeyType, create_unsigned_jwt, verify_jwt
+
+logger = logging.getLogger(__name__)
 
 
 class VaultClient:
@@ -23,7 +26,7 @@ class VaultClient:
             response = requests.post(url, cert=self.__cert, verify=self.__ca_file)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            print(f"fetch token error: {e}")
+            logger.error(f"fetch token error: {e}")
             return None
 
         token = response.json().get("auth", {}).get("client_token")
@@ -44,7 +47,7 @@ class VaultClient:
             )
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            print(f"fetch signature data error: {e}")
+            logger.error(f"fetch signature data error: {e}")
             return None
 
         signature_data = response.json()["data"]["signature"]
@@ -62,7 +65,7 @@ class VaultClient:
             )
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            print(f"fetch pubkey list error: {e}")
+            logger.error(f"fetch pubkey list error: {e}")
             return None
 
         keys_dict = response.json()["data"]["keys"]

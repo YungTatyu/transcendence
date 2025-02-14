@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 from typing import Union
 
 from cryptography.hazmat.primitives import hashes
@@ -20,6 +21,8 @@ PublicKeyType = Union[
     ed25519.Ed25519PublicKey,
     ed448.Ed448PublicKey,
 ]
+
+logger = logging.getLogger(__name__)
 
 
 def base64url_encode(data):
@@ -60,5 +63,5 @@ def verify_jwt(pubkey: PublicKeyType, unsigned_jwt: bytes, signature: bytes) -> 
         )
         return True
     except Exception as e:
-        print(str(e))
+        logger.warn(str(e))
         return False
