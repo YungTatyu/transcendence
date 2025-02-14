@@ -25,6 +25,8 @@ O="${O:-42tokyo}"
 OU="${OU:-IT}"
 CN="${CN:-localhost}"
 SUBJ="/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}"
+SAN_DNS="${SAN_DNS:-localhost}"
+SAN_IP="${SAN_IP:-0.0.0.0}"
 
 # 鍵と証明書がすでに存在するかチェック
 check_files_exist() {
@@ -52,9 +54,17 @@ generate_csr() {
 # 証明書を生成
 generate_certificates() {
     echo "Generating certificates..."
-    openssl req -new -x509 -days "${VALIDITY_DAYS}" -key "${CA_KEY}" -out "${CA_CRT}" -config "${CONFIG}" -extensions v3_ca -sha256 -subj "${SUBJ}"
-    openssl x509 -req -days "${VALIDITY_DAYS}" -in "${CLIENT_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${CLIENT_CRT}" -extfile "${CONFIG}" -extensions v3_client -sha256
-    openssl x509 -req -days "${VALIDITY_DAYS}" -in "${SERVER_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${SERVER_CRT}" -extfile "${CONFIG}" -extensions v3_server -sha256
+	TMP_CONFIG="tmp_openssl.cnf"
+	cp ${CONFIG} ${TMP_CONFIG}
+	echo >> ${TMP_CONFIG}
+	echo "[ alt_names ]" >> ${TMP_CONFIG}
+    echo "DNS = ${SAN_DNS}" >> ${TMP_CONFIG}
+	echo "IP  = ${SAN_IP}" >> ${TMP_CONFIG}
+
+    openssl req -new -x509 -days "${VALIDITY_DAYS}" -key "${CA_KEY}" -out "${CA_CRT}" -config "${TMP_CONFIG}" -extensions v3_ca -sha256 -subj "${SUBJ}"
+    openssl x509 -req -days "${VALIDITY_DAYS}" -in "${CLIENT_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${CLIENT_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_client -sha256
+    openssl x509 -req -days "${VALIDITY_DAYS}" -in "${SERVER_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${SERVER_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_server -sha256
+	rm ${TMP_CONFIG}
 }
 
 # メイン処理
