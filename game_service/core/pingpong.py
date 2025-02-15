@@ -19,7 +19,7 @@ class Ball:
     WIDTH = 20
     INITIAL_POS = Position(x=Screen.WIDTH / 2, y=Screen.HEIGHT / 2)
     INITIAL_SPEED = Position(x=4, y=4)
-    ACCELERATION = 1.2
+    ACCELERATION = 1.05
     LEFTEST_POS = Screen.LEFTEST_POS
 
     def __init__(self):
