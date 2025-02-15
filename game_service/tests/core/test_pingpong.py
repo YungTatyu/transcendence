@@ -79,7 +79,8 @@ class TestBall(unittest.TestCase):
         self.ball.y_pos = self.left_player.paddle.y_pos - self.ball.HEIGHT
         old_speed = self.ball.x_speed
 
-        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        re = self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertFalse(re)
         self.assertEqual(self.ball.x_speed, old_speed)
 
     def test_hit_left_paddle_edge_no_hit2(self):
@@ -88,7 +89,8 @@ class TestBall(unittest.TestCase):
         self.ball.y_pos = self.left_player.paddle.y_pos + self.left_player.paddle.HEIGHT
         old_speed = self.ball.x_speed
 
-        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        re = self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertFalse(re)
         self.assertEqual(self.ball.x_speed, old_speed)
 
     def test_hit_right_paddle(self):
@@ -124,7 +126,8 @@ class TestBall(unittest.TestCase):
         self.ball.x_pos = Screen.LEFTEST_POS + Paddle.WIDTH
         self.ball.y_pos = self.right_player.paddle.y_pos + Paddle.HEIGHT
         old_speed = self.ball.x_speed
-        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        re = self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertFalse(re)
         self.assertEqual(self.ball.x_speed, old_speed)
 
     def test_hit_right_paddle_no_hit2(self):
@@ -132,7 +135,8 @@ class TestBall(unittest.TestCase):
         self.ball.x_pos = Screen.LEFTEST_POS + Paddle.WIDTH
         self.ball.y_pos = self.right_player.paddle.y_pos - Ball.HEIGHT
         old_speed = self.ball.x_speed
-        self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        re = self.ball.hit_paddle(self.left_player.paddle, self.right_player.paddle)
+        self.assertFalse(re)
         self.assertEqual(self.ball.x_speed, old_speed)
 
     def test_move_no_goal(self):
