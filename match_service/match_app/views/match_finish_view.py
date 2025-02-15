@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.utils.timezone import now
-from match_app.client.user_client import UserClient
+from match_app.client.tournament_client import TournamentClient
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchFinishSerializer
 from rest_framework.response import Response
@@ -66,7 +66,7 @@ class MatchFinishView(APIView):
 
     def __send_match_result_to_tournament(self, match: Match) -> Optional[str]:
         """/tournaments/finish-matchを叩き、試合終了を通知"""
-        client = UserClient(settings.TOURNAMENT_API_BASE_URL)
+        client = TournamentClient(settings.TOURNAMENT_API_BASE_URL)
         try:
             client.finish_match(match.tournament_id, match.round)
         except Exception as e:

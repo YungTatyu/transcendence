@@ -1,7 +1,7 @@
 import requests
 
 
-class UserClient:
+class TournamentClient:
     def __init__(self, base_url):
         """
         :param base_url: The base URL of the API (e.g., http://localhost:80)

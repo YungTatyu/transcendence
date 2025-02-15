@@ -25,7 +25,7 @@ class TestMatchFinish:
         mock_response.status_code = 200
         mock_response.json.return_value = {"message": "Match ended normally"}
         return mocker.patch(
-            "match_app.client.user_client.UserClient.finish_match",
+            "match_app.client.tournament_client.TournamentClient.finish_match",
             return_value=mock_response,
         )
 
@@ -33,7 +33,7 @@ class TestMatchFinish:
     def requests_post_faild_mocker(self, mocker):
         """モック対象の処理はエラー時に例外を投げるため、例外の発生をモックする"""
         return mocker.patch(
-            "match_app.client.user_client.UserClient.finish_match",
+            "match_app.client.tournament_client.TournamentClient.finish_match",
             side_effect=requests.exceptions.RequestException("Network Error"),
         )
 
