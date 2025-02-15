@@ -40,6 +40,8 @@ class UpdatePasswordView(APIView):
             user.password = make_password(serializer.validated_data["new_password"])
             user.save()
 
-            return Response({"message": "Password updated successfully."}, status=200)
+            return Response(
+                {"message": "Password updated successfully."}, status=200
+            )
         except Exception as e:
             return Response({"error": str(e)}, status=500)
