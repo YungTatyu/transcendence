@@ -11,19 +11,7 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.channel_name = self.channel_name  # チャネル名の一意性を保つ
 
-        # クッキーからJWTトークンを取得
-        token = self.scope.get("cookies", {}).get("access_token")
-        if not token:
-            await self.close()  # トークンが無い場合は接続を拒否
-            return
-
-        try:
-            decoded_token = jwt.decode(token, options={"verify_signature": False})
-            self.user_id = str(decoded_token.get("user_id"))
-        except jwt.ExpiredSignatureError:
-            await self.close()
-            return
-        except jwt.InvalidTokenError:
+        if not self.scope.get("user_id"):
             await self.close()
             return
 
