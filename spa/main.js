@@ -3,9 +3,10 @@ window.SPA = SPA;
 
 import Home from "./views/Home.js";
 import NotFound from "./views/NotFound.js";
-
+import Store, { setupStore } from "./views/Store.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
+SPA.route("/store", Store, setupStore);
 
 SPA.init({ containerId: "app" });
