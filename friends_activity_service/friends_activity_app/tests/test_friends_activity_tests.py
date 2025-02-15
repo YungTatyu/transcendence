@@ -51,3 +51,14 @@ class TestLoggedInUsersConsumer(TestCase):
         secret_key = "your_secret_key"
         token = jwt.encode(payload, secret_key, algorithm="HS256")
         return token
+
+    async def test_websocket_invalid_jwt(self):
+        # 無効なJWTを利用して接続を試みる
+        invalid_token = "invalid_token"
+        url = "/friends/online/"
+        communicator = WebsocketCommunicator(application, url)
+        communicator.scope["cookies"] = {"access_token": invalid_token}
+
+        connected, _ = await communicator.connect()
+        # JWTが無効なため、接続が確立されないはず
+        assert not connected
