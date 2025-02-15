@@ -1,10 +1,10 @@
-from urllib.parse import parse_qs
 import jwt
-from channels.middleware.base import BaseMiddleware
-from starlette.websockets import WebSocketDisconnect
 
-class JWTAuthMiddleware(BaseMiddleware):
-    """ WebSocketのリクエストからJWTを取得し、検証する """
+class JWTAuthMiddleware:
+    """ WebSocket のリクエストから JWT を取得し、検証する """
+
+    def __init__(self, inner):
+        self.inner = inner
 
     async def __call__(self, scope, receive, send):
         token = scope.get("cookies", {}).get("access_token")
@@ -26,4 +26,4 @@ class JWTAuthMiddleware(BaseMiddleware):
             })
             return
 
-        return await super().__call__(scope, receive, send)
+        return await self.inner(scope, receive, send)
