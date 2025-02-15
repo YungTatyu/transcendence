@@ -61,6 +61,7 @@ jobs:
         docker compose exec auth python manage.py test
         docker compose exec game python manage.py test
         docker compose exec tournament pytest
+        docker compose exec friends_activity_app pytest
 
     - name: Tear down
       if: always()
