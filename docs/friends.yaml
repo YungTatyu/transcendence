@@ -52,17 +52,17 @@ paths:
                     items:
                       type: object
                       properties:
-                        userId:
+                        fromUserId:
                           type: integer
-                        username:
-                          type: string
+                        toUserId:
+                          type: integer
                         status:
                           $ref: '#/components/schemas/FriendStatus'
-                        request_sent_at:
+                        requestSentAt:
                           type: string
                           format: date-time
                           description: "友達リクエストが送信された日時"
-                        approved_at:
+                        approvedAt:
                           type: string
                           format: date-time
                           description: "友達リクエストが承認された日時"
@@ -72,16 +72,7 @@ paths:
                     example: 1
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
-        "404":
-          description: "No friends found."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "No friends found."
+
   /friends/requests/{userId}:
     post:
       summary: "フレンドリクエストを送信"
