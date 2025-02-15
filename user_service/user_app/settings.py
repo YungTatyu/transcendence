@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-d$5z8fkmt13wp&73^(qh0g9#%-_0wkfkc*ioe1=$pbn42r+$r#"
+SECRET_KEY = "django-insecure-(6$k27bfa80g@9sops2j0my@8l4h@i652dw65u*=5odt2w3%kf"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
     "user_app",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -85,8 +85,12 @@ DATABASES = {
         "PASSWORD": os.getenv("DJANGO_DB_PASSWORD"),
         "HOST": os.getenv("DJANGO_DB_HOST"),
         "PORT": os.getenv("DJANGO_DB_PORT"),
+        "TEST": {
+            "NAME": "test_transcendence_db",
+        },
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
