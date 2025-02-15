@@ -4,7 +4,9 @@ import time
 import pytest
 from channels.testing import WebsocketCommunicator
 
-from tournament_app.consumers import TournamentMatchingConsumer as Tmc
+from tournament_app.consumers.tournament_matching_consumer import (
+    TournamentMatchingConsumer as Tmc,
+)
 from tournament_app.utils.tournament_matching_manager import (
     TournamentMatchingManager as Tmm,
 )

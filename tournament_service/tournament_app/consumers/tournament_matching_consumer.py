@@ -6,8 +6,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from tournament_app.models import Tournament
 
-from .utils.tournament_matching_manager import TournamentMatchingManager
-from .utils.tournament_session import TournamentSession
+from tournament_app.utils.tournament_matching_manager import TournamentMatchingManager
+from tournament_app.utils.tournament_session import TournamentSession
 
 
 class TournamentMatchingConsumer(AsyncWebsocketConsumer):
@@ -123,12 +123,10 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         start_time = event["tournament_start_time"]
         wait_user_ids = event["wait_user_ids"]
         await self.send(
-            text_data=json.dumps(
-                {
-                    "tournament_start_time": start_time,
-                    "wait_user_ids": wait_user_ids,
-                }
-            )
+            text_data=json.dumps({
+                "tournament_start_time": start_time,
+                "wait_user_ids": wait_user_ids,
+            })
         )
 
     @database_sync_to_async
