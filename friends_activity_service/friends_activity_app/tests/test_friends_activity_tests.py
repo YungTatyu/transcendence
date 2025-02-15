@@ -19,7 +19,7 @@ class TestLoggedInUsersConsumer(TestCase):
         access_token = self.create_jwt_for_user(user_id)
 
         # WebSocket URL
-        url = 'ws://localhost:8000/ws/logged-in-users/'
+        url = 'ws://localhost:8000/friends/online/'
 
         # WebSocket接続
         communicator = WebsocketCommunicator(LoggedInUsersConsumer.as_asgi(), url)
