@@ -6,7 +6,7 @@ import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 from friends_activity_app.consumers import LoggedInUsersConsumer
-
+from friends_activity_app.asgi import application 
 
 @pytest.mark.asyncio
 class TestLoggedInUsersConsumer(TestCase):
@@ -18,12 +18,10 @@ class TestLoggedInUsersConsumer(TestCase):
         access_token = self.create_jwt_for_user(user_id)
 
         # WebSocket URL
-        url = "ws://localhost:8000/friends/online/"
+        url = "/friends/online/"
 
         # WebSocket接続
-        communicator = WebsocketCommunicator(LoggedInUsersConsumer.as_asgi(), url)
-
-        # JWTをクッキーに設定して接続
+        communicator = WebsocketCommunicator(application, url)
         communicator.scope["cookies"] = {"access_token": access_token}
 
         # WebSocket接続を試みる

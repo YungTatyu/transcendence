@@ -10,8 +10,8 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.channel_name = self.channel_name  # チャネル名の一意性を保つ
-
-        if not self.scope.get("user_id"):
+        self.user_id = self.scope.get("user_id")
+        if not self.user_id:
             await self.close()
             return
 
