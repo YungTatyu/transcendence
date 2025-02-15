@@ -49,7 +49,8 @@ class FriendRequestView(APIView):
                 {"error": "Friend request already sent."}, status=HTTP_409_CONFLICT
             )
         if (
-            friend_status == Friends.STATUS_APPROVED or rev_friend_status == Friends.STATUS_APPROVED
+            friend_status == Friends.STATUS_APPROVED
+            or rev_friend_status == Friends.STATUS_APPROVED
         ):  # すでにfriend
             return Response({"error": "Already friend."}, status=HTTP_400_BAD_REQUEST)
         if rev_friend_status == Friends.STATUS_PENDING:
@@ -69,9 +70,9 @@ class FriendRequestView(APIView):
         friend = Friends.objects.filter(
             from_user_id=from_user_id, to_user_id=to_user_id
         ).first()
-        '''
+        """
         rev_friend:from_user_idとto_user_idを逆にしたもの
-        '''
+        """
         rev_friend = Friends.objects.filter(
             from_user_id=to_user_id, to_user_id=from_user_id
         ).first()
@@ -87,7 +88,9 @@ class FriendRequestView(APIView):
             )
 
         Friends.objects.create(
-            from_user_id=from_user_id, to_user_id=to_user_id, status=Friends.STATUS_PENDING
+            from_user_id=from_user_id,
+            to_user_id=to_user_id,
+            status=Friends.STATUS_PENDING,
         )
         return Response(
             {"message": "Friend request sent successfully."}, status=HTTP_201_CREATED
