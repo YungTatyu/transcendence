@@ -5,8 +5,8 @@ import jwt
 import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
-from friends_activity_app.consumers import LoggedInUsersConsumer
-from friends_activity_app.asgi import application 
+from friends_activity_app.asgi import application
+
 
 @pytest.mark.asyncio
 class TestLoggedInUsersConsumer(TestCase):
