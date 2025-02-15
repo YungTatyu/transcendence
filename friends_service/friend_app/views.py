@@ -54,6 +54,25 @@ class FriendRequestView(APIView):
     で条件分岐
     """
 
+    def status_post(self, friend, rev_friend):
+        friend_status = friend.status if friend else None
+        rev_friend_status = rev_friend.status if rev_friend else None
+
+        if friend_status == "pending":
+            return Response(
+                {"error": "Friend request already sent."}, status=HTTP_409_CONFLICT
+            )
+        if (
+            friend_status == "approved" or rev_friend_status == "approved"
+        ):  # すでにfriend
+            return Response({"error": "Already friend."}, status=HTTP_400_BAD_REQUEST)
+        if rev_friend_status == "pending":
+            return Response(
+                {"error": "Friend requests have already been received."},
+                status=HTTP_409_CONFLICT,
+            )
+        return None
+
     def post(self, _, user_id):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
@@ -67,25 +86,11 @@ class FriendRequestView(APIView):
         rev_friend = Friends.objects.filter(
             from_user_id=to_user_id, to_user_id=from_user_id
         ).first()
-        if friend or rev_friend:
-            friend_status = friend.status if friend else None
-            rev_friend_status = rev_friend.status if rev_friend else None
 
-            if friend_status == "pending":
-                return Response(
-                    {"error": "Friend request already sent."}, status=HTTP_409_CONFLICT
-                )
-            if (
-                friend_status == "approved" or rev_friend_status == "approved"
-            ):  # すでにfriend
-                return Response(
-                    {"error": "Already friend."}, status=HTTP_400_BAD_REQUEST
-                )
-            if rev_friend_status == "pending":
-                return Response(
-                    {"error": "Friend requests have already been received."},
-                    status=HTTP_409_CONFLICT,
-                )
+        if friend or rev_friend:
+            response = self.status_post(friend, rev_friend)
+            if response:
+                return response
         if from_user_id == to_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},

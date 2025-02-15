@@ -385,29 +385,29 @@ class FriendListTest(APITestCase):
         expect_answer = {
             "friends": [
                 {
-                    "fromUserId":1,
-                    "toUserId":2,
+                    "fromUserId": 1,
+                    "toUserId": 2,
                     "status": "pending",
                     "requestSentAt": current_time.isoformat(),
                     "approvedAt": None,
                 },
                 {
-                    "fromUserId":3,
-                    "toUserId":1,
+                    "fromUserId": 3,
+                    "toUserId": 1,
                     "status": "pending",
                     "requestSentAt": current_time.isoformat(),
                     "approvedAt": None,
                 },
                 {
-                    "fromUserId":1,
-                    "toUserId":4,
+                    "fromUserId": 1,
+                    "toUserId": 4,
                     "status": "approved",
                     "requestSentAt": current_time.isoformat(),
                     "approvedAt": current_time.isoformat(),
                 },
                 {
-                    "fromUserId":5,
-                    "toUserId":1,
+                    "fromUserId": 5,
+                    "toUserId": 1,
                     "status": "approved",
                     "requestSentAt": current_time.isoformat(),
                     "approvedAt": current_time.isoformat(),
