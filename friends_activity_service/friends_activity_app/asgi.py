@@ -8,10 +8,6 @@ from friends_activity_app.views import health_check
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'friends_activity_app.settings')
 
-http_urlpatterns = [
-    path('health/', health_check, name='health-check'),
-]
-
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
