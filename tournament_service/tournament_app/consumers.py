@@ -4,7 +4,7 @@ from typing import Optional
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from tournament_app.models import Tournaments
+from tournament_app.models import Tournament
 
 from .utils.tournament_matching_manager import TournamentMatchingManager
 from .utils.tournament_session import TournamentSession
@@ -134,7 +134,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def __create_tournament(self) -> int:
         """永続的データとメモリ上のデータの両方を作成"""
-        tournament = Tournaments.objects.create()
+        tournament = Tournament.objects.create()
         tournament_id = tournament.tournament_id
         TournamentSession.register(
             tournament_id,
