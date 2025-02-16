@@ -1,7 +1,7 @@
 const stateManager = {
     state: {
         count: 0,
-        
+        items: [],
     },
     listeners: [],
     setState(newState) {
