@@ -1,3 +1,4 @@
+import random
 from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -18,14 +19,21 @@ class Ball:
     WIDTH = 20
     INITIAL_POS = Position(x=Screen.WIDTH / 2, y=Screen.HEIGHT / 2)
     INITIAL_SPEED = Position(x=4, y=4)
-    ACCELERATION = 1.2
+    ACCELERATION = 1.05
     LEFTEST_POS = Screen.LEFTEST_POS
 
     def __init__(self):
         self.__x_pos = self.INITIAL_POS.x
         self.__y_pos = self.INITIAL_POS.y
-        self.__x_speed = self.INITIAL_SPEED.x
-        self.__y_speed = self.INITIAL_SPEED.y
+        self.__x_speed = (
+            self.INITIAL_SPEED.x
+            if random.choice([True, False])
+            else self.INITIAL_SPEED.x * -1
+        )
+        random_speed = self.generate_random_speed()
+        self.__y_speed = (
+            random_speed if random.choice([True, False]) else random_speed * -1.0
+        )
 
     @property
     def x_pos(self):
@@ -118,10 +126,21 @@ class Ball:
         return pos
 
     def reset_ball_status(self):
+        # goalをきめたプレイヤーの方向にボールが進む
+        self.__x_speed = (
+            self.INITIAL_SPEED.x
+            if self.x_pos <= Screen.LEFTEST_POS
+            else self.INITIAL_SPEED.x * -1
+        )
+        random_speed = self.generate_random_speed()
+        self.__y_speed = (
+            random_speed if random.choice([True, False]) else random_speed * -1.0
+        )
         self.__x_pos = self.INITIAL_POS.x
         self.__y_pos = self.INITIAL_POS.y
-        self.__x_speed = self.INITIAL_SPEED.x
-        self.__y_speed = self.INITIAL_SPEED.y
+
+    def generate_random_speed(self):
+        return random.uniform(3.0, 6.0)
 
 
 class Paddle:
