@@ -32,9 +32,12 @@ class TestMatchFinish:
     @pytest.fixture()
     def requests_post_faild_mocker(self, mocker):
         """モック対象の処理はエラー時に例外を投げるため、例外の発生をモックする"""
+        mock_response = MagicMock(spec=requests.Response)
+        mock_response.status_code = 500
+        mock_response.json.return_value = {"error": "Internal Server Error"}
         return mocker.patch(
             "match_app.client.tournament_client.TournamentClient.finish_match",
-            side_effect=requests.exceptions.RequestException("Network Error"),
+            return_value=mock_response,
         )
 
     def request_match_finish(self, client, status, match_id, results) -> dict:

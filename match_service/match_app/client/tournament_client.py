@@ -1,4 +1,7 @@
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TournamentClient:
@@ -35,12 +38,23 @@ class TournamentClient:
         response.raise_for_status()
         return response
 
-    def finish_match(self, tournament_id, round):
+    def finish_match(self, tournament_id, round) -> requests.Response:
         """
         /tournaments/finish-matchを叩き、試合終了を通知
-        HTTPステータスコードが200番台以外であれば例が発生
-        ネットワーク系のエラーの場合例外が発生
+        エラーの場合INTERNAL_SERVER_ERRORを返す
         """
         endpoint = "tournaments/finish-match"
         body = {"tournamentId": tournament_id, "round": round}
-        return self.__send_request("POST", endpoint, body)
+
+        try:
+            return self.__send_request("POST", endpoint, body)
+        except Exception as e:
+            logger.error(f"finish-match error: {str(e)}")
+            response = requests.Response()
+            response.status_code = 500
+            response._content = b'{"error": "Internal Server Error"}'
+            response.headers["Content-Type"] = "application/json"
+            response.request = requests.Request(
+                "POST", f"{self.base_url}/{endpoint}"
+            ).prepare()
+            return response

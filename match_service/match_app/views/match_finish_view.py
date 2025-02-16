@@ -67,8 +67,7 @@ class MatchFinishView(APIView):
     def __send_match_result_to_tournament(self, match: Match) -> Optional[str]:
         """/tournaments/finish-matchを叩き、試合終了を通知"""
         client = TournamentClient(settings.TOURNAMENT_API_BASE_URL)
-        try:
-            client.finish_match(match.tournament_id, match.round)
-        except Exception as e:
-            return str(e)
-        return None
+        response = client.finish_match(match.tournament_id, match.round)
+        if response.status_code == 200:
+            return None
+        return "Internal Server Error"
