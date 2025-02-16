@@ -1,32 +1,32 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname $0)
-CA_KEY="${SCRIPT_DIR}/ca.key"
-CA_CRT="${SCRIPT_DIR}/ca.crt"
+readonly SCRIPT_DIR=$(dirname $0)
+readonly CA_KEY="${SCRIPT_DIR}/ca.key"
+readonly CA_CRT="${SCRIPT_DIR}/ca.crt"
 
-CLIENT_KEY="${SCRIPT_DIR}/client.key"
-CLIENT_CSR="${SCRIPT_DIR}/client.csr"
-CLIENT_CRT="${SCRIPT_DIR}/client.crt"
+readonly CLIENT_KEY="${SCRIPT_DIR}/client.key"
+readonly CLIENT_CSR="${SCRIPT_DIR}/client.csr"
+readonly CLIENT_CRT="${SCRIPT_DIR}/client.crt"
 
-SERVER_KEY="${SCRIPT_DIR}/server.key"
-SERVER_CSR="${SCRIPT_DIR}/server.csr"
-SERVER_CRT="${SCRIPT_DIR}/server.crt"
+readonly SERVER_KEY="${SCRIPT_DIR}/server.key"
+readonly SERVER_CSR="${SCRIPT_DIR}/server.csr"
+readonly SERVER_CRT="${SCRIPT_DIR}/server.crt"
 
-CONFIG="${SCRIPT_DIR}/openssl.cnf"
+readonly CONFIG="${SCRIPT_DIR}/openssl.cnf"
 
-KEY_LENGTH="2048"
-VALIDITY_DAYS="365"
+readonly KEY_LENGTH="2048"
+readonly VALIDITY_DAYS="365"
 
 # 既存の環境変数が設定されている場合はそれを使用し、なければデフォルトの値を使用
-C="${C:-JP}"
-ST="${ST:-Tokyo}"
-L="${L:-Shinjuku}"
-O="${O:-42tokyo}"
-OU="${OU:-IT}"
-CN="${CN:-localhost}"
-SUBJ="/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}"
-SAN_DNS="${SAN_DNS:-localhost}"
-SAN_IP="${SAN_IP:-0.0.0.0}"
+readonly C="${C:-JP}"
+readonly ST="${ST:-Tokyo}"
+readonly L="${L:-Shinjuku}"
+readonly O="${O:-42tokyo}"
+readonly OU="${OU:-IT}"
+readonly CN="${CN:-localhost}"
+readonly SUBJ="/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}"
+readonly SAN_DNS="${SAN_DNS:-localhost}"
+readonly SAN_IP="${SAN_IP:-0.0.0.0}"
 
 # 鍵と証明書がすでに存在するかチェック
 check_files_exist() {
@@ -54,7 +54,7 @@ generate_csr() {
 # 証明書を生成
 generate_certificates() {
     echo "Generating certificates..."
-	TMP_CONFIG="tmp_openssl.cnf"
+	readonly TMP_CONFIG="tmp_openssl.cnf"
 	cp "$CONFIG" "$TMP_CONFIG"
 	echo >> ${TMP_CONFIG}
 	echo "[ alt_names ]" >> ${TMP_CONFIG}
