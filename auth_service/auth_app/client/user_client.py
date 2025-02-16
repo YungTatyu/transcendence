@@ -21,7 +21,7 @@ class MockResponse:
 
 
 class UserClient:
-    def __init__(self, base_url, use_mock=False):
+    def __init__(self, base_url, use_mock=False, mock_search_data=None):
         """
         Initialize the UserClient.
 
@@ -30,6 +30,7 @@ class UserClient:
         """
         self.base_url = base_url
         self.use_mock = use_mock
+        self.mock_search_data = mock_search_data
         if use_mock:
             self._setup_mock()
 
@@ -46,10 +47,17 @@ class UserClient:
             status_code=201,
         )
 
-        self.mock_get_user.return_value = MockResponse(
-            json_data=[{"error": "User not found."}],
-            status_code=404,
-        )
+        if self.mock_search_data:
+            self.mock_get_user.return_value = MockResponse(
+                json_data=self.mock_search_data,
+                status_code=200,
+            )
+        else:
+            # Default mock for search_users
+            self.mock_get_user.return_value = MockResponse(
+                json_data=[{"error": "User not found."}],
+                status_code=404,
+            )
 
     def create_user(self, username):
         """
