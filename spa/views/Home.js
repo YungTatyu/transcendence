@@ -6,6 +6,7 @@ export default function Home() {
     return `
         ${Header({ title: "ホーム" })}
         <p>これはホームページです。</p>
+        <img src="./assets/42.png" alt="ロゴ">
         <button onclick="SPA.navigate('/store')">storeへ</button>
         <button onclick="SPA.navigate('/api')">APIへ</button>
         <button onclick="SPA.navigate('/404')">404へ</button>
