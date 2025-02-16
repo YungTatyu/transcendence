@@ -8,6 +8,7 @@ all: up
 
 .PHONY: up
 up:
+	./certs/create_cert.sh
 	${DCCOMPOSE} up -d --build
 
 .PHONY: down

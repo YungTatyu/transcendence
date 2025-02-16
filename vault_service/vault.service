@@ -1,0 +1,13 @@
+[Unit]
+Description=Vault Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/vault server -config=/vault/config/vault.hcl
+Restart=on-failure
+ExecStartPost=/usr/local/bin/init_vault.sh
+
+EnvironmentFile=/etc/vault.env
+
+[Install]
+WantedBy=multi-user.target

@@ -122,6 +122,28 @@ services:
     volumes:
       - match_db_data:/var/lib/postgresql/data
 
+  vault:
+    build: ./vault_service
+    container_name: vault
+    ports:
+      - 8200:8200
+    networks:
+      - app_network
+    env_file: ./docker_env/vault.env
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./certs/client.crt:/vault/certs/client.crt:ro
+      - ./certs/client.key:/vault/certs/client.key:ro
+      - ./certs/server.crt:/vault/certs/server.crt:ro
+      - ./certs/server.key:/vault/certs/server.key:ro
+      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./docker_env/vault.env:/etc/vault.env:ro
+      - vault_data:/vault/data
+    tmpfs: [/tmp, /run]
+    privileged: true
+    stop_signal: SIGRTMIN+3
+
 networks:
   app_network:
     driver: bridge
@@ -131,3 +153,4 @@ volumes:
   tournament_db_data:
   user_db_data:
   match_db_data:
+  vault_data:
