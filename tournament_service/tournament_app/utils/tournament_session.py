@@ -2,6 +2,7 @@ from typing import Optional
 
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.tournament_tree import TournamentTree
+from django.conf import settings
 
 
 class TournamentSession:
@@ -70,7 +71,7 @@ class TournamentSession:
         [WARN] matchAPIを叩く処理でエラーが発生した場合、例外が発生
         """
         tree = TournamentTree(user_ids)
-        client = MatchClient("http://localhost:8002")
+        client = MatchClient(settings.MATCH_API_BASE_URL)
 
         for node in TournamentTree.bfs_iterator(tree.root):
             parent = node.parent_node
