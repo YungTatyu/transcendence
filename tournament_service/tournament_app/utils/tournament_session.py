@@ -1,8 +1,8 @@
 from typing import Optional
 
+from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.tournament_tree import TournamentTree
-from django.conf import settings
 
 
 class TournamentSession:

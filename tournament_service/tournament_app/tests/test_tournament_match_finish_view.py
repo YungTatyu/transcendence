@@ -1,6 +1,6 @@
 import pytest
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from django.utils.timezone import now
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from tournament_app.models import Tournament
 from tournament_app.utils.tournament_session import TournamentSession
