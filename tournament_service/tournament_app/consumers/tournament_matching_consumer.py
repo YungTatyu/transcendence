@@ -98,7 +98,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
     async def __start_tournament(self):
         """
         1. リソースを作成
-        2. tournament_id Send
+        2. tournament_id(TournamentSession作成失敗ならNone)をSend
         3. ユーザーをchannelから削除
         4. タイマーを削除(タスクがない場合は何もしない)
         """
@@ -130,12 +130,17 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def __create_tournament(self) -> int:
-        """永続的データとメモリ上のデータの両方を作成"""
+    def __create_tournament(self) -> Optional[int]:
+        """
+        永続的データとメモリ上のデータの両方を作成
+        [INFO] TournamentSession.register失敗時、Noneが返る
+        """
         tournament = Tournament.objects.create()
         tournament_id = tournament.tournament_id
-        TournamentSession.register(
+        session = TournamentSession.register(
             tournament_id,
             list(TournamentMatchingManager.get_waiting_users().keys()),
         )
+        if session is None:
+            return None
         return tournament_id
