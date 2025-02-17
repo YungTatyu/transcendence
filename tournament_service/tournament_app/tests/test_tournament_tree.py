@@ -5,6 +5,20 @@ from tournament_app.utils.tournament_tree import TournamentTree
 
 class TestTournamentTree:
     @pytest.mark.parametrize(
+        "lst, group_size",
+        [
+            ([0], 2),  # len(lst) == 0 なのでエラー
+            ([1], 2),  # len(lst) == 1 なのでエラー
+            ([1, 2], 1),  # group_size == 1 なのでエラー
+            ([1, 2], -1),  # group_size == -1 なのでエラー
+        ],
+    )
+    def test_tournament_tree_raise_value_error(self, lst, group_size):
+        """ValueErrorが発生するかをテスト"""
+        with pytest.raises(ValueError):
+            TournamentTree(lst, group_size)
+
+    @pytest.mark.parametrize(
         "expect_return, lst, group_size",
         [
             (1, [1, 2], 2),
