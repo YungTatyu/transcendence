@@ -80,6 +80,30 @@ class TournamentTree:
         return self.__root
 
     def __create_tree(self, node_list: list[Node], round_counter: int) -> Node:
+        """
+        TournamentTreeを作成
+        [INFO] TournamentTree作成時、ノードをまとめる処理が入ります
+
+        ex1) lst = [1, 2, 3, 4], group_size = 2
+
+             Node([],3)
+                    |
+            +----------------+
+            |                |
+        Node([1,3],1)   Node([2,4],2)
+
+        ex2) lst = [1, 2, 3, 4, 5], group_size = 2
+
+                    Node([],4)
+                        |
+               +------------------+
+               |                  |
+            +------+          Node([3,4],3)
+            |      |
+            |    Node([2],2)
+            |
+        Node([1,5],1)
+        """
         if len(node_list) == 1:  # nodeが１つに収束したら終了
             root = node_list[0]
             root.round = round_counter
@@ -109,10 +133,24 @@ class TournamentTree:
 
     def __create_node_list(self, lst: list, group_size: int):
         """
-        {lst, group_size} -> node_list
+        TournamentTreeの末端ノードリストを作成
 
-        {[1, 2, 3, 4], 2} -> [(1, 3), (2, 4)]
-        {[1, 2, 3, 4, 5], 2} -> [(1, 5), (2), (3), (4)]
+        ex1) lst = [1, 2, 3, 4], group_size = 2
+
+            [ ]
+             |
+          +-----+
+        [1,3] [2,4] <- 末端ノードリスト = [[1,3], [2,4]]
+
+        ex2) lst = [1, 2, 3, 4, 5], group_size = 2
+
+                [ ]
+                 |
+            +--------+
+           [ ]      [ ]
+            |        |
+          +----+   +---+
+        [1,5] [2] [3] [4] <- 末端ノードリスト = [[1,5], [2], [3], [4]]
         """
         node_list_size = TournamentTree.calc_node_list_size(lst, group_size)
         node_list = []
@@ -131,15 +169,25 @@ class TournamentTree:
     @staticmethod
     def calc_node_list_size(lst: list, group_size: int) -> int:
         """
-        {len(lst), group_size} -> num_of_nodes
+        TournamentTreeの末端ノード数を算出
+        [INFO] 詳細な挙動はテストを見て
 
-        {2, 2} -> 1
-        {3, 2} -> 2
-        {4, 2} -> 2
-        {5, 2} -> 4
-        {3, 3} -> 1
-        {4, 3} -> 3
-        {5, 3} -> 3
+        ex1) lst = [1, 2, 3, 4], group_size = 2
+
+            [ ]
+             |
+          +-----+
+        [1,3] [2,4] <- 末端ノード数 = 2
+
+        ex2) lst = [1, 2, 3, 4, 5], group_size = 2
+
+                [ ]
+                 |
+            +--------+
+           [ ]      [ ]
+            |        |
+          +----+   +---+
+        [1,5] [2] [3] [4] <- 末端ノード数 = 4
         """
         if len(lst) < 2 or group_size < 2:
             return -1
