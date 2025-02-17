@@ -1,5 +1,8 @@
 from typing import Optional
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MatchClient:
@@ -45,8 +48,7 @@ class MatchClient:
     ):
         """
         /matches/tournament-matchを叩き、トーナメント試合レコードを作成
-        HTTPステータスコードが200番台以外であれば例が発生
-        ネットワーク系のエラーの場合例外が発生
+        エラーの場合INTERNAL_SERVER_ERRORを返す
         """
         endpoint = "matches/tournament-match"
         body = {
@@ -55,4 +57,20 @@ class MatchClient:
             "parentMatchId": parent_match_id,
             "round": round,
         }
-        return self.__send_request("POST", endpoint, body)
+        try:
+            return self.__send_request("POST", endpoint, body=body)
+        except Exception as e:
+            logger.error(
+                f"Error occurred while create tournament match. "
+                f"Exception: {str(e)} "
+                f"Endpoint: {self.base_url}/{endpoint} "
+                f"Request Body: {body}",
+            )
+            response = requests.Response()
+            response.status_code = 500
+            response._content = b'{"error": "Internal Server Error"}'
+            response.headers["Content-Type"] = "application/json"
+            response.request = requests.Request(
+                "POST", f"{self.base_url}/{endpoint}"
+            ).prepare()
+            return response
