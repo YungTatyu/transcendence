@@ -28,6 +28,9 @@ readonly SUBJ="/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}"
 readonly SAN_DNS="${SAN_DNS:-localhost}"
 readonly SAN_IP="${SAN_IP:-0.0.0.0}"
 
+# 証明書作成のために作られる一時ファイル
+readonly TMP_CONFIG="tmp_openssl.cnf"
+
 # 鍵と証明書がすでに存在するかチェック
 check_files_exist() {
 	if [[ -f "${CA_KEY}" && -f "${CA_CRT}" && -f "${CLIENT_KEY}" && -f "${CLIENT_CRT}" && -f "${SERVER_KEY}" && -f "${SERVER_CRT}" ]]; then
@@ -54,7 +57,6 @@ generate_csr() {
 # 証明書を生成
 generate_certificates() {
 	echo "Generating certificates..."
-	readonly TMP_CONFIG="tmp_openssl.cnf"
 	cp "$CONFIG" "$TMP_CONFIG"
 	echo >>${TMP_CONFIG}
 	echo "[ alt_names ]" >>${TMP_CONFIG}
@@ -70,8 +72,8 @@ generate_certificates() {
 }
 
 print_and_exit() {
-	message=$1
-	exit_code=$2
+	local message=$1
+	local exit_code=$2
 	echo "$message" >&2
 	exit $exit_code
 }
