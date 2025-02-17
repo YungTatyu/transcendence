@@ -1,8 +1,10 @@
 from django.test import TestCase
 
 from tournament_app.utils.tournament_session import TournamentSession as Ts
+import pytest
 
 
+@pytest.mark.usefixtures("create_match_records_mocker")
 class TournamentSessionTest(TestCase):
     def setUp(self):
         Ts.clear()

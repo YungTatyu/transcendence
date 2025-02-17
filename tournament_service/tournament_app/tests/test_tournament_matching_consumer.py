@@ -105,7 +105,7 @@ async def test_same_port():
 # INFO @pytest.mark.django_dbを付与したテストで作成されたレコードはテスト後にロールバックされ、永続化しない。
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_start_tournament_by_room_capacity():
+async def test_start_tournament_by_room_capacity(create_match_records_mocker):
     """ROOM_CAPACITYに達した時にtournament_idが送信されるか"""
     communicators = []
     for i in range(Tmc.ROOM_CAPACITY):
@@ -123,7 +123,7 @@ async def test_start_tournament_by_room_capacity():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_start_tournament_by_force_start_time():
+async def test_start_tournament_by_force_start_time(create_match_records_mocker):
     """FORCED_START_TIMEに達した時にtournament_idが送信されるか"""
     communicators = []
 
@@ -167,7 +167,7 @@ async def test_not_start_tournament():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_init_matching_room_after_start_tournament():
+async def test_init_matching_room_after_start_tournament(create_match_records_mocker):
     """
     トーナメント開始後、マッチングルームが初期化され、別ユーザーがマッチングできるか
 
@@ -208,7 +208,7 @@ async def test_init_matching_room_after_start_tournament():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_create_resource():
+async def test_create_resource(create_match_records_mocker):
     """トーナメント開始後、リソースが作成されたか"""
     communicators = []
     for i in range(Tmc.ROOM_CAPACITY):
@@ -226,7 +226,7 @@ async def test_create_resource():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_start_after_timer_cancel():
+async def test_start_after_timer_cancel(create_match_records_mocker):
     """
     2人の状態で1人抜け、トーナメント強制開始タイマーがcancelされた後、トーナメントが正常に開始されるか
     """

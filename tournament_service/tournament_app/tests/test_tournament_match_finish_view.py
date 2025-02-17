@@ -7,7 +7,7 @@ from tournament_app.utils.tournament_session import TournamentSession
 
 
 @pytest.fixture
-def tournament_setup_and_teardown():
+def tournament_setup_and_teardown(create_match_records_mocker):
     """
     トーナメントデータを作成し、後処理を実行(DBは別のfixtureで後処理)
     [INFO] TournamentSession.roundはregster時に1で初期化される
