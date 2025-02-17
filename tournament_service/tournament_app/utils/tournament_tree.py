@@ -59,6 +59,14 @@ class TournamentTree:
             return f"({value_list}, {round}, {parent}, {match_id})"
 
     def __init__(self, lst: list, group_size: int = 2):
+        """
+        :param lst: TournamentTreeを作成するためのデータのリスト(要素数2以上)
+        :param group_size: 1試合の最大人数(2以上)
+        """
+        if len(lst) < 2 or group_size < 2:
+            raise ValueError(
+                "Invalid parameters: list size must be at least 2, group_size must be 2 or greater."
+            )
         self.__group_size = group_size
         node_list = self.__create_node_list(lst, group_size)
         self.__root = self.__create_tree(node_list, 1)
@@ -68,7 +76,7 @@ class TournamentTree:
         return self.__group_size
 
     @property
-    def root(self):
+    def root(self) -> Node:
         return self.__root
 
     def __create_tree(self, node_list: list[Node], round_counter: int) -> Node:
@@ -121,7 +129,7 @@ class TournamentTree:
         return node_list
 
     @staticmethod
-    def calc_node_list_size(lst: list, group_size: int):
+    def calc_node_list_size(lst: list, group_size: int) -> int:
         """
         {len(lst), group_size} -> num_of_nodes
 
@@ -133,8 +141,10 @@ class TournamentTree:
         {4, 3} -> 3
         {5, 3} -> 3
         """
-        node_list_size = 1
+        if len(lst) < 2 or group_size < 2:
+            return -1
 
+        node_list_size = 1
         while node_list_size * group_size < len(lst):
             node_list_size *= group_size
         return node_list_size
