@@ -100,6 +100,28 @@ services:
     volumes:
       - user_db_data:/var/lib/postgresql/data
 
+  match:
+    build: ./match_service
+    container_name: match
+    ports:
+      - "8003:8003"
+    env_file: ./docker_env/match.env
+    networks:
+      - app_network
+    depends_on:
+      - match_db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+
+  match_db:
+    image: postgres:15
+    container_name: match_db
+    env_file: ./docker_env/match_db.env
+    networks:
+      - app_network
+    volumes:
+      - match_db_data:/var/lib/postgresql/data
+
 networks:
   app_network:
     driver: bridge
@@ -108,3 +130,4 @@ volumes:
   auth_db_data:
   tournament_db_data:
   user_db_data:
+  match_db_data:
