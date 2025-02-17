@@ -90,6 +90,29 @@ class TestTournamentTree:
             TournamentTree(lst, group_size)
 
     @pytest.mark.parametrize(
+        "lst, group_size, expect_id_list",
+        [
+            ([1, 2, 3], 2, [None, 1]),
+            ([1, 2, 3, 4], 2, [None, 1, 1]),
+            ([1, 2, 3, 4, 5], 2, [None, 1, 1, 2]),
+            ([1, 2, 3, 4, 5, 6, 7, 8], 2, [None, 1, 1, 2, 2, 3, 3]),
+            ([1, 2, 3, 4, 5, 6, 7, 8, 9], 3, [None, 1, 1, 1]),
+            ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3, [None, 1, 1, 1, 2]),
+        ],
+    )
+    def test_get_parent_match_id(self, lst, group_size, expect_id_list):
+        tree = TournamentTree(lst, group_size)
+
+        for i, node in enumerate(tree.bfs_iterator(tree.root)):
+            #  仮のmatch_idとして 1,2,3...を付与する
+            node.match_id = i + 1
+
+        for expect_id, node in zip(expect_id_list, tree.bfs_iterator(tree.root)):
+            parent_node = node.parent_node
+            parent_match_id = None if parent_node is None else parent_node.match_id
+            assert expect_id == parent_match_id
+
+    @pytest.mark.parametrize(
         "expect_return, lst, group_size",
         [
             (1, [1, 2], 2),
