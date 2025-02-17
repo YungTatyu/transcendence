@@ -50,7 +50,12 @@ class TournamentClient:
         try:
             return self.__send_request("POST", endpoint, body)
         except Exception as e:
-            logger.error(f"finish-match error: {str(e)}")
+            logger.error(
+                f"Error occurred while finishing match. "
+                f"Exception: {str(e)} "
+                f"Endpoint: {self.base_url}/{endpoint} "
+                f"Request Body: {body}",
+            )
             response = requests.Response()
             response.status_code = 500
             response._content = b'{"error": "Internal Server Error"}'
