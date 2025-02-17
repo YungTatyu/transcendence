@@ -18,7 +18,12 @@ down:
 .PHONY: re
 re: down up
 
-# サービス単体でコンテナを起動
+# サービス単位でコンテナを起動するターゲット
+# 使い方:
+#   make service <サービス名>
+# 例:
+#   make service vault -> vaultサービスのみを起動
+#   make service vault match -> vaultとmatchサービスのみを起動
 .PHONY: service
 service:
 	docker compose up $(filter-out $@,$(MAKECMDGOALS)) -d --build
