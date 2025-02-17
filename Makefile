@@ -18,6 +18,15 @@ down:
 .PHONY: re
 re: down up
 
+# サービス単体でコンテナを起動
+.PHONY: service
+service:
+	docker compose up $(filter-out $@,$(MAKECMDGOALS)) -d --build
+
+# 余計なターゲット扱いを防ぐ
+%:
+	@:
+
 .PHONY: build-linter
 build-linter:
 	docker build -t ${LINTER_IMG_NAME} -f ${TOOL_DIR}/Dockerfile .
