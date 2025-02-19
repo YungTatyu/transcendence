@@ -17,9 +17,26 @@ Including another URLconf
 
 from django.urls import path
 
-from .views import OTPVerificationView, SignupView
+from auth_app.views.health_check_view import HealthCheckView
+from auth_app.views.otp_login_view import OTPLoginVerificationView, OTPLoginView
+from auth_app.views.signup_views import OTPVerificationView, SignupView
+from auth_app.views.update_email_view import UpdateEmailView
+from auth_app.views.update_password_view import UpdatePasswordView
 
 urlpatterns = [
     path("auth/otp/signup", SignupView.as_view(), name="otp-signup"),
-    path("auth/otp/signup/verify", OTPVerificationView.as_view(), name="otp-verify"),
+    path(
+        "auth/otp/signup/verify",
+        OTPVerificationView.as_view(),
+        name="otp-signup-verify",
+    ),
+    path("auth/me/email", UpdateEmailView.as_view(), name="update_email"),
+    path("auth/me/password", UpdatePasswordView.as_view(), name="update_password"),
+    path("auth/otp/login", OTPLoginView.as_view(), name="otp-login"),
+    path(
+        "auth/otp/login/verify",
+        OTPLoginVerificationView.as_view(),
+        name="otp-login-verify",
+    ),
+    path("health", HealthCheckView.as_view(), name="health_check"),
 ]

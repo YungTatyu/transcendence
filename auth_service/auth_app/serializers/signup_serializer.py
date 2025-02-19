@@ -1,18 +1,17 @@
 import json
 
 import pyotp
+from auth_app.client.user_client import UserClient
+from auth_app.models import CustomUser
+from auth_app.utils.redis_handler import RedisHandler
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
-from auth_app.client.user_client import UserClient
-from auth_app.models import CustomUser
-from auth_app.utils.redis_handler import RedisHandler
-
 
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20)
-    email = serializers.EmailField()
+    email = serializers.EmailField(max_length=255)
     password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
@@ -84,3 +83,8 @@ class SignupSerializer(serializers.ModelSerializer):
             "email": validated_data["email"],
             "otp_secret": otp_secret,
         }
+
+
+class OTPVerificationSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=20, required=True)
+    otp_token = serializers.CharField(required=True)
