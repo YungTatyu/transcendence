@@ -20,9 +20,6 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
         # ユーザーをリストに追加
         await self.add_user_to_list()
 
-        # ユーザー追加時にユーザーリストを送信
-        await self.send_logged_in_users_periodically()
-
     async def disconnect(self, close_code):
         # WebSocket接続が切断されたときにユーザーをリストから削除
         await self.remove_user_from_list()
@@ -55,16 +52,6 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
                 {
                     "status": "User removed",
                     "user_id": self.user_id,
-                    "current_users": self.user_list,
-                }
-            )
-        )
-
-    async def send_logged_in_users_periodically(self):
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "status": "Current logged in users",
                     "current_users": self.user_list,
                 }
             )
