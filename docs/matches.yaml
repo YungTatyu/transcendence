@@ -77,8 +77,8 @@ paths:
                     "parentMatchId": 3,
                     "round": 10,
                     "participants": [
-                      {"userId": 1, "userName": "ABC"},
-                      {"userId": 2, "userName": "DEF"}
+                      {"id": 1, "score": 10},
+                      {"id": 2, "score": 12}
                     ]
                   },
                   {
@@ -89,8 +89,8 @@ paths:
                     "parentMatchId": NULL,
                     "round": 11,
                     "participants": [
-                      {"userId": 2, "userName": "DEF"},
-                      {"userId": 3, "userName": "GHI"}
+                      {"id": 2, "score": 1},
+                      {"id": 3, "score": 11}
                     ]
                   }
                 ]
@@ -102,12 +102,6 @@ paths:
                 "error": "Bad Request"
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
-        '404':
-          description: 該当する試合が存在しない
-          content:
-            application/json:
-              example:
-                "error": "Match Not Found"
 
   /matches/tournament-match:
     post:
@@ -345,7 +339,7 @@ paths:
                     "date": "2024-12-09",
                     "userScore": 11,
                     "opponents": [
-                      {"name": "User2", "score": 5}
+                      {"id": 1, "score": 5}
                     ],
                   },
                   {
@@ -354,7 +348,7 @@ paths:
                     "date": "2024-12-01",
                     "userScore": 10,
                     "opponents": [
-                      {"name": "User3", "score": 12}
+                      {"id": 2, "score": 12}
                     ],
                   }
                 ]

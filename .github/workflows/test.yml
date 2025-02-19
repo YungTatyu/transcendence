@@ -29,6 +29,7 @@ jobs:
           ["auth"]=$CHECK
           ["game"]=$CHECK
           ["tournament"]=$CHECK
+          ["match"]=$CHECK
         )
 
         for i in {1..30}; do
@@ -62,6 +63,7 @@ jobs:
         docker compose exec game python manage.py test
         docker compose exec tournament pytest
         docker compose exec friends_activity_app pytest
+        docker compose exec match pytest
 
     - name: Tear down
       if: always()
