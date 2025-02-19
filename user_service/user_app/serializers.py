@@ -1,19 +1,22 @@
+from django.core.validators import MinLengthValidator
 from rest_framework import serializers
 
 
 class CreateUserSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=10)
+    username = serializers.CharField(validators=[MinLengthValidator(1)], max_length=10)
 
 
 class UserDataSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField()
-    username = serializers.CharField(max_length=10)
-    avatar_path = serializers.CharField(max_length=100)
+    userId = serializers.IntegerField( source="user_id")  # noqa: N815
+    username = serializers.CharField(validators=[MinLengthValidator(1)], max_length=10)
+    avatarPath = serializers.CharField(max_length=100, source="avatar_path")  # noqa: N815
 
 
 class QueryParamSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(required=False)
-    username = serializers.CharField(max_length=10, required=False)
+    userId = serializers.IntegerField(required=False, source="user_id")  # noqa: N815
+    username = serializers.CharField(
+        validators=[MinLengthValidator(1)], max_length=10, required=False
+    )
 
     def validate(self, data):
         """
@@ -23,14 +26,14 @@ class QueryParamSerializer(serializers.Serializer):
         username = data.get("username")
         user_id = data.get("user_id")
 
-        if not username and not user_id:
+        if username is None and user_id is None:
             raise serializers.ValidationError(
-                "query parameter 'username' or 'userid' is required."
+                "query parameter 'username' or 'userId' is required."
             )
 
-        if username and user_id:
+        if username is not None and user_id is not None:
             raise serializers.ValidationError(
-                "query parameter 'username' or 'userid' must not be provided together."
+                "query parameter 'username' or 'userId' must not be provided together."
             )
 
         return data

@@ -33,6 +33,12 @@ class TestUserViewPost:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data  # usernameのエラーを確認
 
+    def test_post_validation_error_emptyusernme(self, api_client):
+        """POST: バリデーションエラー(username空文字列)"""
+        response = api_client.post(reverse("users"), data={"username": ""})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "username" in response.data  # usernameのエラーを確認
+
     def test_post_user_already_exists(self, api_client, create_user):
         """POST: 既に存在するユーザーの登録(エラー)"""
         response = api_client.post(reverse("users"), data={"username": "testuser"})
@@ -58,7 +64,7 @@ class TestUserViewGet:
     def test_get_username_and_userid_specified(self, api_client, create_user):
         """GET: username と userid の両方を指定した場合（バリデーションエラー）"""
         response = api_client.get(
-            reverse("users"), {"username": "testuser", "user_id": create_user.user_id}
+            reverse("users"), {"username": "testuser", "userId": create_user.user_id}
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "non_field_errors" in response.data
@@ -71,7 +77,7 @@ class TestUserViewGet:
 
     def test_get_user_by_userid_success(self, api_client, create_user):
         """GET: userid でユーザーを検索（成功）"""
-        response = api_client.get(reverse("users"), {"user_id": create_user.user_id})
+        response = api_client.get(reverse("users"), {"userId": create_user.user_id})
         assert response.status_code == status.HTTP_200_OK
         assert response.data["username"] == "testuser"
 
@@ -83,7 +89,7 @@ class TestUserViewGet:
 
     def test_get_user_not_found_by_userid(self, api_client):
         """GET: 存在しないユーザーを userid で検索(エラー)"""
-        response = api_client.get(reverse("users"), {"user_id": 99999})
+        response = api_client.get(reverse("users"), {"userId": 99999})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
 
@@ -95,3 +101,9 @@ class TestUserViewGet:
         assert response.data["username"] == [
             "Ensure this field has no more than 10 characters."
         ]
+
+    def test_get_user_with_empty_username(self, api_client):
+        """GET: 10文字以上の username で検索 (バリデーションエラー)"""
+        response = api_client.get(reverse("users"), {"username": ""})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "non_field_errors" in response.data
