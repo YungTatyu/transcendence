@@ -7,7 +7,7 @@ class CreateUserSerializer(serializers.Serializer):
 
 
 class UserDataSerializer(serializers.Serializer):
-    userId = serializers.IntegerField( source="user_id")  # noqa: N815
+    userId = serializers.IntegerField(source="user_id")  # noqa: N815
     username = serializers.CharField(validators=[MinLengthValidator(1)], max_length=10)
     avatarPath = serializers.CharField(max_length=100, source="avatar_path")  # noqa: N815
 
