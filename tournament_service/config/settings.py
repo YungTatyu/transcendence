@@ -143,3 +143,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+MATCH_API_BASE_URL = "https://matches.42.fr"
