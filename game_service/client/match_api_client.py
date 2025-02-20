@@ -10,13 +10,16 @@ class MatchApiClient:
     @staticmethod
     def send_game_result(data):
         url = f"{MATCH_SERVICE}/matches/finish"
-        response = requests.post(url, json=data)
+        try:
+            response = requests.post(url, json=data)
 
-        if response.status_code >= 400:
-            error_detail = response.json()
-            logger.critical(
-                f"POST {url}\n"
-                f"status: {response.status_code}\n"
-                f"respones: {error_detail}\n"
-                f"Sent Data: {data}"
-            )
+            if response.status_code >= 400:
+                error_detail = response.json()
+                logger.critical(
+                    f"POST {url}\n"
+                    f"status: {response.status_code}\n"
+                    f"respones: {error_detail}\n"
+                    f"Sent Data: {data}"
+                )
+        except Exception as e:
+            logger.critical(f"POST {url}\nSent Data: {data}\nerror: {e}")
