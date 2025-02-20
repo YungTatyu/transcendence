@@ -111,9 +111,10 @@ class TournamentTree:
 
         parent_node_list = []  # node_listからみて親となるノードのリスト
         # group_sizeごとに親ノードを作成する
-        for i in range(0, len(node_list), self.__group_size):
+        for group_start_index in range(0, len(node_list), self.__group_size):
             value_list, children = [], []
-            for child in node_list[i : i + self.__group_size]:
+            group_end_index = group_start_index + self.__group_size
+            for child in node_list[group_start_index:group_end_index]:
                 if child.is_leaf and child.has_single_value:
                     # 親ノードが子ノードを吸収
                     value_list.extend(child.value_list)
