@@ -155,10 +155,10 @@ class TournamentTree:
         node_list_size = TournamentTree.calc_node_list_size(lst, group_size)
         node_list = []
 
-        for i in range(node_list_size):
+        for node_index in range(node_list_size):
             value_list = []
-            for j in range(group_size):
-                idx = i + (j * node_list_size)
+            for group_index in range(group_size):
+                idx = node_index + (group_index * node_list_size)
                 if len(lst) <= idx:
                     break
                 value_list.append(lst[idx])
