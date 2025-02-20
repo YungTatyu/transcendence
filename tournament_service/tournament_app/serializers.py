@@ -15,14 +15,18 @@ class TournamentMatchFinishSerializer(serializers.Serializer):
 
         tournament = Tournament.objects.filter(tournament_id=tournament_id).first()
         if tournament is None:
-            raise serializers.ValidationError("The Tournament does not exist")
+            raise serializers.ValidationError("The tournament does not exist")
         if tournament.finish_date is not None:
-            raise serializers.ValidationError("The Tournament is already over")
+            raise serializers.ValidationError("The tournament is already finished")
 
         tournament_session = TournamentSession.search(tournament_id)
         if tournament_session is None:
-            raise serializers.ValidationError("The Tournament Session does not exist")
+            raise serializers.ValidationError(
+                "The tournament session could not be found"
+            )
         if tournament_session.current_round != round:
-            raise serializers.ValidationError("Mismatch with tournament session info")
+            raise serializers.ValidationError(
+                "The specified round does not match the current round"
+            )
 
         return attrs
