@@ -8,6 +8,7 @@ all: up
 
 .PHONY: up
 up:
+	./certs/create_cert.sh
 	${DCCOMPOSE} up -d --build
 
 .PHONY: down
@@ -16,6 +17,20 @@ down:
 
 .PHONY: re
 re: down up
+
+# サービス単位でコンテナを起動するターゲット
+# 使い方:
+#   make service <サービス名>
+# 例:
+#   make service vault -> vaultサービスのみを起動
+#   make service vault match -> vaultとmatchサービスのみを起動
+.PHONY: service
+service:
+	docker compose up $(filter-out $@,$(MAKECMDGOALS)) -d --build
+
+# 余計なターゲット扱いを防ぐ
+%:
+	@:
 
 .PHONY: build-linter
 build-linter:
