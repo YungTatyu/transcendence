@@ -10,17 +10,17 @@ class JWTAuthMiddleware:
     async def __call__(self, scope, receive, send):
         token = scope.get("cookies", {}).get("access_token")
 
-        if token:
-            try:
-                decoded_token = jwt.decode(
-                    token, options={"verify_signature": False}, algorithms=["HS256"]
-                )
-                scope["user_id"] = str(decoded_token.get("user_id"))
-            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, jwt.DecodeError):
-                await send({"type": "websocket.close", "code": 1008})
-                return
-        else:
+        if token is None:
             await send({"type": "websocket.close", "code": 1008})
             return
+
+        try:
+            decoded_token = jwt.decode(
+                token, options={"verify_signature": False}, algorithms=["HS256"]
+            )
+            scope["user_id"] = str(decoded_token.get("user_id"))
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, jwt.DecodeError):
+            await send({"type": "websocket.close", "code": 1008})
+            return            
 
         return await self.inner(scope, receive, send)
