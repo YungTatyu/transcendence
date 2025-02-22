@@ -67,24 +67,23 @@ class TestLoggedInUsersConsumer(TestCase):
         await asyncio.sleep(0.5)
 
         try:
-            # すべてのメッセージを受信するためにループする
-            received_users_1 = set()
-            received_users_2 = set()
+            # communicator_2 は 1 回だけ受信
+            response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+            assert user_id in response_from_second_client["current_users"]
+            assert user_id_2 in response_from_second_client["current_users"]
+
+            # communicator は複数回受信して最新のユーザーリストを取得
+            received_users = set()
 
             for _ in range(2):  # 2回受信を試みる
                 response_from_first_client = await communicator.receive_json_from(timeout=1)
-                response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+                received_users.update(response_from_first_client["current_users"])
 
-                received_users_1.update(response_from_first_client["current_users"])
-                received_users_2.update(response_from_second_client["current_users"])
-
-                if user_id in received_users_1 and user_id_2 in received_users_1:
+                if user_id in received_users and user_id_2 in received_users:
                     break  # 期待するデータを受け取ったらループを抜ける
 
-            assert user_id in received_users_1
-            assert user_id_2 in received_users_1
-            assert user_id in received_users_2
-            assert user_id_2 in received_users_2
+            assert user_id in received_users
+            assert user_id_2 in received_users
 
         finally:
             # 接続解除
