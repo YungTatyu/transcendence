@@ -90,6 +90,45 @@ class TestLoggedInUsersConsumer(TestCase):
             await communicator.disconnect()
             await communicator_2.disconnect()
 
+    async def test_websocket_user_logout_broadcasts_to_others(self):
+        """1人がログアウトしたとき、他のユーザーに通知されるかテスト"""
+        user_id_1 = str(random.randint(1, 1000))
+        user_id_2 = str(random.randint(1, 1000))
+
+        access_token_1 = self.create_jwt_for_user(user_id_1)
+        access_token_2 = self.create_jwt_for_user(user_id_2)
+
+        url = "/friends/online"
+
+        communicator_1 = WebsocketCommunicator(application, url)
+        communicator_1.scope["cookies"] = {"access_token": access_token_1}
+
+        communicator_2 = WebsocketCommunicator(application, url)
+        communicator_2.scope["cookies"] = {"access_token": access_token_2}
+
+        connected_1, _ = await communicator_1.connect()
+        connected_2, _ = await communicator_2.connect()
+        assert connected_1
+        assert connected_2
+
+        await asyncio.sleep(0.5)
+
+        # ユーザーリストを受信
+        await communicator_1.receive_json_from()
+        await communicator_2.receive_json_from()
+
+        # 1人目のユーザーを切断
+        await communicator_1.disconnect()
+
+        # 2人目のクライアントが更新情報を受信するか確認
+        response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+        assert response_from_second_client["status"] == "User removed"
+        assert response_from_second_client["user_id"] == user_id_1
+        assert user_id_1 not in response_from_second_client["current_users"]
+        assert user_id_2 in response_from_second_client["current_users"]
+
+        await communicator_2.disconnect()
+
     def create_jwt_for_user(self, user_id):
         # JWTを生成するロジック
         payload = {
