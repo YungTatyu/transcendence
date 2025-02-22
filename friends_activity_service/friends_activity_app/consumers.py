@@ -27,23 +27,22 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
         pass
 
     async def add_user_to_list(self):
-        if self.user_id not in self.user_list:
-            self.user_list.append(self.user_id)
+        self.user_list.append(self.user_id)
         await self.broadcast_user_list("User added")
 
     async def remove_user_from_list(self):
-        if self.user_id in self.user_list:
-            self.user_list.remove(self.user_id)
+        self.user_list.remove(self.user_id)
         await self.broadcast_user_list("User removed")
 
     async def broadcast_user_list(self, status):
+        current_users = list(set(self.user_list))
         await self.channel_layer.group_send(
             self.group_name,
             {
                 "type": "send_user_list",
                 "status": status,
                 "user_id": self.user_id,
-                "current_users": self.user_list,
+                "current_users": current_users,
             },
         )
 
