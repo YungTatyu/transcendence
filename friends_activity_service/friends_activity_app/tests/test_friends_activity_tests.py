@@ -6,6 +6,7 @@ import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 from friends_activity_app.asgi import application
+import asyncio
 
 
 @pytest.mark.asyncio
@@ -37,11 +38,13 @@ class TestLoggedInUsersConsumer(TestCase):
         await communicator.disconnect()
 
     async def test_multiple_websocket_connect_and_send_message(self):
-        # ランダムなuser_idを生成
+        # ランダムな user_id を生成
         user_id = str(random.randint(1, 1000))
+        user_id_2 = str(random.randint(1, 1000))
 
-        # JWTの発行（適宜変更）
+        # JWT の発行
         access_token = self.create_jwt_for_user(user_id)
+        access_token_2 = self.create_jwt_for_user(user_id_2)
 
         # WebSocket URL
         url = "/friends/online"
@@ -49,30 +52,32 @@ class TestLoggedInUsersConsumer(TestCase):
         # WebSocket接続
         communicator = WebsocketCommunicator(application, url)
         communicator.scope["cookies"] = {"access_token": access_token}
-
-        # WebSocket接続を試みる
-        connected, subprotocol = await communicator.connect()
-        assert connected
-
-        user_id_2 = str(random.randint(1, 1000))
-        access_token_2 = self.create_jwt_for_user(user_id_2)
+        
         communicator_2 = WebsocketCommunicator(application, url)
         communicator_2.scope["cookies"] = {"access_token": access_token_2}
 
-        connected_2, subprotocol_2 = await communicator_2.connect()
+        # WebSocket接続を試みる
+        connected, _ = await communicator.connect()
+        assert connected
+
+        connected_2, _ = await communicator_2.connect()
         assert connected_2
 
-        response_from_first_client = await communicator.receive_json_from()
-        response_from_second_client = await communicator_2.receive_json_from()
+        # サーバーのブロードキャストを待つ
+        await asyncio.sleep(0.1)
 
-        assert user_id in response_from_first_client["current_users"]
-        assert user_id_2 in response_from_first_client["current_users"]
-        assert user_id in response_from_second_client["current_users"]
-        assert user_id_2 in response_from_second_client["current_users"]
+        try:
+            response_from_first_client = await communicator.receive_json_from(timeout=1)
+            response_from_second_client = await communicator_2.receive_json_from(timeout=1)
 
-        # 接続解除
-        await communicator.disconnect()
-        await communicator_2.disconnect()
+            assert user_id in response_from_first_client["current_users"]
+            assert user_id_2 in response_from_first_client["current_users"]
+            assert user_id in response_from_second_client["current_users"]
+            assert user_id_2 in response_from_second_client["current_users"]
+        finally:
+            # 接続解除
+            await communicator.disconnect()
+            await communicator_2.disconnect()
 
 
     def create_jwt_for_user(self, user_id):
