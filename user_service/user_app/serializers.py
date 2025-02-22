@@ -14,9 +14,7 @@ class UserDataSerializer(serializers.Serializer):
 
 class QueryParamSerializer(serializers.Serializer):
     userId = serializers.IntegerField(required=False, source="user_id")  # noqa: N815
-    username = serializers.CharField(
-        validators=[MinLengthValidator(1)], max_length=10, required=False
-    )
+    username = serializers.CharField(required=False)
 
     def validate(self, data):
         """

@@ -94,16 +94,14 @@ class TestUserViewGet:
         assert response.data["error"] == "User not found."
 
     def test_get_user_with_long_username(self, api_client):
-        """GET: 10文字以上の username で検索 (バリデーションエラー)"""
+        """GET: 10文字以上の username で検索 (エラー)"""
         response = api_client.get(reverse("users"), {"username": "longusername"})
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "username" in response.data  # username のエラーが含まれているか確認
-        assert response.data["username"] == [
-            "Ensure this field has no more than 10 characters."
-        ]
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data["error"] == "User not found."
 
     def test_get_user_with_empty_username(self, api_client):
-        """GET: 10文字以上の username で検索 (バリデーションエラー)"""
-        response = api_client.get(reverse("users"), {"username": ""})
+        """GET: 空文字のusername で検索 (シリアライザの仕様によりバリデーションエラー)"""
+        response = api_client.get(reverse("users"), {"username": " "})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "non_field_errors" in response.data
+        assert "username" in response.data
+        assert response.data["username"] == ["This field may not be blank."]
