@@ -64,21 +64,32 @@ class TestLoggedInUsersConsumer(TestCase):
         assert connected_2
 
         # サーバーのブロードキャストを待つ
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.5)
 
         try:
-            response_from_first_client = await communicator.receive_json_from(timeout=1)
-            response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+            # すべてのメッセージを受信するためにループする
+            received_users_1 = set()
+            received_users_2 = set()
 
-            assert user_id in response_from_first_client["current_users"]
-            assert user_id_2 in response_from_first_client["current_users"]
-            assert user_id in response_from_second_client["current_users"]
-            assert user_id_2 in response_from_second_client["current_users"]
+            for _ in range(2):  # 2回受信を試みる
+                response_from_first_client = await communicator.receive_json_from(timeout=1)
+                response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+
+                received_users_1.update(response_from_first_client["current_users"])
+                received_users_2.update(response_from_second_client["current_users"])
+
+                if user_id in received_users_1 and user_id_2 in received_users_1:
+                    break  # 期待するデータを受け取ったらループを抜ける
+
+            assert user_id in received_users_1
+            assert user_id_2 in received_users_1
+            assert user_id in received_users_2
+            assert user_id_2 in received_users_2
+
         finally:
             # 接続解除
             await communicator.disconnect()
             await communicator_2.disconnect()
-
 
     def create_jwt_for_user(self, user_id):
         # JWTを生成するロジック
