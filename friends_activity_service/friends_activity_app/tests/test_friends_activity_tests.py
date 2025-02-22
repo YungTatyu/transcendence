@@ -129,6 +129,39 @@ class TestLoggedInUsersConsumer(TestCase):
 
         await communicator_2.disconnect()
 
+    async def test_websocket_multiple_sessions_logout(self):
+        """同じ user_id で複数接続し、1つを切断した際に user_list に残っているか確認"""
+        user_id = str(random.randint(1, 1000))
+        access_token = self.create_jwt_for_user(user_id)
+
+        url = "/friends/online"
+
+        communicator_1 = WebsocketCommunicator(application, url)
+        communicator_1.scope["cookies"] = {"access_token": access_token}
+
+        communicator_2 = WebsocketCommunicator(application, url)
+        communicator_2.scope["cookies"] = {"access_token": access_token}
+
+        connected_1, _ = await communicator_1.connect()
+        connected_2, _ = await communicator_2.connect()
+        assert connected_1
+        assert connected_2
+
+        await asyncio.sleep(0.5)
+
+        # 初期ユーザーリストを受信
+        await communicator_1.receive_json_from()
+        await communicator_2.receive_json_from()
+
+        # 1つのセッションを切断
+        await communicator_1.disconnect()
+
+        # まだ `user_id` がリストに残っていることを確認
+        response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+        assert user_id in response_from_second_client["current_users"]
+
+        await communicator_2.disconnect()
+
     def create_jwt_for_user(self, user_id):
         # JWTを生成するロジック
         payload = {
