@@ -111,3 +111,11 @@ class TestLoggedInUsersConsumer(TestCase):
         connected, _ = await communicator.connect()
         # JWTが無効なため、接続が確立されないはず
         assert not connected
+
+    async def test_websocket_without_jwt(self):
+        url = "/friends/online/"
+        communicator = WebsocketCommunicator(application, url)
+
+        connected, _ = await communicator.connect()
+        # JWTがないため、接続が確立されないはず
+        assert not connected
