@@ -1,3 +1,4 @@
+import asyncio
 import random
 from datetime import timedelta
 
@@ -6,7 +7,6 @@ import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 from friends_activity_app.asgi import application
-import asyncio
 
 
 @pytest.mark.asyncio
@@ -52,7 +52,7 @@ class TestLoggedInUsersConsumer(TestCase):
         # WebSocket接続
         communicator = WebsocketCommunicator(application, url)
         communicator.scope["cookies"] = {"access_token": access_token}
-        
+
         communicator_2 = WebsocketCommunicator(application, url)
         communicator_2.scope["cookies"] = {"access_token": access_token_2}
 
@@ -68,7 +68,9 @@ class TestLoggedInUsersConsumer(TestCase):
 
         try:
             # communicator_2 は 1 回だけ受信
-            response_from_second_client = await communicator_2.receive_json_from(timeout=1)
+            response_from_second_client = await communicator_2.receive_json_from(
+                timeout=1
+            )
             assert user_id in response_from_second_client["current_users"]
             assert user_id_2 in response_from_second_client["current_users"]
 
@@ -76,7 +78,9 @@ class TestLoggedInUsersConsumer(TestCase):
             received_users = set()
 
             for _ in range(2):  # 2回受信を試みる
-                response_from_first_client = await communicator.receive_json_from(timeout=1)
+                response_from_first_client = await communicator.receive_json_from(
+                    timeout=1
+                )
                 received_users.update(response_from_first_client["current_users"])
 
                 if user_id in received_users and user_id_2 in received_users:

@@ -21,6 +21,6 @@ class JWTAuthMiddleware:
             scope["user_id"] = str(decoded_token.get("user_id"))
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, jwt.DecodeError):
             await send({"type": "websocket.close", "code": 1008})
-            return            
+            return
 
         return await self.inner(scope, receive, send)
