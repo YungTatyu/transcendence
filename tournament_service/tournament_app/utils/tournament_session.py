@@ -1,4 +1,5 @@
 from typing import Optional
+import asyncio
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -6,7 +7,6 @@ from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
-from tournament_app.consumers.tournament_consumer import TournamentConsumer
 
 
 class TournamentSession:
@@ -24,7 +24,7 @@ class TournamentSession:
         self.__task_timer = None
         self.__create_match_records(tournament_id, user_ids)
         self.update_matches_data()
-        self.set_tournament_match_task()
+        asyncio.run(self.set_tournament_match_task())
 
     @classmethod
     def register(
@@ -107,7 +107,7 @@ class TournamentSession:
 
         self.__matches_data = response.json()["results"]
 
-    def set_tournament_match_task(self):
+    async def set_tournament_match_task(self):
         # WARN タスクが終了していない状態で実行すると予期せぬ挙動になる
         self.__task_timer = TaskTimer(
             self.LIMIT_TOURNAMENT_MATCH_SEC, self.handle_tournament_match_bye
@@ -127,6 +127,8 @@ class TournamentSession:
         """
         トーナメントの情報を更新し、次の試合のアナウンスメントイベントを発生させる
         """
+        from tournament_app.consumers.tournament_consumer import TournamentConsumer
+
         self.update_matches_data()
 
         # 更新されたmatches_dataをTournamentグループに対してブロードキャスト
@@ -142,4 +144,4 @@ class TournamentSession:
 
         # Tournament試合が存在するならTaskTimerをセット
         if self.current_round <= len(self.matches_data):
-            self.set_tournament_match_task()
+            asyncio.run(self.set_tournament_match_task())
