@@ -1,7 +1,5 @@
 import json
-
 from channels.generic.websocket import AsyncWebsocketConsumer
-
 from tournament_app.utils.tournament_session import TournamentSession
 
 
@@ -22,13 +20,19 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        # 試合状況をSend
-        matches_data = tournament_session.matches_data
-        await self.send(text_data=json.dumps(matches_data))
+        # 接続してきたClientに試合状況をSend
+        await self.send(
+            self.channel_name,
+            {
+                "type": "send_matches_data",
+                "matches_data": tournament_session.matches_data,
+            },
+        )
 
     async def disconnect(self, _):
         # WebSocket グループから退出
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-    async def receive(self, _):
-        pass
+    async def send_matches_data(self, event):
+        """試合状況をクライアントに送信"""
+        await self.send(text_data=json.dumps(event["matches_data"]))

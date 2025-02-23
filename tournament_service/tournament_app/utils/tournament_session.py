@@ -1,5 +1,7 @@
 from typing import Optional
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
@@ -20,7 +22,7 @@ class TournamentSession:
         self.__matches_data = {}
         self.__task_timer = None
         self.__create_match_records(tournament_id, user_ids)
-        self.update_matches_data(tournament_id)
+        self.update_matches_data()
         self.set_tournament_match_task()
 
     @classmethod
@@ -94,10 +96,10 @@ class TournamentSession:
                 raise Exception
             node.match_id = int(response.json()["matchId"])
 
-    def update_matches_data(self, tournament_id: int):
+    def update_matches_data(self):
         client = MatchClient(settings.MATCH_API_BASE_URL)
 
-        response = client.fetch_matches_data(tournament_id)
+        response = client.fetch_matches_data(self.tournament_id)
 
         if response.status_code != 200:
             raise Exception
@@ -123,11 +125,20 @@ class TournamentSession:
     def update_tournament_session_info(self):
         """
         トーナメントの情報を更新し、次の試合のアナウンスメントイベントを発生させる
-        todo channel_layerに対して情報を伝達する処理
-            (実現できるかわからないので、無理ならtournamentconsumerでポーリング)
         """
+        self.update_matches_data()
+
+        # 更新されたmatches_dataをTournamentグループに対してブロードキャスト
+        channel_layer = get_channel_layer()
+        group_name = f"tournament_{self.tournament_id}"
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "send_matches_data",  # TournamentConsumer.send_matches_data
+                "message": self.__matches_data,
+            },
+        )
 
         # Tournament試合が存在するならTaskTimerをセット
         if self.current_round <= len(self.matches_data):
             self.set_tournament_match_task()
-        pass
