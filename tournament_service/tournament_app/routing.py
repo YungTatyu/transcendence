@@ -1,9 +1,9 @@
 from django.urls import re_path
 
-from . import consumers
+from tournament_app.consumers.tournament_matching_consumer import (
+    TournamentMatchingConsumer,
+)
 
 websocket_urlpatterns = [
-    re_path(
-        r"^tournaments/ws/enter-room$", consumers.TournamentMatchingConsumer.as_asgi()
-    ),
+    re_path(r"^tournaments/ws/enter-room$", TournamentMatchingConsumer.as_asgi()),
 ]

@@ -30,17 +30,26 @@ services:
   game:
     build: ./game_service
     container_name: game
+    env_file: ./docker_env/game.env
     tty: true
     ports:
       - "8001:8001"
     networks:
       - app_network
+    depends_on:
+      - game_redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://game:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  game_redis:
+    image: redis:alpine
+    container_name: game_redis_server
+    networks:
+      - app_network
 
   tournament:
     build: ./tournament_service
@@ -110,6 +119,49 @@ services:
       - app_network
     volumes:
       - friends_db_data:/var/lib/postgresql/data
+  match:
+    build: ./match_service
+    container_name: match
+    ports:
+      - "8003:8003"
+    env_file: ./docker_env/match.env
+    networks:
+      - app_network
+    depends_on:
+      - match_db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+
+  match_db:
+    image: postgres:15
+    container_name: match_db
+    env_file: ./docker_env/match_db.env
+    networks:
+      - app_network
+    volumes:
+      - match_db_data:/var/lib/postgresql/data
+
+  vault:
+    build: ./vault_service
+    container_name: vault
+    ports:
+      - 8200:8200
+    networks:
+      - app_network
+    env_file: ./docker_env/vault.env
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./certs/client.crt:/vault/certs/client.crt:ro
+      - ./certs/client.key:/vault/certs/client.key:ro
+      - ./certs/server.crt:/vault/certs/server.crt:ro
+      - ./certs/server.key:/vault/certs/server.key:ro
+      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./docker_env/vault.env:/etc/vault.env:ro
+      - vault_data:/vault/data
+    tmpfs: [/tmp, /run]
+    privileged: true
+    stop_signal: SIGRTMIN+3
 
 networks:
   app_network:
@@ -120,3 +172,5 @@ volumes:
   tournament_db_data:
   friends_db_data:
   user_db_data:
+  match_db_data:
+  vault_data:

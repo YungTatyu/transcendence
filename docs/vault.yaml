@@ -11,6 +11,68 @@ servers:
   - url: https://vault.42.fr
 
 paths:
+  /v1/auth/cert/login:
+    post:
+      summary: Vaultトークンを取得
+      description: |
+        TLSクライアント認証を用いてVaultトークンを取得する。
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Vaultトークンを取得
+          content:
+            application/json:
+              example:
+                {
+                  'request_id': 'da931667-0ad5-bab5-ab3c-b90326f623cf',
+                  'lease_id': '',
+                  'renewable': False,
+                  'lease_duration': 0,
+                  'data': None,
+                  'wrap_info': None,
+                  'warnings': None,
+                  'auth': {
+                    'client_token': '<client_token>',
+                    'accessor': 'ZuGrzxYfsBnz5AcGXt07YGXR',
+                    'policies': [
+                      'default',
+                      'transit-policy'
+                      ],
+                    'token_policies': [
+                      'default',
+                      'transit-policy'
+                    ],
+                    'metadata': {
+                      'authority_key_id': '12:95:88:2a:ba:30:0a:a9:10:52:17:12:33:39:62:85:e3:c2:08:c6',
+                      'cert_name': 'client',
+                      'common_name': 'localhost',
+                      'serial_number': '25204468605803643181643385939544849587270056404',
+                      'subject_key_id': '0e:ab:70:45:73:66:9b:81:5f:e6:7f:dc:c2:f1:a8:ba:de:c6:56:cc'
+                    },
+                    'lease_duration': 2764800,
+                    'renewable': True,
+                    'entity_id': '3c41ba15-49d2-376e-4496-0e6a6d3e776f',
+                    'token_type': 'service',
+                    'orphan': True,
+                    'mfa_requirement': None,
+                    'num_uses': 0
+                  },
+                  'mount_type': ''
+                }
+        '403':
+          description: TLSクライアント認証エラー
+          content:
+            application/json:
+              example:
+                {
+                  'errors': [
+                    'permission denied\n\n'
+                  ]
+                }
+      security:
+        - tlsAuth: []
+
   /v1/transit/sign/jwt-key:
     post:
       summary: JWTに署名
@@ -364,6 +426,12 @@ components:
       type: apiKey
       name: X-Vault-Token  # Vaultトークンを指定するヘッダーの名前
       in: header
+    tlsAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: TLS
+      description: |
+        TLSクライアント証明書を使った認証。クライアントは証明書を提供し、サーバーはそれを検証します。
 
 security:
   - VaultTokenAuth: []

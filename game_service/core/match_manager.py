@@ -1,10 +1,10 @@
-from core.game_controller import GameContoroller
+from realtime_pingpong.game_controller import GameController
 
 
 class Match:
     def __init__(self, match_id, players):
-        self.match_id = match_id
-        self.players = players
+        self.match_id: int = match_id
+        self.players: list[int] = players
 
 
 class MatchManager:
@@ -15,7 +15,7 @@ class MatchManager:
     KEY_MATCH = "match"
     KEY_GAME_CONTROLLER = "game_contoroller"
 
-    __matches: dict[int, dict[str, Match | GameContoroller]] = {}
+    __matches: dict[int, dict[str, Match | GameController]] = {}
 
     @classmethod
     def create_match(cls, match_id, players):
@@ -27,7 +27,7 @@ class MatchManager:
         match = Match(match_id, players)
         MatchManager.__matches[match_id] = {
             MatchManager.KEY_MATCH: match,
-            MatchManager.KEY_GAME_CONTROLLER: GameContoroller(),
+            MatchManager.KEY_GAME_CONTROLLER: GameController(),
         }
         return MatchManager.__matches[match_id]
 
@@ -37,10 +37,10 @@ class MatchManager:
         指定されたmatch_dictを取得
 
         Returns:
-            dict[str, Match | GameContoroller] | None:
+            dict[str, Match | GameController] | None:
                 指定されたmatch_idに対応する辞書を返す
                 - "match": Match 型のオブジェクト
-                - "game_controller": GameContoroller 型のオブジェクト
+                - "game_controller": GameController 型のオブジェクト
                 match_id が見つからない場合は None を返す
         """
         return MatchManager.__matches.get(match_id)
