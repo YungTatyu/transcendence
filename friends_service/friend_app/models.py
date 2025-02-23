@@ -8,7 +8,6 @@ class Friends(models.Model):
     STATUS_APPROVED = "approved"
 
     from_user_id = models.IntegerField()
-    # JWT から from_user_idは固定値
     to_user_id = models.IntegerField()
     MODEL_CHOICES = [(STATUS_PENDING, "approved"), (STATUS_APPROVED, "pending")]
     status = models.CharField(choices=MODEL_CHOICES, max_length=20)

@@ -9,6 +9,7 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
+    HTTP_500_INTERNAL_SERVER_ERROR
 )
 from rest_framework.views import APIView
 
@@ -22,8 +23,6 @@ class FriendListView(APIView):
         friends = Friends.objects.filter(
             Q(from_user_id=user_id) | Q(to_user_id=user_id)
         )
-        if not friends:
-            return Response({"friends": [], "total": 0}, status=HTTP_200_OK)
         serializer = FriendsSerializer(friends, many=True)
         friends_data = []
         for friend in serializer.data:
@@ -40,7 +39,7 @@ class FriendListView(APIView):
 
 
 class FriendRequestView(APIView):
-    def status_post(self, friend, rev_friend):
+    def __validate_friend_request(self, friend, rev_friend):
         friend_status = friend.status if friend else None
         rev_friend_status = rev_friend.status if rev_friend else None
 
@@ -58,7 +57,7 @@ class FriendRequestView(APIView):
                 {"error": "Friend requests have already been received."},
                 status=HTTP_409_CONFLICT,
             )
-        return None
+        return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, _, user_id):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
@@ -78,9 +77,7 @@ class FriendRequestView(APIView):
         ).first()
 
         if friend or rev_friend:
-            response = self.status_post(friend, rev_friend)
-            if response:
-                return response
+            return self.__validate_friend_request(friend, rev_friend)
         if from_user_id == to_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},
@@ -102,7 +99,6 @@ class FriendRequestView(APIView):
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
         to_user_id = int(user_id_validator.validated_data["user_id"])
         from_user_id = 1
-        # TODO
         if from_user_id == to_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},
@@ -145,8 +141,7 @@ class FriendRequestView(APIView):
             return Response(
                 {"error": "Friend request not found."}, status=HTTP_404_NOT_FOUND
             )
-        friend_status = friend.status
-        if friend_status == Friends.STATUS_APPROVED:
+        if friend.status == Friends.STATUS_APPROVED:
             return Response(
                 {"error": "Friend request already approved."}, status=HTTP_409_CONFLICT
             )
@@ -175,12 +170,14 @@ class FriendView(APIView):
         rev_friend = Friends.objects.filter(
             from_user_id=to_user_id, to_user_id=from_user_id
         ).first()
-        if not friend and not rev_friend:
-            return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
-        if friend and friend.status == Friends.STATUS_APPROVED:
-            friend.delete()
-        elif rev_friend and rev_friend.status == Friends.STATUS_APPROVED:
-            rev_friend.delete()
-        else:
-            return Response({"error": "Friend not found."}, status=HTTP_404_NOT_FOUND)
-        return Response(status=HTTP_204_NO_CONTENT)
+        match (friend is not None, rev_friend is not None):
+            case (True, False) if friend.status == Friends.STATUS_APPROVED:
+                friend.delete()
+                return Response(status=HTTP_204_NO_CONTENT)
+            case (False, True) if rev_friend.status == Friends.STATUS_APPROVED:
+                rev_friend.delete()
+                return Response(status=HTTP_204_NO_CONTENT)
+            case _:
+                return Response(
+                    {"error": "Friend not found."}, status=HTTP_404_NOT_FOUND
+                )
