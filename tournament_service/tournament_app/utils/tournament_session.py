@@ -6,6 +6,7 @@ from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
+from tournament_app.consumers.tournament_consumer import TournamentConsumer
 
 
 class TournamentSession:
@@ -130,7 +131,7 @@ class TournamentSession:
 
         # 更新されたmatches_dataをTournamentグループに対してブロードキャスト
         channel_layer = get_channel_layer()
-        group_name = f"tournament_{self.tournament_id}"
+        group_name = TournamentConsumer.get_group_name(self.__tournament_id)
         async_to_sync(channel_layer.group_send)(
             group_name,
             {

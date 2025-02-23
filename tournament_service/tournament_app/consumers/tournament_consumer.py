@@ -4,11 +4,18 @@ from tournament_app.utils.tournament_session import TournamentSession
 
 
 class TournamentConsumer(AsyncWebsocketConsumer):
+    GROUP_NAME_FORMAT = "tournament_{}"
+
+    @classmethod
+    def get_group_name(cls, tournament_id: int):
+        # 定数をフォーマットして使用
+        return cls.GROUP_NAME_FORMAT.format(tournament_id)
+
     async def connect(self):
         # tournamentIdをURL から取得
         self.tournament_id = self.scope["url_route"]["kwargs"]["tournamentId"]
         # tournamentIdに紐づいたルーム
-        self.room_group_name = f"tournament_{self.tournament_id}"
+        self.room_group_name = TournamentConsumer.get_group_name(self.tournament_id)
 
         # TournamentSessionが存在しない場合、接続を拒否する
         tournament_session = TournamentSession.search(self.tournament_id)
