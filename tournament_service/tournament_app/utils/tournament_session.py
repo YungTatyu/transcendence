@@ -2,11 +2,13 @@ from typing import Optional
 
 from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
+from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
 
 
 class TournamentSession:
     __tournament_session_dict: dict[int, "TournamentSession"] = {}
+    LIMIT_TOURNAMENT_MATCH_SEC = 300
 
     def __init__(self, tournament_id: int, user_ids: list[int]):
         """
@@ -16,8 +18,10 @@ class TournamentSession:
         self.__current_round: int = 1
         self.__user_ids: list[int] = user_ids
         self.__matches_data = {}
+        self.__task_timer = None
         self.__create_match_records(tournament_id, user_ids)
         self.update_matches_data(tournament_id)
+        self.set_tournament_match_task()
 
     @classmethod
     def register(
@@ -99,3 +103,18 @@ class TournamentSession:
             raise Exception
 
         self.__matches_data = response.json()["results"]
+
+    def set_tournament_match_task(self):
+        # WARN タスクが終了していない状態で実行すると予期せぬ挙動になる
+        self.__task_timer = TaskTimer(
+            self.LIMIT_TOURNAMENT_MATCH_SEC, self.handle_tournament_match_bye
+        )
+
+    def cancel_tournament_match_task(self):
+        if self.__task_timer:
+            self.__task_timer.cancel()
+        self.__task_timer = None
+
+    def handle_tournament_match_bye(self):
+        # TODO トーナメントが不戦勝の場合の処理を記述する
+        pass
