@@ -22,10 +22,8 @@ export default function Game() {
   const userid = sessionStorage.getItem("username");
   const [gameState, setGameState] = useState({
     ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
-    // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
-    left_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
-    // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
-    right_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+    leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+    rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
   });
   const endTimeRef = useRef(0);
   const [remainingTime, setRemainingTime] = useState(0);
@@ -71,10 +69,8 @@ export default function Game() {
 
             setGameState({
               ball: updatedState.ball,
-              // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
-              left_player: updatedState.left_player,
-              // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
-              right_player: updatedState.right_player,
+              leftPlayer: updatedState.left_player,
+              rightPlayer: updatedState.right_player,
             });
           }
           if (
@@ -174,13 +170,13 @@ export default function Game() {
 
       // 左プレイヤーのパドル描画
       ctx.fillStyle = "#0f0"; // 左プレイヤーのパドル色
-      ctx.fillRect(0, gameState.left_player.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+      ctx.fillRect(0, gameState.leftPlayer.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
       // 右プレイヤーのパドル描画
       ctx.fillStyle = "#f00"; // 右プレイヤーのパドル色
       ctx.fillRect(
         GAME_WIDTH - PADDLE_WIDTH,
-        gameState.right_player.y,
+        gameState.rightPlayer.y,
         PADDLE_WIDTH,
         PADDLE_HEIGHT,
       );
@@ -189,15 +185,15 @@ export default function Game() {
       ctx.fillStyle = "white";
       ctx.font = "24px Arial";
       // 左プレイヤーのIDとスコア
-      ctx.fillText(`${gameState.left_player.id}`, 20, 30);
+      ctx.fillText(`${gameState.leftPlayer.id}`, 20, 30);
       ctx.font = "18px Arial"; // スコアのフォントサイズを少し小さく
-      ctx.fillText(`${gameState.left_player.score}`, 20, 60);
+      ctx.fillText(`${gameState.leftPlayer.score}`, 20, 60);
 
       // 右プレイヤーのIDとスコア
       ctx.font = "24px Arial";
-      ctx.fillText(`${gameState.right_player.id}`, GAME_WIDTH - 100, 30);
+      ctx.fillText(`${gameState.rightPlayer.id}`, GAME_WIDTH - 100, 30);
       ctx.font = "18px Arial";
-      ctx.fillText(`${gameState.right_player.score}`, GAME_WIDTH - 100, 60);
+      ctx.fillText(`${gameState.rightPlayer.score}`, GAME_WIDTH - 100, 60);
     };
 
     draw();
