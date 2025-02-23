@@ -1,7 +1,11 @@
 import logging
+import sys
 from typing import Optional
 
 import requests
+import aiohttp
+import asyncio
+
 
 logger = logging.getLogger(__name__)
 
@@ -106,3 +110,29 @@ class MatchClient:
                 "GET", f"{self.base_url}/{endpoint}"
             ).prepare()
             return response
+
+    async def fetch_tournament_match_finish(self, match_id: int, results: list[dict]):
+        """
+        /matches/finishを叩き、トーナメント試合終了処理を行う
+        エラーの場合{"error": "Internal Server Error"}を返す
+        """
+        endpoint = "matches/finish"
+        url = f"{self.base_url}/{endpoint}"
+
+        body = {
+            "matchId": match_id,
+            "results": results,
+        }
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=body, timeout=5) as response:
+                    return await response.json()
+        except Exception as e:
+            logger.error(
+                f"Error occurred while finish tournament matches. "
+                f"Exception: {str(e)} "
+                f"Endpoint: {self.base_url}/{endpoint} "
+                f"Request body: {body}",
+            )
+            return {"error": "Internal Server Error"}
