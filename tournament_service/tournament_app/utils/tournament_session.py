@@ -15,7 +15,9 @@ class TournamentSession:
         self.__tournament_id: int = tournament_id
         self.__current_round: int = 1
         self.__user_ids: list[int] = user_ids
+        self.__matches_data = {}
         self.__create_match_records(tournament_id, user_ids)
+        self.update_matches_data(tournament_id)
 
     @classmethod
     def register(
@@ -61,6 +63,10 @@ class TournamentSession:
     def current_round(self) -> int:
         return self.__current_round
 
+    @property
+    def matches_data(self) -> dict:
+        return self.__matches_data
+
     def next_round(self) -> int:
         self.__current_round += 1
         return self.__current_round
@@ -83,3 +89,13 @@ class TournamentSession:
             if response.status_code != 200:
                 raise Exception
             node.match_id = int(response.json()["matchId"])
+
+    def update_matches_data(self, tournament_id: int):
+        client = MatchClient(settings.MATCH_API_BASE_URL)
+
+        response = client.fetch_matches_data(tournament_id)
+
+        if response.status_code != 200:
+            raise Exception
+
+        self.__matches_data = response.json()["results"]
