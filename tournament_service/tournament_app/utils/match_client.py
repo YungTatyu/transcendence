@@ -75,3 +75,34 @@ class MatchClient:
                 "POST", f"{self.base_url}/{endpoint}"
             ).prepare()
             return response
+
+    def fetch_matches_data(self, tournament_id: int):
+        """
+        /matchesを叩き、トーナメントIDに紐づくMatches情報を取得
+        エラーの場合INTERNAL_SERVER_ERRORを返す
+        """
+        endpoint = "matches"
+
+        params = {
+            "tournamentId": tournament_id,
+            "offset": 0,
+            "limit": 99,  # INFO limitは広めに設定
+        }
+
+        try:
+            return self.__send_request("GET", endpoint, params=params)
+        except Exception as e:
+            logger.error(
+                f"Error occurred while get tournament matches. "
+                f"Exception: {str(e)} "
+                f"Endpoint: {self.base_url}/{endpoint} "
+                f"Request params: {params}",
+            )
+            response = requests.Response()
+            response.status_code = 500
+            response._content = b'{"error": "Internal Server Error"}'
+            response.headers["Content-Type"] = "application/json"
+            response.request = requests.Request(
+                "GET", f"{self.base_url}/{endpoint}"
+            ).prepare()
+            return response
