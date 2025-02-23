@@ -22,7 +22,9 @@ export default function Game() {
   const userid = sessionStorage.getItem("username");
   const [gameState, setGameState] = useState({
     ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
+    // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
     left_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+    // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
     right_player: { id: "", y: GAME_HEIGHT / 2, score: 0 },
   });
   const endTimeRef = useRef(0);
@@ -36,9 +38,9 @@ export default function Game() {
       return; // WebSocketが既に存在する場合は再接続しない
     }
     const createWebSocketManager = (matchId) => {
-      const REDIS_SERVER = "127.0.0.1:8001";
+      const redisServer = "127.0.0.1:8001";
       const socket = new WebSocket(
-        `ws://${REDIS_SERVER}/games/ws/enter-room/${matchId}/${userid}`,
+        `ws://${redisServer}/games/ws/enter-room/${matchId}/${userid}`,
       );
 
       const socketRef = socket;
@@ -69,7 +71,9 @@ export default function Game() {
 
             setGameState({
               ball: updatedState.ball,
+              // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
               left_player: updatedState.left_player,
+              // biome-ignore lint/style/useNamingConvention: サーバーのデータ形式に合わせるため
               right_player: updatedState.right_player,
             });
           }
