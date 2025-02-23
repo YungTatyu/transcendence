@@ -117,4 +117,17 @@ class TournamentSession:
 
     def handle_tournament_match_bye(self):
         # TODO トーナメントが不戦勝の場合の処理を記述する
+        self.update_tournament_session_info()
+        pass
+
+    def update_tournament_session_info(self):
+        """
+        トーナメントの情報を更新し、次の試合のアナウンスメントイベントを発生させる
+        todo channel_layerに対して情報を伝達する処理
+            (実現できるかわからないので、無理ならtournamentconsumerでポーリング)
+        """
+
+        # Tournament試合が存在するならTaskTimerをセット
+        if self.current_round <= len(self.matches_data):
+            self.set_tournament_match_task()
         pass
