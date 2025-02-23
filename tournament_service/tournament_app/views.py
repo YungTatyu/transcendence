@@ -6,9 +6,11 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.views import APIView
+import sys
 
 from tournament_app.serializers import TournamentMatchFinishSerializer
 from tournament_app.utils.tournament_session import TournamentSession
+from asgiref.sync import async_to_sync
 
 
 class TournamentMatchFinishView(APIView):
@@ -27,9 +29,7 @@ class TournamentMatchFinishView(APIView):
                 status=HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        tournament_session.cancel_tournament_match_task()
-        tournament_session.update_tournament_session_info()
-
+        async_to_sync(tournament_session.update_tournament_session_info())
         return Response({"message": "Match ended normally"}, status=HTTP_200_OK)
 
 

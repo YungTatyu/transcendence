@@ -1,7 +1,5 @@
-import asyncio
 from typing import Optional
 
-from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
@@ -24,7 +22,6 @@ class TournamentSession:
         self.__task_timer = None
         self.__create_match_records(tournament_id, user_ids)
         self.update_matches_data()
-        asyncio.run(self.set_tournament_match_task())
 
     @classmethod
     def register(
@@ -118,12 +115,19 @@ class TournamentSession:
             self.__task_timer.cancel()
         self.__task_timer = None
 
-    def handle_tournament_match_bye(self):
+    async def handle_tournament_match_bye(self):
         # TODO トーナメントが不戦勝の場合の処理を記述する
-        self.update_tournament_session_info()
-        pass
+        current_match = [
+            match for match in self.matches_data if match["round"] == self.current_round
+        ][0]
+        participant_ids = [p["id"] for p in current_match["participants"]]
+        results = [{"userId": id, "score": 0} for id in participant_ids]
+        results[0]["score"] = 11
+        match_id = current_match["matchId"]
+        client = MatchClient(settings.MATCH_API_BASE_URL)
+        await client.fetch_tournament_match_finish(match_id, results)
 
-    def update_tournament_session_info(self):
+    async def update_tournament_session_info(self):
         """
         トーナメントの情報を更新し、次の試合のアナウンスメントイベントを発生させる
         """
@@ -134,14 +138,20 @@ class TournamentSession:
         # 更新されたmatches_dataをTournamentグループに対してブロードキャスト
         channel_layer = get_channel_layer()
         group_name = TournamentConsumer.get_group_name(self.__tournament_id)
-        async_to_sync(channel_layer.group_send)(
+        await channel_layer.group_send(
             group_name,
             {
                 "type": "send_matches_data",  # TournamentConsumer.send_matches_data
-                "message": self.__matches_data,
+                "matches_data": self.__matches_data,
             },
         )
+        self.next_round()
+
+        before_task = self.__task_timer
 
         # Tournament試合が存在するならTaskTimerをセット
         if self.current_round <= len(self.matches_data):
-            asyncio.run(self.set_tournament_match_task())
+            await self.set_tournament_match_task()
+
+        if before_task:
+            before_task.cancel()
