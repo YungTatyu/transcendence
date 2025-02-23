@@ -82,4 +82,4 @@ class TournamentSession:
 
             if response.status_code != 200:
                 raise Exception
-            node.match_id = int(response.text)
+            node.match_id = int(response.json()["matchId"])
