@@ -1,8 +1,8 @@
-from typing import Optional
 import asyncio
+from typing import Optional
 
-from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
