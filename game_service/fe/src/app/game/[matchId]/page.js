@@ -1,5 +1,5 @@
 "use client";
-import { useUsername } from "@/app/UsernameContext";
+import { useUsername } from "@/app/usernameContext";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
