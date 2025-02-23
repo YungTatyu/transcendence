@@ -32,6 +32,7 @@ jobs:
           ["auth"]=$CHECK
           ["game"]=$CHECK
           ["tournament"]=$CHECK
+          ["user"]=$CHECK
           ["match"]=$CHECK
         )
 
@@ -66,6 +67,7 @@ jobs:
         docker compose exec game python manage.py test
         docker compose exec tournament pytest
         docker compose exec match pytest
+        docker compose exec user pytest
 
     - name: Tear down
       if: always()
