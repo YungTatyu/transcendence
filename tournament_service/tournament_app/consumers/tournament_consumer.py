@@ -28,13 +28,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         # 接続してきたClientに試合状況をSend
-        await self.send(
-            self.channel_name,
-            {
-                "type": "send_matches_data",
-                "matches_data": tournament_session.matches_data,
-            },
-        )
+        await self.send(text_data=json.dumps(tournament_session.matches_data))
 
     async def disconnect(self, _):
         # WebSocket グループから退出
