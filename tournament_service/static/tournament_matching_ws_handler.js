@@ -55,7 +55,9 @@ class TournamentMatchingWsHandler {
     this.timer.clear();
     // トーナメントマッチングルーム用WebSocketは削除
     this.ws.close();
-    // TODO トーナメント用WebSocketを作成
+
+    // トーナメント用WebSocketを作成
+    this.tournamentWs = this.createTournamentWs(tournamentId);
   }
 
   handleDisplayTournamentStartTime(startTime) {
@@ -64,5 +66,22 @@ class TournamentMatchingWsHandler {
     } else {
       this.timer.start(startTime);
     }
+  }
+
+  createTournamentWs(tournamentId) {
+    const ws = new WebSocket(
+      `ws://localhost:8002/tournaments/ws/enter-room/${tournamentId}`,
+    );
+    ws.onmessage = (event) => {
+      const matchesData = JSON.parse(event.data);
+      console.log(matchesData);
+    };
+    ws.onerror = (error) => {
+      console.error("Tournament WebSocket error:", error);
+    };
+    ws.onclose = () => {
+      console.log("TournamentWs connection closed.");
+    };
+    return ws;
   }
 }
