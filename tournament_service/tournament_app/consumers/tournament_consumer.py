@@ -18,7 +18,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         self.room_group_name = TournamentConsumer.get_group_name(self.tournament_id)
 
         # TournamentSessionが存在しない場合、接続を拒否する
-        tournament_session = TournamentSession.search(self.tournament_id)
+        tournament_session = TournamentSession.search(int(self.tournament_id))
         if tournament_session is None:
             await self.close(code=4400)
             return
