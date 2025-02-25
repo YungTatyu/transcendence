@@ -1,6 +1,6 @@
 from django.core.validators import MinLengthValidator
 from rest_framework import serializers
-
+from .models import User
 
 class CreateUserSerializer(serializers.Serializer):
     username = serializers.CharField(validators=[MinLengthValidator(1)], max_length=10)
@@ -9,7 +9,7 @@ class CreateUserSerializer(serializers.Serializer):
 class UserDataSerializer(serializers.Serializer):
     userId = serializers.IntegerField(source="user_id")  # noqa: N815
     username = serializers.CharField(validators=[MinLengthValidator(1)], max_length=10)
-    avatarPath = serializers.CharField(max_length=100, source="avatar_path")  # noqa: N815
+    # avatarPath = serializers.CharField(max_length=100, source="avatar_path")  # noqa: N815
 
 
 class QueryParamSerializer(serializers.Serializer):
@@ -35,3 +35,9 @@ class QueryParamSerializer(serializers.Serializer):
             )
 
         return data
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['avatar_path']

@@ -10,8 +10,9 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import CreateUserSerializer, QueryParamSerializer, UserDataSerializer
+from .serializers import CreateUserSerializer, QueryParamSerializer, UserDataSerializer, AvatarSerializer
 
+import sys
 
 class UserView(APIView):
     def post(self, request):
@@ -55,6 +56,22 @@ class UserView(APIView):
         # レスポンスのシリアライズ
         serializer = UserDataSerializer(user)
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class AvatarView(APIView):
+    def put(self, request):
+        """
+        TODO: avatar_<userId>.拡張子 の形で保存する
+                defaultからうまく切り替わるか、またカスタムから変更したときに上書きされるか
+        """
+        serializer = AvatarSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    
+        serializer.save()
+
+        return Response(data={"avatarPath": "/uploads/avatars/12345.png"}, status=HTTP_200_OK)
+
 
 
 @api_view(["GET"])
