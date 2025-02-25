@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from ..models import User
 
+from ..models import User
 
 @pytest.fixture
 def api_client():
@@ -105,3 +105,4 @@ class TestUserViewGet:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data
         assert response.data["username"] == ["This field may not be blank."]
+

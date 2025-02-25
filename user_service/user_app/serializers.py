@@ -39,6 +39,22 @@ class QueryParamSerializer(serializers.Serializer):
 
         return data
 
+class UsernameSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(validators=[MinLengthValidator(1)], max_length=10)
+    
+    class Meta:
+        model = User
+        fields = ['username']
+
+    def validate(self, data):
+        """
+        username 重複チェック
+        """
+        username = data["username"]
+        if User.objects.filter(username=username).exclude(user_id=self.instance.user_id).exists():
+            raise serializers.ValidationError({"username": "Username already exists."})
+        return data
+
 
 class AvatarSerializer(serializers.ModelSerializer):
     MAX_FILE_SIZE = 4 * 1024 * 1024
@@ -79,9 +95,9 @@ class AvatarSerializer(serializers.ModelSerializer):
         """
         # 同じ名前のファイルがあったら古いファイルを削除
         if instance.avatar_path:
-            old_avatar_path = instance.avatar_path.path  # ファイルの絶対パス
+            old_avatar_path = instance.avatar_path.path
             if os.path.exists(old_avatar_path):
-                default_storage.delete(old_avatar_path)  # ファイル削除
+                default_storage.delete(old_avatar_path)
 
         # 新しいファイルを保存
         instance.avatar_path = validated_data["avatar_path"]
