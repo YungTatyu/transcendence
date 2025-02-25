@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.timezone import now
 
 
+
+
 class User(models.Model):
     DEFAULT_AVATAR_PATH = "images/default/1.png"
 

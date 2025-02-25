@@ -11,8 +11,12 @@ from rest_framework.views import APIView
 
 from .models import User
 from .serializers import CreateUserSerializer, QueryParamSerializer, UserDataSerializer, AvatarSerializer
-
 import sys
+
+from django.utils.decorators import method_decorator
+from .jwt_decorators import jwt_required
+import json
+from django.core.exceptions import ObjectDoesNotExist
 
 class UserView(APIView):
     def post(self, request):
@@ -59,19 +63,33 @@ class UserView(APIView):
 
 
 class AvatarView(APIView):
+
+
+    # @method_decorator(jwt_required)
     def put(self, request):
         """
         TODO: avatar_<userId>.拡張子 の形で保存する
                 defaultからうまく切り替わるか、またカスタムから変更したときに上書きされるか
+
         """
-        serializer = AvatarSerializer(data=request.data)
+
+        # user_id = request.user_id
+        user_id = 1
+
+        # User インスタンスを取得   
+        try:
+            user = User.objects.get(user_id=user_id)
+        except ObjectDoesNotExist:
+            return Response({"error": "User not found."}, status=HTTP_400_BAD_REQUEST)
+        
+        # instance=user を渡して update()を使用可能に
+        serializer = AvatarSerializer(instance=user, data=request.data, context={"user_id": user_id})   
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-    
-        serializer.save()
+        
+        updated_user = serializer.save()
 
-        return Response(data={"avatarPath": "/uploads/avatars/12345.png"}, status=HTTP_200_OK)
-
+        return Response(data={"avatarPath": updated_user.avatar_path.url}, status=HTTP_200_OK)
 
 
 @api_view(["GET"])
