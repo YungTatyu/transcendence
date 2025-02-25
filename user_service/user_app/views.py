@@ -64,12 +64,10 @@ class UserView(APIView):
 
 class AvatarView(APIView):
 
-
     # @method_decorator(jwt_required)
     def put(self, request):
         """
-        TODO: avatar_<userId>.拡張子 の形で保存する
-                defaultからうまく切り替わるか、またカスタムから変更したときに上書きされるか
+        TODO: defaultからうまく切り替わるか、またカスタムから変更したときに上書きされるか
 
         """
 
