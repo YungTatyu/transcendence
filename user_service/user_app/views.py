@@ -1,3 +1,7 @@
+import os
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -10,14 +14,13 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import CreateUserSerializer, QueryParamSerializer, UserDataSerializer, AvatarSerializer, UsernameSerializer
-import sys, json, os
-
-from django.utils.decorators import method_decorator
-from .jwt_decorators import jwt_required
-from django.core.exceptions import ObjectDoesNotExist
-
-from django.core.files.storage import default_storage
+from .serializers import (
+    AvatarSerializer,
+    CreateUserSerializer,
+    QueryParamSerializer,
+    UserDataSerializer,
+    UsernameSerializer,
+)
 
 
 class UserView(APIView):
@@ -73,7 +76,7 @@ class UsernameView(APIView):
         """
         usernameを変更する
         """
-        
+
         # user_id = request.user_id
         user_id = 1
 
@@ -81,18 +84,17 @@ class UsernameView(APIView):
             user = User.objects.get(user_id=user_id)
         except ObjectDoesNotExist:
             return Response({"error": "User not found"}, status=HTTP_404_NOT_FOUND)
-        
+
         serializer = UsernameSerializer(instance=user, data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        
+
         updated_user = serializer.save()
 
         return Response({"username": updated_user.username}, status=HTTP_200_OK)
 
 
 class AvatarView(APIView):
-
     # @method_decorator(jwt_required)
     def put(self, request):
         """
@@ -102,36 +104,40 @@ class AvatarView(APIView):
         # user_id = request.user_id
         user_id = 1
 
-        # User インスタンスを取得   
+        # User インスタンスを取得
         try:
             user = User.objects.get(user_id=user_id)
         except ObjectDoesNotExist:
             return Response({"error": "User not found."}, status=HTTP_404_NOT_FOUND)
-        
+
         # instance=user を渡して update()を使用可能に
-        serializer = AvatarSerializer(instance=user, data=request.data, context={"user_id": user_id})   
+        serializer = AvatarSerializer(
+            instance=user, data=request.data, context={"user_id": user_id}
+        )
         if not serializer.is_valid():
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        
+
         updated_user = serializer.save()
 
-        return Response(data={"avatarPath": updated_user.avatar_path.url}, status=HTTP_200_OK)
+        return Response(
+            data={"avatarPath": updated_user.avatar_path.url}, status=HTTP_200_OK
+        )
 
     # @method_decorator(jwt_required)
     def delete(self, request):
         """
         設定してある画像ファイルを削除し、defaultのパスを設定する
         """
-        
+
         # user_id = request.user_id
         user_id = 1
 
-        # User インスタンスを取得   
+        # User インスタンスを取得
         try:
             user = User.objects.get(user_id=user_id)
         except ObjectDoesNotExist:
             return Response({"error": "User not found."}, status=HTTP_404_NOT_FOUND)
-        
+
         # デフォルトアバターなら削除しない
         if user.avatar_path.name == User.DEFAULT_AVATAR_PATH:
             return Response({"error": "Avatar is default."}, status=HTTP_404_NOT_FOUND)

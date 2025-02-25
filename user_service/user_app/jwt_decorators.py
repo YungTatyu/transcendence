@@ -1,8 +1,5 @@
 from functools import wraps
 
-import jwt
-from rest_framework.response import Response
-
 
 def jwt_required(func):
     @wraps(func)
@@ -16,8 +13,8 @@ def jwt_required(func):
         #     decoded_token = jwt.decode(token, options={"verify_signature": False})
 
         #     # request.user_id = decoded_token.get("user_id")  # user_id をリクエストに保存
-            
-            # return func(request, *args, **kwargs)
+
+        # return func(request, *args, **kwargs)
 
         # except jwt.ExpiredSignatureError:
         #     return Response({"error": "Token expired"}, status=401)
