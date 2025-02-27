@@ -26,16 +26,16 @@ class MatchFinishView(APIView):
         results: list[dict] = serializer.validated_data["results"]
         match = Match.objects.filter(match_id=match_id).first()
 
-        # 先にトーナメントAPIを叩く(整合性維持のため)
+        finish_date = self.__update_match_data(match_id, results)
         if match.mode == "Tournament":
+            self.__register_winner_in_parent_match(match, results)
             err_message = self.__send_match_result_to_tournament(match)
             if err_message is not None:
+                # TODO DBデータのロールバック処理＋テスト
                 return Response(
                     {"error": err_message}, status=HTTP_500_INTERNAL_SERVER_ERROR
                 )
-            self.__register_winner_in_parent_match(match, results)
 
-        finish_date = self.__update_match_data(match_id, results)
         return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
 
     def __update_match_data(self, match_id: int, results: list[dict]) -> now:
