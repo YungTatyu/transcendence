@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Friends
+from .models import Friend
 
 
 class UserIdValidator(serializers.Serializer):
@@ -14,5 +14,5 @@ class UserIdValidator(serializers.Serializer):
 
 class FriendsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Friends
+        model = Friend
         fields = "__all__"

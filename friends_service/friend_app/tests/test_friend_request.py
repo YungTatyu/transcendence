@@ -4,7 +4,7 @@ from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from friend_app.models import Friends
+from friend_app.models import Friend
 
 
 class FriendRequestTestsPost(APITestCase):
@@ -12,7 +12,7 @@ class FriendRequestTestsPost(APITestCase):
         """
         フレンド申請をしている状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
@@ -20,7 +20,7 @@ class FriendRequestTestsPost(APITestCase):
         """
         フレンド状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="approved"
         )
 
@@ -99,7 +99,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         フレンド申請をしている状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
@@ -107,7 +107,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         フレンド状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="approved"
         )
 
@@ -176,7 +176,7 @@ class FriendTestDelete(APITestCase):
         """
         フレンド申請をしている状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
@@ -184,7 +184,7 @@ class FriendTestDelete(APITestCase):
         """
         フレンド状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="approved"
         )
 
@@ -257,7 +257,7 @@ class FriendRequestTestsPatch(APITestCase):
         """
         フレンド申請をしている状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
@@ -265,7 +265,7 @@ class FriendRequestTestsPatch(APITestCase):
         """
         フレンド状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id, to_user_id=to_user_id, status="approved"
         )
 
@@ -334,7 +334,7 @@ class FriendListTest(APITestCase):
         """
         フレンド申請をしている状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id,
             to_user_id=to_user_id,
             status="pending",
@@ -345,7 +345,7 @@ class FriendListTest(APITestCase):
         """
         フレンド状態にする
         """
-        Friends.objects.create(
+        Friend.objects.create(
             from_user_id=from_user_id,
             to_user_id=to_user_id,
             status="approved",

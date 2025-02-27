@@ -3,7 +3,7 @@ from django.utils.timezone import now
 
 
 # Create your models here.
-class Friends(models.Model):
+class Friend(models.Model):
     STATUS_PENDING = "pending"
     STATUS_APPROVED = "approved"
 
