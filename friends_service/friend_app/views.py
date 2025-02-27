@@ -19,6 +19,13 @@ from .serializers import FriendsSerializer, UserIdValidator
 
 class FriendListView(APIView):
     def get(self, request):
+        query_serializer = FriendsSerializer(data=request.query_params)
+        if not query_serializer.is_valid():
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        '''
+        TODO
+        user_idの変更
+        '''
         user_id = 1
         friends = Friend.objects.filter(Q(from_user_id=user_id) | Q(to_user_id=user_id))
         serializer = FriendsSerializer(friends, many=True)

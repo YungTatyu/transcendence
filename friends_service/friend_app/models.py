@@ -9,7 +9,7 @@ class Friend(models.Model):
 
     from_user_id = models.IntegerField()
     to_user_id = models.IntegerField()
-    MODEL_CHOICES = [(STATUS_PENDING, "approved"), (STATUS_APPROVED, "pending")]
+    MODEL_CHOICES = [(STATUS_PENDING, "pending"), (STATUS_APPROVED, "approved")]
     status = models.CharField(choices=MODEL_CHOICES, max_length=20)
     request_sent_at = models.DateTimeField(default=now)
     approved_at = models.DateTimeField(null=True, blank=True)
