@@ -102,6 +102,10 @@ class TournamentSession:
             node.match_id = int(response.json()["matchId"])
 
     def update_matches_data(self):
+        """
+        matchesエンドポイントを叩き、tournament_idに紐づく試合データを取得
+        TournamentSession.__matches_dataを更新
+        """
         client = MatchClient(settings.MATCH_API_BASE_URL)
 
         response = client.fetch_matches_data(self.tournament_id)
@@ -112,6 +116,10 @@ class TournamentSession:
         self.__matches_data = response.json()["results"]
 
     async def set_tournament_match_task(self):
+        """
+        トーナメント試合がいつまでも終わらない状況を防ぐ
+        強制的に不戦勝処理を行うタスクをセット
+        """
         # WARN タスクが終了していない状態で実行すると予期せぬ挙動になる
         self.__task_timer = TaskTimer(
             self.LIMIT_TOURNAMENT_MATCH_SEC, self.handle_tournament_match_bye
@@ -119,7 +127,7 @@ class TournamentSession:
 
     async def handle_tournament_match_bye(self):
         """
-        時間内に試合が終了されなかった場合に不戦勝での勝ち上がり処理を実行する
+        時間内に試合が終了されなかった場合に不戦勝での勝ち上がり処理を実行
         """
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
@@ -133,7 +141,12 @@ class TournamentSession:
 
     async def update_tournament_session_info(self):
         """
-        トーナメントの情報を更新し、次の試合のアナウンスメントイベントを発生させる
+        1. トーナメントの情報を更新
+        2. 次の試合のアナウンスメントイベントを発生させる
+        3. self.__roundを更新
+        4. トーナメントが終了していない場合, 強制不戦勝処理を行うタスクをセット
+        5. トーナメントが終了する場合, WebSocketを切断
+        6. 以前にセットした強制不戦勝処理タスクをキャンセル
         """
         from tournament_app.consumers.tournament_consumer import TournamentConsumer
 

@@ -40,4 +40,5 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event["matches_data"]))
 
     async def force_disconnect(self, _):
+        """トーナメントが終了した際にサーバからWebSocketを切断するための関数"""
         await self.close(code=4200)

@@ -115,6 +115,7 @@ class MatchClient:
         """
         /matches/finishを叩き、トーナメント試合終了処理を行う
         エラーの場合{"error": "Internal Server Error"}を返す
+        INFO aiohttpライブラリを用いて、非同期にエンドポイントにアクセス
         """
         endpoint = "matches/finish"
         url = f"{self.base_url}/{endpoint}"
