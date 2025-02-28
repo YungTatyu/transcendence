@@ -14,7 +14,12 @@ class UserIdValidator(serializers.Serializer):
         return value
 
 
-class FriendsSerializer(serializers.ModelSerializer):
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friend
+        fields = "__all__"
+
+class FriendQuerySerializer(serializers.Serializer):
     DEFAULT_OFFSET = 0
     DEFAULT_LIMIT = 20
     STATUS_PENDING = "pending"
@@ -24,7 +29,3 @@ class FriendsSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(choices=SERIALIZE_CHOICES,required=False)
     offset = serializers.IntegerField(min_value=0, required=False, default=DEFAULT_OFFSET)
     limit = serializers.IntegerField(min_value=1, required=False, default=DEFAULT_LIMIT)
-    
-    class Meta:
-        model = Friend
-        fields = "__all__"

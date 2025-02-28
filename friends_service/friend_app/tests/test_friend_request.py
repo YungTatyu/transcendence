@@ -385,13 +385,6 @@ class FriendListTest(APITestCase):
         expect_answer = {
             "friends": [
                 {
-                    "fromUserId": 1,
-                    "toUserId": 2,
-                    "status": "pending",
-                    "requestSentAt": current_time.isoformat(),
-                    "approvedAt": None,
-                },
-                {
                     "fromUserId": 3,
                     "toUserId": 1,
                     "status": "pending",
@@ -413,7 +406,7 @@ class FriendListTest(APITestCase):
                     "approvedAt": current_time.isoformat(),
                 },
             ],
-            "total": 4,
+            "total": 3,
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.maxDiff = None

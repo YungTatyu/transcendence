@@ -14,21 +14,33 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 
 from .models import Friend
-from .serializers import FriendsSerializer, UserIdValidator
-
+from .serializers import FriendSerializer, UserIdValidator, FriendQuerySerializer
 
 class FriendListView(APIView):
+    '''
+    フレンド申請状態(pending)の時、クエリーのlimitsとフロントエンドの画面の関係から
+    to_user_idが自身のユーザーID、from_user_idが自分以外のIDの時のみ表示する。
+    '''
     def get(self, request):
-        query_serializer = FriendsSerializer(data=request.query_params)
+        query_serializer = FriendQuerySerializer(data=request.query_params)
         if not query_serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(query_serializer.errors, status=HTTP_400_BAD_REQUEST)
         '''
         TODO
         user_idの変更
         '''
         user_id = 1
-        friends = Friend.objects.filter(Q(from_user_id=user_id) | Q(to_user_id=user_id))
-        serializer = FriendsSerializer(friends, many=True)
+        status = query_serializer.validated_data.get("status") 
+        offset = query_serializer.validated_data.get("offset")
+        limit = query_serializer.validated_data["limit"]
+        if status == FriendQuerySerializer.STATUS_PENDING:
+            friends = friends = Friend.objects.filter(Q(to_user_id=user_id) & Q(status = Friend.STATUS_PENDING))
+        elif status == FriendQuerySerializer.STATUS_APPROVED:
+            friends = friends = Friend.objects.filter((Q(from_user_id=user_id ) | Q(to_user_id=user_id)) & Q(status = Friend.STATUS_APPROVED))
+        else:
+            friends = Friend.objects.filter((Q(from_user_id=user_id) & Q(status=Friend.STATUS_APPROVED))| Q(to_user_id=user_id))
+        friends_paginated = friends[offset: offset + limit]
+        serializer = FriendSerializer(friends_paginated, many=True)
         friends_data = []
         for friend in serializer.data:
             friend_data = {
