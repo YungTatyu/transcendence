@@ -31,7 +31,7 @@ class MatchFinishView(APIView):
             self.__register_winner_in_parent_match(match, results)
             err_message = self.__send_match_result_to_tournament(match)
             if err_message is not None:
-                # TODO DBデータのロールバック処理＋テスト
+                self.__rollback_match_data(match_id, match, results)
                 return Response(
                     {"error": err_message}, status=HTTP_500_INTERNAL_SERVER_ERROR
                 )
@@ -63,6 +63,28 @@ class MatchFinishView(APIView):
 
         winner_user_id = max(results, key=lambda x: x["score"])["userId"]
         MatchParticipant.objects.create(match_id=parent_match, user_id=winner_user_id)
+
+    def __rollback_match_data(self, match_id: int, match: Match, results: list[dict]):
+        """
+        __update_match_data と __register_winner_in_parent_matchのロールバックを実行
+        """
+        # MatchParticipantのスコアをリセット
+        MatchParticipant.objects.filter(match_id=match_id).update(score=None)
+
+        # Match の winner_user_id と finish_date をリセット
+        Match.objects.filter(match_id=match_id).update(
+            winner_user_id=None, finish_date=None
+        )
+
+        # 親試合が無い(決勝戦)場合、これ以降のロールバックは必要ない
+        parent_match = match.parent_match_id
+        if parent_match is None:
+            return
+
+        # 勝ち上がり処理で親試合に追加した試合参加者レコードを削除
+        MatchParticipant.objects.filter(
+            match_id=parent_match, user_id=match.winner_user_id
+        ).delete()
 
     def __send_match_result_to_tournament(self, match: Match) -> Optional[str]:
         """/tournaments/finish-matchを叩き、試合終了を通知"""
