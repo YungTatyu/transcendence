@@ -19,6 +19,7 @@ from django.utils.decorators import method_decorator
 from .jwt_decorators import jwt_required
 from rest_framework.test import APIClient
 import jwt
+from rest_framework.decorators import api_view
 
 
 class FriendListView(APIView):
@@ -207,3 +208,7 @@ class FriendView(APIView):
                 return Response(
                     {"error": "Friend not found."}, status=HTTP_404_NOT_FOUND
                 )
+
+@api_view(["GET"])
+def health_check(_):
+    return Response(data={"status": "healthy"}, status=HTTP_200_OK)

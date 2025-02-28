@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import FriendListView, FriendRequestView, FriendView
+from .views import FriendListView, FriendRequestView, FriendView, health_check
 
 urlpatterns = [
     path("friends", FriendListView.as_view(), name="friend-list"),
@@ -10,4 +10,5 @@ urlpatterns = [
         name="friend-request",
     ),
     path("friends/<str:friend_id>", FriendView.as_view(), name="friend"),
+	path("health", health_check, name="health")
 ]
