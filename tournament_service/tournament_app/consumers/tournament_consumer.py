@@ -38,3 +38,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def send_matches_data(self, event):
         """試合状況をクライアントに送信"""
         await self.send(text_data=json.dumps(event["matches_data"]))
+
+    async def force_disconnect(self, _):
+        await self.close(code=4200)

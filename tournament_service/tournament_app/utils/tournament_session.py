@@ -153,6 +153,10 @@ class TournamentSession:
         # Tournament試合が存在するならTaskTimerをセット
         if self.current_round <= len(self.matches_data):
             await self.set_tournament_match_task()
+        # トーナメントを終了、WebSocket接続を切断
+        else:
+            await channel_layer.group_send(group_name, {"type": "force_disconnect"})
+            TournamentSession.delete(self.__tournament_id)
 
         if before_task:
             before_task.cancel()
