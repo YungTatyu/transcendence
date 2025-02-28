@@ -6,6 +6,8 @@ from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
 
+from asgiref.sync import async_to_sync
+
 
 class TournamentSession:
     __tournament_session_dict: dict[int, "TournamentSession"] = {}
@@ -23,6 +25,10 @@ class TournamentSession:
         self.__task_timer = None
         self.__create_match_records(tournament_id, user_ids)
         self.update_matches_data()
+        async_to_sync(
+            self.set_tournament_match_task,
+            force_new_loop=False,
+        )()
 
     @classmethod
     def register(

@@ -100,7 +100,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         3. ユーザーをchannelから削除
         4. タイマーを削除(タスクがない場合は何もしない)
         """
-        tournament_id, session = await self.__create_tournament()
+        tournament_id = await self.__create_tournament()
         await self.channel_layer.group_send(
             self.MATCHING_ROOM,
             {
@@ -108,8 +108,6 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 "tournament_id": str(tournament_id),
             },
         )
-        if session is not None:
-            await session.set_tournament_match_task()
         for channel_name in TournamentMatchingManager.get_waiting_users().values():
             await self.channel_layer.group_discard(self.MATCHING_ROOM, channel_name)
         TournamentMatchingManager.clear_waiting_users()
@@ -130,7 +128,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
-    def __create_tournament(self) -> tuple[Optional[int], Optional[TournamentSession]]:
+    def __create_tournament(self) -> Optional[int]:
         """
         永続的データとメモリ上のデータの両方を作成
         [INFO] TournamentSession.register失敗時、Noneが返る
@@ -142,5 +140,5 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             list(TournamentMatchingManager.get_waiting_users().keys()),
         )
         if session is None:
-            return None, None
-        return tournament_id, session
+            return None
+        return tournament_id
