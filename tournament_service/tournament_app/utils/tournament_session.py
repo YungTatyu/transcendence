@@ -117,11 +117,6 @@ class TournamentSession:
             self.LIMIT_TOURNAMENT_MATCH_SEC, self.handle_tournament_match_bye
         )
 
-    def cancel_tournament_match_task(self):
-        if self.__task_timer:
-            self.__task_timer.cancel()
-        self.__task_timer = None
-
     async def handle_tournament_match_bye(self):
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
@@ -164,4 +159,5 @@ class TournamentSession:
             TournamentSession.delete(self.__tournament_id)
 
         if before_task:
+            # INFO タスクが既に終了している場合にcancelしても何も起きない
             before_task.cancel()
