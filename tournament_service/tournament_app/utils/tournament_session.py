@@ -118,12 +118,15 @@ class TournamentSession:
         )
 
     async def handle_tournament_match_bye(self):
+        """
+        時間内に試合が終了されなかった場合に不戦勝での勝ち上がり処理を実行する
+        """
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
         ][0]
         participant_ids = [p["id"] for p in current_match["participants"]]
-        results = [{"userId": id, "score": 0} for id in participant_ids]
-        results[0]["score"] = 11
+        results = [{"userId": id, "score": -1} for id in participant_ids]
+        results[0]["score"] = 0  # 一人だけscoreを0に設定し、不戦勝とする
         match_id = current_match["matchId"]
         client = MatchClient(settings.MATCH_API_BASE_URL)
         await client.fetch_tournament_match_finish(match_id, results)
