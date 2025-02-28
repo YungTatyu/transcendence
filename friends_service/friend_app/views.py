@@ -62,7 +62,7 @@ class FriendListView(APIView):
                 "approvedAt": friend["approved_at"],
             }
             friends_data.append(friend_data)
-        response_data = {"friends": friends_data, "total": friends.count()}
+        response_data = {"friends": friends_data, "total": len(friends_data)}
         return Response(response_data, status=HTTP_200_OK)
 
 

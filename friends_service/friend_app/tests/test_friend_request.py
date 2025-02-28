@@ -362,11 +362,6 @@ class FriendRequestTestsPatch(APITestCase):
 
 
 class FriendListTest(APITestCase):
-    """
-    getのテスト
-    自分のid=1とする
-    """
-
     def setUp(self):
         self.client = APIClient()
 
@@ -454,6 +449,219 @@ class FriendListTest(APITestCase):
             ],
             "total": 3,
         }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+
+
+class FriendListQueryTest(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        # JWT トークンの作成
+        self.token_payload = {"user_id": 1}
+        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+
+        self.client.cookies["access_token"] = self.token
+
+    def set_pending(self, from_user_id, to_user_id, current_time):
+        """
+        フレンド申請をしている状態にする
+        """
+        return Friend.objects.create(
+            from_user_id=from_user_id,
+            to_user_id=to_user_id,
+            status="pending",
+            request_sent_at=current_time,
+        )
+
+    def set_approved(self, from_user_id, to_user_id, current_time):
+        """
+        フレンド状態にする
+        """
+        return Friend.objects.create(
+            from_user_id=from_user_id,
+            to_user_id=to_user_id,
+            status="approved",
+            request_sent_at=current_time,
+            approved_at=current_time,
+        )
+
+    def create_many_users(
+        self, number, current_time, offset, limit, delete_status=None
+    ):
+        """
+        フレンドリストを4パターンに分けてまとめて作成
+        1 pending(from_user_id=user_id, to_user_id=other_id)
+        2 pending(from_user_id=other_id, to_user_id=user_id)
+        3 approved(from_user_id=user_id, to_user_id=other_id)
+        4 approved(from_user_id=other_id, to_user_id=user_id)
+
+        number 作成するデータサイズ(人数)
+        current_time 時間のずれによるassertのfalseを回避するために時間を統一する
+        offset offset
+        limit limit
+        delete_status 消したいデータのステータス
+        """
+        user_id = 1
+        friend_list = []
+        for other_id in range(2, 2 + number):
+            if other_id % 4 == 0:
+                friend = self.set_pending(user_id, other_id, current_time)
+                continue  # 予想の答えのリストに追加しない
+            elif other_id % 4 == 1:
+                friend = self.set_pending(other_id, user_id, current_time)
+            elif other_id % 4 == 2:
+                friend = self.set_approved(user_id, other_id, current_time)
+            else:
+                friend = self.set_approved(other_id, user_id, current_time)
+            friend_list.append(
+                {
+                    "fromUserId": friend.from_user_id,
+                    "toUserId": friend.to_user_id,
+                    "status": friend.status,
+                    "requestSentAt": friend.request_sent_at.isoformat(),
+                    "approvedAt": friend.approved_at.isoformat()
+                    if friend.approved_at
+                    else None,
+                }
+            )
+        if delete_status:
+            friend_list = self.delete_pending_approved_data(friend_list, delete_status)
+        friend_list = friend_list[offset : offset + limit]
+        return {
+            "friends": friend_list,
+            "total": len(friend_list),
+        }
+
+    def delete_pending_approved_data(self, friend_list, delete_status):
+        """
+        friend_listの指定されたステータスのデータを消す
+        """
+        if delete_status == "pending":
+            return [
+                friend for friend in friend_list if friend["status"] != delete_status
+            ]
+        else:
+            return [
+                friend for friend in friend_list if friend["status"] != delete_status
+            ]
+
+    def test_no_query(self):
+        """
+        クエリーがない場合
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(5, current_time, 0, 20)
+        url = reverse("friend-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+
+    def test_status_pending_query(self):
+        """
+        quert:status=pendingの時
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(5, current_time, 0, 20, "approved")
+        url = reverse("friend-list") + "?status=pending"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+
+    def test_status_approved_query(self):
+        """
+        quert:status=approvedの時
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(5, current_time, 0, 20, "pending")
+        url = reverse("friend-list") + "?status=approved"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+
+    def test_offset_error(self):
+        """
+        オフセットがエラーの時
+        エラーメッセージはシリアライザが出すものなので比較しない
+        """
+        url = reverse("friend-list") + "?offset=-5"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_offset_over_size(self):
+        """
+        offsetが作成したデータの数より大きい場合
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(5, current_time, 0, 20)
+        url = reverse("friend-list") + "?offset=5"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expect_answer = {
+            "friends": [],
+            "total": 0,
+        }
+        self.assertEqual(expect_answer, response.data)
+
+    def test_limit_error(self):
+        """
+        リミットがエラーの時
+        エラーメッセージはシリアライザが出すものなので比較しない
+        """
+        url = reverse("friend-list") + "?limit=0"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_offset(self):
+        """
+        offset=3の場合
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(5, current_time, 3, 20)
+        url = reverse("friend-list") + "?offset=3"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+
+    def test_limit(self):
+        """
+        limit=1の場合
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(5, current_time, 0, 1)
+        url = reverse("friend-list") + "?limit=1"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.maxDiff = None
+        self.assertEqual(expect_answer, response.data)
+
+    def test_all(self):
+        """
+        queryを全て指定
+        """
+        japan_timezone = pytz.timezone("Asia/Tokyo")
+        current_time = now().astimezone(japan_timezone)
+
+        expect_answer = self.create_many_users(100, current_time, 5, 20, "pending")
+        url = reverse("friend-list") + "?status=approved&offset=5&limit=20"
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.maxDiff = None
         self.assertEqual(expect_answer, response.data)
