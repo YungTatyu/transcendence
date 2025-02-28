@@ -82,8 +82,9 @@ class MatchFinishView(APIView):
             return
 
         # 勝ち上がり処理で親試合に追加した試合参加者レコードを削除
+        winner_user_id = max(results, key=lambda x: x["score"])["userId"]
         MatchParticipant.objects.filter(
-            match_id=parent_match, user_id=match.winner_user_id
+            match_id=parent_match, user_id=winner_user_id
         ).delete()
 
     def __send_match_result_to_tournament(self, match: Match) -> Optional[str]:
