@@ -1,6 +1,8 @@
 # Create your views here.
 from django.db.models import Q
+from django.utils.decorators import method_decorator
 from django.utils.timezone import now
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
@@ -13,37 +15,42 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 
-from .models import Friend
-from .serializers import FriendSerializer, UserIdValidator, FriendQuerySerializer
-from django.utils.decorators import method_decorator
 from .jwt_decorators import jwt_required
-from rest_framework.test import APIClient
-import jwt
-from rest_framework.decorators import api_view
+from .models import Friend
+from .serializers import FriendQuerySerializer, FriendSerializer, UserIdValidator
 
 
 class FriendListView(APIView):
-    '''
+    """
     フレンド申請状態(pending)の時、クエリーのlimitsとフロントエンドの画面の関係から
     to_user_idが自身のユーザーID、from_user_idが自分以外のIDの時のみ表示する。
-    '''
+    """
+
     @method_decorator(jwt_required)
     def get(self, request):
         query_serializer = FriendQuerySerializer(data=request.query_params)
         if not query_serializer.is_valid():
             return Response(query_serializer.errors, status=HTTP_400_BAD_REQUEST)
-        #jwtの対応
+        # jwtの対応
         user_id = request.user_id
-        status = query_serializer.validated_data.get("status") 
+        status = query_serializer.validated_data.get("status")
         offset = query_serializer.validated_data.get("offset")
         limit = query_serializer.validated_data["limit"]
         if status == FriendQuerySerializer.STATUS_PENDING:
-            friends = friends = Friend.objects.filter(Q(to_user_id=user_id) & Q(status = Friend.STATUS_PENDING))
+            friends = Friend.objects.filter(
+                Q(to_user_id=user_id) & Q(status=Friend.STATUS_PENDING)
+            )
         elif status == FriendQuerySerializer.STATUS_APPROVED:
-            friends = friends = Friend.objects.filter((Q(from_user_id=user_id ) | Q(to_user_id=user_id)) & Q(status = Friend.STATUS_APPROVED))
+            friends = Friend.objects.filter(
+                (Q(from_user_id=user_id) | Q(to_user_id=user_id))
+                & Q(status=Friend.STATUS_APPROVED)
+            )
         else:
-            friends = Friend.objects.filter((Q(from_user_id=user_id) & Q(status=Friend.STATUS_APPROVED))| Q(to_user_id=user_id))
-        friends_paginated = friends[offset: offset + limit]
+            friends = Friend.objects.filter(
+                (Q(from_user_id=user_id) & Q(status=Friend.STATUS_APPROVED))
+                | Q(to_user_id=user_id)
+            )
+        friends_paginated = friends[offset : offset + limit]
         serializer = FriendSerializer(friends_paginated, many=True)
         friends_data = []
         for friend in serializer.data:
@@ -87,7 +94,7 @@ class FriendRequestView(APIView):
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
 
         to_user_id = int(user_id_validator.validated_data["user_id"])
-        #jwtの対応
+        # jwtの対応
         from_user_id = request.user_id
         friend = Friend.objects.filter(
             from_user_id=from_user_id, to_user_id=to_user_id
@@ -208,6 +215,7 @@ class FriendView(APIView):
                 return Response(
                     {"error": "Friend not found."}, status=HTTP_404_NOT_FOUND
                 )
+
 
 @api_view(["GET"])
 def health_check(_):

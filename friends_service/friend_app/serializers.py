@@ -3,8 +3,6 @@ from rest_framework import serializers
 from .models import Friend
 
 
-
-
 class UserIdValidator(serializers.Serializer):
     user_id = serializers.CharField()
 
@@ -19,6 +17,7 @@ class FriendSerializer(serializers.ModelSerializer):
         model = Friend
         fields = "__all__"
 
+
 class FriendQuerySerializer(serializers.Serializer):
     DEFAULT_OFFSET = 0
     DEFAULT_LIMIT = 20
@@ -26,6 +25,8 @@ class FriendQuerySerializer(serializers.Serializer):
     STATUS_APPROVED = "approved"
     SERIALIZE_CHOICES = [(STATUS_PENDING, "pending"), (STATUS_APPROVED, "approved")]
 
-    status = serializers.ChoiceField(choices=SERIALIZE_CHOICES,required=False)
-    offset = serializers.IntegerField(min_value=0, required=False, default=DEFAULT_OFFSET)
+    status = serializers.ChoiceField(choices=SERIALIZE_CHOICES, required=False)
+    offset = serializers.IntegerField(
+        min_value=0, required=False, default=DEFAULT_OFFSET
+    )
     limit = serializers.IntegerField(min_value=1, required=False, default=DEFAULT_LIMIT)

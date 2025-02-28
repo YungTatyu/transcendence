@@ -1,20 +1,18 @@
+import jwt
 import pytz
 from django.urls import reverse
 from django.utils.timezone import now
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from friend_app.models import Friend
 
-from rest_framework.test import APIClient
-import jwt
-import sys
 
 class FriendRequestTestsPost(APITestCase):
     def setUp(self):
         # self.client = APIClient()
 
-    # JWT トークンの作成
+        # JWT トークンの作成
         self.token_payload = {"user_id": 1}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
 
@@ -110,12 +108,11 @@ class FriendRequestTestsDelete(APITestCase):
     def setUp(self):
         # self.client = APIClient()
 
-    # JWT トークンの作成
+        # JWT トークンの作成
         self.token_payload = {"user_id": 1}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
 
         self.client.cookies["access_token"] = self.token
-
 
     def set_pending(self, from_user_id, to_user_id):
         """
@@ -293,7 +290,6 @@ class FriendRequestTestsPatch(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -370,6 +366,7 @@ class FriendListTest(APITestCase):
     getのテスト
     自分のid=1とする
     """
+
     def setUp(self):
         self.client = APIClient()
 

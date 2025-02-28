@@ -1,6 +1,6 @@
 from functools import wraps
 
-import jwt, sys
+import jwt
 from rest_framework.response import Response
 
 
