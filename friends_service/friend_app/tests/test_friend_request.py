@@ -6,8 +6,20 @@ from rest_framework.test import APITestCase
 
 from friend_app.models import Friend
 
+from rest_framework.test import APIClient
+import jwt
+import sys
 
 class FriendRequestTestsPost(APITestCase):
+    def setUp(self):
+        # self.client = APIClient()
+
+    # JWT トークンの作成
+        self.token_payload = {"user_id": 1}
+        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+
+        self.client.cookies["access_token"] = self.token
+
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -95,6 +107,16 @@ class FriendRequestTestsPost(APITestCase):
 
 
 class FriendRequestTestsDelete(APITestCase):
+    def setUp(self):
+        # self.client = APIClient()
+
+    # JWT トークンの作成
+        self.token_payload = {"user_id": 1}
+        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+
+        self.client.cookies["access_token"] = self.token
+
+
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -172,6 +194,15 @@ class FriendRequestTestsDelete(APITestCase):
 
 
 class FriendTestDelete(APITestCase):
+    def setUp(self):
+        # self.client = APIClient()
+
+        # JWT トークンの作成
+        self.token_payload = {"user_id": 1}
+        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+
+        self.client.cookies["access_token"] = self.token
+
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -253,6 +284,16 @@ class FriendTestDelete(APITestCase):
 
 
 class FriendRequestTestsPatch(APITestCase):
+    def setUp(self):
+        # self.client = APIClient()
+
+        # JWT トークンの作成
+        self.token_payload = {"user_id": 1}
+        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+
+        self.client.cookies["access_token"] = self.token
+
+
     def set_pending(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
@@ -329,6 +370,14 @@ class FriendListTest(APITestCase):
     getのテスト
     自分のid=1とする
     """
+    def setUp(self):
+        self.client = APIClient()
+
+        # JWT トークンの作成
+        self.token_payload = {"user_id": 1}
+        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+
+        self.client.cookies["access_token"] = self.token
 
     def set_pending(self, from_user_id, to_user_id, current_time):
         """

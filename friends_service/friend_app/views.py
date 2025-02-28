@@ -15,21 +15,24 @@ from rest_framework.views import APIView
 
 from .models import Friend
 from .serializers import FriendSerializer, UserIdValidator, FriendQuerySerializer
+from django.utils.decorators import method_decorator
+from .jwt_decorators import jwt_required
+from rest_framework.test import APIClient
+import jwt
+
 
 class FriendListView(APIView):
     '''
     フレンド申請状態(pending)の時、クエリーのlimitsとフロントエンドの画面の関係から
     to_user_idが自身のユーザーID、from_user_idが自分以外のIDの時のみ表示する。
     '''
+    @method_decorator(jwt_required)
     def get(self, request):
         query_serializer = FriendQuerySerializer(data=request.query_params)
         if not query_serializer.is_valid():
             return Response(query_serializer.errors, status=HTTP_400_BAD_REQUEST)
-        '''
-        TODO
-        user_idの変更
-        '''
-        user_id = 1
+        #jwtの対応
+        user_id = request.user_id
         status = query_serializer.validated_data.get("status") 
         offset = query_serializer.validated_data.get("offset")
         limit = query_serializer.validated_data["limit"]
@@ -76,13 +79,15 @@ class FriendRequestView(APIView):
             )
         return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def post(self, _, user_id):
+    @method_decorator(jwt_required)
+    def post(self, request, user_id):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
 
         to_user_id = int(user_id_validator.validated_data["user_id"])
-        from_user_id = 1
+        #jwtの対応
+        from_user_id = request.user_id
         friend = Friend.objects.filter(
             from_user_id=from_user_id, to_user_id=to_user_id
         ).first()
@@ -110,12 +115,14 @@ class FriendRequestView(APIView):
             {"message": "Friend request sent successfully."}, status=HTTP_201_CREATED
         )
 
-    def delete(self, _, user_id):
+    @method_decorator(jwt_required)
+    def delete(self, request, user_id):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
         to_user_id = int(user_id_validator.validated_data["user_id"])
-        from_user_id = 1
+        # jwtの対応
+        from_user_id = request.user_id
         if from_user_id == to_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},
@@ -136,8 +143,10 @@ class FriendRequestView(APIView):
         Friend.objects.filter(from_user_id=from_user_id, to_user_id=to_user_id).delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
-    def patch(self, _, user_id):
-        my_user_id = 1
+    @method_decorator(jwt_required)
+    def patch(self, request, user_id):
+        # jwtの対応
+        my_user_id = request.user_id
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
@@ -167,12 +176,14 @@ class FriendRequestView(APIView):
 
 
 class FriendView(APIView):
-    def delete(self, _, friend_id):
+    @method_decorator(jwt_required)
+    def delete(self, request, friend_id):
         friend_id_validator = UserIdValidator(data={"user_id": friend_id})
         if not friend_id_validator.is_valid():
             return Response(friend_id_validator.errors, status=HTTP_400_BAD_REQUEST)
         to_user_id = int(friend_id_validator.validated_data["user_id"])
-        from_user_id = 1
+        # jwtの対応
+        from_user_id = request.user_id
         if from_user_id == to_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},

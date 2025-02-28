@@ -5,3 +5,4 @@ pytest-django
 pytest-asyncio
 psycopg2==2.9.10
 pytz
+PyJWT==2.1.0
