@@ -123,7 +123,6 @@ class TournamentSession:
         self.__task_timer = None
 
     async def handle_tournament_match_bye(self):
-        # TODO トーナメントが不戦勝の場合の処理を記述する
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
         ][0]
