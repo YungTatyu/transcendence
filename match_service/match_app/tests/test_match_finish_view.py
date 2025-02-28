@@ -220,3 +220,28 @@ class TestMatchFinish:
             assert not MatchParticipant.objects.filter(
                 match_id=match.parent_match_id, user_id=winner_user_id
             ).exists()
+
+    @pytest.mark.django_db
+    def test_minus_one_score(self, client):
+        """スコアに-1が許容されるかをテスト"""
+        results = [
+            {"userId": 1, "score": 0},
+            {"userId": 2, "score": -1},
+        ]
+        user_ids = [result["userId"] for result in results]
+        match_id = self.__insert_quick_play_match(user_ids)
+        self.request_match_finish(client, HTTP_200_OK, match_id, results)
+
+    @pytest.mark.django_db
+    def test_minus_two_score(self, client):
+        """
+        スコアに-2が許容されないかをテスト
+        INFO スコアの最小値は-1です
+        """
+        results = [
+            {"userId": 1, "score": 0},
+            {"userId": 2, "score": -2},
+        ]
+        user_ids = [result["userId"] for result in results]
+        match_id = self.__insert_quick_play_match(user_ids)
+        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
