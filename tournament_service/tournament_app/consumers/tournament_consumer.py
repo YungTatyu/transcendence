@@ -2,14 +2,7 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from tournament_app.utils.tournament_session import TournamentSession
-
-
-class TournamentState:
-    """トーナメントの状態を表す定数クラス"""
-
-    ONGOING = "ongoing"  # トーナメント中
-    ERROR = "error"  # エラー発生
-    FINISHED = "finished"  # トーナメント終了
+from tournament_app.consumers.tournament_state import TournamentState as State
 
 
 class TournamentConsumer(AsyncWebsocketConsumer):
@@ -40,7 +33,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         event = {
             "matches_data": tournament_session.matches_data,
             "current_round": tournament_session.current_round,
-            "state": TournamentState.ONGOING,
+            "state": State.ONGOING,
         }
         await self.send_matches_data(event)
 

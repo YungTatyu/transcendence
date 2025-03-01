@@ -5,6 +5,8 @@ from django.conf import settings
 from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
+from tournament_app.consumers.tournament_state import TournamentState as State
+
 
 from asgiref.sync import async_to_sync
 
@@ -129,10 +131,6 @@ class TournamentSession:
         """
         時間内に試合が終了されなかった場合に不戦勝での勝ち上がり処理を実行
         """
-        from tournament_app.consumers.tournament_consumer import (
-            TournamentState as State,
-        )
-
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
         ][0]
@@ -157,11 +155,6 @@ class TournamentSession:
         5. トーナメントが終了する場合, WebSocketを切断
         6. 以前にセットした強制不戦勝処理タスクをキャンセル
         """
-        from tournament_app.consumers.tournament_consumer import (
-            TournamentConsumer,
-            TournamentState as State,
-        )
-
         self.next_round()
         is_finished_tournament = self.current_round > len(self.matches_data)
         state = State.FINISHED if is_finished_tournament else State.ONGOING
