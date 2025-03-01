@@ -538,14 +538,8 @@ class FriendListQueryTest(APITestCase):
         """
         friend_listの指定されたステータスのデータを消す
         """
-        if delete_status == "pending":
-            return [
-                friend for friend in friend_list if friend["status"] != delete_status
-            ]
-        else:
-            return [
-                friend for friend in friend_list if friend["status"] != delete_status
-            ]
+        # if delete_status == "pending":
+        return [friend for friend in friend_list if friend["status"] != delete_status]
 
     def test_no_query(self):
         """
