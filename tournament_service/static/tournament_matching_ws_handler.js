@@ -74,9 +74,10 @@ class TournamentMatchingWsHandler {
 		);
 		ws.onmessage = (event) => {
 			const matchesData = JSON.parse(event.data);
-			console.log(matchesData);
 			const tournamentGraph = document.getElementById("tournamentGraph");
+			const matchInfo = document.getElementById("matchInfo");
 			tournamentGraph.textContent = JSON.stringify(matchesData, null, 2);
+			matchInfo.textContent = this.getMatchVsInfo(matchesData);
 		};
 		ws.onerror = (error) => {
 			console.error("Tournament WebSocket error:", error);
@@ -85,5 +86,19 @@ class TournamentMatchingWsHandler {
 			console.log("TournamentWs connection closed.");
 		};
 		return ws;
+	}
+
+	getMatchVsInfo(matchesData) {
+		// current_round に一致する試合を抽出
+		const currentRoundMatches = matchesData.matches_data.filter(
+			match => match.round === matchesData.current_round
+		);
+
+		// 各試合の participants から id を取得し "XXX VS YYY" の形式に変換
+		const matchStrings = currentRoundMatches.map(match => {
+			const ids = match.participants.map(p => p.id);
+			return `${ids[0]} VS ${ids[1]}`;
+		});
+		return matchStrings;
 	}
 }
