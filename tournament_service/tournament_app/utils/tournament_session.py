@@ -129,6 +129,10 @@ class TournamentSession:
         """
         時間内に試合が終了されなかった場合に不戦勝での勝ち上がり処理を実行
         """
+        from tournament_app.consumers.tournament_consumer import (
+            TournamentState as State,
+        )
+
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
         ][0]
@@ -137,7 +141,12 @@ class TournamentSession:
         results[0]["score"] = 0  # 一人だけscoreを0に設定し、不戦勝とする
         match_id = current_match["matchId"]
         client = MatchClient(settings.MATCH_API_BASE_URL)
-        await client.fetch_tournament_match_finish(match_id, results)
+        res_data = await client.fetch_tournament_match_finish(match_id, results)
+
+        # MatchAPIを叩き、エラーの場合、Error情報をSendし、WebSocketを切断
+        if res_data.get("error", None) is not None:
+            await self.__broadcast_matches_info(State.ERROR)
+            await self.__broadcast_force_disconnect()
 
     async def update_tournament_session_info(self):
         """
@@ -153,13 +162,37 @@ class TournamentSession:
             TournamentState as State,
         )
 
-        self.update_matches_data()
         self.next_round()
-
         is_finished_tournament = self.current_round > len(self.matches_data)
         state = State.FINISHED if is_finished_tournament else State.ONGOING
 
-        # 更新されたmatches_dataをTournamentグループに対してブロードキャスト
+        try:
+            self.update_matches_data()
+        except Exception:
+            # MatchAPIを叩き、エラー場合、トーナメント終了・エラー情報をSend
+            is_finished_tournament = True
+            state = State.ERROR
+
+        await self.__broadcast_matches_info(state)
+
+        before_task = self.__task_timer
+
+        # Tournament試合が存在するならTaskTimerをセット
+        if not is_finished_tournament:
+            await self.set_tournament_match_task()
+        # トーナメントを終了、WebSocket接続を切断
+        else:
+            await self.__broadcast_force_disconnect()
+            TournamentSession.delete(self.__tournament_id)
+
+        if before_task:
+            # INFO タスクが既に終了している場合にcancelしても何も起きない
+            before_task.cancel()
+
+    async def __broadcast_matches_info(self, state):
+        """Tournamentグループに対して試合状況をブロードキャスト"""
+        from tournament_app.consumers.tournament_consumer import TournamentConsumer
+
         channel_layer = get_channel_layer()
         group_name = TournamentConsumer.get_group_name(self.__tournament_id)
         await channel_layer.group_send(
@@ -172,16 +205,9 @@ class TournamentSession:
             },
         )
 
-        before_task = self.__task_timer
+    async def __broadcast_force_disconnect(self):
+        from tournament_app.consumers.tournament_consumer import TournamentConsumer
 
-        # Tournament試合が存在するならTaskTimerをセット
-        if not is_finished_tournament:
-            await self.set_tournament_match_task()
-        # トーナメントを終了、WebSocket接続を切断
-        else:
-            await channel_layer.group_send(group_name, {"type": "force_disconnect"})
-            TournamentSession.delete(self.__tournament_id)
-
-        if before_task:
-            # INFO タスクが既に終了している場合にcancelしても何も起きない
-            before_task.cancel()
+        channel_layer = get_channel_layer()
+        group_name = TournamentConsumer.get_group_name(self.__tournament_id)
+        await channel_layer.group_send(group_name, {"type": "force_disconnect"})
