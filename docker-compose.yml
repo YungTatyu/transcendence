@@ -163,6 +163,15 @@ services:
     privileged: true
     stop_signal: SIGRTMIN+3
 
+  waf:
+    build: ./waf_service
+    container_name: waf
+    ports:
+      - 8800:8800
+    networks:
+      - app_network
+    tty: true
+
 networks:
   app_network:
     driver: bridge
