@@ -148,9 +148,16 @@ class TournamentSession:
         5. トーナメントが終了する場合, WebSocketを切断
         6. 以前にセットした強制不戦勝処理タスクをキャンセル
         """
-        from tournament_app.consumers.tournament_consumer import TournamentConsumer
+        from tournament_app.consumers.tournament_consumer import (
+            TournamentConsumer,
+            TournamentState as State,
+        )
 
         self.update_matches_data()
+        self.next_round()
+
+        is_finished_tournament = self.current_round > len(self.matches_data)
+        state = State.FINISHED if is_finished_tournament else State.ONGOING
 
         # 更新されたmatches_dataをTournamentグループに対してブロードキャスト
         channel_layer = get_channel_layer()
@@ -160,14 +167,15 @@ class TournamentSession:
             {
                 "type": "send_matches_data",  # TournamentConsumer.send_matches_data
                 "matches_data": self.__matches_data,
+                "current_round": self.current_round,
+                "state": state,
             },
         )
-        self.next_round()
 
         before_task = self.__task_timer
 
         # Tournament試合が存在するならTaskTimerをセット
-        if self.current_round <= len(self.matches_data):
+        if not is_finished_tournament:
             await self.set_tournament_match_task()
         # トーナメントを終了、WebSocket接続を切断
         else:

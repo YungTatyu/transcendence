@@ -4,6 +4,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from tournament_app.utils.tournament_session import TournamentSession
 
 
+class TournamentState:
+    """トーナメントの状態を表す定数クラス"""
+
+    ONGOING = "ongoing"  # トーナメント中
+    ERROR = "error"  # エラー発生
+    FINISHED = "finished"  # トーナメント終了
+
+
 class TournamentConsumer(AsyncWebsocketConsumer):
     GROUP_NAME_FORMAT = "tournament_{}"
 
@@ -29,7 +37,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         # 接続してきたClientに試合状況をSend
-        await self.send(text_data=json.dumps(tournament_session.matches_data))
+        event = {
+            "matches_data": tournament_session.matches_data,
+            "current_round": tournament_session.current_round,
+            "state": TournamentState.ONGOING,
+        }
+        await self.send_matches_data(event)
 
     async def disconnect(self, _):
         # WebSocket グループから退出
@@ -37,7 +50,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def send_matches_data(self, event):
         """試合状況をクライアントに送信"""
-        await self.send(text_data=json.dumps(event["matches_data"]))
+        await self.send(
+            text_data=json.dumps({
+                "matches_data": event["matches_data"],
+                "current_round": event["current_round"],
+                "state": event["state"],
+            })
+        )
 
     async def force_disconnect(self, _):
         """トーナメントが終了した際にサーバからWebSocketを切断するための関数"""
