@@ -105,6 +105,7 @@ async def test_same_port():
 # INFO @pytest.mark.django_dbを付与したテストで作成されたレコードはテスト後にロールバックされ、永続化しない。
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_start_tournament_by_room_capacity(create_match_records_mocker):
     """ROOM_CAPACITYに達した時にtournament_idが送信されるか"""
     communicators = []
@@ -123,6 +124,7 @@ async def test_start_tournament_by_room_capacity(create_match_records_mocker):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_start_tournament_by_force_start_time(create_match_records_mocker):
     """FORCED_START_TIMEに達した時にtournament_idが送信されるか"""
     communicators = []
@@ -145,6 +147,7 @@ async def test_start_tournament_by_force_start_time(create_match_records_mocker)
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_not_start_tournament():
     """FORCED_START_TIMEに達していない場合にtournament_idが送信されないか"""
     communicators = []
@@ -167,6 +170,7 @@ async def test_not_start_tournament():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_init_matching_room_after_start_tournament(create_match_records_mocker):
     """
     トーナメント開始後、マッチングルームが初期化され、別ユーザーがマッチングできるか
@@ -208,6 +212,7 @@ async def test_init_matching_room_after_start_tournament(create_match_records_mo
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_create_resource(create_match_records_mocker):
     """トーナメント開始後、リソースが作成されたか"""
     communicators = []
@@ -226,6 +231,7 @@ async def test_create_resource(create_match_records_mocker):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_start_after_timer_cancel(create_match_records_mocker):
     """
     2人の状態で1人抜け、トーナメント強制開始タイマーがcancelされた後、トーナメントが正常に開始されるか
@@ -259,6 +265,7 @@ async def test_start_after_timer_cancel(create_match_records_mocker):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_receive_matching_wait_user_ids():
     """
     マッチング待機中ユーザーのIDが送信されるか
@@ -287,6 +294,7 @@ async def test_receive_matching_wait_user_ids():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("update_matches_data_mocker")
 async def test_create_match_error(create_match_records_error_mocker):
     """Matchリソース作成処理が失敗する場合、NoneがSendされる"""
     communicators = []

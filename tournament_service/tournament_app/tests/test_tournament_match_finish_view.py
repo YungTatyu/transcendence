@@ -23,6 +23,7 @@ def tournament_setup_and_teardown(create_match_records_mocker):
     TournamentSession.clear()  # テスト後処理
 
 
+@pytest.mark.usefixtures("update_matches_data_mocker")
 class TestTournamentMatchFinish:
     def request_match_finish(self, client, status, tournament_id, round) -> dict:
         data = {"tournamentId": tournament_id, "round": round}
