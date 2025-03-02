@@ -12,9 +12,9 @@ services:
       - auth_redis
     env_file: ./docker_env/auth.env
     volumes:
-      - ./certs/client.crt:/vault/certs/client.crt:ro
-      - ./certs/client.key:/vault/certs/client.key:ro
-      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   auth_db:
     image: postgres:15
