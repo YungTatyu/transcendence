@@ -55,6 +55,8 @@ services:
   game_proxy:
     build: ./waf_proxy_service
     container_name: game_proxy_server
+    networks:
+      - app_network
     ports:
       - "8004:8004"
     env_file: ./docker_env/game.env
