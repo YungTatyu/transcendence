@@ -6,7 +6,9 @@ const stateManager = {
   listeners: [],
   setState(newState) {
     this.state = { ...this.state, ...newState };
-    this.listeners.forEach((listener) => listener(this.state));
+    for (const listener of this.listeners) {
+      listener(this.state);
+    }
   },
   subscribe(listener) {
     this.listeners.push(listener);
