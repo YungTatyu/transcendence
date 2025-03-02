@@ -1,17 +1,15 @@
 FROM owasp/modsecurity-crs:4.11.0-nginx-202502270602
 
 # for develpment
-# USER root
-# RUN apt update && \
-#     apt install -y --no-install-recommends vim
+USER root
+RUN apt update && \
+    apt install -y --no-install-recommends vim
 
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/conf.d/ /etc/nginx/conf.d/
-COPY modsecurity.d/ /etc/modsecurity.d/
+COPY nginx/nginx.conf.template /etc/nginx/templates/nginx.conf.template
+COPY nginx/conf.d/default.conf.template /etc/nginx/templates/conf.d/
+COPY nginx/conf.d/proxy_params /etc/nginx/conf.d/
+COPY nginx/includes/proxy_backend.conf.template /etc/nginx/templates/includes/
 
-# 環境変数を使用する場合は、以下を使用する
-# COPY docker-entrypoint.sh /
-# RUN chmod +x /docker-entrypoint.sh
-# ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY modsecurity.d/ /etc/nginx/templates/modsecurity.d/
 
 CMD ["nginx", "-g", "daemon off;"]
