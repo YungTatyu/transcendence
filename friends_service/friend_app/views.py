@@ -167,7 +167,7 @@ class FriendRequestView(APIView):
             return Response(
                 {"error": "Already friend."}, status=HTTP_400_BAD_REQUEST
             )  # すでにfriend
-        Friend.objects.filter(from_user_id=from_user_id, to_user_id=to_user_id).delete()
+        Friend.objects.filter(from_user_id=from_user_id, to_user_id=user_id).delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
     @method_decorator(jwt_required)

@@ -134,7 +134,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         フレンド申請を削除した場合
         """
-        self.set_pending(1, 2)
+        self.set_pending(2,1)
         url = reverse("friend-request", kwargs={"user_id": 2})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -152,7 +152,7 @@ class FriendRequestTestsDelete(APITestCase):
 
     def test_no_request(self):
         """
-        フレンド申請していないのに削除した場合
+        フレンド申請されていないのに削除した場合
         """
         url = reverse("friend-request", kwargs={"user_id": 3})
         response = self.client.delete(url)
@@ -166,7 +166,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         すでにフレンドの相手を削除した場合
         """
-        self.set_approved(1, 4)
+        self.set_approved(4, 1)
         url = reverse("friend-request", kwargs={"user_id": 4})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -176,7 +176,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         2回削除しようとした場合
         """
-        self.set_pending(1, 5)
+        self.set_pending(5, 1)
         url = reverse("friend-request", kwargs={"user_id": 5})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
