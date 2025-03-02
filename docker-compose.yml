@@ -60,6 +60,7 @@ services:
     ports:
       - "8004:8004"
     env_file: ./docker_env/game.env
+    restart: always
 
   tournament:
     build: ./tournament_service
@@ -172,16 +173,6 @@ services:
     tmpfs: [/tmp, /run]
     privileged: true
     stop_signal: SIGRTMIN+3
-
-  waf:
-    build: ./waf_proxy_service
-    container_name: waf
-    ports:
-      - 8800:8800
-    networks:
-      - app_network
-    env_file: ./docker_env/proxy.env
-    restart: always
 
 networks:
   app_network:
