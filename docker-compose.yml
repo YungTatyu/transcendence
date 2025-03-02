@@ -108,6 +108,25 @@ services:
     networks:
       - app_network
 
+  friends:
+    build: ./friends_service
+    container_name: friends
+    env_file: ./docker_env/friends.env
+    ports:
+      - "7500:7500"
+    networks:
+      - app_network
+    depends_on:
+      - friends_db
+
+  friends_db:
+    image: postgres:15
+    container_name: friends_db
+    env_file: ./docker_env/friends_db.env
+    networks:
+      - app_network
+    volumes:
+      - friends_db_data:/var/lib/postgresql/data
   match:
     build: ./match_service
     container_name: match
@@ -130,6 +149,28 @@ services:
     volumes:
       - match_db_data:/var/lib/postgresql/data
 
+  vault:
+    build: ./vault_service
+    container_name: vault
+    ports:
+      - 8200:8200
+    networks:
+      - app_network
+    env_file: ./docker_env/vault.env
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./certs/client.crt:/vault/certs/client.crt:ro
+      - ./certs/client.key:/vault/certs/client.key:ro
+      - ./certs/server.crt:/vault/certs/server.crt:ro
+      - ./certs/server.key:/vault/certs/server.key:ro
+      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./docker_env/vault.env:/etc/vault.env:ro
+      - vault_data:/vault/data
+    tmpfs: [/tmp, /run]
+    privileged: true
+    stop_signal: SIGRTMIN+3
+
 networks:
   app_network:
     driver: bridge
@@ -137,5 +178,7 @@ networks:
 volumes:
   auth_db_data:
   tournament_db_data:
+  friends_db_data:
   user_db_data:
   match_db_data:
+  vault_data:

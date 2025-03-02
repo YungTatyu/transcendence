@@ -14,6 +14,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Create certs
+      run: ./certs/create_cert.sh
+
     - name: Build and start services
       run: docker compose up -d --build
 
@@ -29,6 +32,8 @@ jobs:
           ["auth"]=$CHECK
           ["game"]=$CHECK
           ["tournament"]=$CHECK
+          ["friends"]=$CHECK
+          ["user"]=$CHECK
           ["match"]=$CHECK
         )
 
@@ -63,7 +68,9 @@ jobs:
         docker compose exec game python manage.py test
         docker compose exec tournament pytest
         docker compose exec friends_activity_app pytest
+        docker compose exec friends python manage.py test
         docker compose exec match pytest
+        docker compose exec user pytest
 
     - name: Tear down
       if: always()

@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useUsername } from "./UsernameContext";
-import styles from "./page.module.css";
+import { useUsername } from "./usernameContext";
 
 export default function Home() {
   const { username, setUsername } = useUsername();

@@ -14,9 +14,9 @@ class CountDownTimer {
   start(startTime) {
     this.startTime = startTime;
     this.timerElement.style.display = "block";
-    this.updateUI(); // インスタン作成時のUI更新
+    this.updateUi(); // インスタン作成時のUI更新
     const oneSecond = 1000;
-    this.intervalId = setInterval(() => this.updateUI(), oneSecond); // 毎秒UIを更新
+    this.intervalId = setInterval(() => this.updateUi(), oneSecond); // 毎秒UIを更新
   }
 
   clear() {
@@ -28,7 +28,7 @@ class CountDownTimer {
     }
   }
 
-  updateUI() {
+  updateUi() {
     const remainingTime = this.calcTime();
     if (remainingTime > 0) {
       this.timerElement.textContent = `Tournament is forced to start after ${remainingTime} seconds`;
