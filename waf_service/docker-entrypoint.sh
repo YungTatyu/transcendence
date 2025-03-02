@@ -6,7 +6,7 @@ err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
 }
 
-envsubst <${DEFAULT_CONF} >${DEFAULT_CONF} || {
+envsubst < ${DEFAULT_CONF} > ${DEFAULT_CONF} || {
   err "failed to convert env vars"
   exit 1
 }
