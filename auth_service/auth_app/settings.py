@@ -19,6 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # APIベースURL
 USER_API_BASE_URL = "https://users.transcendence.com"
 
+# VAULT関連の設定
+VAULT_ADDR = "https://vault:8200"
+CLIENT_CERT = "/certs/client.crt"
+CLIENT_KEY = "/certs/client.key"
+CA_CERT = "/certs/ca.crt"
+
 # モックモードの設定
 # TODO user api 実装後にFalseとする
 USER_API_USE_MOCK = True
