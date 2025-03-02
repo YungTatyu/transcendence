@@ -23,10 +23,9 @@ class TournamentSession:
         self.__tournament_id: int = tournament_id
         self.__current_round: int = 1
         self.__user_ids: list[int] = user_ids
-        self.__matches_data = {}
         self.__task_timer = None
         self.__create_match_records(tournament_id, user_ids)
-        self.update_matches_data()
+        self.__matches_data = self.update_matches_data()
         async_to_sync(
             self.set_tournament_match_task,
             force_new_loop=False,
@@ -103,7 +102,7 @@ class TournamentSession:
                 raise Exception
             node.match_id = int(response.json()["matchId"])
 
-    def update_matches_data(self):
+    def update_matches_data(self) -> dict:
         """
         matchesエンドポイントを叩き、tournament_idに紐づく試合データを取得
         TournamentSession.__matches_dataを更新
@@ -115,7 +114,7 @@ class TournamentSession:
         if response.status_code != 200:
             raise Exception
 
-        self.__matches_data = response.json()["results"]
+        return response.json()["results"]
 
     async def set_tournament_match_task(self):
         """
@@ -160,7 +159,7 @@ class TournamentSession:
         state = State.FINISHED if is_finished_tournament else State.ONGOING
 
         try:
-            self.update_matches_data()
+            self.__matches_data = self.update_matches_data()
         except Exception:
             # MatchAPIを叩き、エラー場合、トーナメント終了・エラー情報をSend
             is_finished_tournament = True
