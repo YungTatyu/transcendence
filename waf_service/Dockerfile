@@ -7,4 +7,4 @@ RUN apt update && \
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 COPY modsecurity.d/ /etc/modsecurity.d/
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
