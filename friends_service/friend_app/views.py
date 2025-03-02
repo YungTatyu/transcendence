@@ -147,16 +147,16 @@ class FriendRequestView(APIView):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
-        to_user_id = int(user_id_validator.validated_data["user_id"])
+        from_user_id = int(user_id_validator.validated_data["user_id"])
         # jwtの対応
-        from_user_id = request.user_id
-        if from_user_id == to_user_id:
+        user_id = request.user_id
+        if user_id == from_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},
                 status=HTTP_400_BAD_REQUEST,
             )
         friend = Friend.objects.filter(
-            from_user_id=from_user_id, to_user_id=to_user_id
+            from_user_id=from_user_id, to_user_id=user_id
         ).first()
         if not friend:
             return Response(
