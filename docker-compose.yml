@@ -180,8 +180,6 @@ services:
       - app_network
     env_file: ./docker_env/proxy.env
     restart: always
-    volumes:
-      - ./waf_proxy_service/nginx/conf.d/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
 
 networks:
   app_network:
