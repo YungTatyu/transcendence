@@ -3,7 +3,7 @@ import Footer from "../components/Footer.js";
 import stateManager from "../stateManager.js";
 
 export default function Home() {
-    return `
+  return `
         ${Header({ title: "ホーム" })}
         <p>これはホームページです。</p>
         <img src="./assets/42.png" alt="ロゴ">

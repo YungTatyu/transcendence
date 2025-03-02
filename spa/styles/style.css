@@ -1,15 +1,15 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    text-align: center;
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  text-align: center;
 }
 header {
-    background: #333;
-    color: white;
-    padding: 10px;
+  background: #333;
+  color: white;
+  padding: 10px;
 }
 button {
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
 }
