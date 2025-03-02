@@ -170,7 +170,8 @@ services:
       - 8800:8800
     networks:
       - app_network
-    tty: true
+    init: true
+    restart: always
 
 networks:
   app_network:
