@@ -164,7 +164,7 @@ services:
     stop_signal: SIGRTMIN+3
 
   waf:
-    build: ./waf_service
+    build: ./waf_proxy_service
     container_name: waf
     ports:
       - 8800:8800
