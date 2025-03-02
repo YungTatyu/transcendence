@@ -4,7 +4,7 @@ USER root
 RUN apt update && \
     apt install -y --no-install-recommends vim
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY conf/defalut.conf /etc/nginx/conf.d/defalut.conf
-COPY conf/modsecurity.conf /etc/modsecurity.d/modsecurity.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY modsecurity.d/ /etc/modsecurity.d/
 ENTRYPOINT ["bash"]
