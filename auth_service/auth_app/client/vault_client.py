@@ -4,7 +4,7 @@ from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from jwt_utils import PublicKeyType, create_unsigned_jwt, verify_jwt
+from .jwt_utils import PublicKeyType, create_unsigned_jwt, verify_jwt
 
 logger = logging.getLogger(__name__)
 
