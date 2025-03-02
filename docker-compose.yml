@@ -171,7 +171,6 @@ services:
     networks:
       - app_network
     env_file: ./docker_env/waf.env
-    init: true
     restart: always
 
 networks:
