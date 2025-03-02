@@ -1,5 +1,5 @@
-import stateManager from "../stateManager.js";
 import { fetchData } from "../api.js";
+import stateManager from "../stateManager.js";
 
 const APIData = () => {
   const state = stateManager.state;

@@ -1,5 +1,5 @@
-import Header from "../components/Header.js";
 import Footer from "../components/Footer.js";
+import Header from "../components/Header.js";
 import stateManager from "../stateManager.js";
 
 export default function Store() {

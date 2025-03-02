@@ -1,10 +1,10 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
+import APIData, { setupAPIData } from "./views/APIView.js";
 import Home from "./views/Home.js";
 import NotFound from "./views/NotFound.js";
 import Store, { setupStore } from "./views/Store.js";
-import APIData, { setupAPIData } from "./views/APIView.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
