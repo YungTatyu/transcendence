@@ -180,7 +180,7 @@ class TestLoggedInUsersConsumer(TestCase):
     async def test_websocket_invalid_jwt(self):
         # 無効なJWTを利用して接続を試みる
         invalid_token = "invalid_token"
-        url = "/friends/online/"
+        url = "/friends/online"
         communicator = WebsocketCommunicator(application, url)
         communicator.scope["cookies"] = {"access_token": invalid_token}
 
@@ -189,7 +189,7 @@ class TestLoggedInUsersConsumer(TestCase):
         assert not connected
 
     async def test_websocket_without_jwt(self):
-        url = "/friends/online/"
+        url = "/friends/online"
         communicator = WebsocketCommunicator(application, url)
 
         connected, _ = await communicator.connect()
