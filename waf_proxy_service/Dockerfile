@@ -7,7 +7,6 @@ RUN apt update && \
 
 COPY nginx/nginx.conf.template /etc/nginx/templates/nginx.conf.template
 COPY nginx/conf.d/default.conf.template /etc/nginx/templates/conf.d/
-COPY nginx/conf.d/proxy_params /etc/nginx/conf.d/
 COPY nginx/includes/ /etc/nginx/templates/includes/
 
 COPY modsecurity.d/ /etc/nginx/templates/modsecurity.d/
