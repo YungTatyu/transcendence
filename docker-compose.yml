@@ -37,6 +37,7 @@ services:
     networks:
       - app_network
     depends_on:
+      - game_proxy
       - game_redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://game:8001/health"]
@@ -50,6 +51,13 @@ services:
     container_name: game_redis_server
     networks:
       - app_network
+
+  game_proxy:
+    build: ./waf_proxy_service
+    container_name: game_proxy_server
+    ports:
+      - "8004:8004"
+    env_file: ./docker_env/game.env
 
   tournament:
     build: ./tournament_service
