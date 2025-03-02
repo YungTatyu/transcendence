@@ -170,7 +170,7 @@ services:
       - 8800:8800
     networks:
       - app_network
-    env_file: ./docker_env/waf.env
+    env_file: ./docker_env/proxy.env
     restart: always
 
 networks:
