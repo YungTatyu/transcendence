@@ -134,7 +134,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         フレンド申請を削除した場合
         """
-        self.set_pending(2,1)
+        self.set_pending(2, 1)
         url = reverse("friend-request", kwargs={"user_id": 2})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
