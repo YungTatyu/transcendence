@@ -1,7 +1,7 @@
 import { fetchData } from "../api.js";
 import stateManager from "../stateManager.js";
 
-const APIData = () => {
+const ApiData = () => {
   const state = stateManager.state;
   return `
         <div>
@@ -15,7 +15,7 @@ const APIData = () => {
     `;
 };
 
-export function setupAPIData() {
+export function setupApiData() {
   document.getElementById("fetch-data").addEventListener("click", async () => {
     const data = await fetchData("/posts"); // 仮のエンドポイント
     if (data) {
@@ -39,4 +39,4 @@ export function setupAPIData() {
   });
 }
 
-export default APIData;
+export default ApiData;
