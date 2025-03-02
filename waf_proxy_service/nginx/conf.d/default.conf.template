@@ -38,6 +38,7 @@ server {
         include includes/proxy_backend.conf;
         include conf.d/proxy_params;
 
+        # TODO 以下をサービスごとに修正
         index index.html;
         root /usr/share/nginx/html;
     }
