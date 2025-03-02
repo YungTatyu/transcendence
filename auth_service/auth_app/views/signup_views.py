@@ -6,21 +6,20 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.client.jwt_utils import (
+    add_signature_to_jwt,
+    create_unsigned_jwt,
+)
 from auth_app.client.user_client import UserClient
+from auth_app.client.vault_client import VaultClient
 from auth_app.models import CustomUser
 from auth_app.serializers.signup_serializer import (
     OTPVerificationSerializer,
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
-from auth_app.utils.redis_handler import RedisHandler
-
-from auth_app.client.jwt_utils import (
-    add_signature_to_jwt,
-    create_unsigned_jwt,
-)
-from auth_app.client.vault_client import VaultClient
 from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
+from auth_app.utils.redis_handler import RedisHandler
 
 logger = logging.getLogger(__name__)
 
