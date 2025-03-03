@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import patch
+import requests
+from unittest.mock import patch, MagicMock
 
 from tournament_app.utils.tournament_session import TournamentSession
 
@@ -197,6 +198,61 @@ def dummy_matches_data_mocker(mocker):
     return mocker.patch(
         "tournament_app.utils.tournament_session.TournamentSession.update_matches_data",
         side_effect=dummy_matches_data_list,
+    )
+
+
+@pytest.fixture
+def mock_fetch_matches_data(mocker):
+    """
+    fetch_matches_data１回目の呼び出しは正常、2回目の呼び出しはエラーとなるようにモック
+    """
+    mock_response1 = MagicMock(spec=requests.Response)
+    mock_response1.status_code = 200
+    mock_response1.json.return_value = {
+        "results": [
+            {
+                "matchId": 1,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": None,
+                "round": 3,
+                "participants": [],
+            },
+            {
+                "matchId": 2,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 1,
+                "participants": [
+                    {"id": 51574, "score": None},
+                    {"id": 51592, "score": None},
+                ],
+            },
+            {
+                "matchId": 3,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 2,
+                "participants": [
+                    {"id": 51590, "score": None},
+                    {"id": 36858, "score": None},
+                ],
+            },
+        ],
+        "current_round": 1,
+        "state": "ongoing",
+    }
+
+    mock_response2 = MagicMock(spec=requests.Response)
+    mock_response2.status_code = 500
+    mocker.patch(
+        "tournament_app.utils.match_client.MatchClient.fetch_matches_data",
+        side_effect=[mock_response1, mock_response2],
     )
 
 

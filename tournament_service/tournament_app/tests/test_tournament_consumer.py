@@ -241,3 +241,38 @@ async def test_tournament_manual_and_auto_execution_enter_one_user(
 
     await communicator.disconnect()
     TournamentSession.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_tournament_manual_and_auto_execution_enter_one_user(
+    create_match_records_mocker,
+    mock_fetch_matches_data,
+    mock_handle_tournament_match_bye,
+    mock_limit_tournament_match_sec,
+    setup_finished_matching,
+):
+    """
+    matchesエンドポイントからデータの取得が失敗した場合
+    response["state"]がerrorとなる
+    """
+    tournament_id = setup_finished_matching
+
+    tournament_comms = []
+    for _ in range(Tmc.ROOM_CAPACITY):
+        communicator = await create_tournament_communicator(tournament_id)
+        tournament_comms.append(communicator)
+        res = await communicator.receive_json_from()
+        assert res["current_round"] == 1
+        assert res["state"] == "ongoing"
+
+    # round1の手動トーナメント試合終了処理で次の試合に進む
+    await request_tournament_match_finish_imitate(tournament_id, 1)
+    for communicator in tournament_comms:
+        res = await communicator.receive_json_from()
+        assert res["current_round"] == 2
+        assert res["state"] == "error"  # update_matches_dataが失敗し、errorが返る
+
+    for communicator in tournament_comms:
+        await communicator.disconnect()
+    TournamentSession.clear()
