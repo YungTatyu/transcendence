@@ -32,8 +32,11 @@ async def create_communicator(port: int):
 
 async def create_tournament_communicator(tournament_id: int):
     path = FORMAT_TOURNAMENT.format(tournament_id)
-    communicator = WebsocketCommunicator(TournamentConsumer.as_asgi(), path)
-    communicator.scope["url_route"] = {"kwargs": {"tournamentId": tournament_id}}
+    communicator = CustomWebsocketCommunicator(
+        TournamentConsumer.as_asgi(),
+        path,
+        scope_override={"url_route": {"kwargs": {"tournamentId": tournament_id}}},
+    )
     connected, _ = await communicator.connect()
     assert connected
     return communicator
