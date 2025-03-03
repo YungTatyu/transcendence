@@ -6,6 +6,8 @@ from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
 from tournament_app.consumers.tournament_state import TournamentState as State
+from tournament_app.models import Tournament
+from django.utils.timezone import now
 
 
 from asgiref.sync import async_to_sync
@@ -175,6 +177,9 @@ class TournamentSession:
         # トーナメントを終了、WebSocket接続を切断
         else:
             await self.__broadcast_force_disconnect()
+            Tournament.objects.filter(tournament_id=self.__tournament_id).update(
+                finish_date=now()
+            )
             TournamentSession.delete(self.__tournament_id)
 
         if before_task:
