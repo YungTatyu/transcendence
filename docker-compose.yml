@@ -31,7 +31,6 @@ services:
     build: ./game_service
     container_name: game
     env_file: ./docker_env/game.env
-    tty: true
     ports:
       - "8001:8001"
     networks:
