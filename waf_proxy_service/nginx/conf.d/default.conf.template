@@ -37,10 +37,5 @@ server {
         include includes/proxy_backend.conf;
     }
 
-    location /ws/ {
-        include includes/cors.conf;
-        include includes/proxy_backend.conf;
-    }
-
     include includes/location_common.conf;
 }
