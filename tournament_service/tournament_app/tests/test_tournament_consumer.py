@@ -202,3 +202,42 @@ async def test_tournament_manual_and_auto_execution(
     for communicator in tournament_comms:
         await communicator.disconnect()
     TournamentSession.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_tournament_manual_and_auto_execution_enter_one_user(
+    create_match_records_mocker,
+    dummy_matches_data_mocker,
+    mock_handle_tournament_match_bye,
+    mock_limit_tournament_match_sec,
+    setup_finished_matching,
+):
+    """
+    参加者4人に対して、トーナメントルームに入る人数は1人だけのケース
+    """
+    tournament_id = setup_finished_matching
+    communicator = await create_tournament_communicator(tournament_id)
+    res = await communicator.receive_json_from()
+    assert res["current_round"] == 1
+    assert res["state"] == "ongoing"
+
+    # round1の手動トーナメント試合終了処理で次の試合に進む
+    await request_tournament_match_finish_imitate(tournament_id, 1)
+    res = await communicator.receive_json_from()
+    assert res["current_round"] == 2
+    assert res["state"] == "ongoing"
+
+    # round2の強制勝ち上がり処理が自動実行される
+    await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
+    res = await communicator.receive_json_from()
+    assert res["current_round"] == 3
+    assert res["state"] == "ongoing"
+
+    # round3(決勝戦)の強制勝ち上がり処理が自動実行される
+    await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
+    res = await communicator.receive_json_from()
+    assert res["state"] == "finished"
+
+    await communicator.disconnect()
+    TournamentSession.clear()
