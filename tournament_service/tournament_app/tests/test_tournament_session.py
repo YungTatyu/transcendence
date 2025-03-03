@@ -5,7 +5,7 @@ from tournament_app.utils.tournament_session import TournamentSession as Ts
 
 
 @pytest.mark.usefixtures("create_match_records_mocker")
-@pytest.mark.usefixtures("update_matches_data_mocker")
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 class TournamentSessionTest(TestCase):
     def setUp(self):
         Ts.clear()

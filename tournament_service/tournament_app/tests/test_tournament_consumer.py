@@ -41,9 +41,9 @@ async def create_tournament_communicator(tournament_id: int):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_create_resource(
+async def test_tournament_4_participants(
     create_match_records_mocker,
-    dummy_matches_data_start_mocker,
+    dummy_matches_data_mocker,
     mock_handle_tournament_match_bye,
 ):
     # トーナメントマッチングルームに入り、tournament_idを取得
@@ -70,3 +70,7 @@ async def test_create_resource(
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         print("\n\n[2]", res)
+
+    for communicator in tournament_comms:
+        await communicator.disconnect()
+    TournamentSession.clear()
