@@ -312,3 +312,25 @@ async def test_fetch_tournament_match_finish_error(
     for communicator in tournament_comms:
         await communicator.disconnect()
     TournamentSession.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_no_tournament_session(
+    create_match_records_mocker,
+    dummy_matches_data_mocker,
+    mock_handle_tournament_match_bye,
+    mock_limit_tournament_match_sec,
+):
+    """
+    TournamentSessionが作成されていないケース
+    """
+    tournament_id = 12345
+    communicator = CustomWebsocketCommunicator(
+        TournamentConsumer.as_asgi(),
+        FORMAT_TOURNAMENT.format(tournament_id),
+        scope_override={"url_route": {"kwargs": {"tournamentId": tournament_id}}},
+    )
+    connected, _ = await communicator.connect()
+    assert not connected  # 接続が拒否されたかを確認
+    TournamentSession.clear()
