@@ -30,170 +30,154 @@ def dummy_matches_data_mocker(mocker):
     [INFO] 呼び出すたびに、データを順番に返すイテレータみたいな処理です
     """
     dummy_matches_data_list = [
-        {  # 試合開始時
-            "matches_data": [
-                {
-                    "matchId": 1,
-                    "winnerUserId": None,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": None,
-                    "round": 3,
-                    "participants": [],
-                },
-                {
-                    "matchId": 2,
-                    "winnerUserId": None,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 1,
-                    "participants": [
-                        {"id": 51574, "score": None},
-                        {"id": 51592, "score": None},
-                    ],
-                },
-                {
-                    "matchId": 3,
-                    "winnerUserId": None,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 2,
-                    "participants": [
-                        {"id": 51590, "score": None},
-                        {"id": 36858, "score": None},
-                    ],
-                },
-            ],
-            "current_round": 1,
-            "state": "ongoing",
-        },
-        {  # round1終了時
-            "matches_data": [
-                {
-                    "matchId": 1,
-                    "winnerUserId": None,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": None,
-                    "round": 3,
-                    "participants": [
-                        {"id": 51574, "score": None},
-                    ],
-                },
-                {
-                    "matchId": 2,
-                    "winnerUserId": 51574,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 1,
-                    "participants": [
-                        {"id": 51574, "score": 0},
-                        {"id": 51592, "score": -1},
-                    ],
-                },
-                {
-                    "matchId": 3,
-                    "winnerUserId": None,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 2,
-                    "participants": [
-                        {"id": 51590, "score": None},
-                        {"id": 36858, "score": None},
-                    ],
-                },
-            ],
-            "current_round": 2,
-            "state": "ongoing",
-        },
-        {  # round2終了時
-            "matches_data": [
-                {
-                    "matchId": 1,
-                    "winnerUserId": None,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": None,
-                    "round": 3,
-                    "participants": [
-                        {"id": 51574, "score": None},
-                        {"id": 51590, "score": None},
-                    ],
-                },
-                {
-                    "matchId": 2,
-                    "winnerUserId": 51574,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 1,
-                    "participants": [
-                        {"id": 51574, "score": 0},
-                        {"id": 51592, "score": -1},
-                    ],
-                },
-                {
-                    "matchId": 3,
-                    "winnerUserId": 51590,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 2,
-                    "participants": [
-                        {"id": 51590, "score": 0},
-                        {"id": 36858, "score": -1},
-                    ],
-                },
-            ],
-            "current_round": 3,
-            "state": "ongoing",
-        },
-        {  # round3終了時(トーナメント終了時)
-            "matches_data": [
-                {
-                    "matchId": 1,
-                    "winnerUserId": 51574,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": None,
-                    "round": 3,
-                    "participants": [
-                        {"id": 51574, "score": 0},
-                        {"id": 51590, "score": -1},
-                    ],
-                },
-                {
-                    "matchId": 2,
-                    "winnerUserId": 51574,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 1,
-                    "participants": [
-                        {"id": 51574, "score": 0},
-                        {"id": 51592, "score": -1},
-                    ],
-                },
-                {
-                    "matchId": 3,
-                    "winnerUserId": 51590,
-                    "mode": "Tournament",
-                    "tournamentId": 1,
-                    "parentMatchId": 1,
-                    "round": 2,
-                    "participants": [
-                        {"id": 51590, "score": 0},
-                        {"id": 36858, "score": -1},
-                    ],
-                },
-            ],
-            "current_round": 4,
-            "state": "finished",
-        },
+        [  # 試合開始時
+            {
+                "matchId": 1,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": None,
+                "round": 3,
+                "participants": [],
+            },
+            {
+                "matchId": 2,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 1,
+                "participants": [
+                    {"id": 51574, "score": None},
+                    {"id": 51592, "score": None},
+                ],
+            },
+            {
+                "matchId": 3,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 2,
+                "participants": [
+                    {"id": 51590, "score": None},
+                    {"id": 36858, "score": None},
+                ],
+            },
+        ],
+        [  # round1終了時
+            {
+                "matchId": 1,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": None,
+                "round": 3,
+                "participants": [
+                    {"id": 51574, "score": None},
+                ],
+            },
+            {
+                "matchId": 2,
+                "winnerUserId": 51574,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 1,
+                "participants": [
+                    {"id": 51574, "score": 0},
+                    {"id": 51592, "score": -1},
+                ],
+            },
+            {
+                "matchId": 3,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 2,
+                "participants": [
+                    {"id": 51590, "score": None},
+                    {"id": 36858, "score": None},
+                ],
+            },
+        ],
+        [  # round2終了時
+            {
+                "matchId": 1,
+                "winnerUserId": None,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": None,
+                "round": 3,
+                "participants": [
+                    {"id": 51574, "score": None},
+                    {"id": 51590, "score": None},
+                ],
+            },
+            {
+                "matchId": 2,
+                "winnerUserId": 51574,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 1,
+                "participants": [
+                    {"id": 51574, "score": 0},
+                    {"id": 51592, "score": -1},
+                ],
+            },
+            {
+                "matchId": 3,
+                "winnerUserId": 51590,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 2,
+                "participants": [
+                    {"id": 51590, "score": 0},
+                    {"id": 36858, "score": -1},
+                ],
+            },
+        ],
+        [  # round3終了時(トーナメント終了時)
+            {
+                "matchId": 1,
+                "winnerUserId": 51574,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": None,
+                "round": 3,
+                "participants": [
+                    {"id": 51574, "score": 0},
+                    {"id": 51590, "score": -1},
+                ],
+            },
+            {
+                "matchId": 2,
+                "winnerUserId": 51574,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 1,
+                "participants": [
+                    {"id": 51574, "score": 0},
+                    {"id": 51592, "score": -1},
+                ],
+            },
+            {
+                "matchId": 3,
+                "winnerUserId": 51590,
+                "mode": "Tournament",
+                "tournamentId": 1,
+                "parentMatchId": 1,
+                "round": 2,
+                "participants": [
+                    {"id": 51590, "score": 0},
+                    {"id": 36858, "score": -1},
+                ],
+            },
+        ],
     ]
     return mocker.patch(
         "tournament_app.utils.tournament_session.TournamentSession.update_matches_data",
@@ -250,9 +234,21 @@ def mock_fetch_matches_data(mocker):
 
     mock_response2 = MagicMock(spec=requests.Response)
     mock_response2.status_code = 500
-    mocker.patch(
+    return mocker.patch(
         "tournament_app.utils.match_client.MatchClient.fetch_matches_data",
         side_effect=[mock_response1, mock_response2],
+    )
+
+
+@pytest.fixture
+def mock_fetch_tournament_match_finish(mocker):
+    """
+    matches/finishエンドポイントを叩く処理が失敗するようにモック
+    """
+
+    return mocker.patch(
+        "tournament_app.utils.match_client.MatchClient.fetch_tournament_match_finish",
+        return_value={"error": "Internal Server Error"},
     )
 
 
