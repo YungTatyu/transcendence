@@ -140,19 +140,20 @@ class TournamentSession:
         client = MatchClient(settings.MATCH_API_BASE_URL)
         res_data = await client.fetch_tournament_match_finish(match_id, results)
 
-        # MatchAPIを叩き、エラーの場合、Error情報をSendし、WebSocketを切断
+        # MatchAPIを叩き、エラーの場合
         if res_data.get("error", None) is not None:
-            await self.__broadcast_matches_info(State.ERROR)
-            await self.__broadcast_force_disconnect()
+            await self.__broadcast_matches_info(State.ERROR)  # Error情報をSend
+            await self.__broadcast_force_disconnect()  # WebSocketを切断
+            # INFO 異常終了時、トーナメントは終了として扱う
+            await sync_to_async(
+                Tournament.objects.filter(tournament_id=self.__tournament_id).update,
+                thread_sensitive=False,
+            )(finish_date=now())
+            TournamentSession.delete(self.__tournament_id)
 
     async def update_tournament_session_info(self):
         """
-        1. トーナメントの情報を更新
-        2. 次の試合のアナウンスメントイベントを発生させる
-        3. self.__roundを更新
-        4. トーナメントが終了していない場合, 強制不戦勝処理を行うタスクをセット
-        5. トーナメントが終了する場合, WebSocketを切断
-        6. 以前にセットした強制不戦勝処理タスクをキャンセル
+        トーナメント試合終了時に次の試合を行うための処理を実行する
         """
         self.next_round()
         is_finished_tournament = self.current_round > len(self.matches_data)
@@ -161,7 +162,7 @@ class TournamentSession:
         try:
             self.__matches_data = self.update_matches_data()
         except Exception:
-            # MatchAPIを叩き、エラー場合、トーナメント終了・エラー情報をSend
+            # MatchAPIを叩き、エラー場合、トーナメント終了&エラー情報をSend
             is_finished_tournament = True
             state = State.ERROR
 
