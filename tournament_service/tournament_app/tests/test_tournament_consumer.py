@@ -245,7 +245,7 @@ async def test_tournament_manual_and_auto_execution_enter_one_user(
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_tournament_manual_and_auto_execution_enter_one_user(
+async def test_fetch_matches_data_error(
     create_match_records_mocker,
     mock_fetch_matches_data,
     mock_handle_tournament_match_bye,
@@ -272,6 +272,42 @@ async def test_tournament_manual_and_auto_execution_enter_one_user(
         res = await communicator.receive_json_from()
         assert res["current_round"] == 2
         assert res["state"] == "error"  # update_matches_dataが失敗し、errorが返る
+
+    for communicator in tournament_comms:
+        await communicator.disconnect()
+    TournamentSession.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_fetch_tournament_match_finish_error(
+    create_match_records_mocker,
+    dummy_matches_data_mocker,
+    mock_fetch_tournament_match_finish,
+    mock_limit_tournament_match_sec,
+    setup_finished_matching,
+):
+    """
+    matches/finish エンドポイントを叩く処理が失敗した場合
+    response["state"]がerrorとなる
+    """
+    tournament_id = setup_finished_matching
+
+    tournament_comms = []
+    for _ in range(Tmc.ROOM_CAPACITY):
+        communicator = await create_tournament_communicator(tournament_id)
+        tournament_comms.append(communicator)
+        res = await communicator.receive_json_from()
+        assert res["current_round"] == 1
+        assert res["state"] == "ongoing"
+
+    # TaskTimerによる強制勝ち上がり処理が実行される
+    await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
+
+    for communicator in tournament_comms:
+        res = await communicator.receive_json_from()
+        # handle_tournament_match_byeが失敗し、errorが返る
+        assert res["state"] == "error"
 
     for communicator in tournament_comms:
         await communicator.disconnect()
