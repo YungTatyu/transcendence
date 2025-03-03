@@ -1,4 +1,4 @@
-# Nginx configuration for both HTTP and SSL
+# Nginx configuration for both SSL
 
 server_tokens ${SERVER_TOKENS};
 
@@ -39,6 +39,15 @@ server {
 
         index index.html;
         root /usr/share/nginx/html;
+    }
+
+    location /ws/ {
+
+        include includes/cors.conf;
+        include includes/proxy_backend.conf;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
     }
 
     include includes/location_common.conf;
