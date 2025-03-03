@@ -1,3 +1,4 @@
+from asgiref.sync import async_to_sync
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -9,7 +10,6 @@ from rest_framework.views import APIView
 
 from tournament_app.serializers import TournamentMatchFinishSerializer
 from tournament_app.utils.tournament_session import TournamentSession
-from asgiref.sync import async_to_sync
 
 
 class TournamentMatchFinishView(APIView):

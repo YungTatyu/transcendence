@@ -1,11 +1,8 @@
 import logging
-import sys
 from typing import Optional
 
-import requests
 import aiohttp
-import asyncio
-
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -126,9 +123,11 @@ class MatchClient:
         }
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(url, json=body, timeout=5) as response:
-                    return await response.json()
+            async with (
+                aiohttp.ClientSession() as session,
+                session.post(url, json=body, timeout=5) as response,
+            ):
+                return await response.json()
         except Exception as e:
             logger.error(
                 f"Error occurred while finish tournament matches. "

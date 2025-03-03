@@ -1,8 +1,8 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-from tournament_app.utils.tournament_session import TournamentSession
 from tournament_app.consumers.tournament_state import TournamentState as State
+from tournament_app.utils.tournament_session import TournamentSession
 
 
 class TournamentConsumer(AsyncWebsocketConsumer):
@@ -44,11 +44,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def send_matches_data(self, event):
         """試合状況をクライアントに送信"""
         await self.send(
-            text_data=json.dumps({
-                "matches_data": event["matches_data"],
-                "current_round": event["current_round"],
-                "state": event["state"],
-            })
+            text_data=json.dumps(
+                {
+                    "matches_data": event["matches_data"],
+                    "current_round": event["current_round"],
+                    "state": event["state"],
+                }
+            )
         )
 
     async def force_disconnect(self, _):

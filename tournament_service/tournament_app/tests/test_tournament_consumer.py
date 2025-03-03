@@ -1,11 +1,12 @@
 import asyncio
+
 import pytest
 from channels.testing import WebsocketCommunicator
 
+from tournament_app.consumers.tournament_consumer import TournamentConsumer
 from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
-from tournament_app.consumers.tournament_consumer import TournamentConsumer
 from tournament_app.utils.tournament_session import TournamentSession
 
 PATH_MATCHING = "/tournament/ws/enter-room"
