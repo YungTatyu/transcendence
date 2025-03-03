@@ -1,4 +1,4 @@
-# Nginx configuration for both SSL
+# Nginx configuration for SSL
 
 server_tokens ${SERVER_TOKENS};
 
