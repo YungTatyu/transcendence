@@ -36,10 +36,9 @@ services:
     networks:
       - app_network
     depends_on:
-      - game_proxy
       - game_redis
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://game:8001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -60,6 +59,8 @@ services:
       - "8004:8004"
     env_file: ./docker_env/game.env
     restart: always
+    depends_on:
+      - game
 
   tournament:
     build: ./tournament_service
