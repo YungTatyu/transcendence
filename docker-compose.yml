@@ -171,6 +171,18 @@ services:
     privileged: true
     stop_signal: SIGRTMIN+3
 
+  spa_nginx:
+    image: nginx:alpine
+    container_name: spa_nginx
+    ports:
+      - "8080:80"
+    networks:
+      - app_network
+    volumes:
+      - ./spa:/usr/share/nginx/html:ro
+      - ./spa/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+
 networks:
   app_network:
     driver: bridge
