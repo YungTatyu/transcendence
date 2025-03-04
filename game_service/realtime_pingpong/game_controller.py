@@ -82,7 +82,7 @@ class GameController:
                 self.__game.update()
                 await GameConsumer.group_send(
                     {
-                        "message": GameConsumer.MessageType.MSG_UPDATE.value,
+                        "message": GameConsumer.MessageType.MSG_UPDATE,
                         "data": {
                             "state": self.__game.get_state(),
                         },
@@ -90,10 +90,19 @@ class GameController:
                     group_name,
                 )
                 await asyncio.sleep(self.FRAME_DURATION)
-            self.__game.state = PingPong.GameState.GAME_OVER
-            MatchApiClient.send_game_result(self.__get_game_result(group_name))
+            await self.process_game_result(group_name)
         except asyncio.CancelledError:
             pass
+
+    async def process_game_result(self, group_name):
+        # 遅延インポートで循環インポートを防ぐ
+        from realtime_pingpong.consumers import GameConsumer
+
+        self.__game.state = PingPong.GameState.GAME_OVER
+        result = self.__get_game_result(group_name)
+        MatchApiClient.send_game_result(result)
+        result["message"] = GameConsumer.MessageType.MSG_GAME_OVER
+        await GameConsumer.finish_game(result, group_name)
 
     def __calc_unix_time(self, time):
         return int(time.timestamp())
@@ -103,7 +112,7 @@ class GameController:
 
         await GameConsumer.group_send(
             {
-                "message": GameConsumer.MessageType.MSG_TIMER.value,
+                "message": GameConsumer.MessageType.MSG_TIMER,
                 "end_time": self.__game_end_time,
             },
             group_name,

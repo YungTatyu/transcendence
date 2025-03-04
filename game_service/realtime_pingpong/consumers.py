@@ -1,5 +1,5 @@
 import json
-from enum import Enum
+from dataclasses import dataclass
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
@@ -68,11 +68,11 @@ class ActionHandler:
         if match_dict is None:
             return
         game_controller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
-        game = game_controller.game
-        if game.state == PingPong.GameState.GAME_OVER:
-            return MatchManager.remove_match(match_id)
-        # gameが終了していない限り、matchは終了しない
         return game_controller.disconnect_event(player_id)
+
+    @staticmethod
+    def handle_game_end(match_id):
+        MatchManager.remove_match(match_id)
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -80,7 +80,8 @@ class GameConsumer(AsyncWebsocketConsumer):
     wsの通信, I/O処理を責務とする
     """
 
-    class MessageType(Enum):
+    @dataclass(frozen=True)
+    class MessageType:
         MSG_UPDATE = "update"
         MSG_ERROR = "error"
         MSG_TIMER = "timer"
@@ -106,7 +107,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.accept()
         await ActionHandler.handle_game_connection(self.match_id, self.user_id)
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, close_code=1000):
+        """
+        defaultは正常終了(1000)
+        """
         ActionHandler.handle_disconnection(self.match_id, self.user_id)
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
         await self.close(close_code)
@@ -129,3 +133,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         channel_layer = get_channel_layer()
         event["type"] = "game.message"
         await channel_layer.group_send(group_name, event)
+
+    async def game_finish_message(self, event):
+        await self.send(text_data=json.dumps(event))
+        await self.disconnect()
+
+    @staticmethod
+    async def finish_game(event, group_name):
+        channel_layer = get_channel_layer()
+        event["type"] = "game.finish.message"
+        await channel_layer.group_send(group_name, event)
+        ActionHandler.handle_game_end(int(group_name))
