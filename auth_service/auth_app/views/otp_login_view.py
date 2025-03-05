@@ -5,10 +5,16 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.client.jwt_utils import (
+    add_signature_to_jwt,
+    create_unsigned_jwt,
+)
+from auth_app.client.vault_client import VaultClient
 from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,
     OTPVerificationSerializer,
 )
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +76,31 @@ class OTPLoginVerificationView(APIView):
 
         user = serializer.validated_data["user"]
 
+        client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+
+        # TODO userIDを取得する
+
+        token = client.fetch_token()
+        if not token:
+            logger.error("Failed to fetch token from Vault")
+            return Response(
+                {"error": "Token fetch failed"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        jwt_header = {"alg": "RS256", "typ": "JWT"}
+        jwt_payload = {"sub": "1234567890", "userId": "1"}
+        jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
+        signature = client.fetch_signature(token, jwt_data)
+        signed_jwt = add_signature_to_jwt(jwt_data, signature)
+
+        # extracted_signature = extract_signature_from_jwt(signed_jwt)
+        # pubkey = client.fetch_pubkey(token)
+        # if extracted_signature and pubkey:
+        #     logger.error("Verify JWT: ", verify_jwt(pubkey, jwt_data, extracted_signature))
+
         tokens = {
-            "access": "tmp",
+            "access": signed_jwt,
             "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
         }
 
