@@ -38,7 +38,7 @@ class TournamentMatchSerializer(serializers.Serializer):
 class MatchFinishSerializer(serializers.Serializer):
     class ResultSerializer(serializers.Serializer):
         userId = serializers.IntegerField(min_value=0)  # noqa: N815
-        score = serializers.IntegerField(min_value=0)
+        score = serializers.IntegerField(min_value=-1)
 
     matchId = serializers.IntegerField(min_value=0)  # noqa: N815
     results = serializers.ListField(child=ResultSerializer())

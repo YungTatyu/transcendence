@@ -193,7 +193,9 @@ class TestMatchFinish:
 
     @pytest.mark.django_db
     def test_faild_tournament_api_request(self, requests_post_faild_mocker, client):
-        """TournamentAPIを叩く処理が失敗"""
+        """
+        TournamentAPIを叩く処理が失敗 + ロールバック処理のテスト
+        """
 
         results = [{"userId": 1, "score": 11}, {"userId": 2, "score": 1}]
         user_ids = [result["userId"] for result in results]
@@ -202,3 +204,44 @@ class TestMatchFinish:
         self.request_match_finish(
             client, HTTP_500_INTERNAL_SERVER_ERROR, match_id, results
         )
+
+        for user_id in user_ids:
+            match_participant_after_rollback = MatchParticipant.objects.filter(
+                match_id=match_id, user_id=user_id
+            ).first()
+            assert match_participant_after_rollback.score is None
+
+        match_after_rollback = Match.objects.filter(match_id=match_id).first()
+        assert match_after_rollback.winner_user_id is None
+        assert match_after_rollback.finish_date is None
+
+        if match.parent_match_id is not None:
+            winner_user_id = max(results, key=lambda x: x["score"])["userId"]
+            assert not MatchParticipant.objects.filter(
+                match_id=match.parent_match_id, user_id=winner_user_id
+            ).exists()
+
+    @pytest.mark.django_db
+    def test_minus_one_score(self, client):
+        """スコアに-1が許容されるかをテスト"""
+        results = [
+            {"userId": 1, "score": 0},
+            {"userId": 2, "score": -1},
+        ]
+        user_ids = [result["userId"] for result in results]
+        match_id = self.__insert_quick_play_match(user_ids)
+        self.request_match_finish(client, HTTP_200_OK, match_id, results)
+
+    @pytest.mark.django_db
+    def test_minus_two_score(self, client):
+        """
+        スコアに-2が許容されないかをテスト
+        INFO スコアの最小値は-1です
+        """
+        results = [
+            {"userId": 1, "score": 0},
+            {"userId": 2, "score": -2},
+        ]
+        user_ids = [result["userId"] for result in results]
+        match_id = self.__insert_quick_play_match(user_ids)
+        self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)

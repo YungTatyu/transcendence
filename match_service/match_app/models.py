@@ -29,7 +29,7 @@ class MatchParticipant(models.Model):
     match_id = models.ForeignKey(Match, on_delete=models.CASCADE)
     user_id = models.IntegerField(validators=[MinValueValidator(0)])
     score = models.IntegerField(
-        null=True, blank=True, validators=[MinValueValidator(0)]
+        null=True, blank=True, validators=[MinValueValidator(-1)]
     )
 
     class Meta:

@@ -8,3 +8,4 @@ pytest-django
 pytest-asyncio
 requests
 pytest-mock
+aiohttp
