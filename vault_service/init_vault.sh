@@ -20,9 +20,12 @@ vault write -f transit/keys/jwt-key type=rsa-2048
 vault read transit/keys/jwt-key
 
 # APIキー配信用の設定
-AUTO_ROTATE_PERIOD="auto_rotate_period=24h"
+# INFO APIキー生成が短い間隔で連続した場合、同じAPIキーになる可能性あり(実際同じ値が生成された)
+AUTO_ROTATE_PERIOD="auto_rotate_period=1h"
 vault write transit/keys/api-key-users ${AUTO_ROTATE_PERIOD}
+sleep 1
 vault write transit/keys/api-key-matches ${AUTO_ROTATE_PERIOD}
+sleep 1
 vault write transit/keys/api-key-tournaments ${AUTO_ROTATE_PERIOD}
 
 # ポリシーを作成
