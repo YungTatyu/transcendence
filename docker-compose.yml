@@ -31,7 +31,6 @@ services:
     build: ./game_service
     container_name: game
     env_file: ./docker_env/game.env
-    tty: true
     ports:
       - "8001:8001"
     networks:
@@ -39,17 +38,27 @@ services:
     depends_on:
       - game_redis
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://game:8001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
 
   game_redis:
     image: redis:alpine
     container_name: game_redis_server
     networks:
       - app_network
+
+  game_proxy:
+    build: ./waf_proxy_service
+    container_name: game_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8004:8004"
+    env_file: ./docker_env/game.env
+    restart: always
+    depends_on:
+      - game
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8004/healthz"]
 
   tournament:
     build: ./tournament_service
