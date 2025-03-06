@@ -59,7 +59,9 @@ class UsernameSerializer(serializers.ModelSerializer):
             .exclude(user_id=self.instance.user_id)
             .exists()
         ):
-            raise serializers.ValidationError({"username": "A username is already used."})
+            raise serializers.ValidationError(
+                {"username": "A username is already used."}
+            )
         return data
 
 
