@@ -148,4 +148,4 @@ class TestAvatarViewDelete:
         """DELETE: すでにデフォルトアバターの場合（エラー）"""
         url = reverse("update-avatar")
         response = self.api_client.delete(url)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_404_NOT_FOUND
