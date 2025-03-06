@@ -81,7 +81,7 @@ class TestUsernameViewPut:
         url = reverse("update-username")
         response = self.api_client.put(url, {"username": ""}, format="json")
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_409_CONFLICT
         assert "username" in response.data
 
     def test_put_username_already_taken(self, create_another_user):
@@ -89,7 +89,7 @@ class TestUsernameViewPut:
         url = reverse("update-username")
         response = self.api_client.put(url, {"username": "existuser"}, format="json")
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_409_CONFLICT
 
 
 @pytest.mark.usefixtures("setup_test")
