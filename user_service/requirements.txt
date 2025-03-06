@@ -8,3 +8,4 @@ pytest
 pytest-django
 pillow
 PyJWT==2.1.0
+pyotp

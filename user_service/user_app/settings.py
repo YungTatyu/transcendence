@@ -52,6 +52,14 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
+REST_FRAMEWORK = {}
+
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
+
+
 ROOT_URLCONF = "user_app.urls"
 
 TEMPLATES = [

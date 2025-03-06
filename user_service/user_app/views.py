@@ -23,6 +23,10 @@ from .serializers import (
 )
 
 
+from django.utils.decorators import method_decorator
+from .jwt_decorators import jwt_required
+
+
 class UserView(APIView):
     def post(self, request):
         # リクエストボディをシリアライズ
@@ -71,14 +75,14 @@ class UserView(APIView):
 
 
 class UsernameView(APIView):
-    # @method_decorator(jwt_required)
+    @method_decorator(jwt_required)
     def put(self, request):
         """
         usernameを変更する
         """
 
-        # user_id = request.user_id
-        user_id = 1
+        user_id = request.user_id
+        # user_id = 1
 
         try:
             user = User.objects.get(user_id=user_id)
