@@ -99,14 +99,14 @@ class UsernameView(APIView):
 
 
 class AvatarView(APIView):
-    # @method_decorator(jwt_required)
+    @method_decorator(jwt_required)
     def put(self, request):
         """
         avatarをdefaultからカスタムに変更する
         すでにカスタムの場合は上書き保存する
         """
-        # user_id = request.user_id
-        user_id = 1
+        user_id = request.user_id
+        # user_id = 1
 
         # User インスタンスを取得
         try:
@@ -127,14 +127,14 @@ class AvatarView(APIView):
             data={"avatarPath": updated_user.avatar_path.url}, status=HTTP_200_OK
         )
 
-    # @method_decorator(jwt_required)
+    @method_decorator(jwt_required)
     def delete(self, request):
         """
         設定してある画像ファイルを削除し、defaultのパスを設定する
         """
 
-        # user_id = request.user_id
-        user_id = 1
+        user_id = request.user_id
+        # user_id = 1
 
         # User インスタンスを取得
         try:

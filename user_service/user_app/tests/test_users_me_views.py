@@ -57,8 +57,7 @@ def setup_test(request, api_client, create_user):
     logger.error(f"Generated token: {token}")  
     assert token is not None, "JWT トークンが `None` になっています"
 
-    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-
+    api_client.cookies["access_token"] = token
     logger.error(f"Headers: {api_client._credentials}") 
 
     request.cls.api_client = api_client
@@ -99,63 +98,63 @@ class TestUsernameViewPut:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-# @pytest.mark.usefixtures("setup_test")
-# @pytest.mark.django_db
-# class TestAvatarViewPut:
-#     def test_put_avatar_success(self):
-#         """PUT: アバター画像を正常に更新"""
+@pytest.mark.usefixtures("setup_test")
+@pytest.mark.django_db
+class TestAvatarViewPut:
+    def test_put_avatar_success(self):
+        """PUT: アバター画像を正常に更新"""
 
-#         url = reverse("update-avatar")
+        url = reverse("update-avatar")
 
-#         # PIL でテスト用の画像を作成
-#         image_io = io.BytesIO()
-#         image = Image.new("RGB", (100, 100), "white")
-#         image.save(image_io, format="PNG")
-#         image_io.seek(0)
+        # PIL でテスト用の画像を作成
+        image_io = io.BytesIO()
+        image = Image.new("RGB", (100, 100), "white")
+        image.save(image_io, format="PNG")
+        image_io.seek(0)
 
-#         # テスト用の画像ファイルを作成
-#         image_file = SimpleUploadedFile(
-#             "avatar.png", image_io.read(), content_type="image/png"
-#         )
+        # テスト用の画像ファイルを作成
+        image_file = SimpleUploadedFile(
+            "avatar.png", image_io.read(), content_type="image/png"
+        )
 
-#         response = self.api_client.put(
-#             url, {"avatar_path": image_file}, format="multipart"
-#         )
+        response = self.api_client.put(
+            url, {"avatar_path": image_file}, format="multipart"
+        )
 
-#         # DBをリロードして変更が適用されたか確認
-#         self.user.refresh_from_db()
+        # DBをリロードして変更が適用されたか確認
+        self.user.refresh_from_db()
 
-#         assert response.status_code == status.HTTP_200_OK
-#         assert "avatarPath" in response.data
+        assert response.status_code == status.HTTP_200_OK
+        assert "avatarPath" in response.data
 
-#     def test_put_avatar_invalid_data(self):
-#         """PUT: 無効なデータを送信した場合(エラー)"""
-#         url = reverse("update-avatar")
-#         response = self.api_client.put(
-#             url, {"avatar_path": ""}, format="multipart"
-#         )
+    def test_put_avatar_invalid_data(self):
+        """PUT: 無効なデータを送信した場合(エラー)"""
+        url = reverse("update-avatar")
+        response = self.api_client.put(
+            url, {"avatar_path": ""}, format="multipart"
+        )
 
-#         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-# @pytest.mark.usefixtures("setup_test")
-# @pytest.mark.django_db
-# class TestAvatarViewDelete:
-#     def test_delete_avatar_success(self):
-#         """DELETE: アバターを正常に削除（デフォルト画像にリセット）"""
-#         url = reverse("update-avatar")
-#         self.user.avatar_path = "images/uploads/custom_avatar.jpg"
-#         self.user.save()
+@pytest.mark.usefixtures("setup_test")
+@pytest.mark.django_db
+class TestAvatarViewDelete:
+    def test_delete_avatar_success(self):
+        """DELETE: アバターを正常に削除（デフォルト画像にリセット）"""
+        url = reverse("update-avatar")
+        self.user.avatar_path = "images/uploads/custom_avatar.jpg"
+        self.user.save()
 
-#         response = self.api_client.delete(url)
-#         self.user.refresh_from_db()
+        response = self.api_client.delete(url)
+        self.user.refresh_from_db()
 
-#         assert response.status_code == status.HTTP_200_OK
-#         assert self.user.avatar_path == User.DEFAULT_AVATAR_PATH  # デフォルト画像に戻る
+        assert response.status_code == status.HTTP_200_OK
+        assert self.user.avatar_path == User.DEFAULT_AVATAR_PATH  # デフォルト画像に戻る
 
-#     def test_delete_avatar_already_default(self):
-#         """DELETE: すでにデフォルトアバターの場合（エラー）"""
-#         url = reverse("update-avatar")
-#         response = self.api_client.delete(url)
+    def test_delete_avatar_already_default(self):
+        """DELETE: すでにデフォルトアバターの場合（エラー）"""
+        url = reverse("update-avatar")
+        response = self.api_client.delete(url)
 
-#         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
