@@ -165,8 +165,8 @@ paths:
                     example: "updated_username"
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
-        "404":
-          description: "User not found."
+        "409":
+          description: "Conflict - usernameが既に存在している"
           content:
             application/json:
               schema:
@@ -174,8 +174,8 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: "エラーの詳細"
-                    example: "User not found."
+                    description: "コンフリクトエラーの詳細"
+                    example: "A username is already used."
   /users/me/avatar:
     put:
       summary: "ユーザのアバターを更新"

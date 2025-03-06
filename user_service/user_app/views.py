@@ -129,7 +129,7 @@ class AvatarView(APIView):
 
         # デフォルトアバターなら削除しない
         if user.avatar_path.name == User.DEFAULT_AVATAR_PATH:
-            return Response({"error": "Avatar is default."}, status=HTTP_404_NOT_FOUND)
+            return Response({"error": "Avatar not found."}, status=HTTP_404_NOT_FOUND)
 
         # ファイルのパスを取得して削除
         avatar_path = user.avatar_path.path
