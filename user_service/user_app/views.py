@@ -1,7 +1,7 @@
 import os
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage
+from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -13,6 +13,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 
+from .jwt_decorators import jwt_required
 from .models import User
 from .serializers import (
     AvatarSerializer,
@@ -21,10 +22,6 @@ from .serializers import (
     UserDataSerializer,
     UsernameSerializer,
 )
-
-
-from django.utils.decorators import method_decorator
-from .jwt_decorators import jwt_required
 
 
 class UserView(APIView):
@@ -82,16 +79,12 @@ class UsernameView(APIView):
         """
 
         user_id = request.user_id
-        # user_id = 1
 
-        try:
-            user = User.objects.get(user_id=user_id)
-        except ObjectDoesNotExist:
-            return Response({"error": "User not found"}, status=HTTP_404_NOT_FOUND)
+        user = User.objects.get(user_id=user_id)
 
         serializer = UsernameSerializer(instance=user, data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_409_CONFLICT)
 
         updated_user = serializer.save()
 
@@ -106,13 +99,9 @@ class AvatarView(APIView):
         すでにカスタムの場合は上書き保存する
         """
         user_id = request.user_id
-        # user_id = 1
 
         # User インスタンスを取得
-        try:
-            user = User.objects.get(user_id=user_id)
-        except ObjectDoesNotExist:
-            return Response({"error": "User not found."}, status=HTTP_404_NOT_FOUND)
+        user = User.objects.get(user_id=user_id)
 
         # instance=user を渡して update()を使用可能に
         serializer = AvatarSerializer(
@@ -134,13 +123,9 @@ class AvatarView(APIView):
         """
 
         user_id = request.user_id
-        # user_id = 1
 
         # User インスタンスを取得
-        try:
-            user = User.objects.get(user_id=user_id)
-        except ObjectDoesNotExist:
-            return Response({"error": "User not found."}, status=HTTP_404_NOT_FOUND)
+        user = User.objects.get(user_id=user_id)
 
         # デフォルトアバターなら削除しない
         if user.avatar_path.name == User.DEFAULT_AVATAR_PATH:

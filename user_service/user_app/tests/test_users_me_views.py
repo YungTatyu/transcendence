@@ -1,16 +1,16 @@
 import io
-import pytest
+import logging
+
 import jwt
-import pyotp
-from django.contrib.auth.hashers import make_password
+import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils.timezone import now
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
+
 from user_app.models import User  # 正しい `User` モデルをインポート
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +52,13 @@ def create_another_user(db):
 @pytest.fixture(autouse=True)
 def setup_test(request, api_client, create_user):
     """各テスト実行前に API クライアントをセットアップ"""
-    user, token = create_user  
+    user, token = create_user
 
-    logger.error(f"Generated token: {token}")  
+    logger.error(f"Generated token: {token}")
     assert token is not None, "JWT トークンが `None` になっています"
 
     api_client.cookies["access_token"] = token
-    logger.error(f"Headers: {api_client._credentials}") 
+    logger.error(f"Headers: {api_client._credentials}")
 
     request.cls.api_client = api_client
     request.cls.user, request.cls.token = create_user
@@ -71,9 +71,7 @@ class TestUsernameViewPut:
     def test_put_username_success(self):
         """PUT: 正常にユーザー名を変更 (成功)"""
         url = reverse("update-username")
-        response = self.api_client.put(
-            url, {"username": "new_name"}, format="json"
-        )
+        response = self.api_client.put(url, {"username": "new_name"}, format="json")
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["username"] == "new_name"
@@ -81,9 +79,7 @@ class TestUsernameViewPut:
     def test_put_username_validation_error_empty(self):
         """PUT: username が空の場合（バリデーションエラー）"""
         url = reverse("update-username")
-        response = self.api_client.put(
-            url, {"username": ""}, format="json"
-        )
+        response = self.api_client.put(url, {"username": ""}, format="json")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "username" in response.data
@@ -91,9 +87,7 @@ class TestUsernameViewPut:
     def test_put_username_already_taken(self, create_another_user):
         """PUT: すでに存在する username を指定した場合（重複エラー）"""
         url = reverse("update-username")
-        response = self.api_client.put(
-            url, {"username": "existuser"}, format="json"
-        )
+        response = self.api_client.put(url, {"username": "existuser"}, format="json")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -130,9 +124,7 @@ class TestAvatarViewPut:
     def test_put_avatar_invalid_data(self):
         """PUT: 無効なデータを送信した場合(エラー)"""
         url = reverse("update-avatar")
-        response = self.api_client.put(
-            url, {"avatar_path": ""}, format="multipart"
-        )
+        response = self.api_client.put(url, {"avatar_path": ""}, format="multipart")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -156,5 +148,4 @@ class TestAvatarViewDelete:
         """DELETE: すでにデフォルトアバターの場合（エラー）"""
         url = reverse("update-avatar")
         response = self.api_client.delete(url)
-
         assert response.status_code == status.HTTP_400_BAD_REQUEST
