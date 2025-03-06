@@ -23,7 +23,7 @@ from .serializers import FriendQuerySerializer, FriendSerializer, UserIdValidato
 class FriendListView(APIView):
     """
     フレンド申請状態(pending)の時、クエリーのlimitsとフロントエンドの画面の関係から
-    to_user_idが自身のユーザーID、from_user_idが自分以外のIDの時のみ表示する。s
+    to_user_idが自身のユーザーID、from_user_idが自分以外のIDの時のみ表示する。
 
     userの状態について
 
@@ -50,18 +50,18 @@ class FriendListView(APIView):
         status = query_serializer.validated_data.get("status")
         offset = query_serializer.validated_data.get("offset")
         limit = query_serializer.validated_data.get("limit")
-        if status == FriendQuerySerializer.STATUS_PENDING:
+        if status == Friend.STATUS_PENDING:
             friends = Friend.objects.filter(
                 Q(to_user_id=user_id) & Q(status=Friend.STATUS_PENDING)
             )
-        elif status == FriendQuerySerializer.STATUS_APPROVED:
+        elif status == Friend.STATUS_APPROVED:
             friends = Friend.objects.filter(
                 (Q(from_user_id=user_id) | Q(to_user_id=user_id))
                 & Q(status=Friend.STATUS_APPROVED)
             )
         else:
             """
-                下の条件いついて
+                下の条件について
                 from_user_idがuser_idの時はstatusはapprovedのみ
                 to_user_idがuser_idの時はstatusはapproved,pending両方取得
             """
@@ -81,7 +81,7 @@ class FriendListView(APIView):
                 "approvedAt": friend["approved_at"],
             }
             friends_data.append(friend_data)
-        response_data = {"friends": friends_data, "total": len(friends_data)}
+        response_data = {"friends": friends_data, "total": len(friends)}
         return Response(response_data, status=HTTP_200_OK)
 
 

@@ -10,8 +10,6 @@ from friend_app.models import Friend
 
 class FriendRequestTestsPost(APITestCase):
     def setUp(self):
-        # self.client = APIClient()
-
         # JWT トークンの作成
         self.token_payload = {"user_id": 1}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
@@ -106,8 +104,6 @@ class FriendRequestTestsPost(APITestCase):
 
 class FriendRequestTestsDelete(APITestCase):
     def setUp(self):
-        # self.client = APIClient()
-
         # JWT トークンの作成
         self.token_payload = {"user_id": 1}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
@@ -192,8 +188,6 @@ class FriendRequestTestsDelete(APITestCase):
 
 class FriendTestDelete(APITestCase):
     def setUp(self):
-        # self.client = APIClient()
-
         # JWT トークンの作成
         self.token_payload = {"user_id": 1}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
@@ -282,8 +276,6 @@ class FriendTestDelete(APITestCase):
 
 class FriendRequestTestsPatch(APITestCase):
     def setUp(self):
-        # self.client = APIClient()
-
         # JWT トークンの作成
         self.token_payload = {"user_id": 1}
         self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
@@ -487,7 +479,7 @@ class FriendListQueryTest(APITestCase):
             approved_at=current_time,
         )
 
-    def create_many_users(
+    def create_user(
         self, number, current_time, offset, limit, delete_status=None
     ):
         """
@@ -528,10 +520,11 @@ class FriendListQueryTest(APITestCase):
             )
         if delete_status:
             friend_list = self.delete_pending_approved_data(friend_list, delete_status)
+        total = len(friend_list)
         friend_list = friend_list[offset : offset + limit]
         return {
             "friends": friend_list,
-            "total": len(friend_list),
+            "total": total,
         }
 
     def delete_pending_approved_data(self, friend_list, delete_status):
@@ -548,7 +541,7 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(5, current_time, 0, 20)
+        expect_answer = self.create_user(5, current_time, 0, 20)
         url = reverse("friend-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -562,7 +555,7 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(5, current_time, 0, 20, "approved")
+        expect_answer = self.create_user(5, current_time, 0, 20, "approved")
         url = reverse("friend-list") + "?status=pending"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -576,7 +569,7 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(5, current_time, 0, 20, "pending")
+        expect_answer = self.create_user(5, current_time, 0, 20, "pending")
         url = reverse("friend-list") + "?status=approved"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -599,14 +592,10 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(5, current_time, 0, 20)
+        expect_answer = self.create_user(5, current_time, 5, 20)
         url = reverse("friend-list") + "?offset=5"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expect_answer = {
-            "friends": [],
-            "total": 0,
-        }
         self.assertEqual(expect_answer, response.data)
 
     def test_limit_error(self):
@@ -625,7 +614,7 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(5, current_time, 3, 20)
+        expect_answer = self.create_user(5, current_time, 3, 20)
         url = reverse("friend-list") + "?offset=3"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -639,7 +628,7 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(5, current_time, 0, 1)
+        expect_answer = self.create_user(5, current_time, 0, 1)
         url = reverse("friend-list") + "?limit=1"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -653,7 +642,7 @@ class FriendListQueryTest(APITestCase):
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
 
-        expect_answer = self.create_many_users(100, current_time, 5, 20, "pending")
+        expect_answer = self.create_user(100, current_time, 5, 20, "pending")
         url = reverse("friend-list") + "?status=approved&offset=5&limit=20"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

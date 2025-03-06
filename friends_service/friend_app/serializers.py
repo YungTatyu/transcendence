@@ -21,11 +21,8 @@ class FriendSerializer(serializers.ModelSerializer):
 class FriendQuerySerializer(serializers.Serializer):
     DEFAULT_OFFSET = 0
     DEFAULT_LIMIT = 20
-    STATUS_PENDING = "pending"
-    STATUS_APPROVED = "approved"
-    SERIALIZE_CHOICES = [(STATUS_PENDING, "pending"), (STATUS_APPROVED, "approved")]
 
-    status = serializers.ChoiceField(choices=SERIALIZE_CHOICES, required=False)
+    status = serializers.ChoiceField(choices=Friend.MODEL_CHOICES, required=False)
     offset = serializers.IntegerField(
         min_value=0, required=False, default=DEFAULT_OFFSET
     )
