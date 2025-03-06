@@ -84,6 +84,16 @@ class TestUsernameViewPut:
         assert response.status_code == status.HTTP_409_CONFLICT
         assert "username" in response.data
 
+    def test_put_username_validation_longer(self):
+        """PUT: username が10文字以上の場合（バリデーションエラー）"""
+        url = reverse("update-username")
+        response = self.api_client.put(
+            url, {"username": "longerusername"}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_409_CONFLICT
+        assert "username" in response.data
+
     def test_put_username_already_taken(self, create_another_user):
         """PUT: すでに存在する username を指定した場合（重複エラー）"""
         url = reverse("update-username")
