@@ -231,7 +231,7 @@ paths:
                 }
       security: []
 
-  /v1/transit/keys/{apiKey}:
+  /v1/kv/apikeys/{apiKey}:
     post:
       summary: APIキーを取得
       description: |
@@ -248,10 +248,9 @@ paths:
           schema:
             type: string
             enum:
-              - auth-users-key          # ユーザー登録処理・UserNameからUserId取得処理
-              - games-matches-key       # ゲーム結果通知処理
-              - tournaments-matches-key # トーナメント試合作成処理
-              - matches-tournaments-key # トーナメント試合終了通知処理
+              - users
+              - matches
+              - tournaments
           description: 取得するAPIキーの種類
       responses:
         '200':
@@ -260,35 +259,18 @@ paths:
             application/json:
               example:
                 {
-                  'request_id': '98fc3c12-9a16-3dcf-8c05-66d2727ba5dd',
+                  'request_id': 'bbb1be21-481c-24e5-a102-850f5bfc202e',
                   'lease_id': '',
                   'renewable': False,
-                  'lease_duration': 0,
+                  'lease_duration': 2764800,
                   'data': {
-                    'allow_plaintext_backup': False,
-                    'auto_rotate_period': 0,
-                    'deletion_allowed': False,
-                    'derived': False,
-                    'exportable': False,
-                    'imported_key': False,
-                    'keys': {
-                      '1': 1735111224
-                    },
-                    'latest_version': 1,
-                    'min_available_version': 0,
-                    'min_decryption_version': 1,
-                    'min_encryption_version': 0,
-                    'name': 'api-key',
-                    'supports_decryption': True,
-                    'supports_derivation': True,
-                    'supports_encryption': True,
-                    'supports_signing': False,
-                    'type': 'aes256-gcm96'
+                    'previous_value': 'dOKHh2WYNYfbzMrH',
+                    'value': 'flXpTk8qfsv7CmtP'
                   },
                   'wrap_info': None,
                   'warnings': None,
                   'auth': None,
-                  'mount_type': 'transit'
+                  'mount_type': 'kv'
                 }
         '403':
           description: 無効なトークン
