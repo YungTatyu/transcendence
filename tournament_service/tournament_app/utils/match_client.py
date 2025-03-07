@@ -112,7 +112,17 @@ class MatchClient:
         """
         /matches/finishを叩き、トーナメント試合終了処理を行う
         エラーの場合{"error": "Internal Server Error"}を返す
-        INFO aiohttpライブラリを用いて、非同期にエンドポイントにアクセス
+
+        INFO MatchAPIを叩いた後、MatchAPI側がTournamentAPIのエンドポイントを叩きます。
+             その時、MatchAPIを叩く処理が同期処理だと、MatchAPIから叩かれた時、
+             TournamentAPIがブロッキングされていてデッドロック状態になるため、
+             非同期でMatchAPIを叩きます。
+
+             TournamentAPI ──> MatchAPI (同期リクエスト)
+             TournamentAPI <── MatchAPI (同期リクエスト)   <== デッドロック状態
+
+             TournamentAPI ──> MatchAPI (非同期リクエスト)
+             TournamentAPI <── MatchAPI (同期リクエスト)   <== デッドロックしない
         """
         endpoint = "matches/finish"
         url = f"{self.base_url}/{endpoint}"
