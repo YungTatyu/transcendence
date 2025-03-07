@@ -76,7 +76,7 @@ class VaultClient:
 
     def fetch_api_key(self, token: str, api_key_name: str) -> Optional[dict[str, int]]:
         """APIキーを取得(自動ローテーションするため、APIキーのDictを返す)"""
-        url = f"{self.__base_url}/v1/transit/keys/{api_key_name}"
+        url = f"{self.__base_url}/v1/kv/apikeys/{api_key_name}"
         headers = {"X-Vault-Token": token}
 
         try:
@@ -88,7 +88,7 @@ class VaultClient:
             logger.error(f"fetch pubkey list error: {e}")
             return None
 
-        return response.json()["data"]["keys"]
+        return response.json()["data"]
 
 
 if __name__ == "__main__":
@@ -111,9 +111,9 @@ if __name__ == "__main__":
         if signature and pubkey:
             print("Verify JWT: ", verify_jwt(pubkey, jwt_data, signature))
 
-        users_apikeys = client.fetch_api_key(token, "api-key-users")
-        matches_apikeys = client.fetch_api_key(token, "api-key-matches")
-        tournaments_apikeys = client.fetch_api_key(token, "api-key-tournaments")
+        users_apikeys = client.fetch_api_key(token, "users")
+        matches_apikeys = client.fetch_api_key(token, "matches")
+        tournaments_apikeys = client.fetch_api_key(token, "tournaments")
         print("APIKEY[users]: ", users_apikeys)
         print("APIKEY[matches]: ", matches_apikeys)
         print("APIKEY[tournaments]: ", tournaments_apikeys)

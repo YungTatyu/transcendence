@@ -20,22 +20,20 @@ vault write -f transit/keys/jwt-key type=rsa-2048
 vault read transit/keys/jwt-key
 
 # APIキー配信用の設定
-# INFO APIキー生成が短い間隔で連続した場合、同じAPIキーになる可能性あり(実際同じ値が生成された)
-AUTO_ROTATE_PERIOD="auto_rotate_period=1h"
-vault write transit/keys/api-key-users ${AUTO_ROTATE_PERIOD}
-sleep 1
-vault write transit/keys/api-key-matches ${AUTO_ROTATE_PERIOD}
-sleep 1
-vault write transit/keys/api-key-tournaments ${AUTO_ROTATE_PERIOD}
+vault secrets enable -path=kv/apikeys -description="kv for APIKey" kv
+vault kv put kv/apikeys/users value=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
+vault kv put kv/apikeys/matches value=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
+vault kv put kv/apikeys/tournaments value=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
 
 # ポリシーを作成
 vault policy write transit-policy /vault/config/transit-policy.hcl
+vault policy write kv-policy /vault/config/kv-policy.hcl
 
 # TLS認証の設定
 vault auth enable cert
 vault write auth/cert/certs/client \
 	display_name="client" \
-	policies="default,transit-policy" \
+	policies="default,transit-policy,kv-policy" \
 	certificate="$(cat /vault/certs/ca.crt)"
 
 echo "Vault ルートトークン: $root_token"
