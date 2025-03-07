@@ -1,7 +1,8 @@
 from typing import Optional
 
 from asgiref.sync import async_to_sync, sync_to_async
-from channels.layers import get_channel_layer
+
+# from channels.layers import get_channel_layer
 from django.conf import settings
 from django.utils.timezone import now
 from tournament_app.consumers.tournament_state import TournamentState as State
@@ -130,6 +131,8 @@ class TournamentSession:
         """
         時間内に試合が終了されなかった場合に不戦勝での勝ち上がり処理を実行
         """
+        from tournament_app.consumers.tournament_consumer import TournamentConsumer
+
         current_match = [
             match for match in self.matches_data if match["round"] == self.current_round
         ][0]
@@ -142,8 +145,15 @@ class TournamentSession:
 
         # MatchAPIを叩き、エラーの場合
         if res_data.get("error", None) is not None:
-            await self.__broadcast_matches_info(State.ERROR)  # Error情報をSend
-            await self.__broadcast_force_disconnect()  # WebSocketを切断
+            # Error情報をSend
+            await TournamentConsumer.broadcast_matches_info(
+                State.ERROR,
+                self.__tournament_id,
+                self.__matches_data,
+                self.__current_round,
+            )
+            # WebSocketを切断
+            await TournamentConsumer.broadcast_force_disconnect(self.__tournament_id)
             # INFO 異常終了時、トーナメントは終了として扱う
             await sync_to_async(
                 Tournament.objects.filter(tournament_id=self.__tournament_id).update,
@@ -155,6 +165,8 @@ class TournamentSession:
         """
         トーナメント試合終了時に次の試合を行うための処理を実行する
         """
+        from tournament_app.consumers.tournament_consumer import TournamentConsumer
+
         self.next_round()
         is_finished_tournament = self.current_round > len(self.matches_data)
         state = State.FINISHED if is_finished_tournament else State.ONGOING
@@ -166,7 +178,9 @@ class TournamentSession:
             is_finished_tournament = True
             state = State.ERROR
 
-        await self.__broadcast_matches_info(state)
+        await TournamentConsumer.broadcast_matches_info(
+            state, self.__tournament_id, self.__matches_data, self.__current_round
+        )
 
         before_task = self.__task_timer
 
@@ -175,7 +189,7 @@ class TournamentSession:
             await self.set_tournament_match_task()
         # トーナメントを終了、finish_dateを更新、WebSocket接続を切断
         else:
-            await self.__broadcast_force_disconnect()
+            await TournamentConsumer.broadcast_force_disconnect(self.__tournament_id)
             await sync_to_async(
                 Tournament.objects.filter(tournament_id=self.__tournament_id).update,
                 thread_sensitive=False,
@@ -185,26 +199,3 @@ class TournamentSession:
         if before_task:
             # INFO タスクが既に終了している場合にcancelしても何も起きない
             before_task.cancel()
-
-    async def __broadcast_matches_info(self, state):
-        """Tournamentグループに対して試合状況をブロードキャスト"""
-        from tournament_app.consumers.tournament_consumer import TournamentConsumer
-
-        channel_layer = get_channel_layer()
-        group_name = TournamentConsumer.get_group_name(self.__tournament_id)
-        await channel_layer.group_send(
-            group_name,
-            {
-                "type": "send_matches_data",  # TournamentConsumer.send_matches_data
-                "matches_data": self.__matches_data,
-                "current_round": self.current_round,
-                "state": state,
-            },
-        )
-
-    async def __broadcast_force_disconnect(self):
-        from tournament_app.consumers.tournament_consumer import TournamentConsumer
-
-        channel_layer = get_channel_layer()
-        group_name = TournamentConsumer.get_group_name(self.__tournament_id)
-        await channel_layer.group_send(group_name, {"type": "force_disconnect"})

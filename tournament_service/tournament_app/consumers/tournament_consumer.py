@@ -1,6 +1,7 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 from tournament_app.consumers.tournament_state import TournamentState as State
 from tournament_app.utils.tournament_session import TournamentSession
 
@@ -54,5 +55,26 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         )
 
     async def force_disconnect(self, _):
-        """トーナメントが終了した際にサーバからWebSocketを切断するための関数"""
         await self.close(code=4200)
+
+    @staticmethod
+    async def broadcast_matches_info(state, tournament_id, matches_data, current_round):
+        """Tournamentグループに対して試合状況をブロードキャスト"""
+        channel_layer = get_channel_layer()
+        group_name = TournamentConsumer.get_group_name(tournament_id)
+        await channel_layer.group_send(
+            group_name,
+            {
+                "type": "send_matches_data",
+                "matches_data": matches_data,
+                "current_round": current_round,
+                "state": state,
+            },
+        )
+
+    @staticmethod
+    async def broadcast_force_disconnect(tournament_id):
+        """TournamentグループのユーザーとのWebSocketを切断"""
+        channel_layer = get_channel_layer()
+        group_name = TournamentConsumer.get_group_name(tournament_id)
+        await channel_layer.group_send(group_name, {"type": "force_disconnect"})
