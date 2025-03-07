@@ -1,42 +1,123 @@
 #!/bin/bash
 
 # Vaultサーバの起動待機
-until vault status 2>&1 | grep -q "Initialized"; do
-	echo "Vault起動待機中..."
-	sleep 2
-done
+wait_for_vault() {
+	until vault status 2>&1 | grep -q "Initialized"; do
+		echo "Vault起動待機中..."
+		sleep 2
+	done
+}
 
 # Vaultの初期化
-init_output=$(vault operator init -key-shares=1 -key-threshold=1 -format=json)
-unseal_key=$(echo "$init_output" | sed -n '/"unseal_keys_b64": \[/,/]/p' | grep -o '.*="$' | sed 's/\s*"//g')
-root_token=$(echo "$init_output" | grep -o '"root_token": "[^"]*"' | sed 's/"root_token": "//' | sed 's/"//g')
+initialize_vault() {
+	local init_output=$(vault operator init -key-shares=1 -key-threshold=1 -format=json)
+	local unseal_key=$(echo "$init_output" | sed -n '/"unseal_keys_b64": \[/,/]/p' | grep -o '.*="$' | sed 's/\s*"//g')
+	local root_token=$(echo "$init_output" | grep -o '"root_token": "[^"]*"' | sed 's/"root_token": "//' | sed 's/"//g')
+	export VAULT_TOKEN=$root_token
+	echo "Vault ルートトークン: $root_token"
 
-# Vaultアンシール
-vault operator unseal $unseal_key
+	# Vaultアンシール
+	if ! vault operator unseal "$unseal_key"; then
+		echo "Vaultアンシールに失敗しました"
+		exit 1
+	fi
+}
+
 # Vault設定: transitシークレットエンジンの有効化と署名キー作成
-export VAULT_TOKEN=$root_token
-vault secrets enable transit
-vault write -f transit/keys/jwt-key type=rsa-2048
-vault read transit/keys/jwt-key
+enable_transit() {
+	if ! vault secrets enable transit; then
+		echo "transitシークレットエンジンの有効化に失敗しました"
+		exit 1
+	fi
+	if ! vault write -f transit/keys/jwt-key type=rsa-2048; then
+		echo "署名キーの作成に失敗しました"
+		exit 1
+	fi
+	vault read transit/keys/jwt-key
+}
 
 # APIキー配信用の設定
-vault secrets enable -path=kv/apikeys -description="kv for APIKey" kv
-users_key=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
-matches_key=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
-tournaments_key=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
-vault kv put kv/apikeys/users value=${users_key} previous_value=${users_key}
-vault kv put kv/apikeys/matches value=${matches_key} previous_value=${matches_key}
-vault kv put kv/apikeys/tournaments value=${tournaments_key} previous_value=${tournaments_key}
-
-# ポリシーを作成
-vault policy write transit-policy /vault/config/transit-policy.hcl
-vault policy write kv-policy /vault/config/kv-policy.hcl
+enable_api_keys() {
+	if ! vault secrets enable -path=kv/apikeys -description="kv for APIKey" kv; then
+		echo "APIキーのkv設定に失敗しました"
+		exit 1
+	fi
+}
 
 # TLS認証の設定
-vault auth enable cert
-vault write auth/cert/certs/client \
-	display_name="client" \
-	policies="default,transit-policy,kv-policy" \
-	certificate="$(cat /vault/certs/ca.crt)"
+enable_tls_auth() {
+	# ポリシーを作成
+	vault policy write transit-policy /vault/config/transit-policy.hcl
+	vault policy write kv-policy /vault/config/kv-policy.hcl
 
-echo "Vault ルートトークン: $root_token"
+	if ! vault auth enable cert; then
+		echo "TLS認証の設定に失敗しました"
+		exit 1
+	fi
+
+	if ! vault write auth/cert/certs/client \
+		display_name="client" \
+		policies="default,transit-policy,kv-policy" \
+		certificate="$(cat /vault/certs/ca.crt)"; then
+		echo "TLS証明書の設定に失敗しました"
+		exit 1
+	fi
+}
+
+gen_api_key() {
+	echo $(openssl rand -base64 12 | tr -dc 'A-Za-z0-9')
+}
+
+# APIキーを更新する関数
+update_api_key() {
+	local key_name=$1
+	local old_key=$2
+	local new_key=$3
+
+	# APIキー更新の前に引数チェック
+	if [ -z "$key_name" ] || [ -z "$old_key" ] || [ -z "$new_key" ]; then
+		echo "無効な引数が渡されました"
+		exit 1
+	fi
+
+	# 新しいAPIキーを保存し、前のAPIキーを previous_value に保存
+	vault kv put kv/apikeys/$key_name value="$new_key" previous_value="$old_key"
+}
+
+update_api_keys_loop() {
+	readonly API_KEY_UPDATE_SEC=3600
+
+	local current_users_key=$(gen_api_key)
+	local current_matches_key=$(gen_api_key)
+	local current_tournaments_key=$(gen_api_key)
+
+	# 🔁 APIキーを更新
+	while true; do
+		# 新しいランダムなAPIキーを生成
+		local new_users_key=$(gen_api_key)
+		local new_matches_key=$(gen_api_key)
+		local new_tournaments_key=$(gen_api_key)
+
+		# 新しいAPIキーを保存し、前のAPIキーを previous_value に保存
+		update_api_key "users" "$current_users_key" "$new_users_key"
+		update_api_key "matches" "$current_matches_key" "$new_matches_key"
+		update_api_key "tournaments" "$current_tournaments_key" "$new_tournaments_key"
+
+		current_users_key=$new_users_key
+		current_matches_key=$new_matches_key
+		current_tournaments_key=$new_tournaments_key
+
+		sleep ${API_KEY_UPDATE_SEC}
+	done
+}
+
+main() {
+	wait_for_vault
+	initialize_vault
+	enable_transit
+	enable_api_keys
+	enable_tls_auth
+	update_api_keys_loop
+}
+
+main
