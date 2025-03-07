@@ -21,9 +21,12 @@ vault read transit/keys/jwt-key
 
 # APIキー配信用の設定
 vault secrets enable -path=kv/apikeys -description="kv for APIKey" kv
-vault kv put kv/apikeys/users value=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
-vault kv put kv/apikeys/matches value=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
-vault kv put kv/apikeys/tournaments value=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
+users_key=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
+matches_key=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
+tournaments_key=$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 16)
+vault kv put kv/apikeys/users value=${users_key} previous_value=${users_key}
+vault kv put kv/apikeys/matches value=${matches_key} previous_value=${matches_key}
+vault kv put kv/apikeys/tournaments value=${tournaments_key} previous_value=${tournaments_key}
 
 # ポリシーを作成
 vault policy write transit-policy /vault/config/transit-policy.hcl
