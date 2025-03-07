@@ -85,7 +85,7 @@ update_api_key() {
 }
 
 update_api_keys_loop() {
-	readonly API_KEY_UPDATE_SEC=3600
+	readonly API_KEY_ROTATE_SEC=${API_KEY_ROTATE_SEC:-3600}
 
 	local current_users_key=$(gen_api_key)
 	local current_matches_key=$(gen_api_key)
@@ -107,7 +107,7 @@ update_api_keys_loop() {
 		current_matches_key=$new_matches_key
 		current_tournaments_key=$new_tournaments_key
 
-		sleep ${API_KEY_UPDATE_SEC}
+		sleep ${API_KEY_ROTATE_SEC}
 	done
 }
 
