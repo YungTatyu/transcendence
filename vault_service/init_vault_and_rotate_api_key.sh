@@ -1,5 +1,12 @@
 #!/bin/bash
 
+print_log_and_exit() {
+	local message=$1
+	local exit_code=$2
+	echo "[$(date '+%Y-%m-%dT%H:%M:%S%z')]: $message" >&2
+	exit $exit_code
+}
+
 # Vaultサーバの起動待機
 wait_for_vault() {
 	until vault status 2>&1 | grep -q "Initialized"; do
@@ -18,20 +25,17 @@ initialize_vault() {
 
 	# Vaultアンシール
 	if ! vault operator unseal "$unseal_key"; then
-		echo "Vaultアンシールに失敗しました"
-		exit 1
+		print_log_and_exit "Vaultアンシールに失敗しました" 1
 	fi
 }
 
 # Vault設定: transitシークレットエンジンの有効化と署名キー作成
 enable_transit() {
 	if ! vault secrets enable transit; then
-		echo "transitシークレットエンジンの有効化に失敗しました"
-		exit 1
+		print_log_and_exit "transitシークレットエンジンの有効化に失敗しました" 1
 	fi
 	if ! vault write -f transit/keys/jwt-key type=rsa-2048; then
-		echo "署名キーの作成に失敗しました"
-		exit 1
+		print_log_and_exit "署名キーの作成に失敗しました" 1
 	fi
 	vault read transit/keys/jwt-key
 }
@@ -39,8 +43,7 @@ enable_transit() {
 # APIキー配信用の設定
 enable_api_keys() {
 	if ! vault secrets enable -path=kv/apikeys -description="kv for APIKey" kv; then
-		echo "APIキーのkv設定に失敗しました"
-		exit 1
+		print_log_and_exit "APIキーのkv設定に失敗しました" 1
 	fi
 }
 
@@ -51,16 +54,14 @@ enable_tls_auth() {
 	vault policy write kv-policy /vault/config/kv-policy.hcl
 
 	if ! vault auth enable cert; then
-		echo "TLS認証の設定に失敗しました"
-		exit 1
+		print_log_and_exit "TLS認証の設定に失敗しました" 1
 	fi
 
 	if ! vault write auth/cert/certs/client \
 		display_name="client" \
 		policies="default,transit-policy,kv-policy" \
 		certificate="$(cat /vault/certs/ca.crt)"; then
-		echo "TLS証明書の設定に失敗しました"
-		exit 1
+		print_log_and_exit "TLS証明書の設定に失敗しました" 1
 	fi
 }
 
@@ -76,8 +77,7 @@ update_api_key() {
 
 	# APIキー更新の前に引数チェック
 	if [ -z "$key_name" ] || [ -z "$old_key" ] || [ -z "$new_key" ]; then
-		echo "無効な引数が渡されました"
-		exit 1
+		print_log_and_exit "無効な引数が渡されました" 1
 	fi
 
 	# 新しいAPIキーを保存し、前のAPIキーを previous_value に保存
