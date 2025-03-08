@@ -5,7 +5,9 @@ import stateManager from "../stateManager.js";
 export default function SignUp() {
 	return `
     ${Header({ title: "signup" })}
-    <img id="qrCodeImage" alt="QR Code">
+    <img id="qrCode" alt="QR Code">
+    <label for="otp">OTP:</label>
+    <input type="number" id="otp" name="otp" required><br><br>
     <button id="signUpVerifyButton">verify</button>
     ${Footer({ text: "© 2025 My Company" })}
   `;
@@ -14,10 +16,12 @@ export default function SignUp() {
 export function setupSignUpVerify() {
 	const signUpVerifyButton = document.getElementById("signUpVerifyButton");
 
-	document.getElementById("qrCodeImage").src = stateManager.state.qr;
+	const qrCode = stateManager.state.qr;
+    const imgElement = document.getElementById("qrCode");
+    imgElement.src = qrCode;
 
-	signUpVerifyButton.addEventListener("click", () => {
-		const resData = fetchOtpSignUpVerify();
+	signUpVerifyButton.addEventListener("click", async () => {
+		const resData = await fetchOtpSignUpVerify();
 		if (resData == null) { return; }
 		console.log(resData);
 	});
@@ -29,7 +33,7 @@ async function fetchOtpSignUpVerify() {
 
 	const requestBody = {
 		username: stateManager.state.username,
-		otp: document.getElementById("otp"),
+		otp_token: document.getElementById("otp").value,
 	};
 
 	try {

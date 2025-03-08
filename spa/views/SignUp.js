@@ -21,8 +21,9 @@ export default function SignUp() {
 export function setupSignUp() {
 	const signUpButton = document.getElementById("signUpButton");
 
-	signUpButton.addEventListener("click", () => {
-		const qrCode = fetchOtpSignUp();
+
+	signUpButton.addEventListener("click", async () => {
+		const qrCode = await fetchOtpSignUp();
 		if (qrCode == null) { return; }
 
 		stateManager.setState({ qr: qrCode });
@@ -51,8 +52,8 @@ async function fetchOtpSignUp() {
 			throw new Error(`HTTP Error! Status: ${response.status}`);
 		}
 
-		const qrCode = await response.json();
-		return qrCode;
+		const resData = await response.json();
+		return resData.qr_code;
 	} catch (error) {
 		console.error("API fetch error: ", error);
 		return null;
