@@ -28,7 +28,7 @@ export default function Game() {
           </div>
         </div>
       </div>
-      <div class="game-timer display-4">60</div>
+      <div class="game-timer display-3">0</div>
     </div>
     `
   };
@@ -54,7 +54,6 @@ export function drawGame() {
   const ctx = canvas.getContext('2d');
 
   const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
 
   ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
   ctx.lineWidth = 2; // 線の太さ
