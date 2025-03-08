@@ -30,34 +30,34 @@ export default function Game() {
       </div>
       <div class="game-timer display-3">0</div>
     </div>
-    `
-  };
+    `;
+  }
 
   function gameCanvas() {
     return `
       <div class="canvas-container d-flex justify-content-center align-items-center">
         <canvas class="game-canvas border border-2 border-white h-100" width="${GAME_WIDTH}" height="${GAME_HEIGHT}"></canvas>
       </div>
-    `
-  };
+    `;
+  }
 
   return `
     <div class="game text-center bg-dark vh-100">
       ${gameHeader()}
       ${gameCanvas()}
     </div>
-  `
-};
+  `;
+}
 
 export function drawGame() {
-  const canvas = document.querySelector('.game-canvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.querySelector(".game-canvas");
+  const ctx = canvas.getContext("2d");
 
   const centerX = canvas.width / 2;
 
   ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
   ctx.lineWidth = 2; // 線の太さ
-  ctx.strokeStyle = '#FFFFFF';
+  ctx.strokeStyle = "#FFFFFF";
 
   // 垂直線を描画
   ctx.beginPath();
@@ -71,7 +71,7 @@ export function drawGame() {
     y: GAME_HEIGHT / 2,
     width: BALL_WIDTH,
     height: BALL_HEIGHT,
-    color: 'white',
+    color: "white",
   };
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, ball.width / 2, 0, Math.PI * 2);
@@ -85,7 +85,7 @@ export function drawGame() {
     y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
-    color: '#0BB0CC',
+    color: "#0BB0CC",
   };
   ctx.fillStyle = leftPaddle.color;
   ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
@@ -96,9 +96,13 @@ export function drawGame() {
     y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
-    color: '#9F2BDA',
+    color: "#9F2BDA",
   };
   ctx.fillStyle = rightPaddle.color;
-  ctx.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
-};
-
+  ctx.fillRect(
+    rightPaddle.x,
+    rightPaddle.y,
+    rightPaddle.width,
+    rightPaddle.height,
+  );
+}
