@@ -52,7 +52,7 @@ class FriendListView(APIView):
         limit = query_serializer.validated_data.get("limit")
         if status == Friend.STATUS_PENDING:
             friends = Friend.objects.filter(
-                Q(to_user_id=user_id) & Q(status=Friend.STATUS_PENDING)
+                to_user_id=user_id, status=Friend.STATUS_PENDING
             )
         elif status == Friend.STATUS_APPROVED:
             friends = Friend.objects.filter(
@@ -149,14 +149,14 @@ class FriendRequestView(APIView):
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
         from_user_id = int(user_id_validator.validated_data["user_id"])
         # jwtの対応
-        user_id = request.user_id
-        if user_id == from_user_id:
+        to_user_id = request.user_id
+        if to_user_id == from_user_id:
             return Response(
                 {"error": "You cannot send a request to yourself."},
                 status=HTTP_400_BAD_REQUEST,
             )
         friend = Friend.objects.filter(
-            from_user_id=from_user_id, to_user_id=user_id
+            from_user_id=from_user_id, to_user_id=to_user_id
         ).first()
         if not friend:
             return Response(
@@ -167,18 +167,17 @@ class FriendRequestView(APIView):
             return Response(
                 {"error": "Already friend."}, status=HTTP_400_BAD_REQUEST
             )  # すでにfriend
-        Friend.objects.filter(from_user_id=from_user_id, to_user_id=user_id).delete()
+        Friend.objects.filter(from_user_id=from_user_id, to_user_id=to_user_id).delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
     @method_decorator(jwt_required)
     def patch(self, request, user_id):
         # jwtの対応
-        my_user_id = request.user_id
+        to_user_id = request.user_id
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
             return Response(user_id_validator.errors, status=HTTP_400_BAD_REQUEST)
         from_user_id = int(user_id_validator.validated_data["user_id"])
-        to_user_id = my_user_id
 
         if from_user_id == to_user_id:
             return Response(

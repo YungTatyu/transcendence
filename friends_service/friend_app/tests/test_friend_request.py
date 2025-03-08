@@ -479,9 +479,7 @@ class FriendListQueryTest(APITestCase):
             approved_at=current_time,
         )
 
-    def create_user(
-        self, number, current_time, offset, limit, delete_status=None
-    ):
+    def create_user(self, number, current_time, offset, limit, delete_status=None):
         """
         フレンドリストを4パターンに分けてまとめて作成
         1 pending(from_user_id=user_id, to_user_id=other_id)
