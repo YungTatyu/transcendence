@@ -1,5 +1,6 @@
 const GAME_HEIGHT = 500;
 const GAME_WIDTH = 800;
+const GAME_LEFTEST = 0;
 const BALL_WIDTH = 20;
 const BALL_HEIGHT = 20;
 const PADDLE_WIDTH = 10;
@@ -32,7 +33,9 @@ export default function Game() {
 
   function gameCanvas() {
     return `
-        <canvas class="game-canvas" width="${GAME_WIDTH}" height="${GAME_HEIGHT}"></canvas>
+      <div class="d-flex justify-content-center align-items-center  vh-100">
+          <canvas class="game-canvas w-90 h-100 border border-2 border-white" width="${GAME_WIDTH}" height="${GAME_HEIGHT}"></canvas>
+      </div>
     `
   };
 
@@ -66,7 +69,7 @@ export function drawGame() {
 
   // 左パドルの描画
   const leftPaddle = {
-    x: 10,
+    x: GAME_LEFTEST,
     y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
@@ -77,7 +80,7 @@ export function drawGame() {
 
   // 右パドルの描画
   const rightPaddle = {
-    x: GAME_WIDTH - 10 - PADDLE_WIDTH,
+    x: GAME_WIDTH - PADDLE_WIDTH,
     y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
