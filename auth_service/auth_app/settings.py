@@ -17,11 +17,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # APIベースURL
-USER_API_BASE_URL = "https://users.transcendence.com"
+USER_API_BASE_URL = "http://user:9000"
 
 # モックモードの設定
 # TODO user api 実装後にFalseとする
-USER_API_USE_MOCK = True
+USER_API_USE_MOCK = False
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

@@ -96,5 +96,4 @@ class UserClient:
             return self.mock_get_user(query)
 
         response = requests.get(url, params=query)
-        response.raise_for_status()
         return response
