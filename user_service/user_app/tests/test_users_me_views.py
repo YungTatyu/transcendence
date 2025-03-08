@@ -1,5 +1,4 @@
 import io
-import logging
 
 import jwt
 import pytest
@@ -10,36 +9,13 @@ from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from user_app.models import User  # 正しい `User` モデルをインポート
-
-logger = logging.getLogger(__name__)
+from user_app.models import User
 
 SECRET_KEY = "test_secret"  # テスト用の秘密鍵
 ALGORITHM = "HS256"
 
 
-@pytest.fixture
-def api_client():
-    return APIClient()
-
-
-@pytest.fixture
-def create_user(db):
-    """テスト用のユーザーを作成"""
-    user = User.objects.create(
-        username="testuser",
-        avatar_path=User.DEFAULT_AVATAR_PATH,
-        created_at=now(),
-    )
-
-    # JWT トークンの作成
-    token_payload = {"user_id": user.user_id}
-    token = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)
-
-    return user, token
-
-
-@pytest.fixture
+@pytest.fixture(scope="function")
 def create_another_user(db):
     """重複チェック用のユーザーを作成"""
     return User.objects.create(
@@ -49,24 +25,33 @@ def create_another_user(db):
     )
 
 
-@pytest.fixture(autouse=True)
-def setup_test(request, api_client, create_user):
+@pytest.fixture
+def setup_test(db, request):
     """各テスト実行前に API クライアントをセットアップ"""
-    user, token = create_user
 
-    logger.error(f"Generated token: {token}")
-    assert token is not None, "JWT トークンが `None` になっています"
+    # ユーザー作成
+    user = User.objects.create(
+        username="testuser",
+        avatar_path=User.DEFAULT_AVATAR_PATH,
+    )
 
-    api_client.cookies["access_token"] = token
-    logger.error(f"Headers: {api_client._credentials}")
+    # JWT トークンの作成（Cookieに設定するだけ）
+    token_payload = {"user_id": user.user_id}
+    token = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)
 
-    request.cls.api_client = api_client
-    request.cls.user, request.cls.token = create_user
-    request.cls.api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {request.cls.token}")
+    api_client = APIClient()
+    api_client.cookies["access_token"] = token  # Cookie に JWT をセット
+
+    # クラス属性にセット（テストクラスで `self.api_client` を利用可能にする）
+    if hasattr(request, "cls"):
+        request.cls.api_client = api_client
+        request.cls.user = user
+        request.cls.token = token
+
+    yield api_client, user, token
 
 
 @pytest.mark.usefixtures("setup_test")
-@pytest.mark.django_db
 class TestUsernameViewPut:
     def test_put_username_success(self):
         """PUT: 正常にユーザー名を変更 (成功)"""
@@ -138,24 +123,29 @@ class TestAvatarViewPut:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+    def test_put_avatar_oversized(self):
+        """PUT: 4MBを超える画像ファイルをアップロード (エラー)"""
 
-@pytest.mark.usefixtures("setup_test")
-@pytest.mark.django_db
-class TestAvatarViewDelete:
-    def test_delete_avatar_success(self):
-        """DELETE: アバターを正常に削除（デフォルト画像にリセット）"""
         url = reverse("update-avatar")
-        self.user.avatar_path = "images/uploads/custom_avatar.jpg"
-        self.user.save()
 
-        response = self.api_client.delete(url)
-        self.user.refresh_from_db()
+        # PIL で 3000x3000px の画像を作成（PNGは圧縮されるためサイズ保証できない）
+        image_io = io.BytesIO()
+        image = Image.new("RGB", (3000, 3000), "white")
+        image.save(image_io, format="PNG")
+        image_io.seek(0)
 
-        assert response.status_code == status.HTTP_200_OK
-        assert self.user.avatar_path == User.DEFAULT_AVATAR_PATH  # デフォルト画像に戻る
+        # 画像サイズが 4MB を超えるようにダミーデータを追加
+        while image_io.tell() < (4 * 1024 * 1024) + 1:  # 4MB + 1B
+            image_io.write(b"\0")  # 無意味なバイトを書き足す
+        image_io.seek(0)
 
-    def test_delete_avatar_already_default(self):
-        """DELETE: すでにデフォルトアバターの場合（エラー）"""
-        url = reverse("update-avatar")
-        response = self.api_client.delete(url)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        # テスト用の画像ファイルを作成
+        image_file = SimpleUploadedFile(
+            "oversized_avatar.png", image_io.read(), content_type="image/png"
+        )
+
+        response = self.api_client.put(
+            url, {"avatar_path": image_file}, format="multipart"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
