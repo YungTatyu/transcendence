@@ -7,6 +7,7 @@ from tournament_app.consumers.tournament_consumer import TournamentConsumer
 from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
+from tournament_app.consumers.tournament_state import TournamentState
 from tournament_app.utils.tournament_session import TournamentSession
 
 PATH_MATCHING = "/tournament/ws/enter-room"
@@ -88,27 +89,27 @@ async def test_tournament_auto_execution(
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round1の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 2
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round2の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 3
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round3(決勝戦)の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
-        assert res["state"] == "finished"
+        assert res["state"] == TournamentState.FINISHED
 
     for communicator in tournament_comms:
         await communicator.disconnect()
@@ -131,27 +132,27 @@ async def test_tournament_manual_execution(
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round1の手動トーナメント試合終了処理で次の試合に進む
     await request_tournament_match_finish_imitate(tournament_id, 1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 2
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round2の手動トーナメント試合終了処理で次の試合に進む
     await request_tournament_match_finish_imitate(tournament_id, 2)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 3
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round3(決勝戦)の手動トーナメント試合終了処理で次の試合に進む
     await request_tournament_match_finish_imitate(tournament_id, 3)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
-        assert res["state"] == "finished"
+        assert res["state"] == TournamentState.FINISHED
 
     for communicator in tournament_comms:
         await communicator.disconnect()
@@ -178,27 +179,27 @@ async def test_tournament_manual_and_auto_execution(
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round1の手動トーナメント試合終了処理で次の試合に進む
     await request_tournament_match_finish_imitate(tournament_id, 1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 2
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round2の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 3
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round3(決勝戦)の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
-        assert res["state"] == "finished"
+        assert res["state"] == TournamentState.FINISHED
 
     for communicator in tournament_comms:
         await communicator.disconnect()
@@ -221,24 +222,24 @@ async def test_tournament_manual_and_auto_execution_enter_one_user(
     communicator = await create_tournament_communicator(tournament_id)
     res = await communicator.receive_json_from()
     assert res["current_round"] == 1
-    assert res["state"] == "ongoing"
+    assert res["state"] == TournamentState.ONGOING
 
     # round1の手動トーナメント試合終了処理で次の試合に進む
     await request_tournament_match_finish_imitate(tournament_id, 1)
     res = await communicator.receive_json_from()
     assert res["current_round"] == 2
-    assert res["state"] == "ongoing"
+    assert res["state"] == TournamentState.ONGOING
 
     # round2の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     res = await communicator.receive_json_from()
     assert res["current_round"] == 3
-    assert res["state"] == "ongoing"
+    assert res["state"] == TournamentState.ONGOING
 
     # round3(決勝戦)の強制勝ち上がり処理が自動実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
     res = await communicator.receive_json_from()
-    assert res["state"] == "finished"
+    assert res["state"] == TournamentState.FINISHED
 
     await communicator.disconnect()
     TournamentSession.clear()
@@ -265,14 +266,15 @@ async def test_fetch_matches_data_error(
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # round1の手動トーナメント試合終了処理で次の試合に進む
     await request_tournament_match_finish_imitate(tournament_id, 1)
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         assert res["current_round"] == 2
-        assert res["state"] == "error"  # update_matches_dataが失敗し、errorが返る
+        # update_matches_dataが失敗し、errorが返る
+        assert res["state"] == TournamentState.ERROR
 
     for communicator in tournament_comms:
         await communicator.disconnect()
@@ -300,7 +302,7 @@ async def test_fetch_tournament_match_finish_error(
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
-        assert res["state"] == "ongoing"
+        assert res["state"] == TournamentState.ONGOING
 
     # TaskTimerによる強制勝ち上がり処理が実行される
     await asyncio.sleep(TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC + 0.1)
@@ -308,7 +310,7 @@ async def test_fetch_tournament_match_finish_error(
     for communicator in tournament_comms:
         res = await communicator.receive_json_from()
         # handle_tournament_match_byeが失敗し、errorが返る
-        assert res["state"] == "error"
+        assert res["state"] == TournamentState.ERROR
 
     for communicator in tournament_comms:
         await communicator.disconnect()
