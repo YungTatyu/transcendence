@@ -77,17 +77,18 @@ class MatchClient:
             ).prepare()
             return response
 
-    def fetch_matches_data(self, tournament_id: int):
+    def fetch_matches_data(self, tournament_id: int, offset: int = 0, limit: int = 100):
         """
         /matchesを叩き、トーナメントIDに紐づくMatches情報を取得
         エラーの場合INTERNAL_SERVER_ERRORを返す
+        INFO 引数のlimitはmatchesエンドポイントの最大レコード取得数に合わせています
         """
         endpoint = "matches"
 
         params = {
             "tournamentId": tournament_id,
-            "offset": 0,
-            "limit": 99,  # INFO limitは広めに設定
+            "offset": offset,
+            "limit": limit,
         }
 
         try:
