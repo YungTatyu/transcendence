@@ -30,3 +30,11 @@
 .game-timer {
   color: #0B7D90;
 }
+
+.header-container {
+  height: 20%;
+}
+
+.canvas-container {
+  height: 80%;
+}

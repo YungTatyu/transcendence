@@ -9,6 +9,7 @@ const PADDLE_HEIGHT = 100;
 export default function Game() {
   function gameHeader() {
     return `
+    <div class="header-container">
       <div class="game-header row mx-3 py-3">
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
@@ -28,20 +29,20 @@ export default function Game() {
         </div>
       </div>
       <div class="game-timer display-4">60</div>
+    </div>
     `
   };
 
   function gameCanvas() {
     return `
-      <div class="d-flex justify-content-center align-items-center  vh-100">
-          <canvas class="game-canvas w-90 h-100 border border-2 border-white" width="${GAME_WIDTH}" height="${GAME_HEIGHT}"></canvas>
+      <div class="canvas-container d-flex justify-content-center align-items-center">
+        <canvas class="game-canvas border border-2 border-white h-100" width="${GAME_WIDTH}" height="${GAME_HEIGHT}"></canvas>
       </div>
     `
   };
 
-
   return `
-    <div class="game text-center bg-dark">
+    <div class="game text-center bg-dark vh-100">
       ${gameHeader()}
       ${gameCanvas()}
     </div>
