@@ -51,8 +51,20 @@ export default function Game() {
 
 export function drawGame() {
   const canvas = document.querySelector('.game-canvas');
-  console.log(canvas);
   const ctx = canvas.getContext('2d');
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
+  ctx.lineWidth = 2; // 線の太さ
+  ctx.strokeStyle = '#FFFFFF';
+
+  // 垂直線を描画
+  ctx.beginPath();
+  ctx.moveTo(centerX, 0);
+  ctx.lineTo(centerX, canvas.height);
+  ctx.stroke();
 
   // ボールの描画
   const ball = {
