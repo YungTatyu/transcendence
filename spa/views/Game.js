@@ -49,60 +49,68 @@ export default function Game() {
   `;
 }
 
-export function drawGame() {
-  const canvas = document.querySelector(".game-canvas");
-  const ctx = canvas.getContext("2d");
+export const gameRender = {
+  renderGame(state = {
+    ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
+    leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+    rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 }
+  }) {
+    const canvas = document.querySelector(".game-canvas");
+    const ctx = canvas.getContext("2d");
 
-  const centerX = canvas.width / 2;
+    const centerX = canvas.width / 2;
 
-  ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
-  ctx.lineWidth = 2; // 線の太さ
-  ctx.strokeStyle = "#FFFFFF";
+    ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
+    ctx.lineWidth = 2; // 線の太さ
+    ctx.strokeStyle = "#FFFFFF";
 
-  // 垂直線を描画
-  ctx.beginPath();
-  ctx.moveTo(centerX, 0);
-  ctx.lineTo(centerX, canvas.height);
-  ctx.stroke();
+    // 垂直線を描画
+    ctx.beginPath();
+    ctx.moveTo(centerX, 0);
+    ctx.lineTo(centerX, canvas.height);
+    ctx.stroke();
 
-  // ボールの描画
-  const ball = {
-    x: GAME_WIDTH / 2,
-    y: GAME_HEIGHT / 2,
-    width: BALL_WIDTH,
-    height: BALL_HEIGHT,
-    color: "white",
-  };
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.width / 2, 0, Math.PI * 2);
-  ctx.fillStyle = ball.color;
-  ctx.fill();
-  ctx.closePath();
+    // ボールの描画
+    const ball = {
+      x: GAME_WIDTH / 2,
+      y: GAME_HEIGHT / 2,
+      width: BALL_WIDTH,
+      height: BALL_HEIGHT,
+      color: "white",
+    };
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.width / 2, 0, Math.PI * 2);
+    ctx.fillStyle = ball.color;
+    ctx.fill();
+    ctx.closePath();
 
-  // 左パドルの描画
-  const leftPaddle = {
-    x: GAME_LEFTEST,
-    y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    width: PADDLE_WIDTH,
-    height: PADDLE_HEIGHT,
-    color: "#0BB0CC",
-  };
-  ctx.fillStyle = leftPaddle.color;
-  ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+    // 左パドルの描画
+    const leftPaddle = {
+      x: GAME_LEFTEST,
+      y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT,
+      color: "#0BB0CC",
+    };
+    ctx.fillStyle = leftPaddle.color;
+    ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
 
-  // 右パドルの描画
-  const rightPaddle = {
-    x: GAME_WIDTH - PADDLE_WIDTH,
-    y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
-    width: PADDLE_WIDTH,
-    height: PADDLE_HEIGHT,
-    color: "#9F2BDA",
-  };
-  ctx.fillStyle = rightPaddle.color;
-  ctx.fillRect(
-    rightPaddle.x,
-    rightPaddle.y,
-    rightPaddle.width,
-    rightPaddle.height,
-  );
+    // 右パドルの描画
+    const rightPaddle = {
+      x: GAME_WIDTH - PADDLE_WIDTH,
+      y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      width: PADDLE_WIDTH,
+      height: PADDLE_HEIGHT,
+      color: "#9F2BDA",
+    };
+    ctx.fillStyle = rightPaddle.color;
+    ctx.fillRect(
+      rightPaddle.x,
+      rightPaddle.y,
+      rightPaddle.width,
+      rightPaddle.height,
+    )
+  },
+  renderTimer(endTime) {
+  },
 }
