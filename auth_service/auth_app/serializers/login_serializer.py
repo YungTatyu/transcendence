@@ -29,14 +29,14 @@ class OTPVerificationSerializer(serializers.Serializer):
 
     def validate(self, data):
         email = data["email"]
-        otp_token = data["otp"]
+        otp = data["otp"]
 
         try:
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist as err:
             raise serializers.ValidationError("Invalid email.") from err
 
-        if not OTPService.verify_otp(user.secret_key, otp_token):
+        if not OTPService.verify_otp(user.secret_key, otp):
             raise serializers.ValidationError("Invalid OTP.")
 
         data["user"] = user

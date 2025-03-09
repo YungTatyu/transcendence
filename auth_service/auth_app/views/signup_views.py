@@ -61,7 +61,7 @@ class OTPVerificationView(APIView):
             )
 
         username = serializer.validated_data["username"]
-        otp_token = serializer.validated_data["otp_token"]
+        otp_token = serializer.validated_data["otp"]
 
         # Redisから仮登録データを取得
         user_data = self.__get_pending_user_data(username)
