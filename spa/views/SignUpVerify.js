@@ -8,7 +8,11 @@ export default function SignUp() {
     <img id="qrCode" alt="QR Code">
     <label for="otp">OTP:</label>
     <input type="number" id="otp" name="otp" required><br><br>
-    <button id="signUpVerifyButton">verify</button>
+    <button id="signUpVerifyButton">verify</button><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+    <button id="updateEmail">UpdateEmail</button>
     ${Footer({ text: "© 2025 My Company" })}
   `;
 }
@@ -26,6 +30,15 @@ export function setupSignUpVerify() {
       return;
     }
     console.log(resData);
+
+    const updateEmailButton = document.getElementById("updateEmail");
+    updateEmailButton.addEventListener("click", async () => {
+      const resData = await fetchUpdateEmail();
+      if (resData == null) {
+        return;
+      }
+      console.log(resData);
+    });
   });
 }
 
@@ -41,6 +54,34 @@ async function fetchOtpSignUpVerify() {
   try {
     const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
       method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error! Status: ${response.status}`);
+    }
+
+    const resData = await response.json();
+    return resData;
+  } catch (error) {
+    console.error("API fetch error: ", error);
+    return null;
+  }
+}
+
+async function fetchUpdateEmail() {
+  const authApiBaseUrl = "http://localhost:8000";
+  const endpoint = "/auth/me/email";
+
+  const requestBody = {
+    email: document.getElementById("email").value,
+  };
+
+  try {
+    const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
+      method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
