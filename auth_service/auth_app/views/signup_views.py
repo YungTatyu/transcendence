@@ -94,9 +94,10 @@ class OTPVerificationView(APIView):
             )
         self.__cleanup_pending_user(username)
 
+        # INFO user_id: 1の適当なJWT
         tokens = {
-            "access": "tmp",
-            "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+            "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE1MTMyMzl9.KpOfc9EalERl1iVMTNwPoHeo7iMTmMxDeNfsMWpKA5M",
+            "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE1MTMyMzl9.KpOfc9EalERl1iVMTNwPoHeo7iMTmMxDeNfsMWpKA5M",  # refresh tokenの生成方法も要検討
         }
 
         response = Response(
