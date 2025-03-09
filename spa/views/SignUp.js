@@ -47,6 +47,7 @@ async function fetchOtpSignUp() {
   try {
     const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
     });

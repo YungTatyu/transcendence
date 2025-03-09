@@ -109,7 +109,7 @@ class OTPVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=True,  # HTTPS のみで送信 (本番環境では必須)
+            secure=False,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
             samesite="Lax",  # CSRF 対策 (Lax か Strict)
             path="/",
         )
@@ -117,7 +117,7 @@ class OTPVerificationView(APIView):
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
-            secure=True,
+            secure=False,  # TODO revert True
             samesite="Lax",
             path="/",
         )
