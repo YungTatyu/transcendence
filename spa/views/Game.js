@@ -19,16 +19,16 @@ export default function Game() {
           </div>
         </div>
         <div class="game-score text-white col-4 display-1 align-self-center">
-          <span class="neon-text">00:01</span>
+          <span class="neon-text js-game-score">00:00</span>
         </div>
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
-            <div class="player-name right-player-bgc col-auto display-5 text-truncate rounded">player2fdafdsafdsfdsf
+            <div class="player-name right-player-bgc col display-5 text-truncate rounded">player2
             </div>
           </div>
         </div>
       </div>
-      <div class="game-timer display-3">0</div>
+      <div class="game-timer display-3 js-game-timer">60</div>
     </div>
     `;
   }
@@ -55,6 +55,10 @@ export const gameRender = {
     leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
     rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 }
   }) {
+
+    const scoreEle = document.querySelector(".js-game-score");
+    scoreEle.textContent = `${state.leftPlayer.score}:${state.rightPlayer.score}`;
+
     const canvas = document.querySelector(".game-canvas");
     const ctx = canvas.getContext("2d");
 
@@ -72,8 +76,8 @@ export const gameRender = {
 
     // ボールの描画
     const ball = {
-      x: GAME_WIDTH / 2,
-      y: GAME_HEIGHT / 2,
+      x: state.ball.x,
+      y: state.ball.y,
       width: BALL_WIDTH,
       height: BALL_HEIGHT,
       color: "white",
@@ -87,7 +91,7 @@ export const gameRender = {
     // 左パドルの描画
     const leftPaddle = {
       x: GAME_LEFTEST,
-      y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      y: state.leftPlayer.y,
       width: PADDLE_WIDTH,
       height: PADDLE_HEIGHT,
       color: "#0BB0CC",
@@ -98,7 +102,7 @@ export const gameRender = {
     // 右パドルの描画
     const rightPaddle = {
       x: GAME_WIDTH - PADDLE_WIDTH,
-      y: GAME_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+      y: state.rightPlayer.y,
       width: PADDLE_WIDTH,
       height: PADDLE_HEIGHT,
       color: "#9F2BDA",
@@ -111,6 +115,8 @@ export const gameRender = {
       rightPaddle.height,
     )
   },
-  renderTimer(endTime) {
+  renderTimer(time = 60) {
+    const timerEle = document.querySelector(".js-game-timer");
+    timerEle.textContent = time;
   },
 }
