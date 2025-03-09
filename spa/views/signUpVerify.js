@@ -48,7 +48,7 @@ async function fetchOtpSignUpVerify() {
 
   const requestBody = {
     username: stateManager.state.username,
-    otp_token: document.getElementById("otp").value,
+    otp: document.getElementById("otp").value,
   };
 
   try {

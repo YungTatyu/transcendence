@@ -5,8 +5,8 @@ import Home from "./views/Home.js";
 import NotFound from "./views/NotFound.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
-import SignUp, { setupSignUp } from "./views/SignUp.js";
-import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
+import SignUp, { setupSignUp } from "./views/signUp.js";
+import SignUpVerify, { setupSignUpVerify } from "./views/signUpVerify.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
