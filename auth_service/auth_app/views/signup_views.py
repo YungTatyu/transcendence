@@ -1,5 +1,7 @@
 import json
 import logging
+from typing import Optional
+import jwt
 
 from django.conf import settings
 from rest_framework import status
@@ -86,7 +88,8 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not self.__register_user(user_data):
+        user_id = self.__register_user(user_data)
+        if user_id is None:
             logger.fatal("Failed to register user.")
             return Response(
                 {"error": "Failed to register user."},
@@ -94,10 +97,11 @@ class OTPVerificationView(APIView):
             )
         self.__cleanup_pending_user(username)
 
-        # INFO user_id: 1の適当なJWT
+        # TODO 署名を組み込んだJWTの生成
         tokens = {
-            "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE1MTMyMzl9.KpOfc9EalERl1iVMTNwPoHeo7iMTmMxDeNfsMWpKA5M",
-            "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE1MTMyMzl9.KpOfc9EalERl1iVMTNwPoHeo7iMTmMxDeNfsMWpKA5M",  # refresh tokenの生成方法も要検討
+            "access": jwt.encode({"user_id": user_id}, None, algorithm=None),
+            # refresh tokenの生成方法も要検討
+            "refresh": jwt.encode({"user_id": user_id}, None, algorithm=None),
         }
 
         response = Response(
@@ -141,7 +145,7 @@ class OTPVerificationView(APIView):
 
         return json.loads(redis_data)
 
-    def __register_user(self, user_data: dict) -> bool:
+    def __register_user(self, user_data: dict) -> Optional[int]:
         """
         本登録データをデータベースに保存する
         :param user_data: 仮登録データ
@@ -161,10 +165,10 @@ class OTPVerificationView(APIView):
                 hashed_password=user_data["password_hash"],
             )
 
-            return True
+            return user_id
         except Exception as e:
             logger.error(f"Error saving user: {str(e)}")
-            return False
+            return None
 
     def __cleanup_pending_user(self, username: str) -> None:
         """
