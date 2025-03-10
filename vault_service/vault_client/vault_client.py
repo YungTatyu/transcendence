@@ -114,6 +114,8 @@ if __name__ == "__main__":
         users_apikeys = client.fetch_api_key(token, "users")
         matches_apikeys = client.fetch_api_key(token, "matches")
         tournaments_apikeys = client.fetch_api_key(token, "tournaments")
+        games_apikeys = client.fetch_api_key(token, "games")
         print("APIKEY[users]: ", users_apikeys)
         print("APIKEY[matches]: ", matches_apikeys)
         print("APIKEY[tournaments]: ", tournaments_apikeys)
+        print("APIKEY[games]: ", games_apikeys)

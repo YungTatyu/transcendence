@@ -90,6 +90,7 @@ update_api_keys_loop() {
 	local current_users_key=$(gen_api_key)
 	local current_matches_key=$(gen_api_key)
 	local current_tournaments_key=$(gen_api_key)
+	local current_games_key=$(gen_api_key)
 
 	# 🔁 APIキーを更新
 	while true; do
@@ -97,15 +98,18 @@ update_api_keys_loop() {
 		local new_users_key=$(gen_api_key)
 		local new_matches_key=$(gen_api_key)
 		local new_tournaments_key=$(gen_api_key)
+		local new_games_key=$(gen_api_key)
 
 		# 新しいAPIキーを保存し、前のAPIキーを previous_value に保存
 		update_api_key "users" "$current_users_key" "$new_users_key"
 		update_api_key "matches" "$current_matches_key" "$new_matches_key"
 		update_api_key "tournaments" "$current_tournaments_key" "$new_tournaments_key"
+		update_api_key "games" "$current_games_key" "$new_games_key"
 
 		current_users_key=$new_users_key
 		current_matches_key=$new_matches_key
 		current_tournaments_key=$new_tournaments_key
+		current_games_key=$new_games_key
 
 		sleep ${API_KEY_ROTATE_SEC}
 	done
