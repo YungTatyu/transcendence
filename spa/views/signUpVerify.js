@@ -1,20 +1,14 @@
-import Footer from "../components/Footer.js";
-import Header from "../components/Header.js";
+import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
 export default function SignUp() {
-  return `
-    ${Header({ title: "signup" })}
-    <img id="qrCode" alt="QR Code">
-    <label for="otp">OTP:</label>
-    <input type="number" id="otp" name="otp" required><br><br>
-    <button id="signUpVerifyButton">verify</button><br><br>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
-    <button id="updateEmail">UpdateEmail</button>
-    ${Footer({ text: "© 2025 My Company" })}
-  `;
+  const formHtml = generateVerifyForm(
+    true,
+    "Scan this QRcode and verify OTP",
+    6,
+    "signUpVerifyButton",
+  );
+  return formHtml;
 }
 
 export function setupSignUpVerify() {
