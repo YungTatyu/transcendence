@@ -63,7 +63,7 @@ const WsConnectionManager = {
   eventHandler: wsEventHandler,
 
   connect(matchId) {
-    this.socket = new WebSocket(`ws://127.0.0.1:8002/games/ws/enter-room/${matchId}`)
+    this.socket = new WebSocket(`ws://127.0.0.1:8001/games/ws/enter-room/${matchId}`)
   },
 
   disconnect() {
