@@ -31,7 +31,7 @@ export function setupSignUp() {
 
     stateManager.setState({ qr: qrCode });
     stateManager.setState({
-      username: document.getElementById("username").value,
+      username: document.getElementById("fieldUsername").value,
     });
     SPA.navigate("/signup-verify");
   });
@@ -40,9 +40,9 @@ export function setupSignUp() {
 async function fetchOtpSignUp() {
   const authApiBaseUrl = "http://localhost:8000";
   const endpoint = "/auth/otp/signup";
-  const username = document.getElementById("username").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const username = document.getElementById("fieldUsername").value;
+  const password = document.getElementById("fieldPassword").value;
+  const email = document.getElementById("fieldMail").value;
 
   const requestBody = { username: username, email: email, password: password };
 

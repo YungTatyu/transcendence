@@ -6,7 +6,7 @@ export default function generateForm(fields, buttonId, submitText) {
     formContent += `
 			<div class="mb-3">
                 <label for="field${index}" class="form-label">${field.label}</label>
-                <input type="${field.type}" class="form-control" id="field${index}" placeholder="${placeholder}" ${required}>
+                <input type="${field.type}" class="form-control" id="field${field.label}" placeholder="${placeholder}" ${required}>
             </div>
         `;
   });
@@ -17,7 +17,7 @@ export default function generateForm(fields, buttonId, submitText) {
 				<form class="rounded-pill">
 					${formContent}
 					<div class="text-end">
-						<button id="${buttonId}" class="btn btn-primary btn-lg">${submitText}</button>
+						<button id="${buttonId}" class="btn btn-primary btn-lg" type="button">${submitText}</button>
 					</div>
 				</form>
 			</div>
