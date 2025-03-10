@@ -140,7 +140,7 @@ const fetchUsername = async (userid) => {
   return { userid, username };
 };
 
-const setupGame = async () => {
+export const setupGame = async () => {
   try {
     const matchId = 1;
     const res = await fetch(`http://localhost:8003/matches?matchId=${matchId}`);
@@ -154,8 +154,11 @@ const setupGame = async () => {
       const user = await fetchUsername(id);
       gamePlayers.push(user);
     });
+
+    gameRender.renderGame();
   } catch (error) {
     console.error(error);
-    gamePlayers = [];
+    // 配列を初期化する
+    gamePlayers.splice(0, gamePlayers.length);
   }
 };
