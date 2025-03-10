@@ -251,6 +251,7 @@ paths:
               - users
               - matches
               - tournaments
+              - games
           description: 取得するAPIキーの種類
       responses:
         '200':
