@@ -3,28 +3,57 @@ export default function generateVerifyForm(useQr, message, otpSize, buttonId) {
 
   if (useQr) {
     formContent += `
-			<div class="d-flex justify-content-center align-items-center">
-				<img id="qrCode" alt="QR Code" class="w-50">
-			</div>
-		`;
+      <div class="d-flex justify-content-center align-items-center">
+        <img id="qrCode" alt="QR Code" class="w-50">
+      </div>`;
   }
   formContent += `<div class="d-flex justify-content-center align-items-center"><p>${message}</p></div>`;
 
+  let otpInput = "";
   for (let i = 0; i < otpSize; i++) {
-    formContent += `<input type="text" class="form-control digit-input" maxlength="1">`;
+    otpInput += `<input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px; height: 50px;">`;
   }
 
+  formContent += `
+    <div class="container mt-4">
+      <div class="d-flex justify-content-center gap-2">${otpInput}</div>
+    </div>`;
+
   const formHtml = `
-		<div class="container d-flex justify-content-center align-items-center vh-100">
-			<div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-				<form class="rounded-pill">
-					${formContent}
-					<div class="text-end">
-						<button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	`;
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+      <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+        <form class="rounded-pill" onsubmit="return false;">
+          ${formContent}
+          <div class="text-end">
+            <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+
+  // フォームが生成された後にイベントリスナーを適用
+  setTimeout(setupOtpInputs, 0);
+
   return formHtml;
+}
+
+// OTP 入力欄のイベントリスナーを設定
+function setupOtpInputs() {
+  const inputs = document.querySelectorAll(".otp-input");
+
+  inputs.forEach((input, index) => {
+    input.addEventListener("input", (e) => {
+      if (e.target.value.length === 1) {
+        if (index < inputs.length - 1) {
+          inputs[index + 1].focus(); // 次の入力欄に移動
+        }
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && index > 0 && input.value === "") {
+        inputs[index - 1].focus(); // バックスペースで前の入力欄に戻る
+      }
+    });
+  });
 }
