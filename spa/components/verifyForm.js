@@ -7,7 +7,12 @@ export default function generateVerifyForm(useQr, message, otpSize, buttonId) {
         <img id="qrCode" alt="QR Code" class="w-50">
       </div>`;
   }
-  formContent += `<div class="d-flex justify-content-center align-items-center"><p>${message}</p></div>`;
+  formContent += `
+      <div class="d-flex justify-content-center align-items-center">
+        <p class="text-dark fw-bold mt-3">
+          ${message}
+        </p>
+       </div>`;
 
   let otpInput = "";
   for (let i = 0; i < otpSize; i++) {
