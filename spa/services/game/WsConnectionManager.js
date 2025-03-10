@@ -14,25 +14,24 @@ const wsEventHandler = {
   }
 }
 
-export default class WsConnectionManager {
-  constructor() {
-    this.socket = null;
-    this.eventHandler = wsEventHandler;
-  }
+const WsConnectionManager = {
+  socket: null,
+  eventHandler: wsEventHandler,
 
   connect(matchId) {
 
-  }
+  },
 
   disconnect() {
 
-  }
+  },
 
   sendMessage(message) {
 
-  }
+  },
 
   registerEventHandler() {
-  }
+  },
 }
 
+export default WsConnectionManager;
