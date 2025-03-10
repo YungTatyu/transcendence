@@ -1,20 +1,31 @@
-import Footer from "../components/Footer.js";
-import Header from "../components/Header.js";
 import stateManager from "../stateManager.js";
 
 export default function SignUp() {
   return `
-    ${Header({ title: "signup" })}
-	<label for="username">ユーザー名:</label>
-    <input type="text" id="username" name="username" required><br><br>
+	<div class="container d-flex justify-content-center align-items-center vh-100">
+		<div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+			<form class="rounded-pill">
+				<div class="mb-3">
+					<label for="username" class="form-label">Username</label>
+					<input type="text"  class="form-control" id="username" name="username" required>
+				</div>
+
+				<div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<input type="password"  class="form-control" id="password" name="password" required>
+				</div>
         
-    <label for="email">メールアドレス:</label>
-    <input type="email" id="email" name="email" required><br><br>
-        
-    <label for="password">パスワード:</label>
-    <input type="password" id="password" name="password" required><br><br>
-    <button id="signUpButton">signup</button>
-    ${Footer({ text: "© 2025 My Company" })}
+				<div class="mb-3">
+					<label for="email" class="form-label">Mail</label>
+					<input type="email"  class="form-control" id="email" name="email" required>
+				</div>
+
+				<div class="text-end">
+					<button id="signUpButton" class="btn btn-primary btn-lg">signup</button>
+				</div>
+			</form>
+		</div>
+	</div>
   `;
 }
 
