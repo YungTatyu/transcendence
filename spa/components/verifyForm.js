@@ -24,7 +24,7 @@ export default function generateVerifyForm(useQr, message, otpSize, buttonId) {
       <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
         <form class="rounded-pill" onsubmit="return false;">
           ${formContent}
-          <div class="text-end">
+          <div class="text-center mt-3">
             <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
           </div>
         </form>
