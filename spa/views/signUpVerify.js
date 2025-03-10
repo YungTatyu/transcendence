@@ -1,7 +1,7 @@
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
-export default function SignUp() {
+export default function SignUpVerify() {
   const formHtml = generateVerifyForm(
     true,
     "Scan this QRcode and verify OTP",
