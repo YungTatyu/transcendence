@@ -1,32 +1,23 @@
 import stateManager from "../stateManager.js";
+import generateForm from "../components/form.js";
 
 export default function SignUp() {
-  return `
-	<div class="container d-flex justify-content-center align-items-center vh-100">
-		<div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-			<form class="rounded-pill">
-				<div class="mb-3">
-					<label for="username" class="form-label">Username</label>
-					<input type="text"  class="form-control" id="username" name="username" required>
-				</div>
-
-				<div class="mb-3">
-					<label for="password" class="form-label">Password</label>
-					<input type="password"  class="form-control" id="password" name="password" required>
-				</div>
-        
-				<div class="mb-3">
-					<label for="email" class="form-label">Mail</label>
-					<input type="email"  class="form-control" id="email" name="email" required>
-				</div>
-
-				<div class="text-end">
-					<button id="signUpButton" class="btn btn-primary btn-lg">signup</button>
-				</div>
-			</form>
-		</div>
-	</div>
-  `;
+  const signUpFormFields = [
+    { label: "Username", type: "text", placeholder: "User", required: true },
+    {
+      label: "Password",
+      type: "password",
+      placeholder: "password123",
+      required: true,
+    },
+    {
+      label: "Mail",
+      type: "email",
+      placeholder: "sample@example.com",
+      required: true,
+    },
+  ];
+  return generateForm(signUpFormFields, "signUpButton", "signup");
 }
 
 export function setupSignUp() {
