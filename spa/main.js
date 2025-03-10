@@ -6,6 +6,7 @@ import NotFound from "./views/NotFound.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 import Login, { setupLogin } from "./views/login.js";
+import LoginVerify, { setupLoginVerify } from "./views/loginVerify.js";
 import SignUp, { setupSignUp } from "./views/signUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/signUpVerify.js";
 
@@ -16,5 +17,6 @@ SPA.route("/api", ApiData, setupApiData);
 SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup-verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
+SPA.route("/login-verify", LoginVerify, setupLoginVerify);
 
 SPA.init({ containerId: "app" });
