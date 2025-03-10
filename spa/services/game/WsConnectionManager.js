@@ -1,37 +1,22 @@
-
 const wsEventHandler = {
-  handleOpen(message) {
+  handleOpen(message) {},
+  handleMessage(message) {},
 
-  },
-  handleMessage(message) {
-  },
-
-  handleClose(message) {
-
-  },
-  handleError(message) {
-
-  }
-}
+  handleClose(message) {},
+  handleError(message) {},
+};
 
 const WsConnectionManager = {
   socket: null,
   eventHandler: wsEventHandler,
 
-  connect(matchId) {
+  connect(matchId) {},
 
-  },
+  disconnect() {},
 
-  disconnect() {
+  sendMessage(message) {},
 
-  },
-
-  sendMessage(message) {
-
-  },
-
-  registerEventHandler() {
-  },
-}
+  registerEventHandler() {},
+};
 
 export default WsConnectionManager;

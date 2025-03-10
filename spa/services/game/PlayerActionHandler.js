@@ -1,12 +1,9 @@
 import WsConnectionManager from "./WsConnectionManager.js";
 
-const UP_KEY = "upKey";
-const DOWN_KEY = "downKey";
-
 const PlayerActionHandler = {
   actionKeys: {
-    UP_KEY: "KeyW",
-    DOWN_KEY: "KeyS",
+    upKey: "KeyW",
+    downKey: "KeyS",
   },
   handleKeyAction(event) {
     if (!Object.values(this.actionKeys).includes(event.code)) {
@@ -27,6 +24,6 @@ const PlayerActionHandler = {
     document.removeEventListener("keydown", this.handleKeyAction);
     document.removeEventListener("keyup", this.handleKeyAction);
   },
-}
+};
 
 export default PlayerActionHandler;

@@ -50,12 +50,13 @@ export default function Game() {
 }
 
 export const gameRender = {
-  renderGame(state = {
-    ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
-    leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
-    rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 }
-  }) {
-
+  renderGame(
+    state = {
+      ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
+      leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+      rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
+    },
+  ) {
     const scoreEle = document.querySelector(".js-game-score");
     scoreEle.textContent = `${state.leftPlayer.score}:${state.rightPlayer.score}`;
 
@@ -97,7 +98,12 @@ export const gameRender = {
       color: "#0BB0CC",
     };
     ctx.fillStyle = leftPaddle.color;
-    ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+    ctx.fillRect(
+      leftPaddle.x,
+      leftPaddle.y,
+      leftPaddle.width,
+      leftPaddle.height,
+    );
 
     // 右パドルの描画
     const rightPaddle = {
@@ -113,10 +119,10 @@ export const gameRender = {
       rightPaddle.y,
       rightPaddle.width,
       rightPaddle.height,
-    )
+    );
   },
   renderTimer(time = 60) {
     const timerEle = document.querySelector(".js-game-timer");
     timerEle.textContent = time;
   },
-}
+};
