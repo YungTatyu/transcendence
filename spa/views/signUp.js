@@ -1,5 +1,5 @@
-import stateManager from "../stateManager.js";
 import generateForm from "../components/form.js";
+import stateManager from "../stateManager.js";
 
 export default function SignUp() {
   const signUpFormFields = [
