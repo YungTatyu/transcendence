@@ -16,7 +16,7 @@ class FriendRequestTestsPost(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-    def set_pending(self, from_user_id, to_user_id):
+    def create_pending_friend(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
         """
@@ -24,7 +24,7 @@ class FriendRequestTestsPost(APITestCase):
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
-    def set_approved(self, from_user_id, to_user_id):
+    def create_approved_friend(self, from_user_id, to_user_id):
         """
         フレンド状態にする
         """
@@ -70,7 +70,7 @@ class FriendRequestTestsPost(APITestCase):
         """
         相手からフレンド申請が来ている場合
         """
-        self.set_pending(7, 1)
+        self.create_pending_friend(7, 1)
         url = reverse("friend-request", kwargs={"user_id": 7})
         response = self.client.post(url)
 
@@ -84,7 +84,7 @@ class FriendRequestTestsPost(APITestCase):
         """
         すでにフレンドの相手にフレンド申請した場合
         """
-        self.set_approved(4, 1)
+        self.create_approved_friend(4, 1)
         url = reverse("friend-request", kwargs={"user_id": 4})
         response = self.client.post(url)
 
@@ -95,7 +95,7 @@ class FriendRequestTestsPost(APITestCase):
         """
         すでにフレンドの相手にフレンド申請した場合
         """
-        self.set_approved(1, 5)
+        self.create_approved_friend(1, 5)
         url = reverse("friend-request", kwargs={"user_id": 5})
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -110,7 +110,7 @@ class FriendRequestTestsDelete(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-    def set_pending(self, from_user_id, to_user_id):
+    def create_pending_friend(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
         """
@@ -118,7 +118,7 @@ class FriendRequestTestsDelete(APITestCase):
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
-    def set_approved(self, from_user_id, to_user_id):
+    def create_approved_friend(self, from_user_id, to_user_id):
         """
         フレンド状態にする
         """
@@ -130,7 +130,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         フレンド申請を削除した場合
         """
-        self.set_pending(2, 1)
+        self.create_pending_friend(2, 1)
         url = reverse("friend-request", kwargs={"user_id": 2})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -162,7 +162,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         すでにフレンドの相手を削除した場合
         """
-        self.set_approved(4, 1)
+        self.create_approved_friend(4, 1)
         url = reverse("friend-request", kwargs={"user_id": 4})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -172,7 +172,7 @@ class FriendRequestTestsDelete(APITestCase):
         """
         2回削除しようとした場合
         """
-        self.set_pending(5, 1)
+        self.create_pending_friend(5, 1)
         url = reverse("friend-request", kwargs={"user_id": 5})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -194,7 +194,7 @@ class FriendTestDelete(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-    def set_pending(self, from_user_id, to_user_id):
+    def create_pending_friend(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
         """
@@ -202,7 +202,7 @@ class FriendTestDelete(APITestCase):
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
-    def set_approved(self, from_user_id, to_user_id):
+    def create_approved_friend(self, from_user_id, to_user_id):
         """
         フレンド状態にする
         """
@@ -214,7 +214,7 @@ class FriendTestDelete(APITestCase):
         """
         フレンドの削除
         """
-        self.set_approved(1, 2)
+        self.create_approved_friend(1, 2)
         url = reverse("friend", kwargs={"friend_id": 2})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -224,7 +224,7 @@ class FriendTestDelete(APITestCase):
         フレンドの削除
         fromとtoを逆にした場合
         """
-        self.set_approved(3, 1)
+        self.create_approved_friend(3, 1)
         url = reverse("friend", kwargs={"friend_id": 3})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -253,7 +253,7 @@ class FriendTestDelete(APITestCase):
         """
         フレンド申請を受諾していない場合
         """
-        self.set_pending(1, 5)
+        self.create_pending_friend(1, 5)
         url = reverse("friend", kwargs={"friend_id": 5})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -264,7 +264,7 @@ class FriendTestDelete(APITestCase):
         フレンド申請を受諾していない場合
         fromとtoを逆にした場合
         """
-        self.set_pending(6, 1)
+        self.create_pending_friend(6, 1)
         url = reverse("friend", kwargs={"friend_id": 6})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -282,7 +282,7 @@ class FriendRequestTestsPatch(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-    def set_pending(self, from_user_id, to_user_id):
+    def create_pending_friend(self, from_user_id, to_user_id):
         """
         フレンド申請をしている状態にする
         """
@@ -290,7 +290,7 @@ class FriendRequestTestsPatch(APITestCase):
             from_user_id=from_user_id, to_user_id=to_user_id, status="pending"
         )
 
-    def set_approved(self, from_user_id, to_user_id):
+    def create_approved_friend(self, from_user_id, to_user_id):
         """
         フレンド状態にする
         """
@@ -303,7 +303,7 @@ class FriendRequestTestsPatch(APITestCase):
         id=2からのフレンド申請の承認
         """
         from_user_id = 2
-        self.set_pending(from_user_id, 1)
+        self.create_pending_friend(from_user_id, 1)
         url = reverse("friend-request", kwargs={"user_id": from_user_id})
         response = self.client.patch(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -325,7 +325,7 @@ class FriendRequestTestsPatch(APITestCase):
         自身からid=3へのフレンド申請を承認しようとした場合
         """
         from_user_id = 3
-        self.set_pending(1, from_user_id)
+        self.create_pending_friend(1, from_user_id)
         url = reverse("friend-request", kwargs={"user_id": from_user_id})
         response = self.client.patch(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -346,7 +346,7 @@ class FriendRequestTestsPatch(APITestCase):
         すでにフレンドの場合
         """
         from_user_id = 5
-        self.set_approved(from_user_id, 1)
+        self.create_approved_friend(from_user_id, 1)
         url = reverse("friend-request", kwargs={"user_id": from_user_id})
         response = self.client.patch(url)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
@@ -363,7 +363,7 @@ class FriendListTest(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-    def set_pending(self, from_user_id, to_user_id, current_time):
+    def create_pending_friend(self, from_user_id, to_user_id, current_time):
         """
         フレンド申請をしている状態にする
         """
@@ -374,7 +374,7 @@ class FriendListTest(APITestCase):
             request_sent_at=current_time,
         )
 
-    def set_approved(self, from_user_id, to_user_id, current_time):
+    def create_approved_friend(self, from_user_id, to_user_id, current_time):
         """
         フレンド状態にする
         """
@@ -409,10 +409,10 @@ class FriendListTest(APITestCase):
 
         japan_timezone = pytz.timezone("Asia/Tokyo")
         current_time = now().astimezone(japan_timezone)
-        self.set_pending(from_user_id, to_user_id2, current_time)
-        self.set_pending(to_user_id3, from_user_id, current_time)
-        self.set_approved(from_user_id, to_user_id4, current_time)
-        self.set_approved(to_user_id5, from_user_id, current_time)
+        self.create_pending_friend(from_user_id, to_user_id2, current_time)
+        self.create_pending_friend(to_user_id3, from_user_id, current_time)
+        self.create_approved_friend(from_user_id, to_user_id4, current_time)
+        self.create_approved_friend(to_user_id5, from_user_id, current_time)
         url = reverse("friend-list")
         response = self.client.get(url)
         expect_answer = {
@@ -456,7 +456,7 @@ class FriendListQueryTest(APITestCase):
 
         self.client.cookies["access_token"] = self.token
 
-    def set_pending(self, from_user_id, to_user_id, current_time):
+    def create_pending_friend(self, from_user_id, to_user_id, current_time):
         """
         フレンド申請をしている状態にする
         """
@@ -467,7 +467,7 @@ class FriendListQueryTest(APITestCase):
             request_sent_at=current_time,
         )
 
-    def set_approved(self, from_user_id, to_user_id, current_time):
+    def create_approved_friend(self, from_user_id, to_user_id, current_time):
         """
         フレンド状態にする
         """
@@ -497,14 +497,14 @@ class FriendListQueryTest(APITestCase):
         friend_list = []
         for other_id in range(2, 2 + number):
             if other_id % 4 == 0:
-                friend = self.set_pending(user_id, other_id, current_time)
+                friend = self.create_pending_friend(user_id, other_id, current_time)
                 continue  # 予想の答えのリストに追加しない
             elif other_id % 4 == 1:
-                friend = self.set_pending(other_id, user_id, current_time)
+                friend = self.create_pending_friend(other_id, user_id, current_time)
             elif other_id % 4 == 2:
-                friend = self.set_approved(user_id, other_id, current_time)
+                friend = self.create_approved_friend(user_id, other_id, current_time)
             else:
-                friend = self.set_approved(other_id, user_id, current_time)
+                friend = self.create_approved_friend(other_id, user_id, current_time)
             friend_list.append(
                 {
                     "fromUserId": friend.from_user_id,
