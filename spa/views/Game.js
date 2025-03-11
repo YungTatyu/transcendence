@@ -17,7 +17,7 @@ export default function Game() {
       <div class="game-header row mx-3 py-3">
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
-            <div class="player-name left-player-bgc col display-5 text-truncate rounded">
+            <div class="player-name left-player-bgc col display-5 text-truncate rounded js-left-player">
               player1
             </div>
           </div>
@@ -27,7 +27,7 @@ export default function Game() {
         </div>
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
-            <div class="player-name right-player-bgc col display-5 text-truncate rounded">player2
+            <div class="player-name right-player-bgc col display-5 text-truncate rounded js-right-player">player2
             </div>
           </div>
         </div>
@@ -129,7 +129,18 @@ export const gameRender = {
     const timerEle = document.querySelector(".js-game-timer");
     timerEle.textContent = time;
   },
-  renderPlayerNmaes(players = {}) {
+  renderPlayerNames(players = []) {
+    const nameClasses = [".js-left-player", ".js-left-player"];
+    nameClasses.forEach((nameClass, index) => {
+      const player = players[index];
+      const element = document.querySelector(nameClass);
+
+      if (element && player) {
+        element.textContent = player.name;
+      } else if (element) {
+        element.textContent = 'player';
+      }
+    });
   }
 };
 
@@ -156,6 +167,7 @@ export const setupGame = async () => {
     //   const user = await fetchUsername(id);
     //   gamePlayers.push(user);
     // });
+    gameRender.renderPlayerNames(gamePlayers);
 
     PlayerActionHandler.registerEventHandler();
     gameRender.renderGame();

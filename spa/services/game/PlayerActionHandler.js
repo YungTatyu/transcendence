@@ -6,7 +6,7 @@ const PlayerActionHandler = {
     downKey: "KeyS",
   },
   handleKeyAction(event) {
-    if (!Object.values(this.actionKeys).includes(event.code)) {
+    if (!Object.values(PlayerActionHandler.actionKeys).includes(event.code)) {
       return;
     }
     const message = JSON.stringify({
