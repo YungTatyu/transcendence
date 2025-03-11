@@ -1,4 +1,6 @@
 import fetchOtpSignUpVerify from "../api/fetchOtpSignUpVerify.js";
+import fetchUpdateEmail from "../api/fetchUpdateEmail.js";
+import generateForm from "../components/form.js";
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
@@ -9,7 +11,20 @@ export default function SignUpVerify() {
     6,
     "signUpVerifyButton",
   );
-  return formHtml;
+  const updateEmailFormFields = [
+    {
+      label: "NewEmail",
+      type: "email",
+      placeholder: "abc@example.com",
+      required: true,
+    },
+  ];
+  const updateEmailFormHtml = generateForm(
+    updateEmailFormFields,
+    "updateEmail",
+    "update-mail",
+  );
+  return formHtml + updateEmailFormHtml;
 }
 
 export function setupSignUpVerify() {
@@ -21,7 +36,10 @@ export function setupSignUpVerify() {
 
   signUpVerifyButton.addEventListener("click", async () => {
     const username = stateManager.state.username;
-    const otp = Array.from(document.querySelectorAll(".otp-input"));
+    const otpInputs = document.querySelectorAll(".otp-input"); // すべての要素を取得
+    const otp = Array.from(otpInputs)
+      .map((input) => input.value)
+      .join("");
     const resData = await fetchOtpSignUpVerify(username, otp);
     if (resData == null) {
       return;
@@ -30,39 +48,12 @@ export function setupSignUpVerify() {
 
     const updateEmailButton = document.getElementById("updateEmail");
     updateEmailButton.addEventListener("click", async () => {
-      const resData = await fetchUpdateEmail();
+      const email = document.getElementById("fieldNewEmail").value;
+      const resData = await fetchUpdateEmail(email);
       if (resData == null) {
         return;
       }
       console.log(resData);
     });
   });
-}
-
-async function fetchUpdateEmail() {
-  const authApiBaseUrl = "http://localhost:8000";
-  const endpoint = "/auth/me/email";
-
-  const requestBody = {
-    email: document.getElementById("email").value,
-  };
-
-  try {
-    const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP Error! Status: ${response.status}`);
-    }
-
-    const resData = await response.json();
-    return resData;
-  } catch (error) {
-    console.error("API fetch error: ", error);
-    return null;
-  }
 }
