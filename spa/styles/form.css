@@ -8,13 +8,13 @@ body {
 .btn-primary {
   background-color: #0bb0cc;
   border: none;
-  color: black;
+  color: write;
 }
 
 /* フォームボタンhover時に色が変わらないように設定(bootstrapで勝手に色が変わるため) */
 .btn-primary:hover {
   background-color: #0bb0cc;
-  color: black;
+  color: write;
 }
 
 /* ボタンの角を丸く */
