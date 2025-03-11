@@ -1,0 +1,19 @@
+.square-img {
+  width: 200px;  /* 正方形のサイズ */
+  height: 200px; /* 正方形のサイズ */
+  object-fit: cover; /* 中央を基準にトリミング */
+}
+
+.title {
+  font-size: 1.5em; /* タイトルの文字サイズ */
+  font-family: "Turret Road", sans-serif; /* タイトルのフォント */
+  font-weight: 700; /* タイトルの太さ */
+  font-style: normal;
+}
+
+.text{
+  font-size: 1.2em; /* テキストの文字サイズ */
+  font-family: "League Spartan", sans-serif; /* テキストのフォント */
+  font-weight: 400; /* テキストの太さ */
+  font-style: normal;
+}

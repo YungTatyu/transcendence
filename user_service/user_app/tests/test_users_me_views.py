@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from user_app.models import User
+from user_app.serializers import AvatarSerializer
 
 SECRET_KEY = "test_secret"  # テスト用の秘密鍵
 ALGORITHM = "HS256"
@@ -135,7 +136,7 @@ class TestAvatarViewPut:
         image_io.seek(0)
 
         # 画像サイズが 4MB を超えるようにダミーデータを追加
-        while image_io.tell() < (4 * 1024 * 1024) + 1:  # 4MB + 1B
+        while image_io.tell() < (AvatarSerializer.MAX_FILE_SIZE) + 1:  # 4MB + 1B
             image_io.write(b"\0")  # 無意味なバイトを書き足す
         image_io.seek(0)
 
