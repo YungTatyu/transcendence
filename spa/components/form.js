@@ -12,11 +12,10 @@ export default function generateForm(
 
   fields.forEach((field, index) => {
     const placeholder = field.placeholder || "";
-    const required = field.required ? "required" : "";
     formContent += `
 			<div class="mb-3">
                 <label for="field${index}" class="form-label">${field.label}</label>
-                <input type="${field.type}" class="form-control" id="field${field.label}" placeholder="${placeholder}" ${required}>
+                <input type="${field.type}" class="form-control" id="field${field.label}" placeholder="${placeholder}" required>
             </div>
         `;
   });

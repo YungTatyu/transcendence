@@ -12,12 +12,7 @@ export default function SignUpVerify() {
     "signUpVerifyButton",
   );
   const updateEmailFormFields = [
-    {
-      label: "NewEmail",
-      type: "email",
-      placeholder: "abc@example.com",
-      required: true,
-    },
+    { label: "NewEmail", type: "email", placeholder: "abc@example.com" },
   ];
   const updateEmailFormHtml = generateForm(
     updateEmailFormFields,

@@ -4,19 +4,9 @@ import stateManager from "../stateManager.js";
 
 export default function SignUp() {
   const signUpFormFields = [
-    { label: "Username", type: "text", placeholder: "User", required: true },
-    {
-      label: "Password",
-      type: "password",
-      placeholder: "password123",
-      required: true,
-    },
-    {
-      label: "Mail",
-      type: "email",
-      placeholder: "sample@example.com",
-      required: true,
-    },
+    { label: "Username", type: "text", placeholder: "User" },
+    { label: "Password", type: "password", placeholder: "password123" },
+    { label: "Mail", type: "email", placeholder: "sample@example.com" },
   ];
   return generateForm(signUpFormFields, "signUpButton", "signup");
 }
