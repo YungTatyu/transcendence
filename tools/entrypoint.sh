@@ -17,7 +17,7 @@ lint() {
 fmt() {
   local option="$1"
   if [[ ${option} != ${PYTHON} ]]; then
-    biome format --write
+    biome format --write --error-on-warnings
   fi
   if [[ ${option} != ${JS} ]]; then
     ruff format
