@@ -1,3 +1,5 @@
+import PlayerActionHandler from "../services/game/PlayerActionHandler.js";
+
 const GAME_HEIGHT = 500;
 const GAME_WIDTH = 800;
 const GAME_LEFTEST = 0;
@@ -142,19 +144,20 @@ const fetchUsername = async (userid) => {
 
 export const setupGame = async () => {
   try {
-    const matchId = 1;
-    const res = await fetch(`http://localhost:8003/matches?matchId=${matchId}`);
-    if (!res.ok) {
-      console.error(`api request error: ${res.status}`);
-      return;
-    }
-    const match = await res.json().results[0];
-    const ids = match.participants.map((player) => player.id);
-    ids.forEach(async id => {
-      const user = await fetchUsername(id);
-      gamePlayers.push(user);
-    });
+    // TODO apiを叩くので一旦実行しない
+    // const matchId = 1;
+    // const res = await fetch(`http://localhost:8003/matches?matchId=${matchId}`);
+    // if (!res.ok) {
+    //   throw new Error(`failed to fetch match data: ${res.status}`);
+    // }
+    // const match = await res.json().results[0];
+    // const ids = match.participants.map((player) => player.id);
+    // ids.forEach(async id => {
+    //   const user = await fetchUsername(id);
+    //   gamePlayers.push(user);
+    // });
 
+    PlayerActionHandler.registerEventHandler();
     gameRender.renderGame();
   } catch (error) {
     console.error(error);
