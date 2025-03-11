@@ -1,4 +1,5 @@
 import PlayerActionHandler from "../services/game/PlayerActionHandler.js";
+import config from '../config.js';
 
 const GAME_HEIGHT = 500;
 const GAME_WIDTH = 800;
@@ -145,7 +146,7 @@ export const gameRender = {
 };
 
 const fetchUsername = async (userid) => {
-  const res = await fetch(`http://localhost:9000/users?userid=${userid}`);
+  const res = await fetch(`${config.userService}/users?userid=${userid}`);
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
   }
@@ -157,7 +158,7 @@ export const setupGame = async () => {
   try {
     // TODO apiを叩くので一旦実行しない
     // const matchId = 1;
-    // const res = await fetch(`http://localhost:8003/matches?matchId=${matchId}`);
+    // const res = await fetch(`${config.matchService}/matches?matchId=${matchId}`);
     // if (!res.ok) {
     //   throw new Error(`failed to fetch match data: ${res.status}`);
     // }
