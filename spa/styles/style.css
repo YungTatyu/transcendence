@@ -2,6 +2,8 @@ body {
   font-family: Arial, sans-serif;
   margin: 20px;
   text-align: center;
+  background-color: black;
+  color: white;
 }
 header {
   background: #333;

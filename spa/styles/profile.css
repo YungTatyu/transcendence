@@ -1,0 +1,43 @@
+.home-icon {
+  width: 80px;
+  height: 80px;
+}
+
+.square-img {
+  width: 200px;  /* 正方形のサイズ */
+  height: 200px; /* 正方形のサイズ */
+  object-fit: cover; /* 中央を基準にトリミング */
+}
+
+.title {
+  font-size: 4.0em; /* タイトルの文字サイズ */
+  font-family: "Turret Road", sans-serif; /* タイトルのフォント */
+  font-weight: 700; /* タイトルの太さ */
+  font-style: normal;
+}
+
+.text{
+  font-size: 2.0em; 
+  font-family: "League Spartan", sans-serif; 
+  font-weight: 700; 
+  font-style: normal;
+}
+
+
+.match-record{
+  font-size: 1.5em;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 500; 
+  font-style: normal;
+  
+}
+
+.btn.btn-primary {
+  background-color: #0BB0CC;
+  border-color: #0BB0CC;
+  font-size: 2.0em;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 500; 
+  font-style: normal;
+
+}
