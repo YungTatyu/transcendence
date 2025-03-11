@@ -1,5 +1,5 @@
 import PlayerActionHandler from "../services/game/PlayerActionHandler.js";
-import config from '../config.js';
+import config from "../config.js";
 
 const GAME_HEIGHT = 500;
 const GAME_WIDTH = 800;

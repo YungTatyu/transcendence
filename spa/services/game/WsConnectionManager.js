@@ -1,5 +1,5 @@
 import { gameRender } from "../../views/Game.js";
-import config from '../../config.js';
+import config from "../../config.js";
 
 const calcRemaingTime = (endTime) => {
   const now = Date.now(); // 現在時刻（ミリ秒）
