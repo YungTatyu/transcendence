@@ -1,5 +1,15 @@
-export default function generateForm(fields, buttonId, submitText) {
+export default function generateForm(
+  fields,
+  buttonId,
+  submitText,
+  title = null,
+) {
   let formContent = "";
+
+  if (title) {
+    formContent += `<p class="text-center text-black  fw-bold fs-4">${title}</p>`;
+  }
+
   fields.forEach((field, index) => {
     const placeholder = field.placeholder || "";
     const required = field.required ? "required" : "";
