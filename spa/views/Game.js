@@ -138,10 +138,10 @@ export const gameRender = {
       if (element && player) {
         element.textContent = player.name;
       } else if (element) {
-        element.textContent = 'player';
+        element.textContent = "player";
       }
     });
-  }
+  },
 };
 
 const fetchUsername = async (userid) => {

@@ -18,7 +18,7 @@ const startTimer = (endTime) => {
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log(`Connected to match`);
+    console.log("Connected to match");
   },
   handleMessage(message) {
     try {
@@ -29,15 +29,13 @@ const wsEventHandler = {
       ) {
         const updatedState = parsedMessage.data.state;
         gameRender.renderGame(updatedState);
-      }
-      else if (
+      } else if (
         parsedMessage.type === "game.message" &&
         parsedMessage.message === "timer"
       ) {
         const endTime = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
         startTimer(endTime);
-      }
-      else if (
+      } else if (
         parsedMessage.type === "game.finish.message" &&
         parsedMessage.message === "gameover"
       ) {
@@ -63,7 +61,9 @@ const WsConnectionManager = {
   eventHandler: wsEventHandler,
 
   connect(matchId) {
-    this.socket = new WebSocket(`ws://127.0.0.1:8001/games/ws/enter-room/${matchId}`)
+    this.socket = new WebSocket(
+      `ws://127.0.0.1:8001/games/ws/enter-room/${matchId}`,
+    );
   },
 
   disconnect() {
@@ -88,7 +88,9 @@ const WsConnectionManager = {
       return;
     }
     this.socket.onopen = this.eventHandler.handleOpen.bind(this.eventHandler);
-    this.socket.onmessage = this.eventHandler.handleMessage.bind(this.eventHandler);
+    this.socket.onmessage = this.eventHandler.handleMessage.bind(
+      this.eventHandler,
+    );
     this.socket.onclose = this.eventHandler.handleClose.bind(this.eventHandler);
     this.socket.onerror = this.eventHandler.handleError.bind(this.eventHandler);
   },
