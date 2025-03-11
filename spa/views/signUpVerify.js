@@ -47,20 +47,21 @@ export function setupSignUpVerify() {
     const otp = Array.from(otpInputs)
       .map((input) => input.value)
       .join("");
-    const resData = await fetchOtpSignUpVerify(username, otp);
-    if (resData == null) {
+    const { _, data } = await fetchOtpSignUpVerify(username, otp);
+
+    if (data === null) {
       return;
     }
-    console.log(resData);
+    console.log(data);
 
     const updateEmailButton = document.getElementById("updateEmail");
     updateEmailButton.addEventListener("click", async () => {
       const email = document.getElementById("fieldNewEmail").value;
-      const resData = await fetchUpdateEmail(email);
-      if (resData == null) {
+      const { _, data } = await fetchUpdateEmail(email);
+      if (data === null) {
         return;
       }
-      console.log(resData);
+      console.log(data);
     });
   });
 }

@@ -12,14 +12,11 @@ export default async function fetchOtpSignUpVerify(username, otp) {
       body: JSON.stringify(requestBody),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP Error! Status: ${response.status}`);
-    }
-
-    const resData = await response.json();
-    return resData;
+    const status = response.status;
+    const data = await response.json();
+    return { status: status, data: data };
   } catch (error) {
     console.error("API fetch error: ", error);
-    return null;
+    return { status: null, data: null };
   }
 }

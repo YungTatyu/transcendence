@@ -29,12 +29,13 @@ export function setupSignUp() {
     const password = document.getElementById("fieldPassword").value;
     const email = document.getElementById("fieldMail").value;
 
-    const qrCode = await fetchOtpSignUp(username, password, email);
-    if (qrCode == null) {
+    const { _, data } = await fetchOtpSignUp(username, password, email);
+
+    if (data === null) {
       return;
     }
 
-    stateManager.setState({ qr: qrCode });
+    stateManager.setState({ qr: data.qr_code });
     stateManager.setState({
       username: document.getElementById("fieldUsername").value,
     });
