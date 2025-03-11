@@ -1,3 +1,4 @@
+import fetchOtpSignUpVerify from "../api/fetchOtpSignUpVerify.js";
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
@@ -19,7 +20,9 @@ export function setupSignUpVerify() {
   imgElement.src = qrCode;
 
   signUpVerifyButton.addEventListener("click", async () => {
-    const resData = await fetchOtpSignUpVerify();
+    const username = stateManager.state.username;
+    const otp = Array.from(document.querySelectorAll(".otp-input"));
+    const resData = await fetchOtpSignUpVerify(username, otp);
     if (resData == null) {
       return;
     }
@@ -34,35 +37,6 @@ export function setupSignUpVerify() {
       console.log(resData);
     });
   });
-}
-
-async function fetchOtpSignUpVerify() {
-  const authApiBaseUrl = "http://localhost:8000";
-  const endpoint = "/auth/otp/signup/verify";
-
-  const requestBody = {
-    username: stateManager.state.username,
-    otp: Array.from(document.querySelectorAll(".otp-input")),
-  };
-
-  try {
-    const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP Error! Status: ${response.status}`);
-    }
-
-    const resData = await response.json();
-    return resData;
-  } catch (error) {
-    console.error("API fetch error: ", error);
-    return null;
-  }
 }
 
 async function fetchUpdateEmail() {
