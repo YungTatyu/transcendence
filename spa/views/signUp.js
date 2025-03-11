@@ -1,3 +1,4 @@
+import fetchOtpSignUp from "../api/fetchOtpSignUp.js";
 import generateForm from "../components/form.js";
 import stateManager from "../stateManager.js";
 
@@ -24,7 +25,11 @@ export function setupSignUp() {
   const signUpButton = document.getElementById("signUpButton");
 
   signUpButton.addEventListener("click", async () => {
-    const qrCode = await fetchOtpSignUp();
+    const username = document.getElementById("fieldUsername").value;
+    const password = document.getElementById("fieldPassword").value;
+    const email = document.getElementById("fieldMail").value;
+
+    const qrCode = await fetchOtpSignUp(username, password, email);
     if (qrCode == null) {
       return;
     }
@@ -35,33 +40,4 @@ export function setupSignUp() {
     });
     SPA.navigate("/signup-verify");
   });
-}
-
-async function fetchOtpSignUp() {
-  const authApiBaseUrl = "http://localhost:8000";
-  const endpoint = "/auth/otp/signup";
-  const username = document.getElementById("fieldUsername").value;
-  const password = document.getElementById("fieldPassword").value;
-  const email = document.getElementById("fieldMail").value;
-
-  const requestBody = { username: username, email: email, password: password };
-
-  try {
-    const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP Error! Status: ${response.status}`);
-    }
-
-    const resData = await response.json();
-    return resData.qr_code;
-  } catch (error) {
-    console.error("API fetch error: ", error);
-    return null;
-  }
 }
