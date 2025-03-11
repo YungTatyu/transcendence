@@ -29,13 +29,20 @@ export default function SignUpVerify() {
 
 export function setupSignUpVerify() {
   const signUpVerifyButton = document.getElementById("signUpVerifyButton");
-
-  const qrCode = stateManager.state.qr;
   const imgElement = document.getElementById("qrCode");
+
+  const username = stateManager.state.username;
+  const qrCode = stateManager.state.qr;
+
+  // INFO /signup-verifyに直接アクセスされた場合に/signupにリダイレクト
+  if (qrCode === undefined || username === undefined) {
+    SPA.navigate("/signup");
+    return;
+  }
+
   imgElement.src = qrCode;
 
   signUpVerifyButton.addEventListener("click", async () => {
-    const username = stateManager.state.username;
     const otpInputs = document.querySelectorAll(".otp-input"); // すべての要素を取得
     const otp = Array.from(otpInputs)
       .map((input) => input.value)
