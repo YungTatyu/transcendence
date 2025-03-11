@@ -13,15 +13,22 @@ export default function SignUp() {
 
 export function setupSignUp() {
   const signUpButton = document.getElementById("signUpButton");
+  const errorOutput = document.getElementById("errorOutput");
 
   signUpButton.addEventListener("click", async () => {
     const username = document.getElementById("fieldUsername").value;
     const password = document.getElementById("fieldPassword").value;
     const email = document.getElementById("fieldMail").value;
 
-    const { _, data } = await fetchOtpSignUp(username, password, email);
+    const { status, data } = await fetchOtpSignUp(username, password, email);
+    console.log(data);
 
-    if (data === null) {
+    if (status === null) {
+      errorOutput.textContent = "Error Occured!";
+      return;
+    }
+    if (status !== 200) {
+      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
 

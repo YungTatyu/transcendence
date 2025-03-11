@@ -25,6 +25,7 @@ export default function SignUpVerify() {
 export function setupSignUpVerify() {
   const signUpVerifyButton = document.getElementById("signUpVerifyButton");
   const imgElement = document.getElementById("qrCode");
+  const errorOutput = document.getElementById("errorOutput");
 
   const username = stateManager.state.username;
   const qrCode = stateManager.state.qr;
@@ -42,9 +43,14 @@ export function setupSignUpVerify() {
     const otp = Array.from(otpInputs)
       .map((input) => input.value)
       .join("");
-    const { _, data } = await fetchOtpSignUpVerify(username, otp);
+    const { status, data } = await fetchOtpSignUpVerify(username, otp);
 
-    if (data === null) {
+    if (status === null) {
+      errorOutput.textContent = "Error Occured!";
+      return;
+    }
+    if (status !== 200) {
+      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
     console.log(data);
@@ -52,8 +58,14 @@ export function setupSignUpVerify() {
     const updateEmailButton = document.getElementById("updateEmail");
     updateEmailButton.addEventListener("click", async () => {
       const email = document.getElementById("fieldNewEmail").value;
-      const { _, data } = await fetchUpdateEmail(email);
-      if (data === null) {
+      const { status, data } = await fetchUpdateEmail(email);
+
+      if (status === null) {
+        errorOutput.textContent = "Error Occured!";
+        return;
+      }
+      if (status !== 200) {
+        errorOutput.textContent = JSON.stringify(data.error, null, "\n");
         return;
       }
       console.log(data);
