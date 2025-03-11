@@ -129,7 +129,7 @@ class TestAvatarViewPut:
 
         url = reverse("update-avatar")
 
-        # PIL で 3000x3000px の画像を作成（PNGは圧縮されるためサイズ保証できない）
+        # PIL で 3000x3000px の画像を作成
         image_io = io.BytesIO()
         image = Image.new("RGB", (3000, 3000), "white")
         image.save(image_io, format="PNG")
