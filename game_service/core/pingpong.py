@@ -260,24 +260,27 @@ class PingPong:
     def right_player(self):
         return self.__right_player
 
-    def add_player(self, player_id):
+    def add_player(self, player_id, index):
         if (
             self.__state != self.GameState.WAITING_FOR_FIRST_PLAYER
             and self.__state != self.GameState.WAITING_FOR_SECOND_PLAYER
         ):
             # すでにプレイヤーが作成されている時はなにもしない
             return
-        if self.__state == self.GameState.WAITING_FOR_FIRST_PLAYER:
+
+        # indexの順にplayerを追加
+        # 0 = left player, 1 = right player
+        if index == 0 and self.left_player is None:
             self.__left_player = Player(
                 player_id, Paddle(Screen.LEFTEST_POS, Screen.HEIGHT / 2)
             )
-            self.__state = self.GameState.WAITING_FOR_SECOND_PLAYER
-            return
-        # プレイヤーの再接続
-        if self.__left_player.id == player_id:
-            return
-        self.__right_player = Player(player_id, Paddle(Screen.WIDTH, Screen.HEIGHT / 2))
-        self.__state = self.GameState.READY_TO_START
+        elif index == 1 and self.right_player is None:
+            self.__right_player = Player(
+                player_id, Paddle(Screen.WIDTH, Screen.HEIGHT / 2)
+            )
+        self.__state == self.GameState.READY_TO_START if all(
+            [self.__left_player, self.__right_player]
+        ) else self.GameState.WAITING_FOR_SECOND_PLAYER
 
     def player_action(self, id, key):
         if id == self.__left_player.id:
