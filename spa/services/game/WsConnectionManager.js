@@ -1,4 +1,5 @@
 import { gameRender } from "../../views/Game.js";
+import config from '../../config.js';
 
 const calcRemaingTime = (endTime) => {
   const now = Date.now(); // 現在時刻（ミリ秒）
@@ -62,7 +63,7 @@ const WsConnectionManager = {
 
   connect(matchId) {
     this.socket = new WebSocket(
-      `ws://127.0.0.1:8001/games/ws/enter-room/${matchId}`,
+      `ws://${config.gameService}/games/ws/enter-room/${matchId}`,
     );
   },
 
