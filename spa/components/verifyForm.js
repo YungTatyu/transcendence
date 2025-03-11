@@ -32,6 +32,9 @@ export default function generateVerifyForm(useQr, message, otpSize, buttonId) {
           <div class="text-center mt-3">
             <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
           </div>
+          <div class="mt-5">
+            <p id="errorOutput" class="text-center text-danger fw-bold fs-6"></p>
+          </div>
         </form>
       </div>
     </div>`;
