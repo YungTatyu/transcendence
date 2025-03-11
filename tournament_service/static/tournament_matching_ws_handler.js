@@ -55,7 +55,9 @@ class TournamentMatchingWsHandler {
     this.timer.clear();
     // トーナメントマッチングルーム用WebSocketは削除
     this.ws.close();
-    // TODO トーナメント用WebSocketを作成
+
+    // トーナメント用WebSocketを作成
+    this.tournamentWs = this.createTournamentWs(tournamentId);
   }
 
   handleDisplayTournamentStartTime(startTime) {
@@ -64,5 +66,39 @@ class TournamentMatchingWsHandler {
     } else {
       this.timer.start(startTime);
     }
+  }
+
+  createTournamentWs(tournamentId) {
+    const ws = new WebSocket(
+      `ws://localhost:8002/tournaments/ws/enter-room/${tournamentId}`,
+    );
+    ws.onmessage = (event) => {
+      const matchesData = JSON.parse(event.data);
+      const tournamentGraph = document.getElementById("tournamentGraph");
+      const matchInfo = document.getElementById("matchInfo");
+      tournamentGraph.textContent = JSON.stringify(matchesData, null, 2);
+      matchInfo.textContent = this.getMatchVsInfo(matchesData);
+    };
+    ws.onerror = (error) => {
+      console.error("Tournament WebSocket error:", error);
+    };
+    ws.onclose = () => {
+      console.log("TournamentWs connection closed.");
+    };
+    return ws;
+  }
+
+  getMatchVsInfo(matchesData) {
+    // current_round に一致する試合を抽出
+    const currentRoundMatches = matchesData.matches_data.filter(
+      (match) => match.round === matchesData.current_round,
+    );
+
+    // 各試合の participants から id を取得し "XXX VS YYY" の形式に変換
+    const matchStrings = currentRoundMatches.map((match) => {
+      const ids = match.participants.map((p) => p.id);
+      return `${ids[0]} VS ${ids[1]}`;
+    });
+    return matchStrings;
   }
 }

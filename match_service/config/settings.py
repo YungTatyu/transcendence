@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-lpa@_gys^w-zq=1b9zgh2rj=m=tu2&iu%nm-=&-$&^l_gi_bx8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -129,4 +129,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-TOURNAMENT_API_BASE_URL = "https://tournaments.42.fr"
+TOURNAMENT_API_BASE_URL = "http://tournament:8002"

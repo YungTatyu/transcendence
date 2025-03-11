@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-3s^wg%e*nq3s+f3bu9f9-(4r1*m5(@b520k_jps4-vqm0*tow3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -144,4 +144,4 @@ CHANNEL_LAYERS = {
     },
 }
 
-MATCH_API_BASE_URL = "https://matches.42.fr"
+MATCH_API_BASE_URL = "http://match:8003"
