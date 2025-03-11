@@ -1,3 +1,4 @@
+
 .home-icon {
   width: 80px;
   height: 80px;
@@ -10,9 +11,9 @@
 }
 
 .title {
-  font-size: 4.0em; /* タイトルの文字サイズ */
-  font-family: "Turret Road", sans-serif; /* タイトルのフォント */
-  font-weight: 700; /* タイトルの太さ */
+  font-size: 4.0em;
+  font-family: "Turret Road", sans-serif; 
+  font-weight: 700; 
   font-style: normal;
 }
 

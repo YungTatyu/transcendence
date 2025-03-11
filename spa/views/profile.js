@@ -21,7 +21,6 @@ export default function Profile() {
     </div>
 
     
-    
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
           <img src="./assets/42.png" alt="ロゴ" class="square-img rounded-circle me-2" >
