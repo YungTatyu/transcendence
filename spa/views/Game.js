@@ -9,7 +9,6 @@ const BALL_HEIGHT = 20;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 
-
 export default function Game() {
   function gameHeader() {
     return `
