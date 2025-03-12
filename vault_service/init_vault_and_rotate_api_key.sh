@@ -9,9 +9,17 @@ print_log_and_exit() {
 
 # Vaultサーバの起動待機
 wait_for_vault() {
+	local timeout=60
+	local elapsed=0
+
 	until vault status 2>&1 | grep -q "Initialized"; do
 		echo "Vault起動待機中..."
 		sleep 2
+		((elapsed += 2))
+
+		if [ "$elapsed" -ge "$timeout" ]; then
+			print_log_and_exit "Vaultの起動を60秒待ちましたが、応答がありません。" 1
+		fi
 	done
 }
 
