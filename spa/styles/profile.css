@@ -1,7 +1,17 @@
 
+body {
+  background-color: black !important; /* 背景を黒 */
+  color: white !important; /* テキストを白 */
+}
+
 .home-icon {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
+}
+
+.pencil-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .square-img {

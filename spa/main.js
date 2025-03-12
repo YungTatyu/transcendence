@@ -1,6 +1,7 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
+import Game, { setupGame } from "./views/Game.js";
 import Home from "./views/Home.js";
 import NotFound from "./views/NotFound.js";
 import Store, { setupStore } from "./views/Store.js";
@@ -14,5 +15,6 @@ SPA.route("/store", Store, setupStore);
 SPA.route("/api", ApiData, setupApiData);
 SPA.route("/profile", Profile);
 SPA.route("/match-history", MatchHistory);
+SPA.route("/game", Game, setupGame);
 
 SPA.init({ containerId: "app" });

@@ -23,9 +23,9 @@ readonly ST="${ST:-Tokyo}"
 readonly L="${L:-Shinjuku}"
 readonly O="${O:-42tokyo}"
 readonly OU="${OU:-IT}"
-readonly CN="${CN:-localhost}"
+readonly CN="${CN:-vault}"
 readonly SUBJ="/C=${C}/ST=${ST}/L=${L}/O=${O}/OU=${OU}/CN=${CN}"
-readonly SAN_DNS="${SAN_DNS:-localhost}"
+readonly SAN_DNS="${SAN_DNS:-vault}"
 readonly SAN_IP="${SAN_IP:-0.0.0.0}"
 
 # 証明書作成のために作られる一時ファイル

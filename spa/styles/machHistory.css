@@ -1,13 +1,26 @@
+body {
+    background-color: black !important; /* 背景を黒 */
+    color: white !important; /* テキストを白 */
+}
+
+
 .title {
     font-size: 3.5em;
     font-family: "Turret Road", sans-serif; 
     font-weight: 700; 
     font-style: normal;
-  }
+}
   
-  .history-container{
+
+.home-icon {
+    width: 50px;
+    height: 50px;
+}
+  
+
+.history-container{
       margin-top: 8rem;
-  }
+}
 
 .header-row{
     font-size: 1.5em;
@@ -27,4 +40,4 @@
     width: 35px;  /* 正方形のサイズ */
     height: 35px; /* 正方形のサイズ */
     object-fit: cover; /* 中央を基準にトリミング */
-  }
+}

@@ -14,6 +14,7 @@ def tournament_setup_and_teardown(create_match_records_mocker):
     """
     tournament_id = 1
     user_ids = [1, 2]
+    Tournament.objects.all().delete()
     Tournament.objects.create(tournament_id=tournament_id)
     TournamentSession.register(tournament_id, user_ids)
     round = TournamentSession.search(tournament_id).current_round
@@ -23,6 +24,7 @@ def tournament_setup_and_teardown(create_match_records_mocker):
     TournamentSession.clear()  # テスト後処理
 
 
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 class TestTournamentMatchFinish:
     def request_match_finish(self, client, status, tournament_id, round) -> dict:
         data = {"tournamentId": tournament_id, "round": round}
