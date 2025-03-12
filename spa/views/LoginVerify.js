@@ -3,7 +3,7 @@ import fetchUpdateUserName from "../api/fetchUpdateUserName.js";
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
-export default function SignUp() {
+export default function LoginVerify() {
   const formHtml = generateVerifyForm(false, "Verify OTP", "loginVerifyButton");
   return formHtml;
 }
