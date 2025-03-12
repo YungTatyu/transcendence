@@ -1,4 +1,5 @@
 import fetchOtpLoginVerify from "../api/fetchOtpLoginVerify.js";
+import fetchUsers from "../api/fetchUsers.js";
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
@@ -34,7 +35,20 @@ export function setupLoginVerify() {
       return;
     }
     console.log(data);
+
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
+
+    // INFO JWTが必要な別APIサーバのエンドポイントを叩く処理
+    const { status2, data2 } = await fetchUsers({ userId: data.userId });
+    if (status2 === null) {
+      errorOutput.textContent = "Error Occured!";
+      return;
+    }
+    if (status2 !== 200) {
+      errorOutput.textContent = JSON.stringify(data2.error, null, "\n");
+      return;
+    }
+    console.log(data2);
   });
 }
