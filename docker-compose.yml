@@ -156,6 +156,21 @@ services:
       - app_network
     volumes:
       - friends_db_data:/var/lib/postgresql/data
+
+  friends_proxy:
+    build: ./waf_proxy_service
+    container_name: friends_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8007:8007"
+    env_file: ./docker_env/friends.env
+    restart: always
+    depends_on:
+      - friends
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8007/healthz"]
+
   match:
     build: ./match_service
     container_name: match
