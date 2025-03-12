@@ -1,4 +1,5 @@
 import logging
+import jwt
 
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
@@ -70,9 +71,11 @@ class OTPLoginVerificationView(APIView):
 
         user = serializer.validated_data["user"]
 
+        # TODO 署名を組み込んだJWTの生成
         tokens = {
-            "access": "tmp",
-            "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+            "access": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
+            # refresh tokenの生成方法も要検討
+            "refresh": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
         }
 
         response = Response(
