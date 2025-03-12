@@ -200,7 +200,7 @@ services:
       - app_network
     ports:
       - "8008:8008"
-    env_file: ./docker_env/matches.env
+    env_file: ./docker_env/match.env
     restart: always
     depends_on:
       - match
