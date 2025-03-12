@@ -1,6 +1,6 @@
 import logging
-import jwt
 
+import jwt
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
@@ -79,7 +79,7 @@ class OTPLoginVerificationView(APIView):
         }
 
         response = Response(
-            {"message": "OTP verification successful."},
+            {"message": "OTP verification successful.", "userId": user.user_id},
             status=status.HTTP_200_OK,
         )
 
