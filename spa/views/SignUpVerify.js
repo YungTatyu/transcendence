@@ -1,6 +1,6 @@
 import fetchOtpSignUpVerify from "../api/fetchOtpSignUpVerify.js";
 import fetchUpdateEmail from "../api/fetchUpdateEmail.js";
-import generateForm from "../components/form.js";
+import Form from "../components/Form.js";
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
@@ -13,7 +13,7 @@ export default function SignUpVerify() {
   const updateEmailFormFields = [
     { label: "NewEmail", type: "email", placeholder: "abc@example.com" },
   ];
-  const updateEmailFormHtml = generateForm(
+  const updateEmailFormHtml = Form(
     updateEmailFormFields,
     "updateEmail",
     "update-mail",

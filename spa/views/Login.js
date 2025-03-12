@@ -1,5 +1,5 @@
 import fetchOtpLogin from "../api/fetchOtpLogin.js";
-import generateForm from "../components/form.js";
+import Form from "../components/Form.js";
 import stateManager from "../stateManager.js";
 
 export default function Login() {
@@ -7,7 +7,7 @@ export default function Login() {
     { label: "Mail", type: "email", placeholder: "sample@example.com" },
     { label: "Password", type: "password", placeholder: "password123" },
   ];
-  return generateForm(loginFormFields, "loginButton", "Login");
+  return Form(loginFormFields, "loginButton", "Login");
 }
 
 export function setupLogin() {

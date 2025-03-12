@@ -1,9 +1,4 @@
-export default function generateForm(
-  fields,
-  buttonId,
-  submitText,
-  title = null,
-) {
+export default function Form(fields, buttonId, submitText, title = null) {
   let formContent = "";
 
   if (title) {

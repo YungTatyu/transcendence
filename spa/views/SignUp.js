@@ -1,5 +1,5 @@
 import fetchOtpSignUp from "../api/fetchOtpSignUp.js";
-import generateForm from "../components/form.js";
+import Form from "../components/Form.js";
 import stateManager from "../stateManager.js";
 
 export default function SignUp() {
@@ -8,7 +8,7 @@ export default function SignUp() {
     { label: "Password", type: "password", placeholder: "password123" },
     { label: "Mail", type: "email", placeholder: "sample@example.com" },
   ];
-  return generateForm(signUpFormFields, "signUpButton", "signup");
+  return Form(signUpFormFields, "signUpButton", "signup");
 }
 
 export function setupSignUp() {
