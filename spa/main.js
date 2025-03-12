@@ -3,13 +3,13 @@ window.SPA = SPA;
 
 import Game, { setupGame } from "./views/Game.js";
 import Home from "./views/Home.js";
-import NotFound from "./views/NotFound.js";
-import Store, { setupStore } from "./views/Store.js";
-import ApiData, { setupApiData } from "./views/apiPage.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
+import NotFound from "./views/NotFound.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
+import Store, { setupStore } from "./views/Store.js";
+import ApiData, { setupApiData } from "./views/apiPage.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
