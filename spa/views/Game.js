@@ -9,7 +9,6 @@ const BALL_HEIGHT = 20;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 
-const gamePlayers = [];
 
 export default function Game() {
   function gameHeader() {
@@ -150,8 +149,7 @@ const fetchUsername = async (userid) => {
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
   }
-  const username = await res.json().username;
-  return { userid, username };
+  return await res.json().username;
 };
 
 export const setupGame = async () => {
@@ -164,11 +162,8 @@ export const setupGame = async () => {
     // }
     // const match = await res.json().results[0];
     // const ids = match.participants.map((player) => player.id);
-    // ids.forEach(async id => {
-    //   const user = await fetchUsername(id);
-    //   gamePlayers.push(user);
-    // });
-    gameRender.renderPlayerNames(gamePlayers);
+    // const gamePlayers = await Promise.all(ids.map(async (id) => await fetchUsername(id)));
+    // gameRender.renderPlayerNames(gamePlayers);
 
     PlayerActionHandler.registerEventHandler();
     gameRender.renderGame();
