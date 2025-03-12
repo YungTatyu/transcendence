@@ -9,7 +9,7 @@ import ApiData, { setupApiData } from "./views/apiPage.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
-import SignUpVerify, { setupSignUpVerify } from "./views/signUpVerify.js";
+import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
