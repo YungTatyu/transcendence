@@ -33,9 +33,7 @@ export function setupSignUp() {
     }
 
     stateManager.setState({ qr: data.qr_code });
-    stateManager.setState({
-      username: document.getElementById("fieldUsername").value,
-    });
+    stateManager.setState({ username: username });
     SPA.navigate("/signup-verify");
   });
 }
