@@ -1,43 +1,40 @@
 body {
-    background-color: black !important; /* 背景を黒 */
-    color: white !important; /* テキストを白 */
+  background-color: black !important; /* 背景を黒 */
+  color: white !important; /* テキストを白 */
 }
-
 
 .title {
-    font-size: 3.5em;
-    font-family: "Turret Road", sans-serif; 
-    font-weight: 700; 
-    font-style: normal;
+  font-size: 3.5em;
+  font-family: "Turret Road", sans-serif;
+  font-weight: 700;
+  font-style: normal;
 }
-  
 
 .home-icon {
-    width: 50px;
-    height: 50px;
-}
-  
-
-.history-container{
-      margin-top: 8rem;
+  width: 50px;
+  height: 50px;
 }
 
-.header-row{
-    font-size: 1.5em;
-    font-family: "League Spartan", sans-serif;
-    font-weight: 700; 
-    font-style: normal;
+.history-container {
+  margin-top: 8rem;
 }
 
-.content-row{
-    font-size: 1.5em;
-    font-family: "League Spartan", sans-serif;
-    font-weight: 400; 
-    font-style: normal;
+.header-row {
+  font-size: 1.5em;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.content-row {
+  font-size: 1.5em;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .square-img {
-    width: 35px;  /* 正方形のサイズ */
-    height: 35px; /* 正方形のサイズ */
-    object-fit: cover; /* 中央を基準にトリミング */
+  width: 35px; /* 正方形のサイズ */
+  height: 35px; /* 正方形のサイズ */
+  object-fit: cover; /* 中央を基準にトリミング */
 }

@@ -1,14 +1,14 @@
-.number{
-    font-size: 2.0em; 
-    font-family: "League Spartan", sans-serif; 
-    font-weight: 700; 
-    font-style: normal;
-    color: #f44336;
+.number {
+  font-size: 2.0em;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  color: #f44336;
 }
 
-.text{
-    font-size: 1.0em; 
-    font-family: "League Spartan", sans-serif; 
-    font-weight: 700; 
-    font-style: normal;
+.text {
+  font-size: 1.0em;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 700;
+  font-style: normal;
 }
