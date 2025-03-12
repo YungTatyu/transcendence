@@ -1,5 +1,5 @@
 import fetchOtpLoginVerify from "../api/fetchOtpLoginVerify.js";
-import fetchUsers from "../api/fetchUsers.js";
+import fetchUpdateUserName from "../api/fetchUpdateUserName.js";
 import generateVerifyForm from "../components/verifyForm.js";
 import stateManager from "../stateManager.js";
 
@@ -39,8 +39,11 @@ export function setupLoginVerify() {
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
 
-    // INFO JWTが必要な別APIサーバのエンドポイントを叩く処理
-    const { status2, data2 } = await fetchUsers({ userId: data.userId });
+    // INFO JWTが必要なユーザー名の更新エンドポイントを叩く
+    const newName = Math.random()
+      .toString(36)
+      .slice(2, 2 + 9);
+    const { status2, data2 } = await fetchUpdateUserName(newName);
     if (status2 === null) {
       errorOutput.textContent = "Error Occured!";
       return;

@@ -1,19 +1,8 @@
-export default async function fetchUsers(username = null, userId = null) {
+export default async function fetchUpdateUserName(username) {
   const authApiBaseUrl = "http://localhost:9000";
-  const endpoint = "/users";
+  const endpoint = "/users/me/username";
 
-  if (
-    (username === null && userId === null) ||
-    (username !== null && userId !== null)
-  ) {
-    console.log("Please confirm fetchUsers function");
-    return { status: null, data: null };
-  }
-  if (username !== null) {
-    requestBody = { username: username };
-  } else {
-    requestBody = { userid: userId };
-  }
+  requestBody = { username: username };
 
   try {
     const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
