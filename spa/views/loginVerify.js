@@ -43,7 +43,9 @@ export function setupLoginVerify() {
     const newName = Math.random()
       .toString(36)
       .slice(2, 2 + 9);
-    const { status2, data2 } = await fetchUpdateUserName(newName);
+
+    const { status: status2, data: data2 } = await fetchUpdateUserName(newName);
+
     if (status2 === null) {
       errorOutput.textContent = "Error Occured!";
       return;

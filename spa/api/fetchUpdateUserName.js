@@ -1,12 +1,12 @@
 export default async function fetchUpdateUserName(username) {
-  const authApiBaseUrl = "http://localhost:9000";
+  const userApiBaseUrl = "http://localhost:9000";
   const endpoint = "/users/me/username";
 
-  requestBody = { username: username };
+  const requestBody = { username: username };
 
   try {
-    const response = await fetch(`${authApiBaseUrl}${endpoint}`, {
-      method: "POST",
+    const response = await fetch(`${userApiBaseUrl}${endpoint}`, {
+      method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
