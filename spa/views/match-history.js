@@ -20,8 +20,6 @@ export default function MatchHistory() {
       </div>
     </div>
 
-
-
     <div class="container text-center history-container">
       <div class="row row-cols-5 header-row">
         <div class="col">MODE</div>
@@ -31,19 +29,93 @@ export default function MatchHistory() {
         <div class="col">DATE</div>
       </div>
 
-      <div class="row row-cols-5 content-row mt-2">
-        <div class="col">Quick Play</div>
-        <div class="col text-center">
-          <img src="./assets/42.png" alt="ロゴ" class="square-img rounded-circle me-2" >
-          <span>username</span>
+      <div id="content-row"">
+      <!-- ここにAPIから取得したデータが挿入される -->
+        <div class="row row-cols-5 mt-2">
+          <div class="col">Quick Play</div>
+          <div class="col text-center">
+            <img src="./assets/42.png" alt="ロゴ" class="square-img rounded-circle me-2" >
+            <span>username</span>
+          </div>
+          <div class="col">WIN</div>
+          <div class="col">11-3</div>
+          <div class="col">2025/01/01</div>
         </div>
-        <div class="col">WIN</div>
-        <div class="col">11-3</div>
-        <div class="col">2025/01/01</div>
+        <!-- ここまでAPIから取得したデータが挿入される -->
       </div>
-    </div>
-
-    
+    </div>  
 
   `;
 }
+
+// APIからデータを取得して `.content-row` に挿入
+async function fetchMatchHistory() {
+  try {
+    // TODO: jwtからユーザーIDを取得
+
+    // match historyを取得（apiを適切なものに変更する）
+    const response = await fetch("https://api.example.com/matches/histories/<userId>");
+    const data = await response.json();
+
+    // データを表示するコンテナを取得
+    const container = document.getElementById("content-row");
+
+    // データが空の場合
+    if (!data.results || data.results.length === 0) {
+      container.innerHTML = "<p>試合履歴がありません</p>";
+      return;
+    }
+   
+    // 対戦相手のavatar_pathとusernameを取得
+    // opponentId のリストを作成 
+    const opponentIds = [...new Set(data.results.map(match => match.opponents[0].id))];
+
+    // すべての opponentId のユーザーデータを取得 (idごとにfetchを実行)
+     const userResponses = await Promise.all(
+      opponentIds.map(id => fetch(`https://api.example.com/users/${id}`).then(res => res.json()))
+    );
+
+    // id をキーとして avatar_path と username を格納する
+    const userProfiles = {};
+    userResponses.forEach(user => {
+      userProfiles[user.id] = {
+        avatar: user.avatar_path,
+        username: user.username
+      };
+    });
+
+
+    // データをループしてHTMLを作成
+    let contentHTML = "";
+    data.results.forEach(match => {
+      // 対戦相手のデータを取得
+      const opponent = match.opponents[0];
+      const opponentData= userProfiles[opponent.id];
+      // 試合結果により色を変更
+      const resultClass = match.result.toUpperCase() === "WIN" ? "text-primary" : "text-danger";
+
+
+      contentHTML += `
+        <div class="row row-cols-5 mt-2">
+          <div class="col">${match.mode}</div>
+          <div class="col text-center">
+            <img src="${opponentData.avatar}" alt="Player" class="square-img rounded-circle me-2" width="40">
+            <span>${opponentData.username}</span>
+          </div>
+          <div class="col ${resultClass}">${match.result.toUpperCase()}</div>
+          <div class="col">${match.userScore} - ${match.opponents.score}</div>
+          <div class="col">${match.date}</div>
+        </div>
+      `;
+    });
+
+    // HTMLを挿入
+    container.innerHTML = contentHTML;
+
+  } catch (error) {
+    console.error("マッチ履歴の取得に失敗しました", error);
+  }
+}
+
+// ページロード後にデータを取得
+window.onload = fetchMatchHistory;
