@@ -103,6 +103,20 @@ services:
     networks:
       - app_network
   
+  tournament_proxy:
+    build: ./waf_proxy_service
+    container_name: tournament_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8006:8006"
+    env_file: ./docker_env/tournament.env
+    restart: always
+    depends_on:
+      - tournament
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8006/healthz"]
+
   user:
     build: ./user_service
     container_name: user_app
