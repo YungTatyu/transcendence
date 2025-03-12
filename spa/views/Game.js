@@ -45,7 +45,7 @@ export default function Game() {
   }
 
   return `
-    <div class="game text-center bg-dark vh-100">
+    <div class="game text-center bg-black vh-100">
       ${gameHeader()}
       ${gameCanvas()}
     </div>
