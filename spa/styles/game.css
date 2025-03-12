@@ -1,0 +1,37 @@
+.game {
+  font-family: "Roboto Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.left-player-bgc {
+  background-color: #0bb0cc;
+}
+
+.right-player-bgc {
+  background-color: #9f2bda;
+}
+
+.neon-text {
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), /* 白 (少し透明) */ 0 0 4px
+    rgba(255, 255, 255, 0.4), /* 白 (さらに透明) */ 0 0 6px
+    rgba(255, 255, 0, 0.5), /* 黄色 (少し透明) */ 0 0 8px rgba(255, 255, 0, 0.3), /* 黄色 (さらに透明) */
+    0 0 10px rgba(255, 255, 0, 0.2); /* 黄色 (さらに透明) */
+}
+
+.game-score {
+  font-size: 7rem;
+}
+
+.game-timer {
+  color: #0b7d90;
+}
+
+.header-container {
+  height: 25%;
+}
+
+.canvas-container {
+  height: 75%;
+}
