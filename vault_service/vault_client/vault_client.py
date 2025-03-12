@@ -74,9 +74,27 @@ class VaultClient:
         pubkey = load_pem_public_key(pubkey_pem.encode())
         return pubkey
 
+    def fetch_api_key(self, token: str, api_key_name: str) -> Optional[dict[str, int]]:
+        """APIキーを取得(自動ローテーションするため、APIキーのDictを返す)"""
+        url = f"{self.__base_url}/v1/kv/apikeys/{api_key_name}"
+        headers = {"X-Vault-Token": token}
+
+        try:
+            response = requests.get(
+                url, headers=headers, cert=self.__cert, verify=self.__ca_file
+            )
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"fetch pubkey list error: {e}")
+            return None
+
+        return response.json()["data"]
+
 
 if __name__ == "__main__":
-    VAULT_ADDR = "https://localhost:8200"
+    # INFO localhostからvaultAPIを叩く場合、CNの設定上、
+    #      "/etc/hostsファイルに127.0.0.1 vault" を追加する必要がある
+    VAULT_ADDR = "https://vault:8200"
     CLIENT_CERT = "../../certs/client.crt"
     CLIENT_KEY = "../../certs/client.key"
     CA_CERT = "../../certs/ca.crt"
@@ -92,3 +110,12 @@ if __name__ == "__main__":
         pubkey = client.fetch_pubkey(token)
         if signature and pubkey:
             print("Verify JWT: ", verify_jwt(pubkey, jwt_data, signature))
+
+        users_apikeys = client.fetch_api_key(token, "users")
+        matches_apikeys = client.fetch_api_key(token, "matches")
+        tournaments_apikeys = client.fetch_api_key(token, "tournaments")
+        games_apikeys = client.fetch_api_key(token, "games")
+        print("APIKEY[users]: ", users_apikeys)
+        print("APIKEY[matches]: ", matches_apikeys)
+        print("APIKEY[tournaments]: ", tournaments_apikeys)
+        print("APIKEY[games]: ", games_apikeys)
