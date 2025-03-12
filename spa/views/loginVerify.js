@@ -34,5 +34,7 @@ export function setupLoginVerify() {
       return;
     }
     console.log(data);
+    // INFO stateManagerにuserIdを登録
+    stateManager.setState({ userId: data.userId });
   });
 }

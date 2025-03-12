@@ -54,6 +54,9 @@ export function setupSignUpVerify() {
     }
     console.log(data);
 
+    // INFO stateManagerにuserIdを登録
+    stateManager.setState({ userId: data.userId });
+
     const updateEmailButton = document.getElementById("updateEmail");
     updateEmailButton.addEventListener("click", async () => {
       const email = document.getElementById("fieldNewEmail").value;
