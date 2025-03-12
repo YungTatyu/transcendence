@@ -272,6 +272,8 @@ class TestPingPong(unittest.TestCase):
 
         self.game.add_player(left_player.get("id"), 0)
         self.game.add_player(right_player.get("id"), 1)
+        # game開始
+        self.game.state = self.game.GameState.IN_PROGRESS
 
         self.game.left_player.paddle.y_pos = left_player.get("y")
         self.game.left_player.score = left_player.get("score")
@@ -365,6 +367,8 @@ class TestPingPong(unittest.TestCase):
         downkey = keys.get(Player.DOWN)
         left_pos = self.game.left_player.paddle.y_pos
         right_pos = self.game.right_player.paddle.y_pos
+        # game開始
+        self.game.state = self.game.GameState.IN_PROGRESS
 
         # paddleの位置が上に移動しているはず
         self.game.player_action(1, upkey)
@@ -379,6 +383,8 @@ class TestPingPong(unittest.TestCase):
 
         left_pos = self.game.left_player.paddle.y_pos
         right_pos = self.game.right_player.paddle.y_pos
+        # game開始
+        self.game.state = self.game.GameState.IN_PROGRESS
 
         # 未登録のkeyなのでなにも起こらない
         self.game.player_action(1, "KeyA")
