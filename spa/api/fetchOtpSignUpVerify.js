@@ -1,5 +1,7 @@
+import config from "../../config.js";
+
 export default async function fetchOtpSignUpVerify(username, otp) {
-  const authApiBaseUrl = "http://localhost:8000";
+  const authApiBaseUrl = config.authService;
   const endpoint = "/auth/otp/signup/verify";
 
   const requestBody = { username: username, otp: otp };

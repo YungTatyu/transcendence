@@ -1,5 +1,7 @@
+import config from "../../config.js";
+
 export default async function fetchOtpSignUp(username, password, email) {
-  const authApiBaseUrl = "http://localhost:8000";
+  const authApiBaseUrl = config.authService;
   const endpoint = "/auth/otp/signup";
 
   const requestBody = { username: username, email: email, password: password };

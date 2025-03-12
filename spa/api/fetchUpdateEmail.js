@@ -1,5 +1,7 @@
+import config from "../../config.js";
+
 export default async function fetchUpdateEmail(email) {
-  const authApiBaseUrl = "http://localhost:8000";
+  const authApiBaseUrl = config.authService;
   const endpoint = "/auth/me/email";
 
   const requestBody = { email: email };

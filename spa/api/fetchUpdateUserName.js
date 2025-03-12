@@ -1,5 +1,7 @@
+import config from "../../config.js";
+
 export default async function fetchUpdateUserName(username) {
-  const userApiBaseUrl = "http://localhost:9000";
+  const userApiBaseUrl = config.userService;
   const endpoint = "/users/me/username";
 
   const requestBody = { username: username };
