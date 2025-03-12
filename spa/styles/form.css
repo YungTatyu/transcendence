@@ -1,9 +1,3 @@
-/* ボディ全体をBlackを基本とした色にする */
-body {
-  background-color: black;
-  color: white;
-}
-
 /* フォームのボタンの色をいい感じに */
 .btn-primary {
   background-color: #0bb0cc;
