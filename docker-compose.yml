@@ -193,6 +193,20 @@ services:
     volumes:
       - match_db_data:/var/lib/postgresql/data
 
+  match_proxy:
+    build: ./waf_proxy_service
+    container_name: match_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8008:8008"
+    env_file: ./docker_env/matches.env
+    restart: always
+    depends_on:
+      - match
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8008/healthz"]
+
   vault:
     build: ./vault_service
     container_name: vault
