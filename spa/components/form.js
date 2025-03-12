@@ -10,11 +10,11 @@ export default function generateForm(
     formContent += `<p class="text-center text-black  fw-bold fs-4">${title}</p>`;
   }
 
-  fields.forEach((field, index) => {
+  fields.forEach((field, _) => {
     const placeholder = field.placeholder || "";
     formContent += `
           <div class="mb-3">
-            <label for="field${index}" class="form-label">${field.label}</label>
+            <label class="form-label">${field.label}</label>
             <input type="${field.type}" class="form-control" id="field${field.label}" placeholder="${placeholder}" required>
           </div>
         `;
