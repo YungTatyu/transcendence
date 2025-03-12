@@ -13,7 +13,7 @@ export default function Game() {
   function gameHeader() {
     return `
     <div class="header-container">
-      <div class="game-header row mx-3 py-3">
+      <div class="game-header row mx-3 pt-1 pb-0 mb-0">
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
             <div class="player-name left-player-bgc col display-5 text-truncate rounded js-left-player">
@@ -31,7 +31,7 @@ export default function Game() {
           </div>
         </div>
       </div>
-      <div class="game-timer display-3 js-game-timer">60</div>
+      <h1 class="game-timer display-3 js-game-timer p-0 m-0">60</h1>
     </div>
     `;
   }
