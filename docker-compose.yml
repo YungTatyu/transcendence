@@ -27,11 +27,24 @@ services:
     networks:
       - app_network
 
+  auth_proxy:
+    build: ./waf_proxy_service
+    container_name: auth_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8005:8005"
+    env_file: ./docker_env/auth.env
+    restart: always
+    depends_on:
+      - auth
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8005/healthz"]
+
   game:
     build: ./game_service
     container_name: game
     env_file: ./docker_env/game.env
-    tty: true
     ports:
       - "8001:8001"
     networks:
@@ -39,17 +52,27 @@ services:
     depends_on:
       - game_redis
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://game:8001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
 
   game_redis:
     image: redis:alpine
     container_name: game_redis_server
     networks:
       - app_network
+
+  game_proxy:
+    build: ./waf_proxy_service
+    container_name: game_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8004:8004"
+    env_file: ./docker_env/game.env
+    restart: always
+    depends_on:
+      - game
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8004/healthz"]
 
   tournament:
     build: ./tournament_service
@@ -80,6 +103,20 @@ services:
     networks:
       - app_network
   
+  tournament_proxy:
+    build: ./waf_proxy_service
+    container_name: tournament_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8006:8006"
+    env_file: ./docker_env/tournament.env
+    restart: always
+    depends_on:
+      - tournament
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8006/healthz"]
+
   user:
     build: ./user_service
     container_name: user_app
@@ -127,6 +164,21 @@ services:
       - app_network
     volumes:
       - friends_db_data:/var/lib/postgresql/data
+
+  friends_proxy:
+    build: ./waf_proxy_service
+    container_name: friends_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8007:8007"
+    env_file: ./docker_env/friends.env
+    restart: always
+    depends_on:
+      - friends
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8007/healthz"]
+
   match:
     build: ./match_service
     container_name: match
@@ -148,6 +200,20 @@ services:
       - app_network
     volumes:
       - match_db_data:/var/lib/postgresql/data
+
+  match_proxy:
+    build: ./waf_proxy_service
+    container_name: match_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8008:8008"
+    env_file: ./docker_env/match.env
+    restart: always
+    depends_on:
+      - match
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8008/healthz"]
 
   vault:
     build: ./vault_service
