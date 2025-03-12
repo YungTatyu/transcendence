@@ -1,4 +1,5 @@
-import fetchOtpSignUp from "../api/fetchOtpSignUp.js";
+import config from "../config.js";
+import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import Form from "../components/Form.js";
 import stateManager from "../stateManager.js";
 
@@ -20,7 +21,18 @@ export function setupSignUp() {
     const password = document.getElementById("fieldPassword").value;
     const email = document.getElementById("fieldMail").value;
 
-    const { status, data } = await fetchOtpSignUp(username, password, email);
+    const requestBody = {
+      username: username,
+      email: email,
+      password: password,
+    };
+
+    const { status, data } = await fetchApiWithBody(
+      "POST",
+      config.authService,
+      "/auth/otp/signup",
+      requestBody,
+    );
     console.log(data);
 
     if (status === null) {

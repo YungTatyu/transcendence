@@ -1,5 +1,5 @@
-import fetchOtpLoginVerify from "../api/fetchOtpLoginVerify.js";
-import fetchUpdateUserName from "../api/fetchUpdateUserName.js";
+import config from "../config.js";
+import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import VerifyForm from "../components/VerifyForm.js";
 import stateManager from "../stateManager.js";
 
@@ -24,7 +24,14 @@ export function setupLoginVerify() {
     const otp = Array.from(otpInputs)
       .map((input) => input.value)
       .join("");
-    const { status, data } = await fetchOtpLoginVerify(email, otp);
+    const requestBody = { email: email, otp: otp };
+
+    const { status, data } = await fetchApiWithBody(
+      "POST",
+      config.authService,
+      "/auth/otp/login/verify",
+      requestBody,
+    );
 
     if (status === null) {
       errorOutput.textContent = "Error Occured!";
@@ -44,7 +51,12 @@ export function setupLoginVerify() {
       .toString(36)
       .slice(2, 2 + 9);
 
-    const { status: status2, data: data2 } = await fetchUpdateUserName(newName);
+    const { status: status2, data: data2 } = await fetchApiWithBody(
+      "PUT",
+      config.userService,
+      "/users/me/username",
+      { username: newName },
+    );
 
     if (status2 === null) {
       errorOutput.textContent = "Error Occured!";

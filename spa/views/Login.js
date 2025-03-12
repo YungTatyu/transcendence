@@ -1,4 +1,5 @@
-import fetchOtpLogin from "../api/fetchOtpLogin.js";
+import config from "../config.js";
+import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import Form from "../components/Form.js";
 import stateManager from "../stateManager.js";
 
@@ -17,8 +18,17 @@ export function setupLogin() {
   loginButton.addEventListener("click", async () => {
     const email = document.getElementById("fieldMail").value;
     const password = document.getElementById("fieldPassword").value;
+    const requestBody = {
+      email: email,
+      password: password,
+    };
 
-    const { status, data } = await fetchOtpLogin(email, password);
+    const { status, data } = await fetchApiWithBody(
+      "POST",
+      config.authService,
+      "/auth/otp/login",
+      requestBody,
+    );
     console.log(data);
 
     if (status === null) {

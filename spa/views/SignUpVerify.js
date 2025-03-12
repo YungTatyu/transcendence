@@ -1,5 +1,5 @@
-import fetchOtpSignUpVerify from "../api/fetchOtpSignUpVerify.js";
-import fetchUpdateEmail from "../api/fetchUpdateEmail.js";
+import config from "../config.js";
+import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import Form from "../components/Form.js";
 import VerifyForm from "../components/VerifyForm.js";
 import stateManager from "../stateManager.js";
@@ -42,7 +42,14 @@ export function setupSignUpVerify() {
     const otp = Array.from(otpInputs)
       .map((input) => input.value)
       .join("");
-    const { status, data } = await fetchOtpSignUpVerify(username, otp);
+
+    const requestBody = { username: username, otp: otp };
+    const { status, data } = await fetchApiWithBody(
+      "POST",
+      config.authService,
+      "/auth/otp/signup/verify",
+      requestBody,
+    );
 
     if (status === null) {
       errorOutput.textContent = "Error Occured!";
@@ -60,7 +67,12 @@ export function setupSignUpVerify() {
     const updateEmailButton = document.getElementById("updateEmail");
     updateEmailButton.addEventListener("click", async () => {
       const email = document.getElementById("fieldNewEmail").value;
-      const { status, data } = await fetchUpdateEmail(email);
+      const { status, data } = await fetchApiWithBody(
+        "PUT",
+        config.authService,
+        "/auth/me/email",
+        { email: email },
+      );
 
       if (status === null) {
         errorOutput.textContent = "Error Occured!";
