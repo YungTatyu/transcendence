@@ -37,7 +37,9 @@ enable_transit() {
 	if ! vault write -f transit/keys/jwt-key type=rsa-2048; then
 		print_log_and_exit "署名キーの作成に失敗しました" 1
 	fi
-	vault read transit/keys/jwt-key
+	if ! vault read transit/keys/jwt-key; then
+		print_log_and_exit "JWTキーの読み取りに失敗しました" 1
+	fi
 }
 
 # APIキー配信用の設定
@@ -50,8 +52,13 @@ enable_api_keys() {
 # TLS認証の設定
 enable_tls_auth() {
 	# ポリシーを作成
-	vault policy write transit-policy /vault/config/transit-policy.hcl
-	vault policy write kv-policy /vault/config/kv-policy.hcl
+	if ! vault policy write transit-policy /vault/config/transit-policy.hcl; then
+		print_log_and_exit "transit-policy の適用に失敗しました" 1
+	fi
+
+	if ! vault policy write kv-policy /vault/config/kv-policy.hcl; then
+		print_log_and_exit "kv-policy の適用に失敗しました" 1
+	fi
 
 	if ! vault auth enable cert; then
 		print_log_and_exit "TLS認証の設定に失敗しました" 1
@@ -81,7 +88,9 @@ update_api_key() {
 	fi
 
 	# 新しいAPIキーを保存し、前のAPIキーを previous_value に保存
-	vault kv put kv/apikeys/$key_name value="$new_key" previous_value="$old_key"
+	if ! vault kv put kv/apikeys/$key_name value="$new_key" previous_value="$old_key"; then
+		print_log_and_exit "APIキー '$key_name' の更新に失敗しました。" 1
+	fi
 }
 
 update_api_keys_loop() {
