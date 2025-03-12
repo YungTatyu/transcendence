@@ -9,4 +9,3 @@ export const calcRemaingTime = (endTime) => {
   const re = Math.max(0, Math.floor((endTime - now) / 1000)); // 残り時間（秒単位）
   return re;
 };
-

@@ -21,22 +21,13 @@ const wsEventHandler = {
       const parsedMessage = JSON.parse(message.data);
       const type = parsedMessage.type;
       const gameMessage = parsedMessage.message;
-      if (
-        type === "game.message" &&
-        gameMessage === "update"
-      ) {
+      if (type === "game.message" && gameMessage === "update") {
         const updatedState = parsedMessage.data.state;
         gameRender.renderGame(updatedState);
-      } else if (
-        type === "game.message" &&
-        gameMessage === "timer"
-      ) {
+      } else if (type === "game.message" && gameMessage === "timer") {
         const endTime = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
         startTimer(endTime);
-      } else if (
-        type === "game.finish.message" &&
-        gameMessage === "gameover"
-      ) {
+      } else if (type === "game.finish.message" && gameMessage === "gameover") {
         const results = parsedMessage.results;
         alert(
           `game·over:\n${results.map((r) => `User ${r.userId}: ${r.score}`).join("\n")}`,
