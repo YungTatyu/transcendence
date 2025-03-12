@@ -1,6 +1,11 @@
+from asgiref.sync import async_to_sync
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 from rest_framework.views import APIView
 
 from tournament_app.serializers import TournamentMatchFinishSerializer
@@ -17,17 +22,17 @@ class TournamentMatchFinishView(APIView):
 
         tournament_id = serializer.validated_data["tournamentId"]
         tournament_session = TournamentSession.search(tournament_id)
-        self.__update_tournament_info(tournament_session)
+        if tournament_session is None:
+            return Response(
+                {"error": "Internal Server Error"},
+                status=HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
+        async_to_sync(
+            tournament_session.update_tournament_session_info,
+            force_new_loop=False,
+        )()
         return Response({"message": "Match ended normally"}, status=HTTP_200_OK)
-
-    def __update_tournament_info(self, tournament_session):
-        """
-        トーナメントの情報を更新し、次の試合のアナウンスメントイベントを発生させる
-        TODO channel_layerに対して情報を伝達する処理
-            (実現できるかわからないので、無理ならTournamentConsumerでポーリング)
-        """
-        tournament_session.next_round()
 
 
 @api_view(["GET"])
