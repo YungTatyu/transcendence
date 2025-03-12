@@ -1,6 +1,6 @@
-import config from "../config.js";
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import Form from "../components/Form.js";
+import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function Login() {
