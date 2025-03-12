@@ -1,11 +1,6 @@
 import config from "../../config.js";
+import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { gameRender } from "../../views/Game.js";
-
-const calcRemaingTime = (endTime) => {
-  const now = Date.now(); // 現在時刻（ミリ秒）
-  const re = Math.max(0, Math.floor((endTime - now) / 1000)); // 残り時間（秒単位）
-  return re;
-};
 
 const startTimer = (endTime) => {
   const interval = setInterval(() => {
