@@ -27,6 +27,20 @@ services:
     networks:
       - app_network
 
+  auth_proxy:
+    build: ./waf_proxy_service
+    container_name: auth_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "8005:8005"
+    env_file: ./docker_env/auth.env
+    restart: always
+    depends_on:
+      - auth
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8005/healthz"]
+
   game:
     build: ./game_service
     container_name: game
