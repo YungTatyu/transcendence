@@ -30,7 +30,7 @@ export function setupLoginVerify() {
       errorOutput.textContent = "Error Occured!";
       return;
     }
-    if (status !== 200) {
+    if (status >= 400) {
       errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
@@ -50,7 +50,7 @@ export function setupLoginVerify() {
       errorOutput.textContent = "Error Occured!";
       return;
     }
-    if (status2 !== 200) {
+    if (status2 >= 400) {
       errorOutput.textContent = JSON.stringify(data2.error, null, "\n");
       return;
     }

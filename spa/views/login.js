@@ -25,7 +25,7 @@ export function setupLogin() {
       errorOutput.textContent = "Error Occured!";
       return;
     }
-    if (status !== 200) {
+    if (status >= 400) {
       errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
