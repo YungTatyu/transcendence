@@ -8,7 +8,6 @@ export default function SignUpVerify() {
   const formHtml = generateVerifyForm(
     true,
     "Scan this QRcode and verify OTP",
-    6,
     "signUpVerifyButton",
   );
   const updateEmailFormFields = [

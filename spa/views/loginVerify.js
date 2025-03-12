@@ -1,12 +1,7 @@
 import generateVerifyForm from "../components/verifyForm.js";
 
 export default function SignUp() {
-  const formHtml = generateVerifyForm(
-    false,
-    "Verify OTP",
-    6,
-    "loginVerifyButton",
-  );
+  const formHtml = generateVerifyForm(false, "Verify OTP", "loginVerifyButton");
   return formHtml;
 }
 
