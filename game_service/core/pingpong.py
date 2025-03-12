@@ -278,11 +278,15 @@ class PingPong:
             self.__right_player = Player(
                 player_id, Paddle(Screen.WIDTH, Screen.HEIGHT / 2)
             )
-        self.__state == self.GameState.READY_TO_START if all(
-            [self.__left_player, self.__right_player]
-        ) else self.GameState.WAITING_FOR_SECOND_PLAYER
+        self.__state = (
+            self.GameState.READY_TO_START
+            if all([self.__left_player, self.__right_player])
+            else self.GameState.WAITING_FOR_SECOND_PLAYER
+        )
 
     def player_action(self, id, key):
+        if self.state != self.GameState.IN_PROGRESS:
+            return
         if id == self.__left_player.id:
             self.__left_player.move_paddle(key)
         elif id == self.__right_player.id:
