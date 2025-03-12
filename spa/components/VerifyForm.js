@@ -1,9 +1,4 @@
-export default function generateVerifyForm(
-  useQr,
-  message,
-  buttonId,
-  otpSize = 6,
-) {
+export default function VerifyForm(useQr, message, buttonId, otpSize = 6) {
   let formContent = "";
 
   if (useQr) {

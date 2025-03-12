@@ -1,11 +1,11 @@
 import fetchOtpSignUpVerify from "../api/fetchOtpSignUpVerify.js";
 import fetchUpdateEmail from "../api/fetchUpdateEmail.js";
 import Form from "../components/Form.js";
-import generateVerifyForm from "../components/verifyForm.js";
+import VerifyForm from "../components/VerifyForm.js";
 import stateManager from "../stateManager.js";
 
 export default function SignUpVerify() {
-  const formHtml = generateVerifyForm(
+  const formHtml = VerifyForm(
     true,
     "Scan this QRcode and verify OTP",
     "signUpVerifyButton",

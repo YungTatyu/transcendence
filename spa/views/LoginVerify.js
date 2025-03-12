@@ -1,10 +1,10 @@
 import fetchOtpLoginVerify from "../api/fetchOtpLoginVerify.js";
 import fetchUpdateUserName from "../api/fetchUpdateUserName.js";
-import generateVerifyForm from "../components/verifyForm.js";
+import VerifyForm from "../components/VerifyForm.js";
 import stateManager from "../stateManager.js";
 
 export default function LoginVerify() {
-  const formHtml = generateVerifyForm(false, "Verify OTP", "loginVerifyButton");
+  const formHtml = VerifyForm(false, "Verify OTP", "loginVerifyButton");
   return formHtml;
 }
 
