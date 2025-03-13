@@ -1,5 +1,4 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
-import stateManager from "../stateManager.js";
 
 export default function Profile() {
   return `
@@ -8,7 +7,7 @@ export default function Profile() {
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
-          <img id="user-avatar" src="./assets/42.png" alt="ロゴ" class="square-img rounded-circle me-2 pencil-icon" >
+          <img id="user-avatar" src="./assets/42.png" alt="ロゴ" class="square-img-user-avatar rounded-circle me-2 pencil-icon" >
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
@@ -30,7 +29,6 @@ export default function Profile() {
       </div>
     </div>
 
-
     <div class="container text-center mt-4 match-record">
       <div id="row-content" class="row row-cols-3">
         <div class="col">Number1</div>
@@ -44,8 +42,8 @@ export default function Profile() {
       </div>
     </div>
 
-    <div class="d-grid gap-2 col-6 mx-auto mt-5">
-      <button class="match-history-button btn btn-primary rounded-pill " type="button">Match History</button>
+    <div class="d-grid gap-2 col-4 mx-auto mt-5">
+      <button class="match-history-button btn btn-primary rounded-pill" type="button">Match History</button>
     </div>
 
     `;

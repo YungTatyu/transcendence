@@ -1,5 +1,4 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
-import stateManager from "../stateManager.js";
 
 export default function MatchHistory() {
   return `
