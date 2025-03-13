@@ -1,5 +1,24 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
+export function UserInfo(className, text) {
+  return `
+    <div class="${className}">
+      <p class="user-profile-text me-2">${text}</p>
+      <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
+    </div>
+      `;
+}
+
+export function UserMatchHistory(idName, text1, text2, text3) {
+  return `
+   <div id="${idName} " class="row row-cols-3">
+        <div class="col">${text1}</div>
+        <div class="col">${text2}</div>
+        <div class="col">${text3}</div>
+      </div>
+      `;
+}
+
 export default function Profile() {
   return `
 
@@ -11,35 +30,16 @@ export default function Profile() {
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
+      ${User_info("d-inline-flex align-items-center mt-5", "UserName")}
+      ${User_info("d-inline-flex align-items-center", "Password")}
+      ${User_info("d-inline-flex align-items-center", "Mail")}
 
-      <div class="d-inline-flex align-items-center mt-5">
-          <p id="username" class="user-profile-text me-2">UserName</p>
-          <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
-      </div>
-
-
-      <div class="d-inline-flex align-items-center">
-          <p class="user-profile-text me-2">Password</p>
-          <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
-      </div>
-
-      <div class="d-inline-flex align-items-center">
-          <p class="user-profile-text me-2">Mail</p>
-          <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
-      </div>
+     
     </div>
 
     <div class="container text-center mt-4 match-record">
-      <div id="row-content" class="row row-cols-3">
-        <div class="col">Number1</div>
-        <div class="col">Number2</div>
-        <div class="col">Number3</div>
-      </div>
-      <div id="row-label" class="row row-cols-3">
-        <div class="col">Wins</div>
-        <div class="col">Losses</div>
-        <div class="col">Tournament Wins</div>
-      </div>
+      ${User_match_history("row-data", "10", "5", "3")}
+      ${User_match_history("row-label", "Wins", "Losses", "Tournament Wins")}
     </div>
 
     <div class="d-grid gap-2 col-4 mx-auto mt-5">

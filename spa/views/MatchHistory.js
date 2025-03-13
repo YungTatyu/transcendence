@@ -1,5 +1,27 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
+export function MatchHistoryData(
+  mode,
+  playerAvatar,
+  playerName,
+  result,
+  score,
+  date,
+) {
+  return `
+    <div class="row row-cols-5 mt-2">
+      <div class="col">${mode} </div>
+      <div class="col text-center">
+        <img src="${playerAvatar}" alt="ロゴ" class="square-img rounded-circle me-2" >
+        <span>${playerName} </span>
+      </div>
+      <div class="col">${result}</div>
+      <div class="col">${score}</div>
+      <div class="col">${date}</div>
+    </div>
+    `;
+}
+
 export default function MatchHistory() {
   return `
 
@@ -15,18 +37,7 @@ export default function MatchHistory() {
       </div>
 
       <div id="content-row"">
-      <!-- ここにAPIから取得したデータが挿入される -->
-        <div class="row row-cols-5 mt-2">
-          <div class="col">Quick Play</div>
-          <div class="col text-center">
-            <img src="./assets/42.png" alt="ロゴ" class="square-img rounded-circle me-2" >
-            <span>username</span>
-          </div>
-          <div class="col">WIN</div>
-          <div class="col">11-3</div>
-          <div class="col">2025/01/01</div>
-        </div>
-        <!-- ここまでAPIから取得したデータが挿入される -->
+        ${MatchHistoryData("1v1", "./assets/42.png", "Player1", "Win", "10-5", "2021-10-10")}
       </div>
     </div>  
 
