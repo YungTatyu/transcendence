@@ -41,6 +41,6 @@ export function setupLogin() {
     }
 
     stateManager.setState({ email: email });
-    SPA.navigate("/login-verify");
+    SPA.navigate("/login/verify");
   });
 }

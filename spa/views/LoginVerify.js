@@ -13,7 +13,7 @@ export function setupLoginVerify() {
   const errorOutput = document.getElementById("errorOutput");
   const email = stateManager.state.email;
 
-  // INFO /login-verifyに直接アクセスされた場合に/loginにリダイレクト
+  // INFO /login/verifyに直接アクセスされた場合に/loginにリダイレクト
   if (email === undefined) {
     SPA.navigate("/login");
     return;

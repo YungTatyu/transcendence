@@ -18,7 +18,7 @@ SPA.route("/api", ApiData, setupApiData);
 SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
-SPA.route("/login-verify", LoginVerify, setupLoginVerify);
+SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
 
 SPA.init({ containerId: "app" });
