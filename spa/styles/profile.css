@@ -1,13 +1,3 @@
-body {
-  background-color: black !important; /* 背景を黒 */
-  color: white !important; /* テキストを白 */
-}
-
-.home-icon {
-  width: 50px;
-  height: 50px;
-}
-
 .pencil-icon {
   width: 20px;
   height: 20px;
@@ -19,14 +9,7 @@ body {
   object-fit: cover; /* 中央を基準にトリミング */
 }
 
-.title {
-  font-size: 4.0em;
-  font-family: "Turret Road", sans-serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.text {
+.user-profile-text {
   font-size: 2.0em;
   font-family: "League Spartan", sans-serif;
   font-weight: 700;
@@ -40,7 +23,7 @@ body {
   font-style: normal;
 }
 
-.btn.btn-primary {
+.match-history-button {
   background-color: #0bb0cc;
   border-color: #0bb0cc;
   font-size: 2.0em;

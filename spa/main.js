@@ -6,8 +6,8 @@ import Home from "./views/Home.js";
 import NotFound from "./views/NotFound.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
-import MatchHistory from "./views/match-history.js";
-import Profile from "./views/profile.js";
+import MatchHistory from "./views/MatchHistory.js";
+import Profile from "./views/Profile.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);

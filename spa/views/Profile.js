@@ -1,21 +1,10 @@
 import stateManager from "../stateManager.js";
+import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
 export default function Profile() {
   return `
 
-    <div class="container text-center">
-      <div class="row">
-        <div class="col align-self-start">
-          <p class="title text-start">PROFILE</p>
-        </div>
-        <div class="col align-self-end">
-          <div class="position-relative">
-            <img src="./assets/home.png" class="home-icon position-absolute top-0 end-0">
-          </div>
-        </div>
-      </div>
-    </div>
-
+    ${TitileAndHomeButton("PROFILE")}
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
@@ -25,18 +14,18 @@ export default function Profile() {
 
 
       <div class="d-inline-flex align-items-center mt-5">
-          <p id="username" class="text me-2">UserName</p>
+          <p id="username" class="user-profile-text me-2">UserName</p>
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
 
       <div class="d-inline-flex align-items-center">
-          <p class="text me-2">Password</p>
+          <p class="user-profile-text me-2">Password</p>
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
       <div class="d-inline-flex align-items-center">
-          <p class="text me-2">Mail</p>
+          <p class="user-profile-text me-2">Mail</p>
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
     </div>
@@ -56,8 +45,8 @@ export default function Profile() {
     </div>
 
     <div class="d-grid gap-2 col-6 mx-auto mt-5">
-      <button class="btn btn-primary rounded-pill" type="button">Match History</button>
+      <button class="match-history-button btn btn-primary rounded-pill " type="button">Match History</button>
     </div>
 
-  `;
+    `;
 }

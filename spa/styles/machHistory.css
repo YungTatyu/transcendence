@@ -1,20 +1,3 @@
-body {
-  background-color: black !important; /* 背景を黒 */
-  color: white !important; /* テキストを白 */
-}
-
-.title {
-  font-size: 3.5em;
-  font-family: "Turret Road", sans-serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.home-icon {
-  width: 50px;
-  height: 50px;
-}
-
 .history-container {
   margin-top: 8rem;
 }

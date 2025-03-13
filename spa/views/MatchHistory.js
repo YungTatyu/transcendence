@@ -1,21 +1,10 @@
 import stateManager from "../stateManager.js";
+import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
 export default function MatchHistory() {
   return `
 
-    <div class="container text-center">
-      <div class="row">
-        <div class="col align-self-start">
-          <p class="title text-start">MATCH HISTORY</p>
-        </div>
-        
-        <div class="col align-self-end">
-          <div class="position-relative">
-            <img src="./assets/home.png" class="pencil-icon position-absolute top-0 end-0 home-icon">
-          </div>
-        </div>
-      </div>
-    </div>
+    ${TitileAndHomeButton("MATCH HISTORY")}
 
     <div class="container text-center history-container">
       <div class="row row-cols-5 header-row">
