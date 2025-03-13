@@ -87,4 +87,4 @@ class SignupSerializer(serializers.ModelSerializer):
 
 class OTPVerificationSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=20, required=True)
-    otp_token = serializers.CharField(required=True)
+    otp = serializers.CharField(required=True)

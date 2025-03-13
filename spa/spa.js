@@ -20,7 +20,6 @@ const SPA = (() => {
       history.pushState({}, "", path);
     }
     renderRoute();
-    renderRoute();
   };
 
   const renderRoute = () => {

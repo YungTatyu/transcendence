@@ -260,6 +260,10 @@ paths:
                     type: string
                     description: "OTP検証成功メッセージ"
                     example: "OTP verification successful."
+                  userId:
+                    type: integer
+                    description: "ユーザーID"
+                    example: 1
         "400":
           description: "Invalid OTP or username."
           content:
@@ -322,6 +326,10 @@ paths:
                     type: string
                     description: "ログイン成功メッセージ"
                     example: "OTP verification successful."
+                  userId:
+                    type: integer
+                    description: "ユーザーID"
+                    example: 1
         "400":
           description: "Invalid OTP or email."
           content:

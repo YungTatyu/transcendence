@@ -13,3 +13,9 @@
 /*  margin: 5px;*/
 /*  cursor: pointer;*/
 /*}*/
+
+/* ボディ全体をBlackを基本とした色にする */
+body {
+  background-color: black;
+  color: white;
+}
