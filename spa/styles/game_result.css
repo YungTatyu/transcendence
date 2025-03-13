@@ -1,3 +1,16 @@
+.game-win-lose {
+  display: inline-block;
+  transform: rotate(-4deg); /* 文字全体を傾ける */
+  font-size: 20vh; /* 高さの20%をフォントサイズに */
+  width: auto;
+}
+
+.game-result {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20vh; /* 高さの20%をフォントサイズに */
+  width: 100%;
+}
 
 .game-result-left-player-bgc {
   background-color: #0bb0cc;
