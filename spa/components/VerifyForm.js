@@ -40,20 +40,25 @@ export default function VerifyForm(useQr, message, buttonId, otpSize = 6) {
     </div>`;
 
   // フォームが生成された後にイベントリスナーを適用
-  setTimeout(setupOtpInputs, 0);
+  setTimeout(() => setupOtpInputs(buttonId), 0);
 
   return formHtml;
 }
 
 // OTP 入力欄のイベントリスナーを設定
-function setupOtpInputs() {
+function setupOtpInputs(buttonId) {
   const inputs = document.querySelectorAll(".otp-input");
+  const verifyButton = document.getElementById(buttonId);
 
   inputs.forEach((input, index) => {
     input.addEventListener("input", (e) => {
       if (e.target.value.length === 1) {
         if (index < inputs.length - 1) {
           inputs[index + 1].focus(); // 次の入力欄に移動
+        } else {
+          // 最後の入力欄が入力されたらVerify ボタンにフォーカスを移動
+          e.preventDefault();
+          verifyButton.focus();
         }
       }
     });
