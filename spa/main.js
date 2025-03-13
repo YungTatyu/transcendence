@@ -1,17 +1,17 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
+import ApiData, { setupApiData } from "./views/apiPage.js";
 import Game, { setupGame } from "./views/Game.js";
 import Home from "./views/Home.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
+import MatchHistory from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
+import Profile from "./views/Profile.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
-import ApiData, { setupApiData } from "./views/apiPage.js";
-import MatchHistory from "./views/MatchHistory.js";
-import Profile from "./views/Profile.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
