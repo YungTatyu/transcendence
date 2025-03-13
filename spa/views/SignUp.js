@@ -46,6 +46,6 @@ export function setupSignUp() {
 
     stateManager.setState({ qr: data.qr_code });
     stateManager.setState({ username: username });
-    SPA.navigate("/signup-verify");
+    SPA.navigate("/signup/verify");
   });
 }

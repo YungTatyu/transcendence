@@ -29,7 +29,7 @@ export function setupSignUpVerify() {
   const username = stateManager.state.username;
   const qrCode = stateManager.state.qr;
 
-  // INFO /signup-verifyに直接アクセスされた場合に/signupにリダイレクト
+  // INFO /signup/verifyに直接アクセスされた場合に/signupにリダイレクト
   if (qrCode === undefined || username === undefined) {
     SPA.navigate("/signup");
     return;
