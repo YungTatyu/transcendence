@@ -1,0 +1,10 @@
+
+.game-result-left-player-bgc {
+  background-color: #0bb0cc;
+  filter: brightness(70%);
+}
+
+.game-result-right-player-bgc {
+  background-color: #9f2bda;
+  filter: brightness(70%);
+}

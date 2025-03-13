@@ -12,15 +12,18 @@
     crossorigin="anonymous"></script>
   <link href="styles/style.css" rel="stylesheet">
   <link href="styles/game.css" rel="stylesheet">
+  <link href="styles/game_result.css" rel="stylesheet">
 </head>
 
 <body>
-  <h1>YOU WIN</h1>
-  <div class="game-result">
-    <div>12</div>
-    <div>1</div>
+  <div class="text-center">
+    <h1 class="my-4">YOU WIN</h1>
+    <div class="game-result d-flex justify-content-between w-100 py-3">
+      <div class="w-50 text-end game-result-left-player-bgc px-2">12</div>
+      <div class="w-50 text-start game-result-right-player-bgc px-2">1</div>
+    </div>
+    <button type="button" class="btn btn-secondary mt-4">Back To Home</button>
   </div>
-  <button type="button">Back To Home</button>
 </body>
 
 </html>
