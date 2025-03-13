@@ -12,6 +12,8 @@ export default function Home() {
         <button onclick="SPA.navigate('/404')">404へ</button>
         <button onclick="SPA.navigate('/profile')">profileへ</button>
         <button onclick="SPA.navigate('/match-history')">Match Historyへ</button>
+        <button onclick="SPA.navigate('/signup')">signupへ</button>
+        <button onclick="SPA.navigate('/login')">loginへ</button>
         ${Footer({ text: "© 2025 My Company" })}
         <div> store sample</div>
         ${stateManager.state.count}

@@ -1,0 +1,42 @@
+/* フォームのボタンの色をいい感じに */
+.btn-primary {
+  background-color: #0bb0cc;
+  border: none;
+  color: write;
+}
+
+/* フォームボタンhover時に色が変わらないように設定(bootstrapで勝手に色が変わるため) */
+.btn-primary:hover {
+  background-color: #0bb0cc;
+  color: write;
+}
+
+/* ボタンの角を丸く */
+.btn {
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* フォーム全体のボーダーをネオンカラーに */
+.card {
+  border: 6px solid transparent; /* ボーダーを透明にする */
+  border-image: linear-gradient(30deg, #0bb0cc, #ff44ff, #aa00ff);
+  border-image-slice: 1; /* ボーダー全体に適用 */
+  box-shadow: 0 0 15px #0bb0cc;
+  border-radius: 20px;
+  background-color: #d9d9d9;
+  color: white;
+  padding: 40px;
+}
+
+/* 入力フィールドの設定 */
+.form-control {
+  border-radius: 8px;
+}
+
+/* ラベルのフォントサイズと太さを変更 */
+.form-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: black;
+}

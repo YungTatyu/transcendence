@@ -1,5 +1,6 @@
 import logging
 
+import jwt
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
@@ -70,13 +71,15 @@ class OTPLoginVerificationView(APIView):
 
         user = serializer.validated_data["user"]
 
+        # TODO 署名を組み込んだJWTの生成
         tokens = {
-            "access": "tmp",
-            "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+            "access": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
+            # refresh tokenの生成方法も要検討
+            "refresh": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
         }
 
         response = Response(
-            {"message": "OTP verification successful."},
+            {"message": "OTP verification successful.", "userId": user.user_id},
             status=status.HTTP_200_OK,
         )
 
@@ -85,7 +88,7 @@ class OTPLoginVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=True,  # HTTPS のみで送信 (本番環境では必須)
+            secure=False,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
             samesite="Lax",  # CSRF 対策 (Lax か Strict)
             path="/",
         )
@@ -93,7 +96,7 @@ class OTPLoginVerificationView(APIView):
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
-            secure=True,
+            secure=False,  # TODO revert True
             samesite="Lax",
             path="/",
         )
