@@ -21,19 +21,19 @@
 .wl-first {
   z-index: 2;
   transform: translate(-50%, -50%) rotate(-4deg) translate(0, 0);
-  color: #BD3BAB;
+  color: #bd3bab;
 }
 
 .wl-second {
   z-index: 3;
   transform: translate(-50%, -50%) rotate(-4deg) translate(6px, -3px);
-  color: #0BB0CC;
+  color: #0bb0cc;
 }
 
 .wl-third {
   z-index: 1;
   transform: translate(-50%, -50%) rotate(-4deg) translate(12px, -6px);
-  color: #59E6FE;
+  color: #59e6fe;
 }
 
 .game-result {
@@ -43,7 +43,7 @@
   font-style: normal;
   display: flex;
   justify-content: space-between;
-  font-size: 12vh; /* 高さの20%をフォントサイズに */
+  font-size: 12vh;
   width: 0%;
 }
 

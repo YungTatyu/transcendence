@@ -16,5 +16,5 @@ export default function GameResult() {
       </div>
       <button type="button" class="my-5 py-3 px-5 game-result-button">Back To Home</button>
     </div>
-  `
-};
+  `;
+}
