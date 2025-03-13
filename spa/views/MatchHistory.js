@@ -27,8 +27,8 @@ export default function MatchHistory() {
 
     ${TitileAndHomeButton("MATCH HISTORY")}
 
-    <div class="container text-center history-container">
-      <div class="row row-cols-5 header-row">
+    <div class="container text-center match-history-container">
+      <div class="row row-cols-5 match-history-table-header">
         <div class="col">MODE</div>
         <div class="col">PLAYER</div>
         <div class="col">RESULT</div>
@@ -36,7 +36,7 @@ export default function MatchHistory() {
         <div class="col">DATE</div>
       </div>
 
-      <div id="content-row"">
+      <div id="match-history-table"">
         ${MatchHistoryData("1v1", "./assets/42.png", "Player1", "Win", "10-5", "2021-10-10")}
       </div>
     </div>  

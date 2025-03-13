@@ -1,15 +1,15 @@
-.history-container {
+.match-history-container {
   margin-top: 8rem;
 }
 
-.header-row {
+.match-history-table-header {
   font-size: 1.5em;
   font-family: "League Spartan", sans-serif;
   font-weight: 700;
   font-style: normal;
 }
 
-.content-row {
+.match-history-table {
   font-size: 1.5em;
   font-family: "League Spartan", sans-serif;
   font-weight: 400;
