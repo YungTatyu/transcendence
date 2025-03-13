@@ -1,8 +1,39 @@
+.wl-container {
+  position: relative;
+  height: 30%;
+  white-space: nowrap;
+}
+
 .game-win-lose {
+  font-family: "Angkor", serif;
+  font-weight: 400;
+  font-style: normal;
   display: inline-block;
   transform: rotate(-4deg); /* 文字全体を傾ける */
   font-size: 20vh; /* 高さの20%をフォントサイズに */
   width: auto;
+  position: absolute;
+  margin: 0;
+  top: 50%; /* 垂直方向中央に配置 */
+  left: 50%; /* 水平方向中央に配置 */
+}
+
+.wl-first {
+  z-index: 2;
+  transform: translate(-50%, -50%) rotate(-4deg) translate(0, 0);
+  color: #BD3BAB;
+}
+
+.wl-second {
+  z-index: 3;
+  transform: translate(-50%, -50%) rotate(-4deg) translate(6px, -3px);
+  color: #0BB0CC;
+}
+
+.wl-third {
+  z-index: 1;
+  transform: translate(-50%, -50%) rotate(-4deg) translate(12px, -6px);
+  color: #59E6FE;
 }
 
 .game-result {

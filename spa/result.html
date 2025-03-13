@@ -13,12 +13,21 @@
   <link href="styles/style.css" rel="stylesheet">
   <link href="styles/game.css" rel="stylesheet">
   <link href="styles/game_result.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Angkor&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
   <div class="game-result-container text-center vh-100">
-    <h1 class="my-4 game-win-lose my-5">YOU WIN</h1>
-    <div class="game-result d-flex justify-content-between w-100 my-5 py-1">
+    <div class="wl-container my-5">
+      <h1 class="game-win-lose wl-first">YOU WIN</h1>
+      <h1 class="game-win-lose wl-second">YOU WIN</h1>
+      <h1 class="game-win-lose wl-third">YOU WIN</h1>
+    </div>
+    <div class="game-result d-flex justify-content-between w-100 mb-5 py-1">
       <div class="w-50 text-end game-result-left-player-bgc px-5">12</div>
       <div class="w-50 text-start game-result-right-player-bgc px-5">1</div>
     </div>
