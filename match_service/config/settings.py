@@ -143,3 +143,4 @@ CHANNEL_LAYERS = {
 }
 
 TOURNAMENT_API_BASE_URL = "http://tournament:8002"
+GAME_API_BASE_URL = "http://game:8001"
