@@ -37,6 +37,10 @@
 }
 
 .game-result {
+  font-family: "Roboto Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   display: flex;
   justify-content: space-between;
   font-size: 12vh; /* 高さの20%をフォントサイズに */

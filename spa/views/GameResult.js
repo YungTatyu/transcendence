@@ -12,7 +12,7 @@ export default function GameResult() {
       </div>
       <div class="game-result d-flex justify-content-between w-100 mb-5 py-1">
         <div class="w-50 text-end game-result-left-player-bgc px-5">12</div>
-        <div class="w-50 text-start game-result-right-player-bgc px-5">1</div>
+        <div class="w-50 text-start game-result-right-player-bgc px-5">0</div>
       </div>
       <button type="button" class="my-5 py-3 px-5 game-result-button">Back To Home</button>
     </div>
