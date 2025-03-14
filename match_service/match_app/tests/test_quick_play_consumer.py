@@ -34,7 +34,8 @@ async def create_communicator(user_id: int, expect_connected=True):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_websocket_connect():
+async def test_fetch_games_success(mock_fetch_games_success):
+    """正常にQuickPlayのマッチングが完了"""
     comms = []
     for i in range(QuickPlayConsumer.ROOM_CAPACITY):
         user_id = i + 1
@@ -44,6 +45,26 @@ async def test_websocket_connect():
     for communicator in comms:
         res = await communicator.receive_json_from()
         assert res.get("match_id", None) is not None
+        assert res["match_id"] != "None"
+
+    [await communicator.disconnect() for communicator in comms]
+    QuickPlayMatchingManager.clear_waiting_users()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_featch_games_error(mock_fetch_games_error):
+    """gamesエンドポイントを叩く処理が失敗した場合、match_id = "None"が返る"""
+    comms = []
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
+        user_id = i + 1
+        communicator = await create_communicator(user_id)
+        comms.append(communicator)
+
+    for communicator in comms:
+        res = await communicator.receive_json_from()
+        assert res.get("match_id", None) is not None
+        assert res["match_id"] == "None"
 
     [await communicator.disconnect() for communicator in comms]
     QuickPlayMatchingManager.clear_waiting_users()
