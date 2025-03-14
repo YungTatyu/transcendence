@@ -75,6 +75,72 @@ async def test_featch_games_error(mock_fetch_games_error):
 
 
 @pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_user_exit_case(mock_fetch_games_success):
+    """ルームに入ったUserが退出し、別Usersがマッチングするケース"""
+    first_time_user_id = 123
+    communicator = await create_communicator(first_time_user_id)
+    await communicator.disconnect()
+
+    comms = []
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
+        user_id = i + 1
+        communicator = await create_communicator(user_id)
+        comms.append(communicator)
+
+    for communicator in comms:
+        res = await communicator.receive_json_from()
+        assert res.get("match_id", None) is not None
+        assert res["match_id"] != "None"
+        expect_user_id_list = [
+            str(i + 1) for i in range(QuickPlayConsumer.ROOM_CAPACITY)
+        ]
+        assert res["user_id_list"] == expect_user_id_list
+
+    [await communicator.disconnect() for communicator in comms]
+    QuickPlayMatchingManager.clear_waiting_users()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_fetch_games_success_2_groups(mock_fetch_games_success):
+    """２グループマッチングを行う"""
+    comms = []
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
+        user_id = i + 1
+        communicator = await create_communicator(user_id)
+        comms.append(communicator)
+
+    for communicator in comms:
+        res = await communicator.receive_json_from()
+        assert res.get("match_id", None) is not None
+        assert res["match_id"] != "None"
+        expect_user_id_list = [
+            str(i + 1) for i in range(QuickPlayConsumer.ROOM_CAPACITY)
+        ]
+        assert res["user_id_list"] == expect_user_id_list
+
+    comms2 = []
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
+        user_id = i + 1
+        communicator = await create_communicator(user_id)
+        comms2.append(communicator)
+
+    for communicator in comms2:
+        res = await communicator.receive_json_from()
+        assert res.get("match_id", None) is not None
+        assert res["match_id"] != "None"
+        expect_user_id_list = [
+            str(i + 1) for i in range(QuickPlayConsumer.ROOM_CAPACITY)
+        ]
+        assert res["user_id_list"] == expect_user_id_list
+
+    [await communicator.disconnect() for communicator in comms]
+    [await communicator.disconnect() for communicator in comms2]
+    QuickPlayMatchingManager.clear_waiting_users()
+
+
+@pytest.mark.asyncio(loop_scope="function")
 async def test_has_not_jwt():
     """コネクション確立時にJWTを含まないケースはコネクションが確立できない"""
     communicator = WebsocketCommunicator(application, PATH_MATCHING)
