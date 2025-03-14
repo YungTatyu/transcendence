@@ -58,6 +58,7 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
             {
                 "type": "send_quick_play_start_message",
                 "match_id": str(match_id),
+                "user_id_list": user_ids,
             },
         )
         for channel_name in QuickPlayMatchingManager.get_waiting_users().values():
@@ -66,7 +67,10 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
 
     async def send_quick_play_start_message(self, event):
         match_id = event["match_id"]
-        await self.send(text_data=json.dumps({"match_id": match_id}))
+        user_id_list = event["user_id_list"]
+        await self.send(
+            text_data=json.dumps({"match_id": match_id, "user_id_list": user_id_list})
+        )
 
     @database_sync_to_async
     def __create_quick_play_match(self, user_ids: list[int]) -> int:
