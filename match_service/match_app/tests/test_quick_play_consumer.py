@@ -10,7 +10,7 @@ from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 PATH_MATCHING = "/matches/ws/enter-room"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(loop_scope="function")
 class TestQuickPlayConsumer(TestCase):
     def setUp(self):
         QuickPlayMatchingManager.clear_waiting_users()
@@ -35,7 +35,6 @@ class TestQuickPlayConsumer(TestCase):
         assert connected == expect_connected
         return communicator
 
-    @pytest.mark.asyncio(loop_scope="function")
     async def test_websocket_connect(self):
         user_id = 1
 
@@ -44,14 +43,12 @@ class TestQuickPlayConsumer(TestCase):
         # 接続解除
         await communicator.disconnect()
 
-    @pytest.mark.asyncio(loop_scope="function")
     async def test_has_not_jwt(self):
         """コネクション確立時にJWTを含まないケースはコネクションが確立できない"""
         communicator = WebsocketCommunicator(application, PATH_MATCHING)
         connected, _ = await communicator.connect()
         assert not connected
 
-    @pytest.mark.asyncio(loop_scope="function")
     async def test_enter_room_same_user(self):
         """同一ユーザーがマッチングルームに入った場合、コネクションが確立できない"""
         user_id = 1
