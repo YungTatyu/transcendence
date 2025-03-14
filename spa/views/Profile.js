@@ -30,16 +30,16 @@ export default function Profile() {
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
-      ${User_info("d-inline-flex align-items-center mt-5", "UserName")}
-      ${User_info("d-inline-flex align-items-center", "Password")}
-      ${User_info("d-inline-flex align-items-center", "Mail")}
+      ${UserInfo("d-inline-flex align-items-center mt-5", "UserName")}
+      ${UserInfo("d-inline-flex align-items-center", "Password")}
+      ${UserInfo("d-inline-flex align-items-center", "Mail")}
 
      
     </div>
 
     <div class="container text-center mt-4 match-record">
-      ${User_match_history("row-data", "10", "5", "3")}
-      ${User_match_history("row-label", "Wins", "Losses", "Tournament Wins")}
+      ${UserMatchHistory("row-data", "10", "5", "3")}
+      ${UserMatchHistory("row-label", "Wins", "Losses", "Tournament Wins")}
     </div>
 
     <div class="d-grid gap-2 col-4 mx-auto mt-5">
