@@ -6,7 +6,6 @@ from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 from config.asgi import application
 from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
-import sys
 
 PATH_MATCHING = "/matches/ws/enter-room"
 
@@ -59,6 +58,4 @@ class TestQuickPlayConsumer(TestCase):
 
         communicator = await self.create_communicator(user_id)
         await self.create_communicator(user_id, expect_connected=False)
-        print(communicator, file=sys.stderr)
-
         await communicator.disconnect()
