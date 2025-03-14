@@ -46,6 +46,10 @@ async def test_fetch_games_success(mock_fetch_games_success):
         res = await communicator.receive_json_from()
         assert res.get("match_id", None) is not None
         assert res["match_id"] != "None"
+        expect_user_id_list = [
+            str(i + 1) for i in range(QuickPlayConsumer.ROOM_CAPACITY)
+        ]
+        assert res["user_id_list"] == expect_user_id_list
 
     [await communicator.disconnect() for communicator in comms]
     QuickPlayMatchingManager.clear_waiting_users()
