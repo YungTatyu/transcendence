@@ -1,6 +1,6 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
-export function MatchHistoryData(
+function MatchHistoryData(
   mode,
   playerAvatar,
   playerName,

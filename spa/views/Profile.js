@@ -1,6 +1,6 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
-export function UserInfo(className, text) {
+function UserInfo(className, text) {
   return `
     <div class="${className}">
       <p class="user-profile-text me-2">${text}</p>
@@ -9,7 +9,7 @@ export function UserInfo(className, text) {
       `;
 }
 
-export function UserMatchHistory(idName, text1, text2, text3) {
+function UserMatchHistory(idName, text1, text2, text3) {
   return `
    <div id="${idName} " class="row row-cols-3">
         <div class="col">${text1}</div>
