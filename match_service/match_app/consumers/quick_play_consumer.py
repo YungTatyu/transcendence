@@ -18,15 +18,16 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        # INFO すでに同じユーザーがマッチングルームにいる場合、接続を拒否する
-        if self.user_id in QuickPlayMatchingManager.get_waiting_users():
-            await self.close()
-            return
-
-        await self.accept()
-
         lock = await QuickPlayMatchingManager.get_lock()
         async with lock:
+            waiting_user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
+
+            # INFO すでに同じユーザーがマッチングルームにいる場合、接続を拒否する
+            if self.user_id in waiting_user_ids:
+                await self.close()
+                return
+
+            await self.accept()
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
             count = QuickPlayMatchingManager.add_user(self.user_id, self.channel_name)
 
