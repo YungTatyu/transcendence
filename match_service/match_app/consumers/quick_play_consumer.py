@@ -41,6 +41,7 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(
                 self.MATCHING_ROOM, self.channel_name
             )
+            QuickPlayMatchingManager.del_user(self.user_id)
 
     async def __start_quick_play(self):
         user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
