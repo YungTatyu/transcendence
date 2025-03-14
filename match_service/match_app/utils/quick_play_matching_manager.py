@@ -36,6 +36,7 @@ class QuickPlayMatchingManager:
 
     @classmethod
     async def get_lock(cls) -> asyncio.Lock:
-        if cls.__lock is None:
-            cls.__lock = asyncio.Lock()  # イベントループ内で初期化
+        loop = asyncio.get_running_loop()  # 現在のイベントループを取得
+        if cls.__lock is None or cls.__lock._loop != loop:
+            cls.__lock = asyncio.Lock()  # 現在のループで新しいロックを作成
         return cls.__lock
