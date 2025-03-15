@@ -35,7 +35,7 @@ export default function Game() {
         </div>
       </div>
       <h1 class="game-timer display-3 js-game-timer p-0 m-0">60</h1>
-      <h1 class="js-game-error fs-1 text-center text-danger fw-bold text-wrap">Error occured.</h1>
+      <h1 class="js-game-error fs-1 text-center text-danger fw-bold text-wrap"></h1>
       <p class="js-game-error-detail fs-2 text-center text-danger text-wrap"></p>
     </div>
     `;
@@ -168,10 +168,10 @@ const fetchUsername = async (userid) => {
 
 export const setupGame = async () => {
   try {
-    // if (!stateManager.state?.players || !stateManager.state?.matchId) {
-    //   SPA.navigate("/");
-    //   return
-    // }
+    if (!stateManager.state?.players || !stateManager.state?.matchId) {
+      SPA.navigate("/");
+      return
+    }
     const names = await Promise.all(stateManager.state.players.map(async (id) => await fetchUsername(id)));
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
