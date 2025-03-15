@@ -1,11 +1,11 @@
 import json
 
-from django.conf import settings
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
-from match_app.models import Match, MatchParticipant
+from django.conf import settings
 from match_app.client.game_client import GameClient
+from match_app.models import Match, MatchParticipant
+from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 
 
 class QuickPlayConsumer(AsyncWebsocketConsumer):

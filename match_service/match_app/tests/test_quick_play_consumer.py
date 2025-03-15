@@ -2,12 +2,13 @@ from datetime import timedelta
 
 import jwt
 import pytest
+from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
 from config.asgi import application
-from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
+
 from match_app.consumers.quick_play_consumer import QuickPlayConsumer
 from match_app.models import MatchParticipant
-from channels.db import database_sync_to_async
+from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 
 PATH_MATCHING = "/matches/ws/enter-room"
 
