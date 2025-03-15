@@ -50,8 +50,7 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
         res_data = await client.fetch_games(match_id, user_ids)
         if res_data.get("error", None) is not None:
             # 試合レコードと試合参加者レコードを削除
-            # Match.objects.filter(match_id=match_id).delete()
-            # MatchParticipant.objects.filter(match_id=match_id).delete()
+            await self.__rollback_quick_play_match(match_id)
             match_id = None
 
         await self.channel_layer.group_send(
@@ -83,3 +82,8 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
         for user_id in user_ids:
             MatchParticipant.objects.create(match_id=match, user_id=user_id)
         return match.match_id
+
+    @database_sync_to_async
+    def __rollback_quick_play_match(self, match_id: int):
+        Match.objects.filter(match_id=match_id).delete()
+        MatchParticipant.objects.filter(match_id=match_id).delete()
