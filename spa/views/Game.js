@@ -172,11 +172,11 @@ export const setupGame = async () => {
       SPA.navigate("/");
       return
     }
+    gameRender.renderGame();
     const names = await Promise.all(stateManager.state.players.map(async (id) => await fetchUsername(id)));
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
     PlayerActionHandler.registerEventHandler();
-    gameRender.renderGame();
   } catch (error) {
     console.error(error);
     gameRender.renderError("failed to setup game.");
