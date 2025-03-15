@@ -44,6 +44,14 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         ):
             return []
 
+        curr_round = match.round
+        # 初回のroundではない場合、一つ前のroundが終了しているかを確認
+        if curr_round != 1:
+            prev_round = curr_round - 1
+            prev_match = Match.objects.filter(match_id=match_id, round=prev_round)
+            if prev_match.finish_date is None:
+                return []
+
         participant_ids = []
         for participant in MatchParticipant.objects.filter(match_id=match):
             participant_ids.append(participant.user_id)
