@@ -23,6 +23,6 @@ SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
 SPA.route("/game/result", GameResult);
-SPA.route("/game/setup", InitMatch), setupInitMatch;
+SPA.route("/game/setup", InitMatch, setupInitMatch);
 
 SPA.init({ containerId: "app" });

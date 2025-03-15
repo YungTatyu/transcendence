@@ -1,3 +1,4 @@
+import SPA from "../spa.js";
 import stateManager from "../stateManager.js";
 
 // TODO 一旦開発用に仮に作った
@@ -28,14 +29,16 @@ export default function InitMatch() {
 export function setupInitMatch() {
   const formEle = document.querySelector(".js-match-form");
   formEle.addEventListener("submit", (event) => {
-    const matchId = event.target.matchId;
-    const leftPlayerId = event.target.leftPlayerId;
-    const rightPlayerId = event.target.rightPlayerId;
+    const matchId = event.target.matchId.value;
+    const leftPlayerId = event.target.leftPlayerId.value;
+    const rightPlayerId = event.target.rightPlayerId.value;
     if (!matchId || !leftPlayerId || !rightPlayerId) {
       alert("全てのフィールドを入力してください。");
       return;
     }
+    console.log(matchId, leftPlayerId, rightPlayerId);
     stateManager.setState({ matchId: matchId });
     stateManager.setState({ players: [leftPlayerId, rightPlayerId] });
+    SPA.navigate("/game");
   });
 }

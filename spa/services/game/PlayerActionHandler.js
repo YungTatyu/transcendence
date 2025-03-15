@@ -1,3 +1,4 @@
+import stateManager from "../../stateManager.js";
 import WsConnectionManager from "./WsConnectionManager.js";
 
 const PlayerActionHandler = {
@@ -12,7 +13,7 @@ const PlayerActionHandler = {
     const message = JSON.stringify({
       type: "game.paddle_move",
       key: e.code,
-      // userid: userid,
+      userid: stateManager.state?.userId,
     });
     WsConnectionManager.sendMessage(message);
   },
