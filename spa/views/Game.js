@@ -1,5 +1,6 @@
 import config from "../config.js";
 import PlayerActionHandler from "../services/game/PlayerActionHandler.js";
+import stateManager from "../stateManager.js";
 
 const GAME_HEIGHT = 500;
 const GAME_WIDTH = 800;
@@ -129,7 +130,7 @@ export const gameRender = {
     timerEle.textContent = time;
   },
   renderPlayerNames(players = []) {
-    const nameClasses = [".js-left-player", ".js-left-player"];
+    const nameClasses = [".js-left-player", ".js-right-player"];
     nameClasses.forEach((nameClass, index) => {
       const player = players[index];
       const element = document.querySelector(nameClass);
@@ -137,7 +138,7 @@ export const gameRender = {
       if (element && player) {
         element.textContent = player.name;
       } else if (element) {
-        element.textContent = "player";
+        element.textContent = "";
       }
     });
   },
@@ -153,17 +154,7 @@ const fetchUsername = async (userid) => {
 
 export const setupGame = async () => {
   try {
-    // TODO apiを叩くので一旦実行しない
-    // const matchId = 1;
-    // const res = await fetch(`${config.matchService}/matches?matchId=${matchId}`);
-    // if (!res.ok) {
-    //   throw new Error(`failed to fetch match data: ${res.status}`);
-    // }
-    // const match = await res.json().results[0];
-    // const ids = match.participants.map((player) => player.id);
-    // const gamePlayers = await Promise.all(ids.map(async (id) => await fetchUsername(id)));
-    // gameRender.renderPlayerNames(gamePlayers);
-
+    gameRender.renderPlayerNames(stateManager.state?.players);
     PlayerActionHandler.registerEventHandler();
     gameRender.renderGame();
   } catch (error) {
