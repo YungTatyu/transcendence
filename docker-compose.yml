@@ -189,6 +189,7 @@ services:
       - app_network
     depends_on:
       - match_db
+      - match_redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
 
@@ -200,6 +201,12 @@ services:
       - app_network
     volumes:
       - match_db_data:/var/lib/postgresql/data
+
+  match_redis:
+    image: redis:alpine
+    container_name: match_redis
+    networks:
+      - app_network
 
   match_proxy:
     build: ./waf_proxy_service
