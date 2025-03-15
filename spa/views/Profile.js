@@ -1,25 +1,36 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
-function UserInfo(className, text) {
-  return `
-    <div class="${className}">
-      <p class="user-profile-text me-2">${text}</p>
-      <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
-    </div>
-      `;
-}
-
-function UserMatchHistory(idName, text1, text2, text3) {
-  return `
-   <div id="${idName} " class="row row-cols-3">
-        <div class="col">${text1}</div>
-        <div class="col">${text2}</div>
-        <div class="col">${text3}</div>
-      </div>
-      `;
-}
-
 export default function Profile() {
+  function UserInfo(className, text) {
+    return `
+      <div class="${className}">
+        <p class="user-profile-text me-2">${text}</p>
+        <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
+      </div>
+        `;
+  }
+
+  function UserMatchHistory(idName) {
+    //APIから取得する
+    const wins="5";
+    const losses="1";
+    const t_wins="1";
+
+
+    return `
+      <div id="row-data " class="row row-cols-3">
+          <div class="col">${wins}</div>
+          <div class="col">${losses}</div>
+          <div class="col">${t_wins}</div>
+      </div>
+      <div id="row-label " class="row row-cols-3">
+          <div class="col">"Wins"</div>
+          <div class="col">"Losses"</div>
+          <div class="col">"Tournament Wins"</div>
+      </div>
+        `;
+  }
+
   return `
 
     ${TitileAndHomeButton("PROFILE")}
@@ -38,8 +49,7 @@ export default function Profile() {
     </div>
 
     <div class="container text-center mt-4 match-record">
-      ${UserMatchHistory("row-data", "10", "5", "3")}
-      ${UserMatchHistory("row-label", "Wins", "Losses", "Tournament Wins")}
+      ${UserMatchHistory()}
     </div>
 
     <div class="d-grid gap-2 col-4 mx-auto mt-5">
