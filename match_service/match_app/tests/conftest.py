@@ -101,7 +101,7 @@ def __insert_only_one_round_finished_tournament() -> dict[str, Match]:
 @pytest.fixture
 def mock_fetch_games_success(mocker):
     """
-    /gamesエンドポイントを叩く処理をモック
+    /gamesエンドポイントを叩く処理(成功)をモック
     """
 
     return mocker.patch(
@@ -113,7 +113,7 @@ def mock_fetch_games_success(mocker):
 @pytest.fixture
 def mock_fetch_games_error(mocker):
     """
-    /gamesエンドポイントを叩く処理をモック
+    /gamesエンドポイントを叩く処理(失敗)をモック
     """
 
     return mocker.patch(

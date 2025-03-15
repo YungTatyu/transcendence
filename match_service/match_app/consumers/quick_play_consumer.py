@@ -9,6 +9,8 @@ from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 
 
 class QuickPlayConsumer(AsyncWebsocketConsumer):
+    """QuickPlayモードのマッチング処理を行うConsumer"""
+
     MATCHING_ROOM = "matching_room"
     ROOM_CAPACITY = 2
 
@@ -46,11 +48,14 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
     async def __start_quick_play(self):
         user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
         match_id = await self.__create_quick_play_match(user_ids)
+
+        # GameAPIを叩き、ゲーム開始の準備を行う
         client = GameClient(settings.GAME_API_BASE_URL)
         res_data = await client.fetch_games(match_id, user_ids)
         if res_data.get("error", None) is not None:
-            # 試合レコードと試合参加者レコードを削除
+            # INFO 非同期関数なのでDjangoのトランザクション処理は難しそうでした
             await self.__rollback_quick_play_match(match_id)
+            # INFO 内部エラーが起きたときはユーザーに`match_id: "None"`を返す
             match_id = None
 
         await self.channel_layer.group_send(
@@ -85,5 +90,8 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __rollback_quick_play_match(self, match_id: int):
+        """
+        __create_quick_play_matchで作成したレコードを削除する処理
+        """
         Match.objects.filter(match_id=match_id).delete()
         MatchParticipant.objects.filter(match_id=match_id).delete()
