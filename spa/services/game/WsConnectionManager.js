@@ -42,6 +42,7 @@ const wsEventHandler = {
   },
   handleError(message) {
     console.error("WebSocket error:", message);
+    gameRender.renderError("failed to establish game connection.");
   },
 };
 
@@ -53,6 +54,7 @@ const WsConnectionManager = {
     this.socket = new WebSocket(
       `ws://${config.gameService}/games/ws/enter-room/${matchId}`,
     );
+    this.registerEventHandler();
   },
 
   disconnect() {
@@ -72,10 +74,6 @@ const WsConnectionManager = {
   },
 
   registerEventHandler() {
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.error("Socket is not open. Unable to send message.");
-      return;
-    }
     this.socket.onopen = this.eventHandler.handleOpen.bind(this.eventHandler);
     this.socket.onmessage = this.eventHandler.handleMessage.bind(
       this.eventHandler,
