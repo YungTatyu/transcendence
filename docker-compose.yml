@@ -189,6 +189,7 @@ services:
       - app_network
     depends_on:
       - match_db
+      - match_redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
 
