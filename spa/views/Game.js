@@ -35,7 +35,8 @@ export default function Game() {
         </div>
       </div>
       <h1 class="game-timer display-3 js-game-timer p-0 m-0">60</h1>
-      <h1 class="js-game-error display-3 text-center text-danger fw-bold m-5">Error happend</h1>
+      <h1 class="js-game-error fs-1 text-center text-danger fw-bold text-wrap">Error occured.</h1>
+      <p class="js-game-error-detail fs-2 text-center text-danger text-wrap"></p>
     </div>
     `;
   }
@@ -145,6 +146,16 @@ export const gameRender = {
       }
     });
   },
+  renderError(errMessage) {
+    const errEle = document.querySelector(".js-game-error");
+    const errDetail = document.querySelector(".js-game-error-detail");
+    if (errEle) {
+      errEle.textContent = "Error occured.";
+    }
+    if (errDetail) {
+      errDetail.textContent = errMessage;
+    }
+  }
 };
 
 const fetchUsername = async (userid) => {
@@ -157,10 +168,10 @@ const fetchUsername = async (userid) => {
 
 export const setupGame = async () => {
   try {
-    if (!stateManager.state?.players || !stateManager.state?.matchId) {
-      SPA.navigate("/");
-      return
-    }
+    // if (!stateManager.state?.players || !stateManager.state?.matchId) {
+    //   SPA.navigate("/");
+    //   return
+    // }
     const names = await Promise.all(stateManager.state.players.map(async (id) => await fetchUsername(id)));
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
@@ -168,5 +179,6 @@ export const setupGame = async () => {
     gameRender.renderGame();
   } catch (error) {
     console.error(error);
+    gameRender.renderError("failed to setup game.");
   }
 };
