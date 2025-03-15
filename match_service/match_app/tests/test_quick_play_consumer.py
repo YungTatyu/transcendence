@@ -6,6 +6,8 @@ from channels.testing import WebsocketCommunicator
 from config.asgi import application
 from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 from match_app.consumers.quick_play_consumer import QuickPlayConsumer
+from match_app.models import MatchParticipant
+from channels.db import database_sync_to_async
 
 PATH_MATCHING = "/matches/ws/enter-room"
 
@@ -30,6 +32,11 @@ async def create_communicator(user_id: int, expect_connected=True):
     connected, _ = await communicator.connect()
     assert connected == expect_connected
     return communicator
+
+
+@database_sync_to_async
+def check_match_participant_exist(user_id: int) -> bool:
+    return MatchParticipant.objects.filter(user_id=user_id).exists()
 
 
 @pytest.mark.asyncio(loop_scope="function")
@@ -58,10 +65,13 @@ async def test_fetch_games_success(mock_fetch_games_success):
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 async def test_featch_games_error(mock_fetch_games_error):
-    """gamesエンドポイントを叩く処理が失敗した場合、match_id = "None"が返る"""
+    """
+    gamesエンドポイントを叩く処理が失敗した場合、match_id = "None"が返る
+    失敗した場合、試合レコードと試合参加者レコードは作成されない
+    """
     comms = []
-    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
-        user_id = i + 1
+    user_ids = [(i + 10) for i in range(QuickPlayConsumer.ROOM_CAPACITY)]
+    for user_id in user_ids:
         communicator = await create_communicator(user_id)
         comms.append(communicator)
 
@@ -69,6 +79,11 @@ async def test_featch_games_error(mock_fetch_games_error):
         res = await communicator.receive_json_from()
         assert res.get("match_id", None) is not None
         assert res["match_id"] == "None"
+
+    for user_id in user_ids:
+        #  試合参加者レコードが存在しないことを確認(rollbackされているか)
+        is_exist = await check_match_participant_exist(user_id)
+        assert not is_exist
 
     [await communicator.disconnect() for communicator in comms]
     QuickPlayMatchingManager.clear_waiting_users()
