@@ -12,16 +12,15 @@ export default function Profile() {
 
   function UserMatchHistory(idName) {
     //APIから取得する
-    const wins="5";
-    const losses="1";
-    const t_wins="1";
-
+    const wins = "5";
+    const losses = "1";
+    const tWins = "1";
 
     return `
       <div id="row-data " class="row row-cols-3">
           <div class="col">${wins}</div>
           <div class="col">${losses}</div>
-          <div class="col">${t_wins}</div>
+          <div class="col">${tWins}</div>
       </div>
       <div id="row-label " class="row row-cols-3">
           <div class="col">"Wins"</div>

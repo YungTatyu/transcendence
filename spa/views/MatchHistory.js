@@ -1,16 +1,14 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
 export default function MatchHistory() {
-  
-
   function MatchHistoryData() {
-    const mode="QuickPlay";
-    const playerAvatar="/assets/42.png";
-    const playerName="playerA";
-    const result="WIN";
-    const score="1-11";
-    const date="2025/01/01";
-    
+    const mode = "QuickPlay";
+    const playerAvatar = "/assets/42.png";
+    const playerName = "playerA";
+    const result = "WIN";
+    const score = "1-11";
+    const date = "2025/01/01";
+
     return `
       <div class="row row-cols-5 mt-2">
         <div class="col">${mode} </div>
