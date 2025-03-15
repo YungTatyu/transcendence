@@ -12,7 +12,7 @@ const PlayerActionHandler = {
     }
     const message = JSON.stringify({
       type: "game.paddle_move",
-      key: e.code,
+      key: event.code,
       userid: stateManager.state?.userId,
     });
     WsConnectionManager.sendMessage(message);
