@@ -12,8 +12,11 @@ class GameClient:
         """
         self.base_url = base_url
 
-    async def fetch_games(self, match_id: int, user_ids: list[int]):
-        """ """
+    async def fetch_games(self, match_id: int, user_ids: list[int]) -> dict:
+        """
+        非同期でGameAPIの/gamesエンドポイントを叩き、Jsonデータを返す
+        ネットワークエラー等の場合、{"error": "Internal Server Error"}を返す
+        """
         endpoint = "games"
         url = f"{self.base_url}/{endpoint}"
 
