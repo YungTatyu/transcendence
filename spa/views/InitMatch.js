@@ -3,7 +3,7 @@ import stateManager from "../stateManager.js";
 
 // TODO 一旦開発用に仮に作った
 export default function InitMatch() {
-  alert(`your userid: ${stateManager?.userId}`);
+  alert(`your userid: ${stateManager.state?.userId}`);
   return `
     <div class="container mt-5">
       <h2 class="mb-4">試合情報入力フォーム</h2>
