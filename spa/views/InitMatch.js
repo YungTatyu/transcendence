@@ -37,12 +37,15 @@ export function setupInitMatch() {
       alert("全てのフィールドを入力してください。");
       return;
     }
-    await fetch(`${config.gameService}/games, {
-      method: POST,
+    res = await fetch(`${config.gameService}/games`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringfy({
         matchId: matchId,
         userIdList: [leftPlayerId, rightPlayerId],
-      })
+      }),
     });
     stateManager.setState({ matchId: matchId });
     stateManager.setState({ players: [leftPlayerId, rightPlayerId] });
