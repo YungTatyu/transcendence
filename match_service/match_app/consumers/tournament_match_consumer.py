@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
@@ -54,7 +55,7 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
             tournament_match_waiter.del_user(self.user_id)
 
     @staticmethod
-    async def broadcast_start_match(match_id: int, user_ids: list[int]):
+    async def broadcast_start_match(match_id: Optional[int], user_ids: list[int]):
         channel_layer = get_channel_layer()
         group_name = TournamentMatchConsumer.get_group_name(match_id)
         await channel_layer.group_send(

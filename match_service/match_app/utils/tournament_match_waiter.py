@@ -3,6 +3,7 @@ from match_app.utils.task_timer import TaskTimer
 from asgiref.sync import async_to_sync
 from match_app.models import Match, MatchParticipant
 from channels.db import database_sync_to_async
+from match_app.views.match_finish_view import MatchFinishView
 
 
 class TournamentMatchWaiter:
@@ -80,16 +81,30 @@ class TournamentMatchWaiter:
             TournamentMatchConsumer,
         )
 
+        match_id = self.match_id
+
         if len(self.__connected_user_ids) == 1:
-            # TODO DBにレコードを挿入し、/tournaments/finish-matchエンドポイントを叩く
-            return
+            self.__handle_tournament_match_bye()
+            match_id = None
 
         await TournamentMatchConsumer.broadcast_start_match(
-            self.match_id, self.connected_user_ids
+            match_id, self.connected_user_ids
         )
-        # 現在いるユーザーのみにSendする
         TournamentMatchWaiter.delete(self.match_id)
-        self.cancel_timer()
+
+    def __handle_tournament_match_bye(self):
+        results = []
+        winner_user_id = list(self.__connected_user_ids)[0]
+        for user_id in self.__user_ids:
+            score = 1 if user_id == winner_user_id else 0
+            results.append({"userId": user_id, "score": score})
+        MatchFinishView.update_match_data(self.match_id, results)
+
+        match = Match.objects.filter(match_id=self.match_id).first()
+        MatchFinishView.register_winner_in_parent_match(match, results)
+        err_message = MatchFinishView.send_match_result_to_tournament(match)
+        if err_message is not None:
+            MatchFinishView.rollback_match_data(self.match_id, match, results)
 
     def __fetch_user_ids(self, match_id: int) -> set[int]:
         participants = MatchParticipant.objects.filter(match_id=match_id)
