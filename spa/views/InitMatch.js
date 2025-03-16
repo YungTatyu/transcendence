@@ -30,6 +30,7 @@ export default function InitMatch() {
 export function setupInitMatch() {
   const formEle = document.querySelector(".js-match-form");
   formEle.addEventListener("submit", async (event) => {
+    event.preventDefault();
     const matchId = event.target.matchId.value;
     const leftPlayerId = event.target.leftPlayerId.value;
     const rightPlayerId = event.target.rightPlayerId.value;
@@ -37,18 +38,22 @@ export function setupInitMatch() {
       alert("全てのフィールドを入力してください。");
       return;
     }
-    res = await fetch(`${config.gameService}/games`, {
+    const res = await fetch(`${config.gameService}/games`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringfy({
+      body: JSON.stringify({
         matchId: matchId,
         userIdList: [leftPlayerId, rightPlayerId],
       }),
     });
     stateManager.setState({ matchId: matchId });
     stateManager.setState({ players: [leftPlayerId, rightPlayerId] });
+    if (res.status >= 400) {
+      console.error(`error status: ${res.status}`);
+      return
+    }
     SPA.navigate("/game");
   });
 }
