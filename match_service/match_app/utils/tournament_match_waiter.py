@@ -1,7 +1,8 @@
 from typing import Optional
 from match_app.utils.task_timer import TaskTimer
-from match_app.models import MatchParticipant
 from asgiref.sync import async_to_sync
+from match_app.models import Match, MatchParticipant
+from channels.db import database_sync_to_async
 
 
 class TournamentMatchWaiter:
@@ -84,9 +85,41 @@ class TournamentMatchWaiter:
             self.match_id, self.connected_user_ids
         )
         # 現在いるユーザーのみにSendする
+        TournamentMatchWaiter.delete(self.match_id)
         self.cancel_timer()
 
     def __fetch_user_ids(self, match_id: int) -> set[int]:
         participants = MatchParticipant.objects.filter(match_id=match_id)
         user_ids = {participant.user_id for participant in participants}
         return user_ids
+
+    @staticmethod
+    @database_sync_to_async
+    def is_invalid_match_id(match_id: int, user_id) -> bool:
+        """match_idが正しいかを確認"""
+        #  既に登録済みで、開始前のmatch_idは正常
+        if TournamentMatchWaiter.search(match_id):
+            return False
+
+        match = Match.objects.filter(match_id=match_id)
+
+        if (
+            not match  # 試合が存在しない
+            or match.finish_date is not None  # 試合が既に終了している
+            or match.mode != "Tournament"  # 試合がTournamentの試合ではない
+        ):
+            return True
+
+        curr_round = match.round
+        # 初回のroundではない場合、一つ前のroundが終了しているかを確認
+        if curr_round != 1:
+            prev_round = curr_round - 1
+            prev_match = Match.objects.filter(match_id=match_id, round=prev_round)
+            if prev_match.finish_date is None:
+                return True
+
+        # match_idに対応する試合にuser_idが参加者として登録されているか
+        exist = MatchParticipant.objects.filter(
+            match_id=match, user_id=user_id
+        ).exists()
+        return not exist
