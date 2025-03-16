@@ -1,5 +1,6 @@
 from typing import Optional
 from match_app.utils.task_timer import TaskTimer
+from match_app.models import MatchParticipant
 
 
 class TournamentMatchWaiter:
@@ -10,7 +11,8 @@ class TournamentMatchWaiter:
     def __init__(self, match_id: int):
         self.__match_id = match_id
         self.__task_timer = None
-        # TODO match_idを用いてDB内からuser_idsを取得する処理
+        self.__user_ids: set[int] = self.__fetch_user_ids(match_id)
+        self.__connected_user_ids: set[int] = set()
         # TODO 強制処理タイマーセット
 
     @classmethod
@@ -50,3 +52,8 @@ class TournamentMatchWaiter:
 
     async def handle_fallback_tournament_match(self):
         pass
+
+    def __fetch_user_ids(self, match_id: int) -> set[int]:
+        participants = MatchParticipant.objects.filter(match_id=match_id)
+        user_ids = {participant.user_id for participant in participants}
+        return user_ids
