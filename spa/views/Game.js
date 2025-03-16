@@ -166,7 +166,8 @@ const fetchUsername = async (userid) => {
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
   }
-  return await res.json().username;
+  const data = await res.json();
+  return data.username;
 };
 
 export const setupGame = async () => {
@@ -177,7 +178,6 @@ export const setupGame = async () => {
     }
     gameRender.renderGame();
     const names = await Promise.all(stateManager.state.players.map(async (id) => await fetchUsername(id)));
-    console.log(names);
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
     PlayerActionHandler.registerEventHandler();
