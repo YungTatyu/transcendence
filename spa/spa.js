@@ -13,20 +13,20 @@ const SPA = (() => {
     routes[path] = { view, setup };
   };
 
-  const navigate = (path, replace = false) => {
+  const navigate = (path, params = {}, replace = false) => {
     if (replace) {
       history.replaceState({}, "", path);
     } else {
       history.pushState({}, "", path);
     }
-    renderRoute();
+    renderRoute(params);
   };
 
-  const renderRoute = () => {
+  const renderRoute = (params) => {
     const path = window.location.pathname;
     const route = routes[path] || routes["/404"];
     if (route && container) {
-      container.innerHTML = route.view();
+      container.innerHTML = route.view(params);
       if (route.setup) {
         route.setup();
       }
