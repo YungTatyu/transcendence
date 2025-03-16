@@ -26,19 +26,20 @@ class MatchFinishView(APIView):
         results: list[dict] = serializer.validated_data["results"]
         match = Match.objects.filter(match_id=match_id).first()
 
-        finish_date = self.__update_match_data(match_id, results)
+        finish_date = self.update_match_data(match_id, results)
         if match.mode == "Tournament":
-            self.__register_winner_in_parent_match(match, results)
-            err_message = self.__send_match_result_to_tournament(match)
+            self.register_winner_in_parent_match(match, results)
+            err_message = self.send_match_result_to_tournament(match)
             if err_message is not None:
-                self.__rollback_match_data(match_id, match, results)
+                self.rollback_match_data(match_id, match, results)
                 return Response(
                     {"error": err_message}, status=HTTP_500_INTERNAL_SERVER_ERROR
                 )
 
         return Response({"finishDate": str(finish_date)}, status=HTTP_200_OK)
 
-    def __update_match_data(self, match_id: int, results: list[dict]) -> now:
+    @staticmethod
+    def update_match_data(match_id: int, results: list[dict]) -> now:
         # MatchParticipantのscoreをユーザーそれぞれに対して更新
         for result in results:
             user_id = result["userId"]
@@ -56,7 +57,8 @@ class MatchFinishView(APIView):
 
         return finish_date
 
-    def __register_winner_in_parent_match(self, match: Match, results: list[dict]):
+    @staticmethod
+    def register_winner_in_parent_match(match: Match, results: list[dict]):
         parent_match = match.parent_match_id
         if parent_match is None:  # 親試合が無い == 決勝戦
             return
@@ -64,7 +66,8 @@ class MatchFinishView(APIView):
         winner_user_id = max(results, key=lambda x: x["score"])["userId"]
         MatchParticipant.objects.create(match_id=parent_match, user_id=winner_user_id)
 
-    def __rollback_match_data(self, match_id: int, match: Match, results: list[dict]):
+    @staticmethod
+    def rollback_match_data(match_id: int, match: Match, results: list[dict]):
         """
         __update_match_data と __register_winner_in_parent_matchのロールバックを実行
         """
@@ -87,7 +90,8 @@ class MatchFinishView(APIView):
             match_id=parent_match, user_id=winner_user_id
         ).delete()
 
-    def __send_match_result_to_tournament(self, match: Match) -> Optional[str]:
+    @staticmethod
+    def send_match_result_to_tournament(match: Match) -> Optional[str]:
         """/tournaments/finish-matchを叩き、試合終了を通知"""
         client = TournamentClient(settings.TOURNAMENT_API_BASE_URL)
         response = client.finish_match(match.tournament_id, match.round)
