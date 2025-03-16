@@ -37,13 +37,12 @@ const wsEventHandler = {
       } else if (type === "game.finish.message" && gameMessage === "gameover") {
         const results = parsedMessage.results;
         const highestScore = results.reduce((max, r) => {
-          const score = parseInt(r.score, 10);
-          return score > max ? score : max;
+          return r.score > max ? r.score : max;
         }, 0);
         const leftScore = results[0]?.score;
         const rightScore = results[1]?.score;
         const userId = stateManager.state?.userid;
-        const win = userId && (results.some(r => r.userId === userId.toString() && r.score === highestScore.toString()));
+        const win = userId && (results.some(r => r.userId == userId && r.score === highestScore));
 
         WsConnectionManager.disconnect();
         PlayerActionHandler.cleanup();
