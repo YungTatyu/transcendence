@@ -1,3 +1,4 @@
+import config from "../config.js";
 import SPA from "../spa.js";
 import stateManager from "../stateManager.js";
 
@@ -28,7 +29,7 @@ export default function InitMatch() {
 
 export function setupInitMatch() {
   const formEle = document.querySelector(".js-match-form");
-  formEle.addEventListener("submit", (event) => {
+  formEle.addEventListener("submit", async (event) => {
     const matchId = event.target.matchId.value;
     const leftPlayerId = event.target.leftPlayerId.value;
     const rightPlayerId = event.target.rightPlayerId.value;
@@ -36,7 +37,13 @@ export function setupInitMatch() {
       alert("全てのフィールドを入力してください。");
       return;
     }
-    console.log(matchId, leftPlayerId, rightPlayerId);
+    await fetch(`${config.gameService}/games, {
+      method: POST,
+      body: JSON.stringfy({
+        matchId: matchId,
+        userIdList: [leftPlayerId, rightPlayerId],
+      })
+    });
     stateManager.setState({ matchId: matchId });
     stateManager.setState({ players: [leftPlayerId, rightPlayerId] });
     SPA.navigate("/game");
