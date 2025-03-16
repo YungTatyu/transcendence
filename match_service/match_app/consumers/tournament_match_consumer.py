@@ -20,8 +20,7 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         self.match_id = int(self.scope["url_route"]["kwargs"]["matchId"])
         self.room_group_name = TournamentMatchConsumer.get_group_name(self.match_id)
 
-        participant_ids = self.__select_match_participant_ids(self.match_id)
-        if self.user_id not in participant_ids:
+        if self.__is_invalid_match_id(self.match_id, self.user_id):
             await self.close(code=4400)
             return
 
@@ -34,7 +33,8 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         pass
 
     @database_sync_to_async
-    def __select_match_participant_ids(self, match_id: int) -> list[int]:
+    def __is_invalid_match_id(self, match_id: int, user_id) -> bool:
+        """match_idが正しいかを確認"""
         match = Match.objects.filter(match_id=match_id)
 
         if (
@@ -42,7 +42,7 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
             or match.finish_date is not None  # 試合が既に終了している
             or match.mode != "Tournament"  # 試合がTournamentの試合ではない
         ):
-            return []
+            return True
 
         curr_round = match.round
         # 初回のroundではない場合、一つ前のroundが終了しているかを確認
@@ -50,9 +50,10 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
             prev_round = curr_round - 1
             prev_match = Match.objects.filter(match_id=match_id, round=prev_round)
             if prev_match.finish_date is None:
-                return []
+                return True
 
-        participant_ids = []
-        for participant in MatchParticipant.objects.filter(match_id=match):
-            participant_ids.append(participant.user_id)
-        return participant_ids
+        # match_idに対応する試合にuser_idが参加者として登録されているか
+        exist = MatchParticipant.objects.filter(
+            match_id=match, user_id=user_id
+        ).exists()
+        return not exist
