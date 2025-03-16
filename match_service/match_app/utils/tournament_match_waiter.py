@@ -38,6 +38,8 @@ class TournamentMatchWaiter:
 
     @classmethod
     def clear(cls):
+        for tournament_match in cls.__tournament_match_waiter_dict.values():
+            tournament_match.cancel_timer()
         cls.__tournament_match_waiter_dict.clear()
 
     @property
