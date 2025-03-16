@@ -1,4 +1,5 @@
 import config from "../../config.js";
+import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { gameRender } from "../../views/Game.js";
 
@@ -14,7 +15,7 @@ const startTimer = (endTime) => {
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log("Connected to match");
+    console.log("Connected to game");
   },
   handleMessage(message) {
     try {
@@ -51,8 +52,9 @@ const WsConnectionManager = {
   eventHandler: wsEventHandler,
 
   connect(matchId) {
+    // TODO: uriを変更する
     this.socket = new WebSocket(
-      `ws://${config.gameService}/games/ws/enter-room/${matchId}`,
+      `${config.gameRealtimeService}/games/ws/enter-room/${matchId}/${stateManager.state?.userId}`,
     );
     this.registerEventHandler();
   },

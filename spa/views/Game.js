@@ -159,7 +159,7 @@ export const gameRender = {
 };
 
 const fetchUsername = async (userid) => {
-  const res = await fetch(`${config.userService}/users?userid=${userid}`);
+  const res = await fetch(`${config.userService}/users?userId=${userid}`);
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
   }
