@@ -11,16 +11,12 @@ export default function Profile() {
   }
 
   function UserMatchHistory(idName) {
-    //APIから取得する
-    const wins = "5";
-    const losses = "1";
-    const tWins = "1";
-
+    //Loadingの部分はAPIから取得した値で上書きする
     return `
       <div id="row-data " class="row row-cols-3">
-          <div class="col">${wins}</div>
-          <div class="col">${losses}</div>
-          <div class="col">${tWins}</div>
+          <div class="col">loading...</div>
+          <div class="col">loading...</div>
+          <div class="col">loading...</div>
       </div>
       <div id="row-label " class="row row-cols-3">
           <div class="col">"Wins"</div>

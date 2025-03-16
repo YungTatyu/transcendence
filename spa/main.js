@@ -2,6 +2,7 @@ import SPA from "./spa.js";
 window.SPA = SPA;
 
 import Game, { setupGame } from "./views/Game.js";
+import GameResult from "./views/GameResult.js";
 import Home from "./views/Home.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
@@ -24,5 +25,6 @@ SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
+SPA.route("/game/result", GameResult);
 
 SPA.init({ containerId: "app" });
