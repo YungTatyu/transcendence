@@ -72,10 +72,17 @@ class TournamentMatchWaiter:
         """
         トーナメント試合に参加者全員が揃わない場合に強制的行われる処理
         """
+        from match_app.consumers.tournament_match_consumer import (
+            TournamentMatchConsumer,
+        )
+
         if len(self.__connected_user_ids) == 1:
             # TODO DBにレコードを挿入し、/tournaments/finish-matchエンドポイントを叩く
             return
 
+        await TournamentMatchConsumer.broadcast_start_match(
+            self.match_id, self.connected_user_ids
+        )
         # 現在いるユーザーのみにSendする
         self.cancel_timer()
 

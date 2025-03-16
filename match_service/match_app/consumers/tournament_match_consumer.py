@@ -1,6 +1,9 @@
+import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from match_app.models import Match, MatchParticipant
 from channels.db import database_sync_to_async
+from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
+from channels.layers import get_channel_layer
 
 
 class TournamentMatchConsumer(AsyncWebsocketConsumer):
@@ -27,10 +30,40 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         # WebSocket グループに参加
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
-        pass
+
+        # TournamentMatchWaiterを取得し、登録されていない場合、登録する
+        tournament_match_waiter = TournamentMatchWaiter.search(self.match_id)
+        if tournament_match_waiter is None:
+            tournament_match_waiter = TournamentMatchWaiter.register(self.match_id)
+
+        tournament_match_waiter.add_user(self.user_id)
+
+        # 参加者全員が揃った
+        if tournament_match_waiter.is_ready:
+            tournament_match_waiter.cancel_timer()
+            await TournamentMatchConsumer.broadcast_start_match(
+                self.match_id, tournament_match_waiter.connected_user_ids
+            )
+            TournamentMatchWaiter.delete(self.match_id)
 
     async def disconnect(self, _):
         pass
+
+    @staticmethod
+    async def broadcast_start_match(match_id: int, user_ids: list[int]):
+        channel_layer = get_channel_layer()
+        group_name = TournamentMatchConsumer.get_group_name(match_id)
+        await channel_layer.group_send(
+            group_name,
+            {
+                "type": "send_start_game",
+                "match_id": str(match_id),
+                "user_id_list": user_ids,
+            },
+        )
+
+    async def send_start_game(self, event):
+        await self.send(text_data=json.dumps({"match_id": event["match_id"]}))
 
     @database_sync_to_async
     def __is_invalid_match_id(self, match_id: int, user_id) -> bool:
