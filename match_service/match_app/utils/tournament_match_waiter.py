@@ -30,6 +30,8 @@ class TournamentMatchWaiter:
     @classmethod
     def delete(cls, match_id: int) -> bool:
         if cls.search(match_id):
+            tournament_match_waiter = cls.__tournament_match_waiter_dict[match_id]
+            tournament_match_waiter.cancel_timer()
             del cls.__tournament_match_waiter_dict[match_id]
             return True
         return False
@@ -54,7 +56,6 @@ class TournamentMatchWaiter:
         self.__connected_user_ids.add(user_id)
 
     def del_user(self, user_id):
-        self.cancel_timer()
         self.__connected_user_ids.remove(user_id)
 
     def cancel_timer(self):
