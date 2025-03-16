@@ -24,7 +24,11 @@ const wsEventHandler = {
       const gameMessage = parsedMessage.message;
       if (type === "game.message" && gameMessage === "update") {
         const updatedState = parsedMessage.data.state;
-        gameRender.renderGame(updatedState);
+        gameRender.renderGame({
+          ball: updatedState.ball,
+          leftPlayer: updatedState.left_player,
+          rightPlayer: updatedState.right_player,
+        });
       } else if (type === "game.message" && gameMessage === "timer") {
         const endTime = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
         startTimer(endTime);
