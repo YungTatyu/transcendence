@@ -13,7 +13,7 @@ const SPA = (() => {
     routes[path] = { view, setup };
   };
 
-  const navigate = (path, params = {}, replace = false) => {
+  const navigate = (path, params = null, replace = false) => {
     if (replace) {
       history.replaceState({}, "", path);
     } else {
