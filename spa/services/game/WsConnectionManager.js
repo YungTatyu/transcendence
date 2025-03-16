@@ -1,4 +1,5 @@
 import config from "../../config.js";
+import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { gameRender } from "../../views/Game.js";
@@ -37,6 +38,21 @@ const wsEventHandler = {
         alert(
           `game·over:\n${results.map((r) => `User ${r.userId}: ${r.score}`).join("\n")}`,
         );
+
+        const highestScore = results.reduce((max, r) => {
+          const score = parseInt(r.score, 10);
+          return score > max ? score : max;
+        }, 0);
+        const leftScore = results[0]?.score;
+        const rightScore = results[1]?.score;
+        const userId = stateManager.state?.userid;
+        const win = userId && (results.some(r => r.userId === userId.toString() && r.score === highestScore.toString()));
+
+        SPA.navigate("/game/result", {
+          left: leftScore,
+          right: rightScore,
+          win: win
+        });
       }
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
