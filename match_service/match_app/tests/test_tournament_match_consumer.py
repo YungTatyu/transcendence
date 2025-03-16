@@ -38,7 +38,7 @@ async def create_communicator(user_id: int, match_id: int, expect_connected=True
 
 @database_sync_to_async
 def insert_tournament_match(
-    user_id_list, mode="Tournament", tournament_id=1, parent_match=None, round=1
+    user_id_list, mode="Tournament", tournament_id=123456, parent_match=None, round=1
 ) -> Match:
     tournament_match = Match.objects.create(
         mode=mode,
@@ -120,7 +120,8 @@ async def test_no_register_user_id():
     user_id_list = [1, 2]
     no_register_user_id = 3
     match = await insert_tournament_match(user_id_list)
-    await create_communicator(
+    communicator = await create_communicator(
         no_register_user_id, match.match_id, expect_connected=False
     )
+    await communicator.disconnect()
     TournamentMatchWaiter.clear()
