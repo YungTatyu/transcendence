@@ -8,7 +8,7 @@ const startTimer = (endTime) => {
   const interval = setInterval(() => {
     const remainingTime = calcRemaingTime(endTime);
     gameRender.renderTimer(remainingTime);
-    if (time <= 0) {
+    if (remainingTime <= 0) {
       clearInterval(interval);
     }
   }, 1000); // 1秒ごとに実行
