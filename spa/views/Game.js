@@ -71,7 +71,9 @@ export const gameRender = {
     const canvas = document.querySelector(".game-canvas");
     const ctx = canvas.getContext("2d");
 
-    const centerX = canvas.width / 2;
+    // 背景クリア
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
     ctx.lineWidth = 2; // 線の太さ
@@ -79,6 +81,7 @@ export const gameRender = {
 
     // 垂直線を描画
     ctx.beginPath();
+    const centerX = canvas.width / 2;
     ctx.moveTo(centerX, 0);
     ctx.lineTo(centerX, canvas.height);
     ctx.stroke();
@@ -174,6 +177,7 @@ export const setupGame = async () => {
     }
     gameRender.renderGame();
     const names = await Promise.all(stateManager.state.players.map(async (id) => await fetchUsername(id)));
+    console.log(names);
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
     PlayerActionHandler.registerEventHandler();
