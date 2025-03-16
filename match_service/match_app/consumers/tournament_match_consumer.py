@@ -1,4 +1,5 @@
 import json
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 from channels.layers import get_channel_layer
@@ -21,7 +22,7 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         self.match_id = int(self.scope["url_route"]["kwargs"]["matchId"])
         self.room_group_name = TournamentMatchConsumer.get_group_name(self.match_id)
 
-        if TournamentMatchWaiter.is_invalid_match_id(self.match_id, self.user_id):
+        if await TournamentMatchWaiter.is_invalid_match_id(self.match_id, self.user_id):
             await self.close(code=4400)
             return
 
@@ -32,7 +33,9 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         # TournamentMatchWaiterを取得し、登録されていない場合、登録する
         tournament_match_waiter = TournamentMatchWaiter.search(self.match_id)
         if tournament_match_waiter is None:
-            tournament_match_waiter = TournamentMatchWaiter.register(self.match_id)
+            tournament_match_waiter = await database_sync_to_async(
+                TournamentMatchWaiter.register
+            )(self.match_id)
 
         tournament_match_waiter.add_user(self.user_id)
 

@@ -6,7 +6,7 @@ from channels.db import database_sync_to_async
 
 
 class TournamentMatchWaiter:
-    __tournament_match_waiter_dict: dict[int, "TournamentMatchWaiter"]
+    __tournament_match_waiter_dict: dict[int, "TournamentMatchWaiter"] = {}
     # ユーザーの最初のアクセスから、強制的に試合を処理するまでの秒数
     LIMIT_WAIT_SEC = 5
 
@@ -102,7 +102,7 @@ class TournamentMatchWaiter:
         if TournamentMatchWaiter.search(match_id):
             return False
 
-        match = Match.objects.filter(match_id=match_id)
+        match = Match.objects.filter(match_id=match_id).first()
 
         if (
             not match  # 試合が存在しない
