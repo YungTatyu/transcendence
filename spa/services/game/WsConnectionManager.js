@@ -3,6 +3,7 @@ import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { gameRender } from "../../views/Game.js";
+import PlayerActionHandler from "./PlayerActionHandler.js";
 
 const startTimer = (endTime) => {
   const interval = setInterval(() => {
@@ -35,10 +36,6 @@ const wsEventHandler = {
         startTimer(endTime);
       } else if (type === "game.finish.message" && gameMessage === "gameover") {
         const results = parsedMessage.results;
-        alert(
-          `game·over:\n${results.map((r) => `User ${r.userId}: ${r.score}`).join("\n")}`,
-        );
-
         const highestScore = results.reduce((max, r) => {
           const score = parseInt(r.score, 10);
           return score > max ? score : max;
@@ -48,6 +45,8 @@ const wsEventHandler = {
         const userId = stateManager.state?.userid;
         const win = userId && (results.some(r => r.userId === userId.toString() && r.score === highestScore.toString()));
 
+        WsConnectionManager.disconnect();
+        PlayerActionHandler.cleanup();
         SPA.navigate("/game/result", {
           left: leftScore,
           right: rightScore,
