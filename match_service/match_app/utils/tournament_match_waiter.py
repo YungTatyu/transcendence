@@ -54,12 +54,17 @@ class TournamentMatchWaiter:
 
     @property
     def is_ready(self) -> bool:
+        """試合参加者全員が試合待機部屋に入ったかどうか"""
         return len(self.__user_ids) == len(self.__connected_user_ids)
 
     def add_user(self, user_id):
         self.__connected_user_ids.add(user_id)
 
     def del_user(self, user_id):
+        """
+        ユーザーをTournamentMatchWaiterから削除、
+        待機部屋に誰もいなくなった場合、インスタンスごと削除
+        """
         self.__connected_user_ids.remove(user_id)
         # ユーザー退出後、誰も待機中でない場合、TournamentMatchWaiterごと削除
         if len(self.__connected_user_ids) == 0:
@@ -80,6 +85,8 @@ class TournamentMatchWaiter:
     async def handle_fallback_tournament_match(self):
         """
         トーナメント試合に参加者全員が揃わない場合に強制的行われる処理
+        if (待機部屋の人数 == 1) -> 不戦勝処理
+        else -> 待機部屋にいる人のみでGameを開始させる
         """
         from match_app.consumers.tournament_match_consumer import (
             TournamentMatchConsumer,
@@ -98,6 +105,7 @@ class TournamentMatchWaiter:
         TournamentMatchWaiter.delete(self.match_id)
 
     async def handle_tournament_match_bye(self):
+        """不戦勝となる場合、/matches/finishと同じ処理を実行"""
         results = []
         winner_user_id = list(self.__connected_user_ids)[0]
         for user_id in self.__user_ids:

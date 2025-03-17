@@ -57,6 +57,11 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
             tournament_match_waiter.del_user(self.user_id)
 
     async def __start_tournament_match(self, tournament_match_waiter):
+        """
+        GameAPIを叩き、リソースを作成
+        試合開始時刻を更新
+        試合開始情報をClientにSend
+        """
         match_id = self.match_id
         user_ids = tournament_match_waiter.connected_user_ids
 
