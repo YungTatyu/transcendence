@@ -35,7 +35,9 @@ class ActionHandlerTestCase(unittest.IsolatedAsyncioTestCase):
     def test_handle_new_connection_success(self):
         result, status_code = ActionHandler.handle_new_connection(1, 2)
 
-        self.mock_game_controller.game.add_player.assert_called_once_with(2)
+        self.mock_game_controller.game.add_player.assert_called_once_with(
+            2, self.mock_match.players.index(2)
+        )
         self.assertTrue(result)
         self.assertEqual(status_code, 200)
 
