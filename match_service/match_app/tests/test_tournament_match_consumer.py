@@ -180,6 +180,27 @@ async def test_where_the_number_of_user_in_wait_room_is_0(
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+async def test_fetch_game_api_error(mock_fetch_games_error):
+    """GameAPIを叩く処理が失敗するケース"""
+    user_id_list = [1, 2]
+    match = await insert_tournament_match(user_id_list)
+
+    comms = []
+    for user_id in user_id_list:
+        communicator = await create_communicator(user_id, match.match_id)
+        comms.append(communicator)
+
+    for communicator in comms:
+        res = await communicator.receive_json_from()
+        assert res.get("match_id", None) is not None
+        assert res["match_id"] == "None"
+
+    [await communicator.disconnect() for communicator in comms]
+    TournamentMatchWaiter.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
 async def test_not_exist_match_id():
     """存在しないmatch_idのURLでコネクションを確立しようとしたケース"""
     user_id = 1
