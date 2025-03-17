@@ -16,6 +16,7 @@ export default function Home() {
         <button onclick="SPA.navigate('/login')">loginへ</button>
         <button onclick="SPA.navigate('/change-username')">changeUsernameへ</button>
         <button onclick="SPA.navigate('/change-mail')">changeMailへ</button>
+        <button onclick="SPA.navigate('/change-password')">changePasswordへ</button>
 
         ${Footer({ text: "© 2025 My Company" })}
         <div> store sample</div>

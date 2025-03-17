@@ -1,7 +1,6 @@
 import Form from "../components/Form.js";
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import config from "../config.js";
-import stateManager from "../stateManager.js";
 
 export default function ChangeUsername(){
     const ChangeNameFormField = [{label: "Username", type: "username", placeholder: "New Username"}];

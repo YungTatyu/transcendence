@@ -15,6 +15,7 @@ import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 import ChangeUsername from "./views/ChangeUsername.js";
 import ChangeMail from "./views/ChangeMail.js";
+import ChangePassword from "./views/ChangePassword.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
@@ -30,6 +31,7 @@ SPA.route("/game", Game, setupGame);
 SPA.route("/game/result", GameResult);
 SPA.route("/change-username", ChangeUsername);
 SPA.route("/change-mail", ChangeMail);
+SPA.route("/change-password", ChangePassword);
 
 
 SPA.init({ containerId: "app" });
