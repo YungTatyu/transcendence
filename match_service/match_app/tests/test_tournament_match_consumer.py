@@ -156,6 +156,30 @@ async def test_handle_tournament_match_bye(
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+async def test_where_the_number_of_user_in_wait_room_is_0(
+    mock_limit_wait_sec, request_finish_match_success_mocker
+):
+    """
+    ユーザー退出後、待機中ユーザーが0人になるケース
+    0人になった際、不戦勝処理が行われないことを確認する
+    """
+    user_id_list = [1, 2]
+    match = await insert_tournament_match(user_id_list)
+
+    # １人のみ試合待機部屋に入り、退出(待機部屋が0人になる)
+    communicator = await create_communicator(user_id_list[0], match.match_id)
+    await communicator.disconnect()
+
+    await asyncio.sleep(TournamentMatchWaiter.LIMIT_WAIT_SEC + 1)
+
+    # finish-matchエンドポイントを叩いていないことをチェック
+    request_finish_match_success_mocker.assert_not_called()
+
+    TournamentMatchWaiter.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
 async def test_not_exist_match_id():
     """存在しないmatch_idのURLでコネクションを確立しようとしたケース"""
     user_id = 1
