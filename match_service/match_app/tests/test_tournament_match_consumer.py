@@ -78,6 +78,34 @@ async def test_start_tournment_match():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+async def test_leave_and_re_enter():
+    """一度待機部屋を抜け、もう一度入り直すケース"""
+    user_id_list = [1, 2]
+    match = await insert_tournament_match(user_id_list)
+
+    for user_id in user_id_list:
+        # 一度ルームに入り、すぐにルームを抜ける
+        communicator = await create_communicator(user_id, match.match_id)
+        await communicator.disconnect()
+
+    comms = []
+    for user_id in user_id_list:
+        communicator = await create_communicator(user_id, match.match_id)
+        comms.append(communicator)
+
+    for communicator in comms:
+        res = await communicator.receive_json_from()
+        assert res.get("match_id", None) is not None
+        assert res["match_id"] != "None"
+        expect_user_id_list = [str(user_id) for user_id in user_id_list]
+        assert sorted(res["user_id_list"]) == sorted(expect_user_id_list)
+
+    [await communicator.disconnect() for communicator in comms]
+    TournamentMatchWaiter.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
 async def test_handle_tournament_match_bye(
     mock_limit_wait_sec, request_finish_match_success_mocker
 ):
