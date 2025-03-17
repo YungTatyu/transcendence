@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import asyncio
 import jwt
 import pytest
 from channels.db import database_sync_to_async
@@ -72,6 +73,28 @@ async def test_start_tournment_match():
         assert sorted(res["user_id_list"]) == sorted(expect_user_id_list)
 
     [await communicator.disconnect() for communicator in comms]
+    TournamentMatchWaiter.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_handle_tournament_match_bye(
+    mock_limit_wait_sec, request_finish_match_success_mocker
+):
+    """1人のみ残っている場合の強制勝ち上がり処理のテスト"""
+    user_id_list = [1, 2]
+    match = await insert_tournament_match(user_id_list)
+
+    # １人のみ試合待機部屋に入る
+    communicator = await create_communicator(user_id_list[0], match.match_id)
+
+    await asyncio.sleep(TournamentMatchWaiter.LIMIT_WAIT_SEC + 1)
+
+    res = await communicator.receive_json_from()
+    assert res.get("match_id", None) is not None
+    assert res["match_id"] == "None"
+
+    await communicator.disconnect()
     TournamentMatchWaiter.clear()
 
 
