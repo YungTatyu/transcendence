@@ -43,6 +43,7 @@ def insert_tournament_match(
 ) -> Match:
     tournament_match = Match.objects.create(
         mode=mode,
+        start_date=None,
         tournament_id=tournament_id,
         parent_match_id=parent_match,
         round=round,
@@ -51,6 +52,11 @@ def insert_tournament_match(
     for user_id in user_id_list:
         MatchParticipant.objects.create(match_id=tournament_match, user_id=user_id)
     return tournament_match
+
+
+@database_sync_to_async
+def fetch_tournament_match(match_id: int):
+    return Match.objects.filter(match_id=match_id).first()
 
 
 @pytest.mark.asyncio(loop_scope="function")
@@ -71,6 +77,10 @@ async def test_start_tournment_match(mock_fetch_games_success):
         assert res["match_id"] != "None"
         expect_user_id_list = [str(user_id) for user_id in user_id_list]
         assert sorted(res["user_id_list"]) == sorted(expect_user_id_list)
+
+    # start_dateが更新されているか
+    match = await fetch_tournament_match(match.match_id)
+    assert match.start_date is not None
 
     [await communicator.disconnect() for communicator in comms]
     TournamentMatchWaiter.clear()
@@ -121,6 +131,10 @@ async def test_handle_tournament_match_bye(
     res = await communicator.receive_json_from()
     assert res.get("match_id", None) is not None
     assert res["match_id"] == "None"
+
+    # 不戦勝処理で勝ち上がる場合、start_dateがNoneになる
+    match = fetch_tournament_match(match.match_id)
+    assert match.start_date is None
 
     await communicator.disconnect()
     TournamentMatchWaiter.clear()

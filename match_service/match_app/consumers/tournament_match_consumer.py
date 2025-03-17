@@ -6,6 +6,8 @@ from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 from channels.layers import get_channel_layer
 from django.conf import settings
 from match_app.client.game_client import GameClient
+from django.utils.timezone import now
+from match_app.models import Match
 
 
 class TournamentMatchConsumer(AsyncWebsocketConsumer):
@@ -66,6 +68,11 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         if res_data.get("error", None) is not None:
             # INFO 内部エラーが起きたときはユーザーに`match_id: "None"`を返す
             match_id = None
+
+        # start_dateを現在時刻で更新する
+        await database_sync_to_async(
+            lambda: Match.objects.filter(match_id=match_id).update(start_date=now())
+        )()
 
         await TournamentMatchConsumer.broadcast_start_match(
             self.room_group_name, match_id, user_ids
