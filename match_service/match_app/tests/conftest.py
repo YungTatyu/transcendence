@@ -10,6 +10,7 @@ from .set_up_utils import (
     insert_quick_play_record,
     insert_tournament_record,
 )
+from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 
 
 @pytest.fixture
@@ -147,3 +148,9 @@ def request_finish_match_error_mocker(mocker):
         "match_app.client.tournament_client.TournamentClient.finish_match",
         return_value=mock_response,
     )
+
+
+@pytest.fixture()
+def mock_limit_wait_sec(mocker):
+    """TournamentMatchWaiter.LIMIT_WAIT_SEC をモックして値を変更"""
+    mocker.patch.object(TournamentMatchWaiter, "LIMIT_WAIT_SEC", 1)

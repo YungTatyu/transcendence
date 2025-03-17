@@ -10,7 +10,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 class TournamentMatchWaiter:
     __tournament_match_waiter_dict: dict[int, "TournamentMatchWaiter"] = {}
     # ユーザーの最初のアクセスから、強制的に試合を処理するまでの秒数
-    LIMIT_WAIT_SEC = 1
+    LIMIT_WAIT_SEC = 5
 
     def __init__(self, match_id: int):
         self.__match_id = match_id
