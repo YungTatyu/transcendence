@@ -156,7 +156,7 @@ export const gameRender = {
     if (errDetail) {
       errDetail.textContent = errMessage;
     }
-  }
+  },
 };
 
 const fetchUsername = async (userid) => {
@@ -174,10 +174,12 @@ export const setupGame = async () => {
   try {
     if (!stateManager.state?.players || !stateManager.state?.matchId) {
       SPA.navigate("/");
-      return
+      return;
     }
     gameRender.renderGame();
-    const names = await Promise.all(stateManager.state.players.map(fetchUsername));
+    const names = await Promise.all(
+      stateManager.state.players.map(fetchUsername),
+    );
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
     PlayerActionHandler.registerEventHandler();

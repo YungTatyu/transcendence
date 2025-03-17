@@ -24,8 +24,8 @@ export default function InitMatch() {
           <button type="submit" class="btn btn-primary">送信</button>
       </form>
     </div>
-  `
-};
+  `;
+}
 
 export function setupInitMatch() {
   const formEle = document.querySelector(".js-match-form");
@@ -52,7 +52,7 @@ export function setupInitMatch() {
     stateManager.setState({ players: [leftPlayerId, rightPlayerId] });
     if (res.status >= 400) {
       console.error(`error status: ${res.status}`);
-      return
+      return;
     }
     SPA.navigate("/game");
   });

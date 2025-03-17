@@ -26,5 +26,5 @@ export async function setupGameResult() {
   homeButtonEle.addEventListener("click", (event) => {
     event.preventDefault();
     SPA.navigate("/", null, true);
-  })
+  });
 }

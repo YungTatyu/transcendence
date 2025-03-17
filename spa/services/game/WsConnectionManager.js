@@ -42,14 +42,16 @@ const wsEventHandler = {
         const leftScore = results[0]?.score;
         const rightScore = results[1]?.score;
         const userId = stateManager.state?.userId;
-        const win = userId && (results.some(r => r.userId == userId && r.score === highestScore));
+        const win =
+          userId &&
+          results.some((r) => Number.parseInt(r.userId) === userId && r.score === highestScore);
 
         PlayerActionHandler.cleanup();
         WsConnectionManager.disconnect();
         SPA.navigate("/game/result", {
           left: leftScore,
           right: rightScore,
-          win: win
+          win: win,
         });
       }
     } catch (error) {
