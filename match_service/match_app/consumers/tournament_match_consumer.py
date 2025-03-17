@@ -1,13 +1,14 @@
 import json
 from typing import Optional
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 from channels.layers import get_channel_layer
 from django.conf import settings
-from match_app.client.game_client import GameClient
 from django.utils.timezone import now
+from match_app.client.game_client import GameClient
 from match_app.models import Match
+from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 
 
 class TournamentMatchConsumer(AsyncWebsocketConsumer):
@@ -100,8 +101,10 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
 
     async def send_start_game(self, event):
         await self.send(
-            text_data=json.dumps({
-                "match_id": event["match_id"],
-                "user_id_list": event["user_id_list"],
-            })
+            text_data=json.dumps(
+                {
+                    "match_id": event["match_id"],
+                    "user_id_list": event["user_id_list"],
+                }
+            )
         )

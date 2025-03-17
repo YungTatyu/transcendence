@@ -1,16 +1,16 @@
-import pytest
-
-from match_app.models import Match
 from unittest.mock import MagicMock
+
+import pytest
 import requests
 
+from match_app.models import Match
+from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 
 from .set_up_utils import (
     insert_match_participants_record,
     insert_quick_play_record,
     insert_tournament_record,
 )
-from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 
 
 @pytest.fixture

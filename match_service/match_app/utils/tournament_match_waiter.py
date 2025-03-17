@@ -1,10 +1,10 @@
 from typing import Optional
-from match_app.utils.task_timer import TaskTimer
-from asgiref.sync import async_to_sync
-from match_app.models import Match, MatchParticipant
-from channels.db import database_sync_to_async
-from match_app.views.match_finish_view import MatchFinishView
+
 from asgiref.sync import async_to_sync, sync_to_async
+from channels.db import database_sync_to_async
+from match_app.models import Match, MatchParticipant
+from match_app.utils.task_timer import TaskTimer
+from match_app.views.match_finish_view import MatchFinishView
 
 
 class TournamentMatchWaiter:

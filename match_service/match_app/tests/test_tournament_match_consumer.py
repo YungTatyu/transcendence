@@ -1,6 +1,6 @@
+import asyncio
 from datetime import timedelta
 
-import asyncio
 import jwt
 import pytest
 from channels.db import database_sync_to_async
@@ -133,7 +133,7 @@ async def test_handle_tournament_match_bye(
     assert res["match_id"] == "None"
 
     # 不戦勝処理で勝ち上がる場合、start_dateがNoneになる
-    match = fetch_tournament_match(match.match_id)
+    match = await fetch_tournament_match(match.match_id)
     assert match.start_date is None
 
     await communicator.disconnect()
@@ -142,7 +142,7 @@ async def test_handle_tournament_match_bye(
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_handle_tournament_match_bye(
+async def test_handle_tournament_match_bye_error(
     mock_limit_wait_sec, request_finish_match_error_mocker
 ):
     """
