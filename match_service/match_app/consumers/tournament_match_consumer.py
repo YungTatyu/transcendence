@@ -47,7 +47,7 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         # 参加者全員が揃った
         if tournament_match_waiter.is_ready:
             tournament_match_waiter.cancel_timer()
-            await self.__start_tournament_match(tournament_match_waiter)
+            await self.start_tournament_match(self.room_group_name, self.match_id)
             TournamentMatchWaiter.delete(self.match_id)
 
     async def disconnect(self, _):
@@ -56,31 +56,32 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         if tournament_match_waiter is not None:
             tournament_match_waiter.del_user(self.user_id)
 
-    async def __start_tournament_match(self, tournament_match_waiter):
+    @staticmethod
+    async def start_tournament_match(group_name, match_id):
         """
         GameAPIを叩き、リソースを作成
         試合開始時刻を更新
         試合開始情報をClientにSend
         """
-        match_id = self.match_id
+        tournament_match_waiter = TournamentMatchWaiter.search(match_id)
         user_ids = tournament_match_waiter.connected_user_ids
 
         # GameAPIを叩き、ゲーム開始の準備を行う
         client = GameClient(settings.GAME_API_BASE_URL)
         res_data = await client.fetch_games(
-            self.match_id, tournament_match_waiter.connected_user_ids
+            match_id, tournament_match_waiter.connected_user_ids
         )
         if res_data.get("error", None) is not None:
             # INFO 内部エラーが起きたときはユーザーに`match_id: "None"`を返す
             match_id = None
-
-        # start_dateを現在時刻で更新する
-        await database_sync_to_async(
-            lambda: Match.objects.filter(match_id=match_id).update(start_date=now())
-        )()
+        else:
+            # start_dateを現在時刻で更新する
+            await database_sync_to_async(
+                lambda: Match.objects.filter(match_id=match_id).update(start_date=now())
+            )()
 
         await TournamentMatchConsumer.broadcast_start_match(
-            self.room_group_name, match_id, user_ids
+            group_name, match_id, user_ids
         )
 
     @staticmethod

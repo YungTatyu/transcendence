@@ -97,11 +97,13 @@ class TournamentMatchWaiter:
 
         if len(self.__connected_user_ids) == 1:
             await self.handle_tournament_match_bye()
-            match_id = None
-
-        await TournamentMatchConsumer.broadcast_start_match(
-            room_group_name, match_id, self.connected_user_ids
-        )
+            await TournamentMatchConsumer.broadcast_start_match(
+                room_group_name, None, self.connected_user_ids
+            )
+        else:
+            await TournamentMatchConsumer.start_tournament_match(
+                room_group_name, match_id
+            )
         TournamentMatchWaiter.delete(self.match_id)
 
     async def handle_tournament_match_bye(self):
