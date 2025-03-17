@@ -44,7 +44,11 @@ const wsEventHandler = {
         const userId = stateManager.state?.userId;
         const win =
           userId &&
-          results.some((r) => r.userId === Number.parseInt(userId, 10) && r.score === highestScore);
+          results.some(
+            (r) =>
+              r.userId === Number.parseInt(userId, 10) &&
+              r.score === highestScore,
+          );
 
         PlayerActionHandler.cleanup();
         WsConnectionManager.disconnect();
