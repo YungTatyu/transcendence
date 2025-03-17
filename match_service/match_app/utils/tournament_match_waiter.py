@@ -61,6 +61,9 @@ class TournamentMatchWaiter:
 
     def del_user(self, user_id):
         self.__connected_user_ids.remove(user_id)
+        # ユーザー退出後、誰も待機中でない場合、TournamentMatchWaiterごと削除
+        if len(self.__connected_user_ids) == 0:
+            TournamentMatchWaiter.delete(self.__match_id)
 
     def cancel_timer(self):
         if self.__task_timer is not None:
