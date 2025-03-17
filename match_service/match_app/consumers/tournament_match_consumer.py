@@ -44,7 +44,9 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         if tournament_match_waiter.is_ready:
             tournament_match_waiter.cancel_timer()
             await TournamentMatchConsumer.broadcast_start_match(
-                self.match_id, tournament_match_waiter.connected_user_ids
+                self.room_group_name,
+                self.match_id,
+                tournament_match_waiter.connected_user_ids,
             )
             TournamentMatchWaiter.delete(self.match_id)
 
@@ -55,9 +57,10 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
             tournament_match_waiter.del_user(self.user_id)
 
     @staticmethod
-    async def broadcast_start_match(match_id: Optional[int], user_ids: list[int]):
+    async def broadcast_start_match(
+        group_name: str, match_id: Optional[int], user_ids: list[int]
+    ):
         channel_layer = get_channel_layer()
-        group_name = TournamentMatchConsumer.get_group_name(match_id)
         await channel_layer.group_send(
             group_name,
             {
