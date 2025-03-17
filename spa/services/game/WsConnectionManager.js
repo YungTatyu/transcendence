@@ -41,11 +41,11 @@ const wsEventHandler = {
         }, 0);
         const leftScore = results[0]?.score;
         const rightScore = results[1]?.score;
-        const userId = stateManager.state?.userid;
+        const userId = stateManager.state?.userId;
         const win = userId && (results.some(r => r.userId == userId && r.score === highestScore));
 
-        WsConnectionManager.disconnect();
         PlayerActionHandler.cleanup();
+        WsConnectionManager.disconnect();
         SPA.navigate("/game/result", {
           left: leftScore,
           right: rightScore,
