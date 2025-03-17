@@ -21,7 +21,7 @@ export default function GameResult(params) {
   `;
 }
 
-export function setupGameResult() {
+export async function setupGameResult() {
   const homeButtonEle = document.querySelector(".game-result-button");
   homeButtonEle.addEventListener("click", (event) => {
     event.preventDefault();
