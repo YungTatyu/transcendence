@@ -25,7 +25,7 @@ class TestTournamentMatch:
             assert match.match_id >= 0  # match_idは0以上の値が自動で採番される
             assert match.winner_user_id is None  # nullがセットされる
             assert match.mode == "Tournament"
-            assert match.start_date is not None  # 現在時刻がセットされる
+            assert match.start_date is None  # nullがセットされる
             assert match.finish_date is None  # nullがセットされる
             if parent_match_id is None:
                 assert match.parent_match_id is None
