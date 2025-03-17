@@ -64,7 +64,7 @@ class TestUserViewGet:
     def test_get_username_and_userid_specified(self, api_client, create_user):
         """GET: username と userid の両方を指定した場合（バリデーションエラー）"""
         response = api_client.get(
-            reverse("users"), {"username": "testuser", "userId": create_user.user_id}
+            reverse("users"), {"username": "testuser", "userid": create_user.user_id}
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "non_field_errors" in response.data
@@ -77,7 +77,7 @@ class TestUserViewGet:
 
     def test_get_user_by_userid_success(self, api_client, create_user):
         """GET: userid でユーザーを検索（成功）"""
-        response = api_client.get(reverse("users"), {"userId": create_user.user_id})
+        response = api_client.get(reverse("users"), {"userid": create_user.user_id})
         assert response.status_code == status.HTTP_200_OK
         assert response.data["username"] == "testuser"
 
@@ -89,7 +89,7 @@ class TestUserViewGet:
 
     def test_get_user_not_found_by_userid(self, api_client):
         """GET: 存在しないユーザーを userid で検索(エラー)"""
-        response = api_client.get(reverse("users"), {"userId": 99999})
+        response = api_client.get(reverse("users"), {"userid": 99999})
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data["error"] == "User not found."
 
