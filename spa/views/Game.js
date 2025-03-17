@@ -160,6 +160,8 @@ export const gameRender = {
 };
 
 const fetchUsername = async (userid) => {
+  // TODO: queryをuseridに変更する
+  // userサービスの修正が適応され次第対応
   const res = await fetch(`${config.userService}/users?userId=${userid}`);
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
@@ -176,7 +178,6 @@ export const setupGame = async () => {
     }
     gameRender.renderGame();
     const names = await Promise.all(stateManager.state.players.map(fetchUsername));
-    console.log(names)
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
     PlayerActionHandler.registerEventHandler();
