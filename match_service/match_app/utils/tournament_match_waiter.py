@@ -139,6 +139,7 @@ class TournamentMatchWaiter:
 
         if (
             not match  # 試合が存在しない
+            or match.start_date is not None  # 試合が既に開始されている
             or match.finish_date is not None  # 試合が既に終了している
             or match.mode != "Tournament"  # 試合がTournamentの試合ではない
         ):
