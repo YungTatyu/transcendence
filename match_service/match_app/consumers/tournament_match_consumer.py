@@ -4,6 +4,8 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 from channels.layers import get_channel_layer
+from django.conf import settings
+from match_app.client.game_client import GameClient
 
 
 class TournamentMatchConsumer(AsyncWebsocketConsumer):
@@ -43,11 +45,7 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         # 参加者全員が揃った
         if tournament_match_waiter.is_ready:
             tournament_match_waiter.cancel_timer()
-            await TournamentMatchConsumer.broadcast_start_match(
-                self.room_group_name,
-                self.match_id,
-                tournament_match_waiter.connected_user_ids,
-            )
+            await self.__start_tournament_match(tournament_match_waiter)
             TournamentMatchWaiter.delete(self.match_id)
 
     async def disconnect(self, _):
@@ -55,6 +53,23 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         tournament_match_waiter = TournamentMatchWaiter.search(self.match_id)
         if tournament_match_waiter is not None:
             tournament_match_waiter.del_user(self.user_id)
+
+    async def __start_tournament_match(self, tournament_match_waiter):
+        match_id = self.match_id
+        user_ids = tournament_match_waiter.connected_user_ids
+
+        # GameAPIを叩き、ゲーム開始の準備を行う
+        client = GameClient(settings.GAME_API_BASE_URL)
+        res_data = await client.fetch_games(
+            self.match_id, tournament_match_waiter.connected_user_ids
+        )
+        if res_data.get("error", None) is not None:
+            # INFO 内部エラーが起きたときはユーザーに`match_id: "None"`を返す
+            match_id = None
+
+        await TournamentMatchConsumer.broadcast_start_match(
+            self.room_group_name, match_id, user_ids
+        )
 
     @staticmethod
     async def broadcast_start_match(

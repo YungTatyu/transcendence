@@ -55,7 +55,7 @@ def insert_tournament_match(
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_start_tournment_match():
+async def test_start_tournment_match(mock_fetch_games_success):
     """正常にトーナメントの試合が開始されるケース"""
     user_id_list = [1, 2]
     match = await insert_tournament_match(user_id_list)
@@ -78,7 +78,7 @@ async def test_start_tournment_match():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_leave_and_re_enter():
+async def test_leave_and_re_enter(mock_fetch_games_success):
     """一度待機部屋を抜け、もう一度入り直すケース"""
     user_id_list = [1, 2]
     match = await insert_tournament_match(user_id_list)
