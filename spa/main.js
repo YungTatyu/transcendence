@@ -10,6 +10,7 @@ import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
+import ChangeUsername from "./views/ChangeUsername.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
@@ -20,5 +21,6 @@ SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
+SPA.route("/changeUsername", ChangeUsername);
 
 SPA.init({ containerId: "app" });
