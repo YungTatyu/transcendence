@@ -139,13 +139,11 @@ export const gameRender = {
   renderPlayerNames(players = []) {
     const nameClasses = [".js-left-player", ".js-right-player"];
     nameClasses.forEach((nameClass, index) => {
-      const player = players[index];
+      const playerName = players[index] ?? "";
       const element = document.querySelector(nameClass);
 
-      if (element && player) {
-        element.textContent = player.name;
-      } else if (element) {
-        element.textContent = "";
+      if (element) {
+        element.textContent = playerName;
       }
     });
   },
@@ -177,7 +175,8 @@ export const setupGame = async () => {
       return
     }
     gameRender.renderGame();
-    const names = await Promise.all(stateManager.state.players.map(async (id) => await fetchUsername(id)));
+    const names = await Promise.all(stateManager.state.players.map(fetchUsername));
+    console.log(names)
     gameRender.renderPlayerNames(names);
     WsConnectionManager.connect(stateManager.state.matchId);
     PlayerActionHandler.registerEventHandler();
