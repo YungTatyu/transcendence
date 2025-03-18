@@ -2,7 +2,7 @@ import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
-import { cleanupGame, gameRender } from "../../views/Game.js";
+import { gameRender } from "../../views/Game.js";
 
 const startTimer = (endTime) => {
   const intervalId = setInterval(() => {
@@ -49,8 +49,6 @@ const wsEventHandler = {
               r.userId === Number.parseInt(userId, 10) &&
               r.score === highestScore,
           );
-        // TODO: cleanup処理はspaに組み込む
-        cleanupGame();
         SPA.navigate("/game/result", {
           left: leftScore,
           right: rightScore,
