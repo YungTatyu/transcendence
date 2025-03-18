@@ -7,7 +7,7 @@ export default function Profile() {
     return `
       <div class="${className}">
         <p class="user-profile-text me-2 ${textClass}">${text}</p>
-        <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1 ${penClass}">
+        <img src="/assets/pencil.png" class="pencil-icon align-self-start mt-n1 ${penClass}">
       </div>
         `;
   }
@@ -34,8 +34,8 @@ export default function Profile() {
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
-          <img src="./assets/42.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
-          <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1 js-pen-avatar">
+          <img src="/assets/42.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
+          <img src="/assets/pencil.png" class="pencil-icon align-self-start mt-n1 js-pen-avatar">
       </div>
 
       ${UserInfo("d-inline-flex align-items-center mt-5", "js-username", "UserName", "js-pen-username")}
@@ -63,11 +63,11 @@ export async function setupProfile() {
     document.querySelector(".js-user-avatar").src =
       stateManager.state.avatar_path;
   } else {
-    const respose = await fetch(
+    const response = await fetch(
       `${config.userService}/users?userid=${stateManager.state.userId}`,
     );
-    const status = respose.status;
-    const data = await respose.json();
+    const status = response.status;
+    const data = await response.json();
 
     if (status === null) {
       errorOutput.textContent = "Error Occured!";
