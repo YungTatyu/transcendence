@@ -5,13 +5,14 @@ import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { cleanupGame, gameRender } from "../../views/Game.js";
 
 const startTimer = (endTime) => {
-  const interval = setInterval(() => {
+  const intervalId = setInterval(() => {
     const remainingTime = calcRemaingTime(endTime);
     gameRender.renderTimer(remainingTime);
     if (remainingTime <= 0) {
-      clearInterval(interval);
+      clearInterval(intervalId);
     }
   }, 1000); // 1秒ごとに実行
+  return intervalId;
 };
 
 const wsEventHandler = {
@@ -32,7 +33,7 @@ const wsEventHandler = {
         });
       } else if (type === "game.message" && gameMessage === "timer") {
         const endTime = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
-        startTimer(endTime);
+        WsConnectionManager.intervalId = startTimer(endTime);
       } else if (type === "game.finish.message" && gameMessage === "gameover") {
         const results = parsedMessage.results;
         const highestScore = results.reduce((max, r) => {
@@ -72,6 +73,7 @@ const wsEventHandler = {
 const WsConnectionManager = {
   socket: null,
   eventHandler: wsEventHandler,
+  intervalId: null,
 
   connect(matchId) {
     // TODO: uriを変更する
@@ -82,11 +84,14 @@ const WsConnectionManager = {
   },
 
   disconnect() {
-    if (this.socket === null) {
-      return;
+    if (this.socket !== null) {
+      this.socket.close();
+      this.socket = null;
     }
-    this.socket.close();
-    this.socket = null;
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   },
 
   sendMessage(message) {
