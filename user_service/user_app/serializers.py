@@ -18,7 +18,7 @@ class UserDataSerializer(serializers.Serializer):
 
 
 class QueryParamSerializer(serializers.Serializer):
-    userid = serializers.IntegerField(required=False, source="user_id")  # noqa: N815
+    userid = serializers.IntegerField(required=False)
     username = serializers.CharField(required=False)
 
     def validate(self, data):
@@ -27,14 +27,14 @@ class QueryParamSerializer(serializers.Serializer):
         """
 
         username = data.get("username")
-        user_id = data.get("user_id")
+        userid = data.get("userid")
 
-        if username is None and user_id is None:
+        if username is None and userid is None:
             raise serializers.ValidationError(
                 "query parameter 'username' or 'userid' is required."
             )
 
-        if username is not None and user_id is not None:
+        if username is not None and userid is not None:
             raise serializers.ValidationError(
                 "query parameter 'username' or 'userid' must not be provided together."
             )
