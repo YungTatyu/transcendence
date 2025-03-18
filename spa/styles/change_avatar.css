@@ -1,7 +1,5 @@
-
 .square-img-user-avatar {
-    width: 200px; /* 正方形のサイズ */
-    height: 200px; /* 正方形のサイズ */
-    object-fit: cover; /* 中央を基準にトリミング */
-  }
-  
+  width: 200px; /* 正方形のサイズ */
+  height: 200px; /* 正方形のサイズ */
+  object-fit: cover; /* 中央を基準にトリミング */
+}

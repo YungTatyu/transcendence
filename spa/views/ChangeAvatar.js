@@ -1,6 +1,5 @@
-
 export default function ChangeAvatar() {
-    const formHtml = `
+  const formHtml = `
         <div class="container d-flex justify-content-center align-items-center vh-100">
           <div class="card shadow-lg p-4 align-items-center" style="width: 100%; max-width: 400px;">
             <form>    
@@ -14,5 +13,5 @@ export default function ChangeAvatar() {
           </div>
         </div>
       `;
-    return formHtml;
+  return formHtml;
 }

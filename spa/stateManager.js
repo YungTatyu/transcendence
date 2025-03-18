@@ -4,7 +4,7 @@ const stateManager = {
     items: [],
     userId: null,
     username: null,
-    avatar_path: null,
+    avatarPath: null,
   },
   listeners: [],
   setState(newState) {

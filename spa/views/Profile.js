@@ -39,8 +39,8 @@ export default function Profile() {
       </div>
 
       ${UserInfo("d-inline-flex align-items-center mt-5", "js-username", "UserName", "js-pen-username")}
-      ${UserInfo("d-inline-flex align-items-center", "js-password","Password", "js-pen-password")}
-      ${UserInfo("d-inline-flex align-items-center", "js-mail","Mail", "js-pen-mail")}
+      ${UserInfo("d-inline-flex align-items-center", "js-password", "Password", "js-pen-password")}
+      ${UserInfo("d-inline-flex align-items-center", "js-mail", "Mail", "js-pen-mail")}
 
      
     </div>
@@ -56,17 +56,19 @@ export default function Profile() {
     `;
 }
 
-export  async function setupProfile(){
-
-  if(stateManager.state.username && stateManager.state.avatar_path){
-    document.querySelector(".js-username").textContent = stateManager.state.username;
-    document.querySelector(".js-user-avatar").src = stateManager.state.avatar_path;
-  
-  }else{
-    const respose= await fetch(`${config.userService}/users?userid=${stateManager.state.userId}`);
+export async function setupProfile() {
+  if (stateManager.state.username && stateManager.state.avatar_path) {
+    document.querySelector(".js-username").textContent =
+      stateManager.state.username;
+    document.querySelector(".js-user-avatar").src =
+      stateManager.state.avatar_path;
+  } else {
+    const respose = await fetch(
+      `${config.userService}/users?userid=${stateManager.state.userId}`,
+    );
     const status = respose.status;
     const data = await respose.json();
-    
+
     if (status === null) {
       errorOutput.textContent = "Error Occured!";
       return;
@@ -78,9 +80,8 @@ export  async function setupProfile(){
     document.querySelector(".js-username").textContent = data.username;
     document.querySelector(".js-user-avatar").src = data.avatar_path;
 
-
-    stateManager.setState({username: data.username});
-    stateManager.setState({avatar_path: data.avatar_path});
+    stateManager.setState({ username: data.username });
+    stateManager.setState({ avatarPath: data.avatar_path });
   }
 
   const changeAvatarButton = document.querySelector(".js-pen-avatar");
@@ -102,11 +103,9 @@ export  async function setupProfile(){
   changeMailButton.addEventListener("click", async () => {
     SPA.navigate("/profile/mail");
   });
-  
+
   const matchHistoryButton = document.querySelector(".js-match-history-button");
   matchHistoryButton.addEventListener("click", async () => {
     SPA.navigate("/history/match");
   });
-
-  
 }
