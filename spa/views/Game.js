@@ -172,9 +172,7 @@ export const gameRender = {
 };
 
 const fetchUsername = async (userid) => {
-  // TODO: queryをuseridに変更する
-  // userサービスの修正が適応され次第対応
-  const res = await fetch(`${config.userService}/users?userId=${userid}`);
+  const res = await fetch(`${config.userService}/users?userid=${userid}`);
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
   }
