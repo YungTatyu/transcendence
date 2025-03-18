@@ -154,6 +154,12 @@ export const gameRender = {
     });
   },
   renderError(errMessage) {
+    const canvas = document.querySelector(".game-canvas");
+    // 画面をクリア
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     const errEle = document.querySelector(".js-game-error");
     const errDetail = document.querySelector(".js-game-error-detail");
     if (errEle) {
