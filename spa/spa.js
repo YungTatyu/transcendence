@@ -9,8 +9,8 @@ const SPA = (() => {
     renderRoute();
   };
 
-  const route = (path, view, setup) => {
-    routes[path] = { view, setup };
+  const route = (path, view, setup, cleanup) => {
+    routes[path] = { view, setup, cleanup };
   };
 
   const navigate = async (path, params = null, replace = false) => {
@@ -29,6 +29,9 @@ const SPA = (() => {
       container.innerHTML = route.view(params);
       if (route.setup) {
         await route.setup();
+      }
+      if (route.cleanup) {
+        route.cleanup();
       }
     }
   };
