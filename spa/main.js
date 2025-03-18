@@ -24,5 +24,6 @@ SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
+SPA.route("/friend", FriendList, setFriendList)
 
 SPA.init({ containerId: "app" });
