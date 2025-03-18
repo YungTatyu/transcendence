@@ -1,10 +1,16 @@
 const SPA = (() => {
   const routes = {};
+  let currentRoute = null;
   let container = null;
 
   const init = ({ containerId }) => {
     container = document.getElementById(containerId);
-    window.addEventListener("popstate", renderRoute);
+    window.addEventListener("popstate", () => {
+      if (currentRoute && currentRoute.cleanup) {
+        currentRoute.cleanup();
+      }
+      renderRoute();
+    });
     window.addEventListener("DOMContentLoaded", renderRoute);
     renderRoute();
   };
@@ -30,9 +36,7 @@ const SPA = (() => {
       if (route.setup) {
         await route.setup();
       }
-      if (route.cleanup) {
-        route.cleanup();
-      }
+      currentRoute = route;
     }
   };
 
