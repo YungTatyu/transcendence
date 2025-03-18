@@ -54,7 +54,7 @@ class UserView(APIView):
 
         validated_data = serializer.validated_data
         username = validated_data.get("username")
-        user_id = validated_data.get("user_id")
+        user_id = validated_data.get("userid")
 
         # ユーザー検索
         user = None
