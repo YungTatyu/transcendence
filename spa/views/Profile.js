@@ -3,11 +3,11 @@ import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function Profile() {
-  function UserInfo(className, jsClass,text) {
+  function UserInfo(className, textClass, text, penClass) {
     return `
       <div class="${className}">
-        <p class="user-profile-text me-2 ${jsClass}">${text}</p>
-        <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
+        <p class="user-profile-text me-2 ${textClass}">${text}</p>
+        <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1 ${penClass}">
       </div>
         `;
   }
@@ -35,12 +35,12 @@ export default function Profile() {
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
           <img src="./assets/42.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
-          <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
+          <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1 js-pen-avatar">
       </div>
 
-      ${UserInfo("d-inline-flex align-items-center mt-5", "js-username", "UserName")}
-      ${UserInfo("d-inline-flex align-items-center", "js-password","Password")}
-      ${UserInfo("d-inline-flex align-items-center", "js-mail","Mail")}
+      ${UserInfo("d-inline-flex align-items-center mt-5", "js-username", "UserName", "js-pen-username")}
+      ${UserInfo("d-inline-flex align-items-center", "js-password","Password", "js-pen-password")}
+      ${UserInfo("d-inline-flex align-items-center", "js-mail","Mail", "js-pen-mail")}
 
      
     </div>
@@ -82,6 +82,26 @@ export  async function setupProfile(){
     stateManager.setState({username: data.username});
     stateManager.setState({avatar_path: data.avatar_path});
   }
+
+  const changeAvatarButton = document.querySelector(".js-pen-avatar");
+  changeAvatarButton.addEventListener("click", async () => {
+    SPA.navigate("/profile/avatar");
+  });
+
+  const changeUsernameButton = document.querySelector(".js-pen-username");
+  changeUsernameButton.addEventListener("click", async () => {
+    SPA.navigate("/profile/username");
+  });
+
+  const changePasswordButton = document.querySelector(".js-pen-password");
+  changePasswordButton.addEventListener("click", async () => {
+    SPA.navigate("/profile/password");
+  });
+
+  const changeMailButton = document.querySelector(".js-pen-mail");
+  changeMailButton.addEventListener("click", async () => {
+    SPA.navigate("/profile/mail");
+  });
   
   const matchHistoryButton = document.querySelector(".js-match-history-button");
   matchHistoryButton.addEventListener("click", async () => {
