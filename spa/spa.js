@@ -6,7 +6,7 @@ const SPA = (() => {
   const init = ({ containerId }) => {
     container = document.getElementById(containerId);
     window.addEventListener("popstate", () => {
-      if (currentRoute && currentRoute.cleanup) {
+      if (currentRoute?.cleanup) {
         currentRoute.cleanup();
       }
       renderRoute();
