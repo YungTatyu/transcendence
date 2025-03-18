@@ -188,3 +188,8 @@ export const setupGame = async () => {
     gameRender.renderError("failed to setup game.");
   }
 };
+
+export const cleanupGame = () => {
+  PlayerActionHandler.cleanup();
+  WsConnectionManager.disconnect();
+}
