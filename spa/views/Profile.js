@@ -3,7 +3,7 @@ import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function Profile() {
-  function UserInfo(className, jsClass ,text) {
+  function UserInfo(className, jsClass,text) {
     return `
       <div class="${className}">
         <p class="user-profile-text me-2 ${jsClass}">${text}</p>
@@ -34,7 +34,7 @@ export default function Profile() {
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
-          <img id="user-avatar" src="./assets/42.png" alt="ロゴ" class="square-img-user-avatar rounded-circle me-2 pencil-icon" >
+          <img src="./assets/42.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
@@ -50,27 +50,43 @@ export default function Profile() {
     </div>
 
     <div class="d-grid gap-2 col-4 mx-auto mt-5">
-      <button class="match-history-button btn btn-primary rounded-pill" type="button">Match History</button>
+      <button class="match-history-button btn btn-primary rounded-pill js-match-history-button" type="button">Match History</button>
     </div>
 
     `;
 }
 
 export  async function setupProfile(){
-  const respose= await fetch(`${config.userService}/users?userId=${stateManager.state.userId}`);
 
-  const status = respose.status;
-  const data = await respose.json();
-
-  if (status === null) {
-    errorOutput.textContent = "Error Occured!";
-    return;
-  }
-  if (status >= 400) {
+  if(stateManager.state.username && stateManager.state.avatar_path){
+    document.querySelector(".js-username").textContent = stateManager.state.username;
+    document.querySelector(".js-user-avatar").src = stateManager.state.avatar_path;
+  
+  }else{
+    const respose= await fetch(`${config.userService}/users?userid=${stateManager.state.userId}`);
+    const status = respose.status;
+    const data = await respose.json();
+    
+    if (status === null) {
+      errorOutput.textContent = "Error Occured!";
+      return;
+    }
+    if (status >= 400) {
       errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
+    }
+    document.querySelector(".js-username").textContent = data.username;
+    document.querySelector(".js-user-avatar").src = data.avatar_path;
+
+
+    stateManager.setState({username: data.username});
+    stateManager.setState({avatar_path: data.avatar_path});
   }
   
-  document.querySelector(".js-username").textContent = data.username;
+  const matchHistoryButton = document.querySelector(".js-match-history-button");
+  matchHistoryButton.addEventListener("click", async () => {
+    SPA.navigate("/history/match");
+  });
+
   
 }

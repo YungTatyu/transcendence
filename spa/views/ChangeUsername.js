@@ -2,6 +2,7 @@ import Form from "../components/Form.js";
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import config from "../config.js";
 import SPA from "../spa.js";
+import stateManager from "../stateManager.js";
 
 export default function ChangeUsername(){
     const ChangeNameFormField = [{label: "Username", type: "username", placeholder: "New Username"}];
@@ -34,6 +35,7 @@ export function setupChageUsername(){
             errorOutput.textContent = JSON.stringify(data.error, null, "\n");
             return;
         }
+        stateManager.setState({username: new_username});
         SPA.navigate("/profile");
     })
        
