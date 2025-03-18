@@ -95,7 +95,13 @@ export const gameRender = {
       color: "white",
     };
     ctx.beginPath();
-    ctx.arc(ball.x + ball.width / 2, ball.y + ball.height / 2, ball.width / 2, 0, Math.PI * 2);
+    ctx.arc(
+      ball.x + ball.width / 2,
+      ball.y + ball.height / 2,
+      ball.width / 2,
+      0,
+      Math.PI * 2,
+    );
     ctx.fillStyle = ball.color;
     ctx.fill();
     ctx.closePath();
