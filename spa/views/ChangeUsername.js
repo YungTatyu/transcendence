@@ -1,6 +1,7 @@
 import Form from "../components/Form.js";
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import config from "../config.js";
+import SPA from "../spa.js";
 
 export default function ChangeUsername(){
     const ChangeNameFormField = [{label: "Username", type: "username", placeholder: "New Username"}];
@@ -9,7 +10,7 @@ export default function ChangeUsername(){
 
 
 export function setupChageUsername(){
-    const submitButton = document.getElementById("chnageUsername");
+    const submitButton = document.getElementById("changeUsername");
 
     submitButton.addEventListener("click", async () => {
         const new_username = document.getElementById("fieldUsername").value;
@@ -33,6 +34,7 @@ export function setupChageUsername(){
             errorOutput.textContent = JSON.stringify(data.error, null, "\n");
             return;
         }
+        SPA.navigate("/profile");
     })
        
 }
