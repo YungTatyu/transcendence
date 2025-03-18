@@ -1,10 +1,12 @@
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import config from "../config.js";
+import stateManager from "../stateManager.js";
 
 export default function Profile() {
-  function UserInfo(className, text) {
+  function UserInfo(className, jsClass ,text) {
     return `
       <div class="${className}">
-        <p class="user-profile-text me-2">${text}</p>
+        <p class="user-profile-text me-2 ${jsClass}">${text}</p>
         <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
         `;
@@ -36,9 +38,9 @@ export default function Profile() {
           <img src="./assets/pencil.png" class="pencil-icon align-self-start mt-n1">
       </div>
 
-      ${UserInfo("d-inline-flex align-items-center mt-5", "UserName")}
-      ${UserInfo("d-inline-flex align-items-center", "Password")}
-      ${UserInfo("d-inline-flex align-items-center", "Mail")}
+      ${UserInfo("d-inline-flex align-items-center mt-5", "js-username", "UserName")}
+      ${UserInfo("d-inline-flex align-items-center", "js-password","Password")}
+      ${UserInfo("d-inline-flex align-items-center", "js-mail","Mail")}
 
      
     </div>
@@ -52,4 +54,23 @@ export default function Profile() {
     </div>
 
     `;
+}
+
+export  async function setupProfile(){
+  const respose= await fetch(`${config.userService}/users?userId=${stateManager.state.userId}`);
+
+  const status = respose.status;
+  const data = await respose.json();
+
+  if (status === null) {
+    errorOutput.textContent = "Error Occured!";
+    return;
+  }
+  if (status >= 400) {
+      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+      return;
+  }
+  
+  document.querySelector(".js-username").textContent = data.username;
+  
 }
