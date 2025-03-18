@@ -50,7 +50,7 @@ export function setupInitMatch() {
     });
     stateManager.setState({ matchId: matchId });
     stateManager.setState({ players: [leftPlayerId, rightPlayerId] });
-    if (res.status >= 400) {
+    if (res.status !== 409 && res.status >= 400) {
       console.error(`error status: ${res.status}`);
       return;
     }
