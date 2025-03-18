@@ -43,7 +43,7 @@ class ActionHandler:
     def handle_player_action(json, game):
         type = json.get("type")
         key = json.get("key")
-        user_id = json.get("userid")
+        user_id = str(json.get("userid"))
         if not all([type, key, user_id]):
             return
         if not user_id.isdigit():
