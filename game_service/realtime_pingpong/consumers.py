@@ -36,7 +36,7 @@ class ActionHandler:
 
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
         game = game_contoroller.game
-        game.add_player(user_id)
+        game.add_player(user_id, match.players.index(user_id))
         return (True, 200)
 
     @staticmethod
@@ -44,7 +44,7 @@ class ActionHandler:
         type = json.get("type")
         key = json.get("key")
         user_id = json.get("userid")
-        if type is None or key is None or user_id is None:
+        if not all([type, key, user_id]):
             return
         if not user_id.isdigit():
             return
