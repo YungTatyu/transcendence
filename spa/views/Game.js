@@ -192,4 +192,4 @@ export const setupGame = async () => {
 export const cleanupGame = () => {
   PlayerActionHandler.cleanup();
   WsConnectionManager.disconnect();
-}
+};
