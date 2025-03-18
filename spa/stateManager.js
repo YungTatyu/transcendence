@@ -3,6 +3,8 @@ const stateManager = {
     count: 0,
     items: [],
     userId: null,
+    matchId: null,
+    players: null,
   },
   listeners: [],
   setState(newState) {
