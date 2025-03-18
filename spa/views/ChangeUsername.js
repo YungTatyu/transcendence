@@ -25,8 +25,6 @@ export function setupChageUsername(){
             requestBody,
         );
 
-        console.log(data);
-
         if (status === null) {
             errorOutput.textContent = "Error Occured!";
             return;

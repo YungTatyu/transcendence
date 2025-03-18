@@ -22,18 +22,18 @@ SPA.route("/", Home);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
 SPA.route("/api", ApiData, setupApiData);
-SPA.route("/profile", Profile);
-SPA.route("/match-history", MatchHistory);
 SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
 SPA.route("/game/result", GameResult);
-SPA.route("/change-username", ChangeUsername);
-SPA.route("/change-mail", ChangeMail);
-SPA.route("/change-password", ChangePassword);
-SPA.route("/change-avatar", ChangeAvatar);
+SPA.route("/profile", Profile);
+SPA.route("/profile/username", ChangeUsername);
+SPA.route("/profile/mail", ChangeMail);
+SPA.route("/profile/password", ChangePassword);
+SPA.route("/profile/avatar", ChangeAvatar);
+SPA.route("/history/match", MatchHistory);
 
 
 SPA.init({ containerId: "app" });

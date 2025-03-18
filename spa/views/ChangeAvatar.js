@@ -6,8 +6,8 @@ export default function ChangeAvatar() {
               <img id="user-avatar" src="./assets/user.png" alt="ロゴ" class="square-img-user-avatar rounded-circle mb-3" >
               
               <div class="d-flex gap-2 mt-4">
-                <button id="change-avatar" class="btn btn-primary w-50" type="button">Edit</button>
-                <button id="delete-avatar" class="btn btn-danger w-50" type="button">Delete</button>
+                <button class="btn btn-primary w-50" type="button">Edit</button>
+                <button class="btn btn-danger w-50 js-delete-avatar" type="button">Delete</button>
               </div>
             </form>
           </div>
@@ -17,6 +17,6 @@ export default function ChangeAvatar() {
 }
 
 function setupChangeAvatar(){
-  const deleteButton = document.getElementById("delete-avatar");
+  const deleteButton = document.querySelector(".js-delete-avatar");
   
 }
