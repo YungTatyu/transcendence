@@ -2,6 +2,7 @@ from datetime import timedelta
 import unittest
 from unittest.mock import MagicMock, patch
 
+from channels.testing import WebsocketCommunicator
 import pytest
 from channels.generic.websocket import WebsocketConsumer
 import jwt
@@ -33,7 +34,8 @@ from realtime_pingpong.game_controller import GameController
 
 @pytest.mark.asyncio
 class TestGameConsumer:
-    async def setup_method(self):
+    async def setup(self):
+        MatchManager.delete_all_matches()
         self.match_id = 1
         self.players = [1, 2]
         self.create_match(self.match_id, self.players)
@@ -45,8 +47,9 @@ class TestGameConsumer:
         )
         GameController.GAME_TIME_SEC = 1
 
-    async def teardown_method(self):
-        MatchManager.delete_all_matches()
+    async def teardown(self):
+        await self.player1.disconnect()
+        await self.player2.disconnect()
 
     def create_jwt_for_user(self, user_id):
         payload = {
@@ -62,12 +65,16 @@ class TestGameConsumer:
         MatchManager.create_match(match_id, users)
 
     async def create_communicator(self, match_id, user_id):
-        communicator = WebsocketConsumer(application, f"games/ws/enter-room/{match_id}")
+        communicator = WebsocketCommunicator(
+            application, f"/games/ws/enter-room/{match_id}"
+        )
         access_token = self.create_jwt_for_user(user_id)
         communicator.scope["cookies"] = {"access_token": access_token}
         connected, _ = await communicator.connect()
         return communicator, connected
 
     async def test_establish_ws_connection(self):
+        await self.setup()
         assert self.player1_connected is True
         assert self.player2_connected is True
+        await self.teardown()
