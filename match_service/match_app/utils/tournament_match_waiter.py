@@ -4,7 +4,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 from channels.db import database_sync_to_async
 from match_app.models import Match, MatchParticipant
 from match_app.utils.task_timer import TaskTimer
-from match_app.views.match_finish_view import MatchFinishView
+from match_app.utils.match_finish_service import MatchFinishService
 
 
 class TournamentMatchWaiter:
@@ -113,23 +113,23 @@ class TournamentMatchWaiter:
         for user_id in self.__user_ids:
             score = 1 if user_id == winner_user_id else 0
             results.append({"userId": user_id, "score": score})
-        await sync_to_async(MatchFinishView.update_match_data, thread_sensitive=False)(
-            self.match_id, results
-        )
+        await sync_to_async(
+            MatchFinishService.update_match_data, thread_sensitive=False
+        )(self.match_id, results)
 
         match = await sync_to_async(
             lambda: Match.objects.filter(match_id=self.match_id).first(),
             thread_sensitive=True,
         )()
         await sync_to_async(
-            MatchFinishView.register_winner_in_parent_match, thread_sensitive=False
+            MatchFinishService.register_winner_in_parent_match, thread_sensitive=False
         )(match, results)
         err_message = await sync_to_async(
-            MatchFinishView.send_match_result_to_tournament, thread_sensitive=False
+            MatchFinishService.send_match_result_to_tournament, thread_sensitive=False
         )(match)
         if err_message is not None:
             await sync_to_async(
-                MatchFinishView.rollback_match_data, thread_sensitive=False
+                MatchFinishService.rollback_match_data, thread_sensitive=False
             )(self.match_id, match, results)
 
     def __fetch_user_ids(self, match_id: int) -> set[int]:
