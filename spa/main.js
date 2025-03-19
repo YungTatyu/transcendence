@@ -13,6 +13,8 @@ import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 
+import FriendList, { setupFriendList } from "./views/Friend.js";
+
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
@@ -24,6 +26,6 @@ SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
-SPA.route("/friend", FriendList, setFriendList)
+SPA.route("/friend", FriendList, setupFriendList)
 
 SPA.init({ containerId: "app" });

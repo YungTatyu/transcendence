@@ -4,12 +4,14 @@ const config = {
     matchService: "http://localhost:8003",
     gameService: "http://localhost:8001",
     authService: "http://localhost:8000",
+    friendService: "http://localhost:7500",
   },
   production: {
     userService: "",
     matchService: "",
     gameService: "",
     authService: "",
+    friendService: "",
   },
 };
 

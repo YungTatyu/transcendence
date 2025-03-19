@@ -19,19 +19,47 @@ export default function FriendList() {
 	`;
 }
 
-export const setupFriendList = async() {
-	// friend_apiを叩く
+const data = {
+	"friends": [
+	  {
+		"fromUserId": 0,
+		"toUserId": 1,
+		"status": "pending",
+		"requestSentAt": "2025-03-18T10:58:38.293Z",
+		"approvedAt": "2025-03-18T10:58:38.293Z"
+	  },
+	  {
+		"fromUserId": 2,
+		"toUserId": 1,
+		"status": "approved",
+		"requestSentAt": "2025-03-17T12:00:00.000Z",
+		"approvedAt": "2025-03-18T13:00:00.000Z"
+	  }
+	],
+	"total": 2
+};
+
+export const setupFriendList = async() => {
+	const friendsList = document.querySelector(".friend_list");
+	friendsList.innerHTML = '';
 	async function get_friend_user_list() {
+		// friend_apiを叩く
 		// const response = await fetch("/friend");
 		// const data = awit response.json();
-		// responseの中のユーザのうち
-		// 
-		
+
+
+		// responseの中のユーザのうち自身以外のuserIdを取ってくる
+		var user_id = stateManager.state?.userId;
+		//テストのためuser_idを1にする
+		user_id = 1;
+
+		//arrayまたはmap
+		var userid_list = data.friends.map(friend => friend.fromUserId === 1 ? friend.toUserId : friend.fromUserId);
 		return (userid_list)
 	}
 
 	// 取得したしたユーザIDからUser
-	async function  get_user_name_and_avator(userid) {
+	async function  get_user_name_and_avatar(userid) {
 		// const response = await fetch("/users");
     	// const data = await response.json();
 		// return {
@@ -40,9 +68,37 @@ export const setupFriendList = async() {
 		// };
 		return {
 			username: "player",
-			avatarPath: "../asssets/42.png"
+			avatarPath: "./assets/42.png"
 		};	
-	} 
+	}
 
-	friend_list = 
+	async function get_user_status(user_id) {
+		// statusを得るapiを叩く
+		return {
+			status: "online"
+		}
+	}
+
+	var friend_list = await get_friend_user_list();
+
+	var friend_info = await Promise.all(friend_list.map(async (userid) => {
+		const user = await get_user_name_and_avatar(userid);
+		const status = await get_user_status(userid);
+		return { ...user, status: status.status };
+	}));
+
+
+	friend_info.forEach(function(friend, index){
+		const friendItem = document.createElement("div");
+		friendItem.classList.add("friend_list_item");
+		friendItem.innerHTML = `
+		<div class="gap-wrap d-flex align-items-center mt-4">
+			<img src=${friend.avatarPath}>
+			<div class="text-white">${friend.username}</div>
+			<div class="user_status">${friend.status}</div>
+			<button type="button" class="remove_bottan btn btn-primary">remove</button>
+		</div>
+		`;
+		friendsList.appendChild(friendItem);
+	})
 }
