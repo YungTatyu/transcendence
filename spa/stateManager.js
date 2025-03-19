@@ -5,6 +5,8 @@ const stateManager = {
     userId: null,
     username: null,
     avatarPath: null,
+    matchId: null,
+    players: null,
   },
   listeners: [],
   setState(newState) {

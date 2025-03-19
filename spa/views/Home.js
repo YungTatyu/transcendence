@@ -19,6 +19,9 @@ export default function Home() {
         <button onclick="SPA.navigate('/profile/password')">changePasswordへ</button>
         <button onclick="SPA.navigate('/profile/avatar')">changeAvatarへ</button>
 
+        <button onclick="SPA.navigate('/game')">gameへ</button>
+        <button onclick="SPA.navigate('/game/setup')">setupgameへ</button>
+        <button onclick="SPA.navigate('/game/result')">gameresultへ</button>
         ${Footer({ text: "© 2025 My Company" })}
         <div> store sample</div>
         ${stateManager.state.count}

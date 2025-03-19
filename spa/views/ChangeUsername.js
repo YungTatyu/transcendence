@@ -24,10 +24,9 @@ export function setupChageUsername() {
     const newUsername = document.getElementById("fieldUsername").value.trim();
     const errorOutput = document.getElementById("errorOutput");
 
-
-    if(!newUsername){
+    if (!newUsername) {
       alert("ユーザー名を入力してください");
-      return ;
+      return;
     }
 
     const requestBody = {
@@ -45,7 +44,7 @@ export function setupChageUsername() {
       errorOutput.textContent = "Error Occured!";
       return;
     }
-    if(status === 409) {
+    if (status === 409) {
       errorOutput.textContent = JSON.stringify(data, null, "\n");
       return;
     }
