@@ -341,3 +341,24 @@ async def test_no_tournament_session(
     _, connected = await create_tournament_communicator(tournament_id, user_id)
     assert not connected  # 接続が拒否されたかを確認
     TournamentSession.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_no_registered_user(
+    create_match_records_mocker,
+    dummy_matches_data_mocker,
+    mock_handle_tournament_match_bye,
+    mock_limit_tournament_match_sec,
+    setup_finished_matching,
+):
+    """
+    トーナメントは存在するが、参加登録されていないユーザーが参加するケース
+    """
+    tournament_id, _ = setup_finished_matching
+    no_registered_user_id = 1234567
+    _, connected = await create_tournament_communicator(
+        tournament_id, no_registered_user_id
+    )
+    assert not connected  # 接続が拒否されたかを確認
+    TournamentSession.clear()
