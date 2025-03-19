@@ -22,8 +22,7 @@ export default function GameResult(params) {
 }
 
 export async function setupGameResult() {
-  const homeButtonEle = document.querySelector(".game-result-button");
-  homeButtonEle.addEventListener("click", (event) => {
+  document.querySelector(".game-result-button")?.addEventListener("click", (event) => {
     event.preventDefault();
     SPA.navigate("/", null, true);
   });
