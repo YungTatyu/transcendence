@@ -127,7 +127,9 @@ async def test_start_tournament_by_room_capacity(create_match_records_mocker):
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 @pytest.mark.usefixtures("dummy_matches_data_mocker")
-async def test_start_tournament_by_force_start_time(create_match_records_mocker):
+async def test_start_tournament_by_force_start_time(
+    create_match_records_mocker, mock_tournament_forced_start_sec
+):
     """FORCED_START_TIMEに達した時にtournament_idが送信されるか"""
     communicators = []
 
@@ -152,7 +154,7 @@ async def test_start_tournament_by_force_start_time(create_match_records_mocker)
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
 @pytest.mark.usefixtures("dummy_matches_data_mocker")
-async def test_not_start_tournament():
+async def test_not_start_tournament(mock_tournament_forced_start_sec):
     """FORCED_START_TIMEに達していない場合にtournament_idが送信されないか"""
     communicators = []
 

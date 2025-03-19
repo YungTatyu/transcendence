@@ -3,6 +3,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
+from tournament_app.consumers.tournament_matching_consumer import (
+    TournamentMatchingConsumer,
+)
 from tournament_app.utils.tournament_session import TournamentSession
 
 
@@ -257,6 +260,12 @@ def mock_fetch_tournament_match_finish(mocker):
 def mock_limit_tournament_match_sec(mocker):
     """TournamentSession.LIMIT_TOURNAMENT_MATCH_SEC をモックして値を変更"""
     mocker.patch.object(TournamentSession, "LIMIT_TOURNAMENT_MATCH_SEC", 1)
+
+
+@pytest.fixture()
+def mock_tournament_forced_start_sec(mocker):
+    """TournamentMatchingConsumer.FORCED_START_TIME をモックして値を変更"""
+    mocker.patch.object(TournamentMatchingConsumer, "FORCED_START_TIME", 2)
 
 
 @pytest.fixture
