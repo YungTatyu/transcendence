@@ -20,7 +20,6 @@ export default function Game() {
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
             <div class="player-name left-player-bgc col display-5 text-truncate rounded js-left-player">
-              player1
             </div>
           </div>
         </div>
@@ -29,7 +28,7 @@ export default function Game() {
         </div>
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
-            <div class="player-name right-player-bgc col display-5 text-truncate rounded js-right-player">player2
+            <div class="player-name right-player-bgc col display-5 text-truncate rounded js-right-player">
             </div>
           </div>
         </div>
