@@ -1,10 +1,10 @@
+from django.utils.decorators import method_decorator
+from match_app.jwt_decorators import jwt_required
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchHistorySerializer, UserIdValidator
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
-from match_app.jwt_decorators import jwt_required
 
 
 class MatchHistoryView(APIView):
