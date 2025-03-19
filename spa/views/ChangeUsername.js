@@ -19,8 +19,12 @@ export default function ChangeUsername() {
 export function setupChageUsername() {
   const submitButton = document.getElementById("changeUsername");
 
-  submitButton.addEventListener("click", async () => {
+  submitButton.addEventListener("click", async (event) => {
     const newUsername = document.getElementById("fieldUsername").value;
+
+    if(!newUsername){
+      return ;
+    }
 
     const requestBody = {
       username: newUsername,
