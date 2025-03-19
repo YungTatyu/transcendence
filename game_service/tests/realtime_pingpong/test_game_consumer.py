@@ -9,6 +9,7 @@ import jwt
 
 from game_app.asgi import application
 from core.match_manager import MatchManager
+from realtime_pingpong import game_controller
 from realtime_pingpong.consumers import GameConsumer
 from realtime_pingpong.game_controller import GameController
 
@@ -37,22 +38,27 @@ class TestGameConsumer:
     async def setup(self, default_player=True):
         MatchManager.delete_all_matches()
         self.match_id = 1
-        self.players = [1, 2]
-        self.create_match(self.match_id, self.players)
+        self.player_ids = [1, 2]
+        self.create_match(self.match_id, self.player_ids)
         self.is_default = default_player
+        self.clients = list()
         if default_player:
-            self.player1, self.player1_connected = await self.create_communicator(
-                self.match_id, self.players[0]
+            self.client1, self.client1_connected = await self.create_communicator(
+                self.match_id, self.player_ids[0]
             )
-            self.player2, self.player2_connected = await self.create_communicator(
-                self.match_id, self.players[1]
+            self.client2, self.client2_connected = await self.create_communicator(
+                self.match_id, self.player_ids[1]
             )
         GameController.GAME_TIME_SEC = 1
 
     async def teardown(self):
         if self.is_default:
-            await self.player1.disconnect()
-            await self.player2.disconnect()
+            await self.client1.disconnect()
+            await self.client2.disconnect()
+        self.clients.clear()
+        match = MatchManager.get_match(self.match_id)
+        game_controller = match[MatchManager.KEY_GAME_CONTROLLER]
+        game_controller.stop_game()
 
     def create_jwt_for_user(self, user_id):
         payload = {
@@ -74,10 +80,24 @@ class TestGameConsumer:
         access_token = self.create_jwt_for_user(user_id)
         communicator.scope["cookies"] = {"access_token": access_token}
         connected, _ = await communicator.connect()
+        if connected:
+            self.clients.append(communicator)
         return communicator, connected
 
     async def test_establish_ws_connection(self):
         await self.setup()
-        assert self.player1_connected is True
-        assert self.player2_connected is True
+        assert self.client1_connected is True
+        assert self.client2_connected is True
+        await self.teardown()
+
+    def assert_endtime_message(self, actual):
+        assert actual.get("message") == GameConsumer.MessageType.MSG_TIMER
+        assert actual.get("end_time") is not None
+        assert actual.get("type") == "game.message"
+
+    async def test_ws_open_message(self):
+        await self.setup()
+        for client in self.clients:
+            res = await client.receive_json_from()
+            self.assert_endtime_message(res)
         await self.teardown()
