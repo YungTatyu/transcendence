@@ -66,9 +66,15 @@ export const gameRender = {
     },
   ) {
     const scoreEle = document.querySelector(".js-game-score");
+    if (scoreEle === null) {
+      return
+    }
     scoreEle.textContent = `${state.leftPlayer.score}:${state.rightPlayer.score}`;
 
     const canvas = document.querySelector(".game-canvas");
+    if (canvas === null) {
+      return
+    }
     const ctx = canvas.getContext("2d");
 
     // 背景クリア
@@ -139,10 +145,7 @@ export const gameRender = {
     );
   },
   renderTimer(time = 60) {
-    const timerEle = document.querySelector(".js-game-timer");
-    if (timerEle) {
-      timerEle.textContent = time;
-    }
+    document.querySelector(".js-game-timer")?.textContent = time;
   },
   renderPlayerNames(players = []) {
     const nameClasses = [".js-left-player", ".js-right-player"];
