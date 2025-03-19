@@ -140,7 +140,9 @@ export const gameRender = {
   },
   renderTimer(time = 60) {
     const timerEle = document.querySelector(".js-game-timer");
-    timerEle.textContent = time;
+    if (timerEle) {
+      timerEle.textContent = time;
+    }
   },
   renderPlayerNames(players = []) {
     const nameClasses = [".js-left-player", ".js-right-player"];
