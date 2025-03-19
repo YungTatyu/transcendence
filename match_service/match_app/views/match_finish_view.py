@@ -1,9 +1,4 @@
-from typing import Optional
-
-from django.conf import settings
-from django.utils.timezone import now
-from match_app.client.tournament_client import TournamentClient
-from match_app.models import Match, MatchParticipant
+from match_app.models import Match
 from match_app.serializers import MatchFinishSerializer
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -12,6 +7,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.views import APIView
+from match_app.utils.match_finish_service import MatchFinishService
 
 
 class MatchFinishView(APIView):
@@ -26,12 +22,12 @@ class MatchFinishView(APIView):
         results: list[dict] = serializer.validated_data["results"]
         match = Match.objects.filter(match_id=match_id).first()
 
-        finish_date = self.update_match_data(match_id, results)
+        finish_date = MatchFinishService.update_match_data(match_id, results)
         if match.mode == "Tournament":
-            self.register_winner_in_parent_match(match, results)
-            err_message = self.send_match_result_to_tournament(match)
+            MatchFinishService.register_winner_in_parent_match(match, results)
+            err_message = MatchFinishService.send_match_result_to_tournament(match)
             if err_message is not None:
-                self.rollback_match_data(match_id, match, results)
+                MatchFinishService.rollback_match_data(match_id, match, results)
                 return Response(
                     {"error": err_message}, status=HTTP_500_INTERNAL_SERVER_ERROR
                 )
