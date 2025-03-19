@@ -34,22 +34,25 @@ from realtime_pingpong.game_controller import GameController
 
 @pytest.mark.asyncio
 class TestGameConsumer:
-    async def setup(self):
+    async def setup(self, default_player=True):
         MatchManager.delete_all_matches()
         self.match_id = 1
         self.players = [1, 2]
         self.create_match(self.match_id, self.players)
-        self.player1, self.player1_connected = await self.create_communicator(
-            self.match_id, self.players[0]
-        )
-        self.player2, self.player2_connected = await self.create_communicator(
-            self.match_id, self.players[1]
-        )
+        self.is_default = default_player
+        if default_player:
+            self.player1, self.player1_connected = await self.create_communicator(
+                self.match_id, self.players[0]
+            )
+            self.player2, self.player2_connected = await self.create_communicator(
+                self.match_id, self.players[1]
+            )
         GameController.GAME_TIME_SEC = 1
 
     async def teardown(self):
-        await self.player1.disconnect()
-        await self.player2.disconnect()
+        if self.is_default:
+            await self.player1.disconnect()
+            await self.player2.disconnect()
 
     def create_jwt_for_user(self, user_id):
         payload = {
