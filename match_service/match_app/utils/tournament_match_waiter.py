@@ -15,8 +15,8 @@ class TournamentMatchWaiter:
     def __init__(self, match_id: int):
         self.__match_id = match_id
         self.__task_timer = None
-        self.__user_ids: set[int] = self.__fetch_user_ids(match_id)
-        self.__connected_user_ids: set[int] = set()
+        self.__user_ids: list[int] = self.__fetch_user_ids(match_id)
+        self.__connected_user_ids: list[int] = list()
         async_to_sync(self.set_wait_timer, force_new_loop=False)()
 
     @classmethod
@@ -50,7 +50,7 @@ class TournamentMatchWaiter:
 
     @property
     def connected_user_ids(self) -> list[int]:
-        return list(self.__connected_user_ids)
+        return self.__connected_user_ids
 
     @property
     def is_ready(self) -> bool:
@@ -58,7 +58,7 @@ class TournamentMatchWaiter:
         return len(self.__user_ids) == len(self.__connected_user_ids)
 
     def add_user(self, user_id):
-        self.__connected_user_ids.add(user_id)
+        self.__connected_user_ids.append(user_id)
 
     def del_user(self, user_id):
         """
@@ -109,7 +109,7 @@ class TournamentMatchWaiter:
     async def handle_tournament_match_bye(self):
         """不戦勝となる場合、/matches/finishと同じ処理を実行"""
         results = []
-        winner_user_id = list(self.__connected_user_ids)[0]
+        winner_user_id = self.__connected_user_ids[0]
         for user_id in self.__user_ids:
             score = 1 if user_id == winner_user_id else 0
             results.append({"userId": user_id, "score": score})
@@ -132,9 +132,9 @@ class TournamentMatchWaiter:
                 MatchFinishService.rollback_match_data, thread_sensitive=False
             )(self.match_id, match, results)
 
-    def __fetch_user_ids(self, match_id: int) -> set[int]:
+    def __fetch_user_ids(self, match_id: int) -> list[int]:
         participants = MatchParticipant.objects.filter(match_id=match_id)
-        user_ids = {participant.user_id for participant in participants}
+        user_ids = [participant.user_id for participant in participants]
         return user_ids
 
     @staticmethod
