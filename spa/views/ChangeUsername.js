@@ -20,10 +20,13 @@ export function setupChageUsername() {
   const submitButton = document.getElementById("changeUsername");
 
   submitButton.addEventListener("click", async (event) => {
+    event.preventDefault();
     const newUsername = document.getElementById("fieldUsername").value.trim();
+    const errorOutput = document.getElementById("errorOutput");
+
 
     if(!newUsername){
-      alert("ユーザー名を入力してください。");
+      alert("ユーザー名を入力してください");
       return ;
     }
 
@@ -40,6 +43,10 @@ export function setupChageUsername() {
 
     if (status === null) {
       errorOutput.textContent = "Error Occured!";
+      return;
+    }
+    if(status === 409) {
+      errorOutput.textContent = JSON.stringify(data, null, "\n");
       return;
     }
     if (status >= 400) {
