@@ -91,9 +91,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         # group nameはstrである必要がある
         self.group_name = self.scope["url_route"]["kwargs"]["matchId"]
         self.match_id = int(self.group_name)
-        # TODO
-        # 本来はuriに含めないが認証の処理に影響するため、一旦仕様を変える
-        self.user_id = int(self.scope["url_route"]["kwargs"]["userId"])
+        self.user_id = int(self.scope.get("user_id"))
+        if not self.user_id:
+            await self.close()
+            return
 
         re, status_code = ActionHandler.handle_new_connection(
             self.match_id, self.user_id
