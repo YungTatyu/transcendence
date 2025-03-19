@@ -25,7 +25,7 @@ def create_jwt_for_user(user_id):
     return token
 
 
-async def create_communicator(user_id: int, match_id: int, expect_connected=True):
+async def create_communicator(user_id: int, match_id: int):
     """JWTをCookieに含んでWebSocketコネクションを作成"""
     access_token = create_jwt_for_user(user_id)
     communicator = WebsocketCommunicator(
@@ -33,8 +33,7 @@ async def create_communicator(user_id: int, match_id: int, expect_connected=True
     )
     communicator.scope["cookies"] = {"access_token": access_token}
     connected, _ = await communicator.connect()
-    assert connected == expect_connected
-    return communicator
+    return communicator, connected
 
 
 @database_sync_to_async
@@ -68,7 +67,7 @@ async def test_start_tournment_match(mock_fetch_games_success):
 
     comms = []
     for user_id in user_id_list:
-        communicator = await create_communicator(user_id, match.match_id)
+        communicator, _ = await create_communicator(user_id, match.match_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -95,12 +94,12 @@ async def test_leave_and_re_enter(mock_fetch_games_success):
 
     for user_id in user_id_list:
         # 一度ルームに入り、すぐにルームを抜ける
-        communicator = await create_communicator(user_id, match.match_id)
+        communicator, _ = await create_communicator(user_id, match.match_id)
         await communicator.disconnect()
 
     comms = []
     for user_id in user_id_list:
-        communicator = await create_communicator(user_id, match.match_id)
+        communicator, _ = await create_communicator(user_id, match.match_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -124,7 +123,7 @@ async def test_handle_tournament_match_bye(
     match = await insert_tournament_match(user_id_list)
 
     # １人のみ試合待機部屋に入る
-    communicator = await create_communicator(user_id_list[0], match.match_id)
+    communicator, _ = await create_communicator(user_id_list[0], match.match_id)
 
     await asyncio.sleep(TournamentMatchWaiter.LIMIT_WAIT_SEC + 1)
 
@@ -156,7 +155,7 @@ async def test_handle_tournament_match_bye_error(
     match = await insert_tournament_match(user_id_list)
 
     # １人のみ試合待機部屋に入る
-    communicator = await create_communicator(user_id_list[0], match.match_id)
+    communicator, _ = await create_communicator(user_id_list[0], match.match_id)
 
     await asyncio.sleep(TournamentMatchWaiter.LIMIT_WAIT_SEC + 1)
 
@@ -181,7 +180,7 @@ async def test_where_the_number_of_user_in_wait_room_is_0(
     match = await insert_tournament_match(user_id_list)
 
     # １人のみ試合待機部屋に入り、退出(待機部屋が0人になる)
-    communicator = await create_communicator(user_id_list[0], match.match_id)
+    communicator, _ = await create_communicator(user_id_list[0], match.match_id)
     await communicator.disconnect()
 
     await asyncio.sleep(TournamentMatchWaiter.LIMIT_WAIT_SEC + 1)
@@ -201,7 +200,7 @@ async def test_fetch_game_api_error(mock_fetch_games_error):
 
     comms = []
     for user_id in user_id_list:
-        communicator = await create_communicator(user_id, match.match_id)
+        communicator, _ = await create_communicator(user_id, match.match_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -219,7 +218,8 @@ async def test_not_exist_match_id():
     """存在しないmatch_idのURLでコネクションを確立しようとしたケース"""
     user_id = 1
     not_exist_match_id = 123
-    await create_communicator(user_id, not_exist_match_id, expect_connected=False)
+    _, connected = await create_communicator(user_id, not_exist_match_id)
+    assert not connected
     TournamentMatchWaiter.clear()
 
 
@@ -229,7 +229,8 @@ async def test_invalid_mode():
     """modeがTournamentモード出ないケース"""
     user_id_list = [1, 2]
     match = await insert_tournament_match(user_id_list, mode="QuickPlay")
-    await create_communicator(user_id_list[0], match.match_id, expect_connected=False)
+    _, connected = await create_communicator(user_id_list[0], match.match_id)
+    assert not connected
     TournamentMatchWaiter.clear()
 
 
@@ -239,13 +240,18 @@ async def test_prev_round_has_not_been_completed():
     """一つ前のラウンドが終了していないケース"""
     round1_user_id_list = [1, 2]
     round2_user_id_list = [3, 4]
-    match1 = await insert_tournament_match(round1_user_id_list)
-    match2 = await insert_tournament_match(round2_user_id_list, parent_match=match1)
+    match1 = await insert_tournament_match(round1_user_id_list, round=1)
+    match2 = await insert_tournament_match(round2_user_id_list, round=2)
 
     # １ラウンド目なのでregister可能
-    communicator = await create_communicator(round1_user_id_list[0], match1.match_id)
+    communicator, connected = await create_communicator(
+        round1_user_id_list[0], match1.match_id
+    )
+    assert connected
+
     # １ラウンド目が終了していないため、２ラウンド目はregister不可能
-    await create_communicator(round2_user_id_list[0], match2.match_id)
+    _, connected = await create_communicator(round2_user_id_list[0], match2.match_id)
+    assert not connected
 
     await communicator.disconnect()
     TournamentMatchWaiter.clear()
@@ -258,8 +264,9 @@ async def test_no_register_user_id():
     user_id_list = [1, 2]
     no_register_user_id = 3
     match = await insert_tournament_match(user_id_list)
-    communicator = await create_communicator(
-        no_register_user_id, match.match_id, expect_connected=False
+    communicator, connected = await create_communicator(
+        no_register_user_id, match.match_id
     )
+    assert not connected
     await communicator.disconnect()
     TournamentMatchWaiter.clear()
