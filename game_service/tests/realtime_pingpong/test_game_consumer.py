@@ -58,8 +58,9 @@ class TestGameConsumer:
             await self.client2.disconnect()
         self.clients.clear()
         match = MatchManager.get_match(self.match_id)
-        game_controller = match[MatchManager.KEY_GAME_CONTROLLER]
-        game_controller.stop_game()
+        if match is not None:
+            game_controller = match[MatchManager.KEY_GAME_CONTROLLER]
+            game_controller.stop_game()
 
     def create_jwt_for_user(self, user_id):
         payload = {
@@ -116,6 +117,29 @@ class TestGameConsumer:
         assert right_player.get("y") is not None
         assert right_player.get("score") is not None
 
+    def assert_gameover_message(self, actual, player_ids):
+        assert actual.get("message") == GameConsumer.MessageType.MSG_GAME_OVER
+        assert actual.get("type") == "game.finish.message"
+        assert actual.get("matchId") == self.match_id
+
+        results = actual.get("results")
+        assert results is not None
+        for i, res in enumerate(results):
+            assert res.get("userId") == player_ids[i]
+            assert res.get("score") is not None
+
+    async def receive_until(self, client, target_message):
+        """
+        欲しいメッセージタイプが来るまでloopする
+        """
+        while True:
+            res = await client.receive_json_from()
+            # updateの場合は一回receiveしたら次のメッセージのはず
+            if target_message == GameConsumer.MessageType.MSG_UPDATE:
+                return None
+            if res.get("message") == target_message:
+                return res
+
     async def test_establish_ws_connection(self):
         await self.setup()
         assert self.client1_connected is True
@@ -130,10 +154,12 @@ class TestGameConsumer:
         await self.teardown()
 
     async def test_game_message(self):
+        """
+        game進行中のメッセージはgameが続いている限り送られるので、1秒間テストする
+        """
         await self.setup()
-        # endtimeのメッセージは無視する
         for client in self.clients:
-            _ = await client.receive_json_from()
+            await self.receive_until(client, GameConsumer.MessageType.MSG_UPDATE)
 
         start_time = asyncio.get_running_loop().time()
         # 1秒間game messageをテストする
@@ -141,4 +167,15 @@ class TestGameConsumer:
             for client in self.clients:
                 res = await client.receive_json_from()
                 self.assert_game_message(res, self.player_ids[0], self.player_ids[1])
+        await self.teardown()
+
+    async def test_gameover_message(self):
+        await self.setup()
+        responses = []
+        for client in self.clients:
+            responses.append(
+                await self.receive_until(client, GameConsumer.MessageType.MSG_GAME_OVER)
+            )
+        for res in responses:
+            self.assert_gameover_message(res, self.player_ids)
         await self.teardown()
