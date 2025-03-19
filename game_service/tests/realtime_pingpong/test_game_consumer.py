@@ -85,12 +85,6 @@ class TestGameConsumer:
             self.clients.append(communicator)
         return communicator, connected
 
-    async def test_establish_ws_connection(self):
-        await self.setup()
-        assert self.client1_connected is True
-        assert self.client2_connected is True
-        await self.teardown()
-
     def assert_endtime_message(self, actual):
         assert actual.get("message") == GameConsumer.MessageType.MSG_TIMER
         assert actual.get("end_time") is not None
@@ -121,6 +115,12 @@ class TestGameConsumer:
         assert right_player.get("id") == expect_right_id
         assert right_player.get("y") is not None
         assert right_player.get("score") is not None
+
+    async def test_establish_ws_connection(self):
+        await self.setup()
+        assert self.client1_connected is True
+        assert self.client2_connected is True
+        await self.teardown()
 
     async def test_ws_open_message(self):
         await self.setup()
