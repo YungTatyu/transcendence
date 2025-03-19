@@ -1,42 +1,16 @@
 import asyncio
 import time
-from datetime import timedelta
 
-import jwt
 import pytest
-from channels.testing import WebsocketCommunicator
-from config.asgi import application
 
 from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
+from tournament_app.tests.conftest import create_communicator
 from tournament_app.utils.tournament_matching_manager import (
     TournamentMatchingManager as Tmm,
 )
 from tournament_app.utils.tournament_session import TournamentSession
-
-PATH_MATCHING = "/tournaments/ws/enter-room"
-
-
-def create_jwt_for_user(user_id):
-    # JWTを生成するロジック
-    payload = {
-        "user_id": user_id,
-        "exp": timedelta(days=1).total_seconds(),
-        "iat": timedelta(days=0).total_seconds(),
-    }
-    secret_key = "your_secret_key"
-    token = jwt.encode(payload, secret_key, algorithm="HS256")
-    return token
-
-
-async def create_communicator(user_id: int):
-    """JWTをCookieに含んでWebSocketコネクションを作成"""
-    access_token = create_jwt_for_user(user_id)
-    communicator = WebsocketCommunicator(application, PATH_MATCHING)
-    communicator.scope["cookies"] = {"access_token": access_token}
-    connected, _ = await communicator.connect()
-    return communicator, connected
 
 
 @pytest.mark.asyncio(loop_scope="function")

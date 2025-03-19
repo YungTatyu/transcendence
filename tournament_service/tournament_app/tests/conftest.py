@@ -1,12 +1,18 @@
+from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
+import jwt
 import pytest
 import requests
+from channels.testing import WebsocketCommunicator
+from config.asgi import application
 
 from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer,
 )
 from tournament_app.utils.tournament_session import TournamentSession
+
+PATH_MATCHING = "/tournaments/ws/enter-room"
 
 
 @pytest.fixture()
@@ -281,3 +287,24 @@ def mock_handle_tournament_match_bye():
         new=TournamentSession.update_tournament_session_info,
     ):
         yield
+
+
+def create_jwt_for_user(user_id):
+    # JWTを生成するロジック
+    payload = {
+        "user_id": user_id,
+        "exp": timedelta(days=1).total_seconds(),
+        "iat": timedelta(days=0).total_seconds(),
+    }
+    secret_key = "your_secret_key"
+    token = jwt.encode(payload, secret_key, algorithm="HS256")
+    return token
+
+
+async def create_communicator(user_id: int):
+    """JWTをCookieに含んでWebSocketコネクションを作成"""
+    access_token = create_jwt_for_user(user_id)
+    communicator = WebsocketCommunicator(application, PATH_MATCHING)
+    communicator.scope["cookies"] = {"access_token": access_token}
+    connected, _ = await communicator.connect()
+    return communicator, connected
