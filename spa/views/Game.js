@@ -151,11 +151,7 @@ export const gameRender = {
     const nameClasses = [".js-left-player", ".js-right-player"];
     nameClasses.forEach((nameClass, index) => {
       const playerName = players[index] ?? "";
-      const element = document.querySelector(nameClass);
-
-      if (element) {
-        element.textContent = playerName;
-      }
+      document.querySelector(nameClass)?.textContent = playerName;
     });
   },
   renderError(errMessage) {
@@ -165,14 +161,8 @@ export const gameRender = {
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
-    const errEle = document.querySelector(".js-game-error");
-    const errDetail = document.querySelector(".js-game-error-detail");
-    if (errEle) {
-      errEle.textContent = "Error occured.";
-    }
-    if (errDetail) {
-      errDetail.textContent = errMessage;
-    }
+    document.querySelector(".js-game-error")?.textContent = "Error occured.";
+    document.querySelector(".js-game-error-detail")?.textContent = errMessage;
   },
 };
 
