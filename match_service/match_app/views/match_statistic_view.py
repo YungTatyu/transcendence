@@ -3,11 +3,14 @@ from match_app.serializers import UserIdValidator
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from match_app.jwt_decorators import jwt_required
 
 
 class MatchStatisticView(APIView):
     """user_idに対応する統計情報を取得する"""
 
+    @method_decorator(jwt_required)
     def get(self, _, user_id):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():
