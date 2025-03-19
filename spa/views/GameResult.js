@@ -22,8 +22,10 @@ export default function GameResult(params) {
 }
 
 export async function setupGameResult() {
-  document.querySelector(".game-result-button")?.addEventListener("click", (event) => {
-    event.preventDefault();
-    SPA.navigate("/", null, true);
-  });
+  document
+    .querySelector(".game-result-button")
+    ?.addEventListener("click", (event) => {
+      event.preventDefault();
+      SPA.navigate("/", null, true);
+    });
 }

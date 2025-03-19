@@ -66,13 +66,13 @@ export const gameRender = {
   ) {
     const scoreEle = document.querySelector(".js-game-score");
     if (scoreEle === null) {
-      return
+      return;
     }
     scoreEle.textContent = `${state.leftPlayer.score}:${state.rightPlayer.score}`;
 
     const canvas = document.querySelector(".game-canvas");
     if (canvas === null) {
-      return
+      return;
     }
     const ctx = canvas.getContext("2d");
 
