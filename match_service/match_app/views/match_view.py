@@ -3,11 +3,14 @@ from match_app.serializers import MatchSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from match_app.jwt_decorators import jwt_required
 
 
 class MatchView(APIView):
     """QueryStringに指定された条件を用いてMatchを検索"""
 
+    @method_decorator(jwt_required)
     def get(self, request):
         serializer = MatchSerializer(data=request.query_params)
         if not serializer.is_valid():
