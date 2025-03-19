@@ -1,55 +1,63 @@
 import asyncio
+from datetime import timedelta
 
+import jwt
 import pytest
 from channels.testing import WebsocketCommunicator
+from config.asgi import application
 
-from tournament_app.consumers.tournament_consumer import TournamentConsumer
 from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
 from tournament_app.consumers.tournament_state import TournamentState
 from tournament_app.utils.tournament_session import TournamentSession
 
-PATH_MATCHING = "/tournament/ws/enter-room"
-FORMAT_TOURNAMENT = "/tournament/ws/enter-room/{}"
+PATH_MATCHING = "/tournaments/ws/enter-room"
+FORMAT_TOURNAMENT = "/tournaments/ws/enter-room/{}"
 
 
-class CustomWebsocketCommunicator(WebsocketCommunicator):
-    def __init__(self, application, path, scope_override=None):
-        super().__init__(application, path)
-        if scope_override:
-            self.scope.update(scope_override)
+def create_jwt_for_user(user_id):
+    # JWTを生成するロジック
+    payload = {
+        "user_id": user_id,
+        "exp": timedelta(days=1).total_seconds(),
+        "iat": timedelta(days=0).total_seconds(),
+    }
+    secret_key = "your_secret_key"
+    token = jwt.encode(payload, secret_key, algorithm="HS256")
+    return token
 
 
-async def create_communicator(port: int):
-    communicator = CustomWebsocketCommunicator(
-        Tmc.as_asgi(),
-        PATH_MATCHING,
-        scope_override={"client": ("127.0.0.1", port)},
-    )
+async def create_communicator(user_id: int):
+    access_token = create_jwt_for_user(user_id)
+    communicator = WebsocketCommunicator(application, PATH_MATCHING)
+    communicator.scope["cookies"] = {"access_token": access_token}
     connected, _ = await communicator.connect()
-    assert connected
-    return communicator
+    return communicator, connected
 
 
-async def create_tournament_communicator(tournament_id: int):
+async def create_tournament_communicator(tournament_id: int, user_id: int):
     path = FORMAT_TOURNAMENT.format(tournament_id)
-    communicator = CustomWebsocketCommunicator(
-        TournamentConsumer.as_asgi(),
-        path,
-        scope_override={"url_route": {"kwargs": {"tournamentId": tournament_id}}},
-    )
+    access_token = create_jwt_for_user(user_id)
+    communicator = WebsocketCommunicator(application, path)
+    communicator.scope["cookies"] = {"access_token": access_token}
     connected, _ = await communicator.connect()
-    assert connected
-    return communicator
+    return communicator, connected
 
 
 @pytest.fixture()
-async def setup_finished_matching(mock_limit_tournament_match_sec) -> int:
-    """トーナメントマッチングルームに入り、マッチング終了後tournament_idを取得"""
+async def setup_finished_matching(
+    mock_limit_tournament_match_sec,
+) -> tuple[int, list[int]]:
+    """
+    トーナメントマッチングルームに入り、
+    マッチング終了後tournament_idと参加者達のuser_idを取得
+    """
     comms = []
-    for i in range(Tmc.ROOM_CAPACITY):
-        comms.append(await create_communicator(10000 + i))
+    user_ids = [(10000 + i) for i in range(Tmc.ROOM_CAPACITY)]
+    for user_id in user_ids:
+        communicator, _ = await create_communicator(user_id)
+        comms.append(communicator)
         [await communicator.receive_json_from() for communicator in comms]
 
     tournament_id = await comms[0].receive_json_from()
@@ -58,7 +66,7 @@ async def setup_finished_matching(mock_limit_tournament_match_sec) -> int:
     for communicator in comms:
         await communicator.disconnect()
 
-    return tournament_id
+    return tournament_id, user_ids
 
 
 @pytest.mark.django_db
@@ -82,10 +90,10 @@ async def test_tournament_auto_execution(
     setup_finished_matching,
 ):
     """強制勝ち上がり処理によって自動的にトーナメントが進行"""
-    tournament_id = setup_finished_matching
+    tournament_id, user_ids = setup_finished_matching
     tournament_comms = []
-    for _ in range(Tmc.ROOM_CAPACITY):
-        communicator = await create_tournament_communicator(tournament_id)
+    for user_id in user_ids:
+        communicator, _ = await create_tournament_communicator(tournament_id, user_id)
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
@@ -125,10 +133,10 @@ async def test_tournament_manual_execution(
     setup_finished_matching,
 ):
     """tournaments/finish-matchエンドポイントを叩くことよってトーナメントが進行"""
-    tournament_id = setup_finished_matching
+    tournament_id, user_ids = setup_finished_matching
     tournament_comms = []
-    for _ in range(Tmc.ROOM_CAPACITY):
-        communicator = await create_tournament_communicator(tournament_id)
+    for user_id in user_ids:
+        communicator, _ = await create_tournament_communicator(tournament_id, user_id)
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
@@ -172,10 +180,10 @@ async def test_tournament_manual_and_auto_execution(
     round1はtournaments/finish-matchが叩かれることによる手動処理
     round2,round3はTaskTimerによる自動勝ち上がり処理
     """
-    tournament_id = setup_finished_matching
+    tournament_id, user_ids = setup_finished_matching
     tournament_comms = []
-    for _ in range(Tmc.ROOM_CAPACITY):
-        communicator = await create_tournament_communicator(tournament_id)
+    for user_id in user_ids:
+        communicator, _ = await create_tournament_communicator(tournament_id, user_id)
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
@@ -218,8 +226,8 @@ async def test_tournament_manual_and_auto_execution_enter_one_user(
     """
     参加者4人に対して、トーナメントルームに入る人数は1人だけのケース
     """
-    tournament_id = setup_finished_matching
-    communicator = await create_tournament_communicator(tournament_id)
+    tournament_id, user_ids = setup_finished_matching
+    communicator, _ = await create_tournament_communicator(tournament_id, user_ids[0])
     res = await communicator.receive_json_from()
     assert res["current_round"] == 1
     assert res["state"] == TournamentState.ONGOING
@@ -258,11 +266,11 @@ async def test_fetch_matches_data_error(
     matchesエンドポイントからデータの取得が失敗した場合
     response["state"]がerrorとなる
     """
-    tournament_id = setup_finished_matching
+    tournament_id, user_ids = setup_finished_matching
 
     tournament_comms = []
-    for _ in range(Tmc.ROOM_CAPACITY):
-        communicator = await create_tournament_communicator(tournament_id)
+    for user_id in user_ids:
+        communicator, _ = await create_tournament_communicator(tournament_id, user_id)
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
@@ -294,11 +302,11 @@ async def test_fetch_tournament_match_finish_error(
     matches/finish エンドポイントを叩く処理が失敗した場合
     response["state"]がerrorとなる
     """
-    tournament_id = setup_finished_matching
+    tournament_id, user_ids = setup_finished_matching
 
     tournament_comms = []
-    for _ in range(Tmc.ROOM_CAPACITY):
-        communicator = await create_tournament_communicator(tournament_id)
+    for user_id in user_ids:
+        communicator, _ = await create_tournament_communicator(tournament_id, user_id)
         tournament_comms.append(communicator)
         res = await communicator.receive_json_from()
         assert res["current_round"] == 1
@@ -329,11 +337,7 @@ async def test_no_tournament_session(
     TournamentSessionが作成されていないケース
     """
     tournament_id = 12345
-    communicator = CustomWebsocketCommunicator(
-        TournamentConsumer.as_asgi(),
-        FORMAT_TOURNAMENT.format(tournament_id),
-        scope_override={"url_route": {"kwargs": {"tournamentId": tournament_id}}},
-    )
-    connected, _ = await communicator.connect()
+    user_id = 10000
+    _, connected = await create_tournament_communicator(tournament_id, user_id)
     assert not connected  # 接続が拒否されたかを確認
     TournamentSession.clear()
