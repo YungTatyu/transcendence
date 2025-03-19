@@ -126,7 +126,7 @@ class GameController:
 
     def __get_game_result(self, match_id):
         return {
-            "matchId": match_id,
+            "matchId": int(match_id),
             "results": [
                 {
                     "userId": self.__game.left_player.id,
