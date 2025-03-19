@@ -20,9 +20,10 @@ export function setupChageUsername() {
   const submitButton = document.getElementById("changeUsername");
 
   submitButton.addEventListener("click", async (event) => {
-    const newUsername = document.getElementById("fieldUsername").value;
+    const newUsername = document.getElementById("fieldUsername").value.trim();
 
     if(!newUsername){
+      alert("ユーザー名を入力してください。");
       return ;
     }
 
