@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta
 import unittest
 from unittest.mock import MagicMock, patch
@@ -95,9 +96,49 @@ class TestGameConsumer:
         assert actual.get("end_time") is not None
         assert actual.get("type") == "game.message"
 
+    def assert_game_message(self, actual, expect_left_id, expect_right_id):
+        assert actual.get("message") == GameConsumer.MessageType.MSG_UPDATE
+        assert actual.get("type") == "game.message"
+
+        data = actual.get("data")
+        assert data is not None
+        state = data.get("state")
+        assert state is not None
+
+        ball = state.get("ball")
+        assert ball is not None
+        assert ball.get("x") is not None
+        assert ball.get("y") is not None
+
+        left_player = state.get("left_player")
+        assert left_player is not None
+        assert left_player.get("id") == expect_left_id
+        assert left_player.get("y") is not None
+        assert left_player.get("score") is not None
+
+        right_player = state.get("right_player")
+        assert right_player is not None
+        assert right_player.get("id") == expect_right_id
+        assert right_player.get("y") is not None
+        assert right_player.get("score") is not None
+
     async def test_ws_open_message(self):
         await self.setup()
         for client in self.clients:
             res = await client.receive_json_from()
             self.assert_endtime_message(res)
+        await self.teardown()
+
+    async def test_game_message(self):
+        await self.setup()
+        # endtimeのメッセージは無視する
+        for client in self.clients:
+            _ = await client.receive_json_from()
+
+        start_time = asyncio.get_running_loop().time()
+        # 1秒間game messageをテストする
+        while (asyncio.get_running_loop().time() - start_time) < 1:
+            for client in self.clients:
+                res = await client.receive_json_from()
+                self.assert_game_message(res, self.player_ids[0], self.player_ids[1])
         await self.teardown()
