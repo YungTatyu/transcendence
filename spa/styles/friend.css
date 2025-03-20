@@ -50,10 +50,10 @@ body {
 	border-radius: 50%;
 }
 
-.friend_list_item {
+.js-friend_list_item {
 	/* display: flex; */
 	font-size: 30px;
-    /* align-items: center; 縦方向に中央揃え */
+    /* align-items: center; */
 	/* margin: 10px 100px 40px; */
 }
 
@@ -112,7 +112,7 @@ body {
 	border-radius: 20px;
 }
 
-.friend_request_list img {
+.js-friend_request_list img {
 	width: 50px;  /* 表示したい範囲(100%) */
 	height: 50px; /* 表示したい範囲(100%) */
 	object-fit: cover; /* 画像をトリミング */
