@@ -14,7 +14,16 @@ export function renderMatchingRoom(users) {
 	users.forEach(user => {
 		const div = document.createElement("div");
 		div.classList.add("matching-room-user");
-		div.textContent = user.name + user.avatarPath;
+
+		const avatarImg = document.createElement("img");
+		avatarImg.src = user.avatarPath;
+		avatarImg.alt = "";
+		div.appendChild(avatarImg);
+
+		const nameText = document.createElement("p");
+		nameText.textContent = user.name;
+		div.appendChild(nameText);
+
 		room.appendChild(div);
 	});
 	updateSizes();
