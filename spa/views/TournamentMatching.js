@@ -1,9 +1,11 @@
-import MatchingRoom, { renderMatchingRoom } from "../components/MatchingRoom.js";
+import MatchingRoom, {
+  renderMatchingRoom,
+} from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import WaitOrStart from "../components/WaitOrStart.js";
 
 export default function TournamentMatching() {
-	return `
+  return `
       ${TitleMatchingRoom("Tournament")}
       ${tournamentMatchingInfo()}
       ${MatchingRoom()}
@@ -12,19 +14,19 @@ export default function TournamentMatching() {
 }
 
 export function setupTournamentMatching() {
-	let jsonData = [
-		{ avatarPath: "/assets/user.png", name: "rikeda1" },
-		{ avatarPath: "/assets/user.png", name: "rikeda2" },
-		{ avatarPath: "/assets/user.png", name: "rikeda3" },
-		{ avatarPath: "/assets/user.png", name: "rikeda4" },
-	];
+  const jsonData = [
+    { avatarPath: "/assets/user.png", name: "rikeda1" },
+    { avatarPath: "/assets/user.png", name: "rikeda2" },
+    { avatarPath: "/assets/user.png", name: "rikeda3" },
+    { avatarPath: "/assets/user.png", name: "rikeda4" },
+  ];
 
-	renderMatchingRoom(jsonData);
-	changeMatchingInfo(4, 16, 9);
+  renderMatchingRoom(jsonData);
+  changeMatchingInfo(4, 16, 9);
 }
 
 function tournamentMatchingInfo() {
-	return `
+  return `
       <div id="tournament-matching-info" class="d-flex flex-column justify-content-center align-items-center text-center">
         <span>
           <span id="current-players">3</span>/<span id="max-players">16</span> players
@@ -37,11 +39,11 @@ function tournamentMatchingInfo() {
 }
 
 function changeMatchingInfo(playerSize, maxPlayerSize, remainSec) {
-	const currentPlayers = document.getElementById("current-players");
-	const maxPlayers = document.getElementById("max-players");
-	const matchingRemainSec = document.getElementById("matching-remain-sec");
+  const currentPlayers = document.getElementById("current-players");
+  const maxPlayers = document.getElementById("max-players");
+  const matchingRemainSec = document.getElementById("matching-remain-sec");
 
-	currentPlayers.textContent = playerSize;
-	maxPlayers.textContent = maxPlayerSize;
-	matchingRemainSec.textContent = `[${remainSec}]`;
+  currentPlayers.textContent = playerSize;
+  maxPlayers.textContent = maxPlayerSize;
+  matchingRemainSec.textContent = `[${remainSec}]`;
 }

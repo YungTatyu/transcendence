@@ -1,9 +1,11 @@
-import MatchingRoom, { renderMatchingRoom } from "../components/MatchingRoom.js";
+import MatchingRoom, {
+  renderMatchingRoom,
+} from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import WaitOrStart from "../components/WaitOrStart.js";
 
 export default function QuickPlayMatching() {
-	return `
+  return `
       ${TitleMatchingRoom("Quick Play")}
       ${matchingInfo()}
       ${MatchingRoom()}
@@ -12,13 +14,13 @@ export default function QuickPlayMatching() {
 }
 
 export function setupQuickPlayMatching() {
-	let jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
+  const jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
 
-	renderMatchingRoom(jsonData);
+  renderMatchingRoom(jsonData);
 }
 
 function matchingInfo() {
-	return `
+  return `
       <p id="matching-info" class="d-flex justify-content-center align-items-center">
         LOOKING FOR AN OPPONENT.
       </p>
@@ -26,8 +28,8 @@ function matchingInfo() {
 }
 
 function changeMatchingInfo() {
-	const matchingInfo = document.getElementById("matching-info");
+  const matchingInfo = document.getElementById("matching-info");
 
-	matchingInfo.innerHTML = "OPPONENT FOUND.";
-	matchingInfo.style.color = "#0CC0DF";
+  matchingInfo.innerHTML = "OPPONENT FOUND.";
+  matchingInfo.style.color = "#0CC0DF";
 }

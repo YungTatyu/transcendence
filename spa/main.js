@@ -10,12 +10,16 @@ import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import MatchHistory from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
 import Profile from "./views/Profile.js";
+import QuickPlayMatching, {
+  setupQuickPlayMatching,
+} from "./views/QuickPlayMatching.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
+import TournamentMatching, {
+  setupTournamentMatching,
+} from "./views/TournamentMatching.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
-import QuickPlayMatching, { setupQuickPlayMatching } from "./views/QuickPlayMatching.js";
-import TournamentMatching, { setupTournamentMatching } from "./views/TournamentMatching.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
