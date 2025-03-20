@@ -280,6 +280,7 @@ class TestGameConsumer:
         await self.setup()
         await self.disconnect_client(self.clients[0])
         # 再接続
+        # openメッセージの後に、updateメッセージが届くはず
         client, _ = await self.create_communicator(self.match_id, self.player_ids[0])
         res = await client.receive_json_from()
         self.assert_open_message(res)
