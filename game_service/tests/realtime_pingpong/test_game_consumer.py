@@ -39,7 +39,6 @@ class TestGameConsumer:
         self.match_id = 1
         self.player_ids = [1, 2]
         self.create_match(self.match_id, self.player_ids)
-        self.is_default = default_player
         self.clients = list()
         if default_player:
             self.client1, self.client1_connected = await self.create_communicator(
@@ -51,15 +50,18 @@ class TestGameConsumer:
         GameController.GAME_TIME_SEC = 1
 
     async def teardown(self):
-        if self.is_default:
-            await self.client1.disconnect()
-            await self.client2.disconnect()
+        for client in self.clients:
+            await client.disconnect()
         match = MatchManager.get_match(self.match_id)
         if match is not None:
             game_controller = match[MatchManager.KEY_GAME_CONTROLLER]
             game_controller.stop_game()
         # メンバ変数すべてを削除
         self.__dict__.clear()
+
+    async def disconnect_client(self, client):
+        await client.disconnect()
+        self.clients.remove(client)
 
     def create_jwt_for_user(self, user_id):
         payload = {
@@ -269,6 +271,21 @@ class TestGameConsumer:
                 "key": "randomkey",
             }
         )
+        await self.teardown()
+
+    async def test_reconnect(self):
+        """
+        接続してから切断する。そのあと再接続
+        """
+        await self.setup()
+        await self.disconnect_client(self.clients[0])
+        # 再接続
+        client, _ = await self.create_communicator(self.match_id, self.player_ids[0])
+        res = await client.receive_json_from()
+        self.assert_open_message(res)
+        res = await client.receive_json_from()
+        self.assert_game_message(res, self.player_ids[0], self.player_ids[1])
+
         await self.teardown()
 
     async def test_error_missing_jwt(self):
