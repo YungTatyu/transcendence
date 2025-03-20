@@ -32,9 +32,9 @@ class ActionHandler:
         if user_id not in match.players:
             return (False, 1008)
 
-        # TODO: user認証
-
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
+        if game_contoroller.player_manager.is_active(user_id):
+            return (False, 1008)
         game = game_contoroller.game
         game.add_player(user_id, match.players.index(user_id))
         return (True, 200)
