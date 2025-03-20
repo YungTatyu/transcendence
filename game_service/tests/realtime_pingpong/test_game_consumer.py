@@ -56,11 +56,12 @@ class TestGameConsumer:
         if self.is_default:
             await self.client1.disconnect()
             await self.client2.disconnect()
-        self.clients.clear()
         match = MatchManager.get_match(self.match_id)
         if match is not None:
             game_controller = match[MatchManager.KEY_GAME_CONTROLLER]
             game_controller.stop_game()
+        # メンバ変数すべてを削除
+        self.__dict__.clear()
 
     def create_jwt_for_user(self, user_id):
         payload = {
@@ -86,7 +87,7 @@ class TestGameConsumer:
             self.clients.append(communicator)
         return communicator, connected
 
-    def assert_endtime_message(self, actual):
+    def assert_open_message(self, actual):
         assert actual.get("message") == GameConsumer.MessageType.MSG_TIMER
         assert actual.get("end_time") is not None
         assert actual.get("type") == "game.message"
@@ -150,7 +151,7 @@ class TestGameConsumer:
         await self.setup()
         for client in self.clients:
             res = await client.receive_json_from()
-            self.assert_endtime_message(res)
+            self.assert_open_message(res)
         await self.teardown()
 
     async def test_game_message(self):
