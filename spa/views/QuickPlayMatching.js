@@ -1,7 +1,8 @@
 import MatchingRoom, { renderMatchingRoom } from "../components/MatchingRoom.js";
+import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 
 export default function QuickPlayMatching() {
-	return MatchingRoom();
+	return TitleMatchingRoom("Quick Play") + MatchingRoom();
 }
 
 export function setupQuickPlayMatching() {

@@ -9,6 +9,8 @@
 
     border: 5px solid white;
     border-radius: 10px;
+	
+	margin-top: 15%;
 }
 
 /* グリッドの設定 */
@@ -33,4 +35,36 @@
     background-color: #000000;
     color: white;
     border-radius: 10px;
+}
+
+
+/* タイトルの共通スタイル */
+.title-matching-room {
+    font-size: 7rem;
+    font-weight: bold;
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%, -50%);
+}
+
+/* 1枚目（後ろ） */
+.mr-first {
+    z-index: 1;
+    transform: translate(-50%, -50%) rotate(0deg) translate(-8px, -8px);
+    color: #FFFFFF;
+}
+
+/* 2枚目（中間） */
+.mr-second {
+    z-index: 2;
+    transform: translate(-50%, -50%) rotate(0deg) translate(4px, -4px);
+    color: #59e6fe;
+}
+
+/* 3枚目（前） */
+.mr-third {
+    z-index: 3;
+    transform: translate(-50%, -50%) rotate(0deg) translate(8px, -8px);
+    color: #0BB0CC;
 }
