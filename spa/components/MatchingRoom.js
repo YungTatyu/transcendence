@@ -9,7 +9,6 @@ export default function MatchingRoom() {
 export function renderMatchingRoom(users) {
   const room = document.getElementById("matching-room");
   room.innerHTML = "";
-  room.style.display = "grid"; // Grid レイアウトを適用
 
   for (const user of users) {
     const div = document.createElement("div");

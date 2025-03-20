@@ -1,4 +1,4 @@
-/* コンテナのスタイル */
+/* MatchingRoomコンポーネント全体のスタイル */
 #matching-room-container {
   width: 100vw;
   height: 50vh;
@@ -11,7 +11,7 @@
   border-radius: 10px;
 }
 
-/* グリッドの設定 */
+/* MatchingRoomコンポーネントのグリッドのスタイル */
 #matching-room {
   width: 100%;
   height: 100%;
@@ -22,7 +22,7 @@
   align-content: center;
 }
 
-/* 各アイテムのスタイル */
+/* MatchingRoomのアイテムのスタイル */
 .matching-room-user {
   width: 100%;
   height: 100%;
@@ -35,7 +35,7 @@
   border-radius: 10px;
 }
 
-/* タイトルの共通スタイル */
+/* MatchingRoomのタイトルのスタイル */
 .title-matching-room {
   font-size: 7rem;
   font-weight: bold;
@@ -45,39 +45,42 @@
   transform: translate(-50%, -50%);
 }
 
-/* 1枚目（後ろ） */
+/* MatchingRoomのタイトルの1枚目（後ろ） */
 .mr-first {
   z-index: 1;
   transform: translate(-50%, -50%) rotate(0deg) translate(-8px, -8px);
   color: #ffffff;
 }
 
-/* 2枚目（中間） */
+/* MatchingRoomのタイトルの2枚目（中間） */
 .mr-second {
   z-index: 2;
   transform: translate(-50%, -50%) rotate(0deg) translate(4px, -4px);
   color: #59e6fe;
 }
 
-/* 3枚目（前） */
+/* MatchingRoomのタイトルの3枚目（前） */
 .mr-third {
   z-index: 3;
   transform: translate(-50%, -50%) rotate(0deg) translate(8px, -8px);
   color: #0bb0cc;
 }
 
+/* MatchingRoomアバター画像のスタイル */
 .matching-room-user img {
   max-width: 100%; /* 最大幅100%で調整 */
   max-height: 100px; /* 最大高さを指定 */
   object-fit: cover; /* 画像のアスペクト比を保ちながら表示 */
 }
 
+/* QuickPlayMatchingRoomのマッチング状況のスタイル */
 #matching-info {
   color: #7733ff;
   font-size: 5rem;
   margin-top: 10%;
 }
 
+/* WaitかStartかのUIのスタイル */
 #wait-or-start {
   color: #0ca5bf;
   font-size: 4rem;
@@ -86,6 +89,7 @@
   text-shadow: 0 0 10px #0ca5bf, 0 0 20px #0ca5bf, 0 0 30px #0ca5bf;
 }
 
+/* TournamentMatchingRoomのマッチング状況のスタイル */
 #tournament-matching-info {
   color: #ffffff;
   font-size: 4rem;
@@ -94,10 +98,12 @@
   line-height: 1.2;
 }
 
+/* TournamentMatchingRoom内の人数のスタイル */
 #current-players {
   color: #0cc0df;
 }
 
+/* TournamentMatchingRoom内の最大人数のスタイル */
 #matching-remain-sec {
   color: #0cc0df;
 }
