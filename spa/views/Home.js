@@ -3,7 +3,7 @@ import Header from "../components/Header.js";
 import stateManager from "../stateManager.js";
 
 export default function Home() {
-  return `
+	return `
         ${Header({ title: "ホーム" })}
         <p>これはホームページです。</p>
         <img src="./assets/42.png" alt="ロゴ">
@@ -17,6 +17,7 @@ export default function Home() {
         <button onclick="SPA.navigate('/game')">gameへ</button>
         <button onclick="SPA.navigate('/game/setup')">setupgameへ</button>
         <button onclick="SPA.navigate('/game/result')">gameresultへ</button>
+        <button onclick="SPA.navigate('/quick-play/matching')">QuickPlayMatchingへ</button>
         ${Footer({ text: "© 2025 My Company" })}
         <div> store sample</div>
         ${stateManager.state.count}
