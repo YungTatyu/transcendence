@@ -9,7 +9,7 @@ export default function TitileAndHomeButton(titleText) {
         </div>
         <div class="col align-self-end">
           <div class="position-relative">
-            <img src="./assets/home.png" class="home-icon position-absolute top-0 end-0">
+            <img src="/assets/home.png" class="home-icon position-absolute top-0 end-0">
           </div>
         </div>
       </div>
