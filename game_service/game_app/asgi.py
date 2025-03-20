@@ -11,7 +11,6 @@ import os
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from realtime_pingpong.middleware import JWTAuthMiddleware
 from realtime_pingpong.routing import websocket_urlpatterns

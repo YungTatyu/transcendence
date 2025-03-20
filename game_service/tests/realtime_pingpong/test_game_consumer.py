@@ -1,14 +1,12 @@
 import asyncio
 from datetime import timedelta
 
-from channels.testing import WebsocketCommunicator
-import pytest
 import jwt
-
-from core.pingpong import PingPong, Player, Screen
-from game_app.asgi import application
+import pytest
+from channels.testing import WebsocketCommunicator
 from core.match_manager import MatchManager
-from realtime_pingpong import game_controller
+from core.pingpong import Player, Screen
+from game_app.asgi import application
 from realtime_pingpong.consumers import ActionHandler, GameConsumer
 from realtime_pingpong.game_controller import GameController
 
