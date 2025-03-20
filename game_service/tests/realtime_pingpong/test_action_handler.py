@@ -71,51 +71,40 @@ class ActionHandlerTestCase(unittest.IsolatedAsyncioTestCase):
             {
                 "type": ActionHandler.ACTION_PADDLE,
                 "key": "KeyW",
-                "userid": "1",
             },
             self.mock_game,
+            2,
         )
-        self.mock_game.player_action.assert_called_once_with(1, "KeyW")
+        self.mock_game.player_action.assert_called_once_with(2, "KeyW")
 
-    def test_handle_player_action_unknown_key(self):
+    def test_handle_player_action_unknown_type(self):
         ActionHandler.handle_player_action(
             {
                 "type": "test",
                 "key": "KeyW",
-                "userid": "1",
             },
             self.mock_game,
+            2,
+        )
+        self.mock_game.player_action.assert_not_called()
+
+    def test_handle_player_action_missing_type(self):
+        ActionHandler.handle_player_action(
+            {
+                "key": "KeyW",
+            },
+            self.mock_game,
+            2,
         )
         self.mock_game.player_action.assert_not_called()
 
     def test_handle_player_action_missing_key(self):
         ActionHandler.handle_player_action(
             {
-                "key": "KeyW",
-                "userid": "1",
-            },
-            self.mock_game,
-        )
-        self.mock_game.player_action.assert_not_called()
-
-    def test_handle_player_action_missing_userid(self):
-        ActionHandler.handle_player_action(
-            {
                 "type": ActionHandler.ACTION_PADDLE,
-                "key": "KeyW",
             },
             self.mock_game,
-        )
-        self.mock_game.player_action.assert_not_called()
-
-    def test_handle_player_action_invalid_userid(self):
-        ActionHandler.handle_player_action(
-            {
-                "type": ActionHandler.ACTION_PADDLE,
-                "key": "KeyW",
-                "userid": "test",
-            },
-            self.mock_game,
+            2,
         )
         self.mock_game.player_action.assert_not_called()
 
