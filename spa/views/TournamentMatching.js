@@ -20,6 +20,7 @@ export function setupTournamentMatching() {
 	];
 
 	renderMatchingRoom(jsonData);
+	changeMatchingInfo(4, 16, 9);
 }
 
 function tournamentMatchingInfo() {
@@ -35,5 +36,12 @@ function tournamentMatchingInfo() {
     `;
 }
 
-function changeMatchingInfo(userSize, maxUserSize, remainSec) {
+function changeMatchingInfo(playerSize, maxPlayerSize, remainSec) {
+	const currentPlayers = document.getElementById("current-players");
+	const maxPlayers = document.getElementById("max-players");
+	const matchingRemainSec = document.getElementById("matching-remain-sec");
+
+	currentPlayers.textContent = playerSize;
+	maxPlayers.textContent = maxPlayerSize;
+	matchingRemainSec.textContent = `[${remainSec}]`;
 }
