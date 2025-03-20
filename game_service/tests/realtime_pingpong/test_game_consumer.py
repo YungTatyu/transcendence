@@ -1,17 +1,15 @@
 import asyncio
 from datetime import timedelta
-import unittest
-from unittest.mock import MagicMock, patch
 
 from channels.testing import WebsocketCommunicator
 import pytest
-from channels.generic.websocket import WebsocketConsumer
 import jwt
 
+from core.pingpong import PingPong, Player, Screen
 from game_app.asgi import application
 from core.match_manager import MatchManager
 from realtime_pingpong import game_controller
-from realtime_pingpong.consumers import GameConsumer
+from realtime_pingpong.consumers import ActionHandler, GameConsumer
 from realtime_pingpong.game_controller import GameController
 
 
@@ -142,6 +140,19 @@ class TestGameConsumer:
             if res.get("message") == target_message:
                 return res
 
+    async def receive_update_message_until(self, client, old_values):
+        """
+        playerのactionが反映されるまでreceiveを続ける
+        """
+        while True:
+            res = await client.receive_json_from()
+            actual = dict()
+            for key, _ in old_values.items():
+                state = res.get("data").get("state")
+                actual[key] = state.get(key)
+            if all(actual[key] != old_values[key] for key in actual):
+                return res
+
     async def test_establish_ws_connection(self):
         await self.setup()
         assert self.client1_connected is True
@@ -184,6 +195,62 @@ class TestGameConsumer:
         for res in responses:
             self.assert_gameover_message(res, self.player_ids)
         assert MatchManager.get_match(self.match_id) is None
+        await self.teardown()
+
+    async def test_send_message(self):
+        """
+        接続さえできればメッセージは送れるはず
+        sendしたメッセージがちゃんと反映されているか
+        """
+        await self.setup(default_player=False)
+        await self.create_communicator(self.match_id, self.player_ids[0])
+        # gameははじまっていないけどメッセージはおくれる.なにも起こらない
+        await self.clients[0].send_json_to(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": Player.KEY + "W",
+            }
+        )
+        await self.create_communicator(self.match_id, self.player_ids[1])
+        for client in self.clients:
+            await self.receive_until(client, GameConsumer.MessageType.MSG_UPDATE)
+
+        responses = []
+        for client in self.clients:
+            responses.append(await client.receive_json_from())
+        # paddleの初期位置を取得
+        initial_pos = dict()
+        for res in responses:
+            state = res.get("data").get("state")
+            assert state.get("left_player").get("y") == Screen.HEIGHT / 2
+            assert state.get("right_player").get("y") == Screen.HEIGHT / 2
+            initial_pos["left_player"] = state.get("left_player").get("y")
+            initial_pos["right_player"] = state.get("right_player").get("y")
+
+        # それぞれパドルを逆方向に動かす
+        await self.clients[0].send_json_to(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": Player.KEY + "W",
+            }
+        )
+        await self.clients[1].send_json_to(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": Player.KEY + "S",
+            }
+        )
+
+        responses.clear()
+        for client in self.clients:
+            responses.append(
+                await self.receive_update_message_until(client, initial_pos)
+            )
+        # paddleの位置がちゃんと移動しているか
+        for res in responses:
+            state = res.get("data").get("state")
+            assert state.get("left_player").get("y") < initial_pos.get("left_player")
+            assert state.get("right_player").get("y") > initial_pos.get("right_player")
         await self.teardown()
 
     async def test_error_missing_jwt(self):
