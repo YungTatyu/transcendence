@@ -40,16 +40,13 @@ class ActionHandler:
         return (True, 200)
 
     @staticmethod
-    def handle_player_action(json, game):
+    def handle_player_action(json, game, user_id):
         type = json.get("type")
         key = json.get("key")
-        user_id = str(json.get("userid"))
-        if not all([type, key, user_id]):
-            return
-        if not user_id.isdigit():
+        if not all([type, key]):
             return
         if type == ActionHandler.ACTION_PADDLE:
-            game.player_action(int(user_id), key)
+            game.player_action(user_id, key)
 
     @staticmethod
     async def handle_game_connection(match_id, player_id):
@@ -123,7 +120,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
         game = match_dict[MatchManager.KEY_GAME_CONTROLLER].game
         text_data_json = json.loads(text_data)
-        ActionHandler.handle_player_action(text_data_json, game)
+        ActionHandler.handle_player_action(text_data_json, game, self.user_id)
 
     # channel_layer.group_sendのtypeがgame.messageのときにこの関数が呼ばれる
     async def game_message(self, event):
