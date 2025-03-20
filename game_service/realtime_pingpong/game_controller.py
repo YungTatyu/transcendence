@@ -22,6 +22,8 @@ class PlayerManager:
             self.players[player_id] = False
 
     def is_active(self, player_id):
+        if self.players.get(player_id) is None:
+            return False
         return self.players[player_id]
 
     def has_active_players(self):
@@ -48,6 +50,10 @@ class GameController:
     @property
     def game(self):
         return self.__game
+
+    @property
+    def player_manager(self):
+        return self.__player_manager
 
     def start_game(self, group_name):
         self.__player_manager.add_players(
