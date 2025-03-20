@@ -19,7 +19,10 @@ class ActionHandlerTestCase(unittest.IsolatedAsyncioTestCase):
 
         self.mock_game_controller = MagicMock()
         self.mock_game = MagicMock()
+        self.mock_player_manager = MagicMock()
+        self.mock_player_manager.is_active.return_value = False
         self.mock_game_controller.game = self.mock_game
+        self.mock_game_controller.player_manager = self.mock_player_manager
         self.mock_game_controller.start_game = MagicMock(return_value=None)
         self.mock_game_controller.reconnect_event = AsyncMock(return_value=None)
         self.mock_game_controller.disconnect_event = MagicMock(return_value=None)

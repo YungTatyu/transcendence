@@ -301,3 +301,12 @@ class TestGameConsumer:
         _, connected = await self.create_communicator(self.match_id, 3)
         assert connected is False
         await self.teardown()
+
+    async def test_error_mulit_connections(self):
+        """
+        複数の端末で接続する場合
+        """
+        await self.setup()
+        _, connected = await self.create_communicator(self.match_id, self.player_ids[0])
+        assert connected is False
+        await self.teardown()
