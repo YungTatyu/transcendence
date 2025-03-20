@@ -14,8 +14,9 @@ import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 
 import FriendList, { setupFriendList } from "./views/FriendList.js";
-import FriendRequestList, { setupFriendRequestList } from "./views/FriendRequestList.js";
-
+import FriendRequestList, {
+  setupFriendRequestList,
+} from "./views/FriendRequestList.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
@@ -28,7 +29,11 @@ SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame);
-SPA.route("/friend/friend-list", FriendList, setupFriendList)
-SPA.route("/friend/friend-request-list", FriendRequestList, setupFriendRequestList)
+SPA.route("/friend/friend-list", FriendList, setupFriendList);
+SPA.route(
+  "/friend/friend-request-list",
+  FriendRequestList,
+  setupFriendRequestList,
+);
 
 SPA.init({ containerId: "app" });
