@@ -13,25 +13,6 @@ from realtime_pingpong.consumers import ActionHandler, GameConsumer
 from realtime_pingpong.game_controller import GameController
 
 
-# class TestGameConsumer(unittest.IsolatedAsyncioTestCase):
-#     @patch("channels.layers.get_channel_layer", return_value=MagicMock())
-#     async def test_finish_game(self, mock_get_channel_layer):
-#         MatchManager.remove_match = MagicMock(return_value=None)
-#
-#         await GameConsumer.finish_game(
-#             {
-#                 "matchId": 1,
-#                 "results": [
-#                     {"userId": 1, "score": 2},
-#                     {"userId": 2, "score": 6},
-#                 ],
-#             },
-#             "1",
-#         )
-#         MatchManager.remove_match.assert_called_once_with(1)
-#
-
-
 @pytest.mark.asyncio
 class TestGameConsumer:
     async def setup(self, default_player=True):
@@ -297,6 +278,9 @@ class TestGameConsumer:
         await self.teardown()
 
     async def test_error_wrong_userid(self):
+        """
+        matchの参加者でないユーザのコネクション
+        """
         await self.setup(default_player=False)
         _, connected = await self.create_communicator(self.match_id, 3)
         assert connected is False
