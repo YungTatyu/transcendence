@@ -68,11 +68,41 @@ class TestGameConsumer:
         return communicator, connected
 
     def assert_open_message(self, actual):
+        """
+        以下のようなデータを想定
+        {
+            end_time: 1742469890,
+            message: "timer",
+            type: "game.message",
+        }
+        """
         assert actual.get("message") == GameConsumer.MessageType.MSG_TIMER
         assert actual.get("end_time") is not None
         assert actual.get("type") == "game.message"
 
     def assert_game_message(self, actual, expect_left_id, expect_right_id):
+        """
+        以下のようなデータを想定
+        {
+            data: {
+                state: {
+                    ball: {x: 404, y: 404},
+                    left_player: {
+                        id: 1,
+                        y: 250,
+                        score: 0,
+                    },
+                    right_player: {
+                        id: 2,
+                        y: 250,
+                        score: 0,
+                    },
+                },
+            },
+            message: "update",
+            type: "game.message",
+        }
+        """
         assert actual.get("message") == GameConsumer.MessageType.MSG_UPDATE
         assert actual.get("type") == "game.message"
 
@@ -99,6 +129,24 @@ class TestGameConsumer:
         assert right_player.get("score") is not None
 
     def assert_gameover_message(self, actual, player_ids):
+        """
+        以下のようなデータを想定
+        {
+            matchId: 1,
+            results: [
+                {
+                    userId: 1,
+                    score: 12,
+                },
+                {
+                    userId: 2,
+                    score: 4,
+                },
+            ],
+            message: "gameover",
+            type: "game.finish.message",
+        }
+        """
         assert actual.get("message") == GameConsumer.MessageType.MSG_GAME_OVER
         assert actual.get("type") == "game.finish.message"
         assert actual.get("matchId") == self.match_id
