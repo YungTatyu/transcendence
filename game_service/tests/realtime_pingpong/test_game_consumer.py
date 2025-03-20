@@ -76,10 +76,11 @@ class TestGameConsumer:
     def create_match(self, match_id, users):
         MatchManager.create_match(match_id, users)
 
+    def get_uri(self, match_id):
+        return f"/games/ws/enter-room/{match_id}"
+
     async def create_communicator(self, match_id, user_id):
-        communicator = WebsocketCommunicator(
-            application, f"/games/ws/enter-room/{match_id}"
-        )
+        communicator = WebsocketCommunicator(application, self.get_uri(match_id))
         access_token = self.create_jwt_for_user(user_id)
         communicator.scope["cookies"] = {"access_token": access_token}
         connected, _ = await communicator.connect()
@@ -171,6 +172,9 @@ class TestGameConsumer:
         await self.teardown()
 
     async def test_gameover_message(self):
+        """
+        gameのresultメッセージとcleanup処理のテスト
+        """
         await self.setup()
         responses = []
         for client in self.clients:
@@ -179,4 +183,18 @@ class TestGameConsumer:
             )
         for res in responses:
             self.assert_gameover_message(res, self.player_ids)
+        assert MatchManager.get_match(self.match_id) is None
+        await self.teardown()
+
+    async def test_error_missing_jwt(self):
+        await self.setup(default_player=False)
+        communicator = WebsocketCommunicator(application, self.get_uri(self.match_id))
+        connected, _ = await communicator.connect()
+        assert connected is False
+        await self.teardown()
+
+    async def test_error_wrong_userid(self):
+        await self.setup(default_player=False)
+        _, connected = await self.create_communicator(self.match_id, 3)
+        assert connected is False
         await self.teardown()
