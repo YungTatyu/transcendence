@@ -78,3 +78,11 @@
 	font-size: 5rem;
 	margin-top:10%;
 }
+
+#wait-or-start {
+	color: #0CA5BF;
+	font-size: 4rem;
+	font-weight: bold;
+	filter: blur(1px);  /* 文字をぼかす */
+	text-shadow: 0 0 10px #0CA5BF, 0 0 20px #0CA5BF, 0 0 30px #0CA5BF;
+}

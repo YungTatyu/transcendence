@@ -1,5 +1,6 @@
 import MatchingRoom, { renderMatchingRoom } from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
+import WaitOrStart from "../components/WaitOrStart.js";
 
 export default function QuickPlayMatching() {
 	return `
@@ -8,6 +9,7 @@ export default function QuickPlayMatching() {
         LOOKING FOR AN OPPONENT.
       </p>
       ${MatchingRoom()}
+      ${WaitOrStart()}
 	`;
 }
 
