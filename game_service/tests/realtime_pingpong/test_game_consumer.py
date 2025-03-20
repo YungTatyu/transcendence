@@ -284,7 +284,7 @@ class TestGameConsumer:
         assert connected is False
         await self.teardown()
 
-    async def test_error_mulit_connections(self):
+    async def test_error_multi_connections(self):
         """
         複数の端末で接続する場合
         """
