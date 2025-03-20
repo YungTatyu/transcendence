@@ -253,6 +253,24 @@ class TestGameConsumer:
             assert state.get("right_player").get("y") > initial_pos.get("right_player")
         await self.teardown()
 
+    async def test_send_random_message(self):
+        """
+        適当なメッセージを送ってもcrashしない
+        """
+        await self.setup()
+        await self.clients[0].send_json_to(
+            {
+                "random": "hello world",
+            }
+        )
+        await self.clients[1].send_json_to(
+            {
+                "type": ActionHandler.ACTION_PADDLE,
+                "key": "randomkey",
+            }
+        )
+        await self.teardown()
+
     async def test_error_missing_jwt(self):
         await self.setup(default_player=False)
         communicator = WebsocketCommunicator(application, self.get_uri(self.match_id))
