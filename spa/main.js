@@ -13,6 +13,7 @@ import Profile from "./views/Profile.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
+import Tournament, { setupTournament } from "./views/Tournament.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 
 SPA.route("/", Home);
@@ -28,5 +29,6 @@ SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/game/setup", InitMatch, setupInitMatch);
+SPA.route("/tournament", Tournament, setupTournament);
 
 SPA.init({ containerId: "app" });
