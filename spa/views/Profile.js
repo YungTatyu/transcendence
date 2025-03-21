@@ -22,9 +22,9 @@ export default function Profile() {
           <div id="tournament-wins" class="col">loading...</div>
       </div>
       <div id="row-label " class="row row-cols-3">
-          <div class="col">"Wins"</div>
-          <div class="col">"Losses"</div>
-          <div class="col">"Tournament Wins"</div>
+          <div class="col">Wins game</div>
+          <div class="col">Losses game</div>
+          <div class="col">Tournament wins</div>
       </div>
         `;
   }
