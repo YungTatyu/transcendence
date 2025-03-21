@@ -1,7 +1,7 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
-import stateManager from "../stateManager.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 import config from "../config.js";
+import stateManager from "../stateManager.js";
 
 export default function Profile() {
   function UserInfo(className, text) {
