@@ -14,6 +14,7 @@ import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
+import FriendRequestForm, { setupFriendRequestForm } from "./views/FriendRequestForm.js"
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
@@ -29,4 +30,5 @@ SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/game/setup", InitMatch, setupInitMatch);
 
+SPA.route("/friend/friend-request-form", FriendRequestForm, setupFriendRequestForm);
 SPA.init({ containerId: "app" });
