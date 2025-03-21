@@ -70,7 +70,8 @@ export function setupProfile() {
     console.log(data);
 
     if (status === null || status >= 400) {
-      console.log("Error OC");
+      console.log("試合統計情報の取得に失敗しました");
+      return;
     }
     const wins = document.getElementById("wins");
     const losses = document.getElementById("losses");
