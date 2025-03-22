@@ -27,6 +27,16 @@ export default function TournamentMatching() {
 }
 
 export function setupTournamentMatching() {
+  function changeMatchingInfo(playerSize, maxPlayerSize, remainSec) {
+    const currentPlayers = document.getElementById("current-players");
+    const maxPlayers = document.getElementById("max-players");
+    const matchingRemainSec = document.getElementById("matching-remain-sec");
+
+    currentPlayers.textContent = playerSize;
+    maxPlayers.textContent = maxPlayerSize;
+    matchingRemainSec.textContent = `[${remainSec}]`;
+  }
+
   const jsonData = [
     { avatarPath: "/assets/user.png", name: "rikeda1" },
     { avatarPath: "/assets/user.png", name: "rikeda2" },
@@ -36,14 +46,4 @@ export function setupTournamentMatching() {
 
   renderMatchingRoom(jsonData);
   changeMatchingInfo(4, 16, 9);
-}
-
-function changeMatchingInfo(playerSize, maxPlayerSize, remainSec) {
-  const currentPlayers = document.getElementById("current-players");
-  const maxPlayers = document.getElementById("max-players");
-  const matchingRemainSec = document.getElementById("matching-remain-sec");
-
-  currentPlayers.textContent = playerSize;
-  maxPlayers.textContent = maxPlayerSize;
-  matchingRemainSec.textContent = `[${remainSec}]`;
 }
