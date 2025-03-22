@@ -68,7 +68,7 @@ export async function setupProfile() {
     );
 
     if (status === null || status >= 400) {
-      console.log("試合統計情報の取得に失敗しました");
+      console.error("試合統計情報の取得に失敗しました");
       return;
     }
     const wins = document.getElementById("wins");
