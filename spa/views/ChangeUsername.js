@@ -44,6 +44,7 @@ export function setupChageUsername() {
       errorOutput.textContent = "Error Occured!";
       return;
     }
+    //一時的に409エラーようにおいてます。バックエンドのエラーフィールド名修正後に下の400以上のに統合予定
     if (status === 409) {
       errorOutput.textContent = JSON.stringify(data, null, "\n");
       return;
