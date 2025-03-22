@@ -67,7 +67,6 @@ export function setupProfile() {
       config.matchService,
       `/matches/statistics/${stateManager.state.userId}`,
     );
-    console.log(data);
 
     if (status === null || status >= 400) {
       console.log("試合統計情報の取得に失敗しました");
