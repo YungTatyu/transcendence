@@ -1,6 +1,6 @@
 import TournamentBracket, {
   renderTournamentBracket,
-} from "../components/TournamentBracket.js";
+} from "../services/tournament/TournamentBracket.js";
 import { createTournamentData } from "../services/tournament/createTournamentData.js";
 
 export default function Tournament() {
