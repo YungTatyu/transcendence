@@ -3,6 +3,8 @@ const stateManager = {
     count: 0,
     items: [],
     userId: null,
+    username: null,
+    avatarPath: null,
     matchId: null,
     players: null,
   },

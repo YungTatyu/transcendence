@@ -11,9 +11,14 @@ export default function Home() {
         <button onclick="SPA.navigate('/api')">APIへ</button>
         <button onclick="SPA.navigate('/404')">404へ</button>
         <button onclick="SPA.navigate('/profile')">profileへ</button>
-        <button onclick="SPA.navigate('/match-history')">Match Historyへ</button>
+        <button onclick="SPA.navigate('/history/match')">Match Historyへ</button>
         <button onclick="SPA.navigate('/signup')">signupへ</button>
         <button onclick="SPA.navigate('/login')">loginへ</button>
+        <button onclick="SPA.navigate('/profile/username')">changeUsernameへ</button>
+        <button onclick="SPA.navigate('/profile/mail')">changeMailへ</button>
+        <button onclick="SPA.navigate('/profile/password')">changePasswordへ</button>
+        <button onclick="SPA.navigate('/profile/avatar')">changeAvatarへ</button>
+
         <button onclick="SPA.navigate('/game')">gameへ</button>
         <button onclick="SPA.navigate('/game/setup')">setupgameへ</button>
         <button onclick="SPA.navigate('/game/result')">gameresultへ</button>
