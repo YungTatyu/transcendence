@@ -89,6 +89,12 @@ export function setupFriendRequestForm() {
     addButton.textContent = "add";
     addButton.type = "button";
     resultOutput.appendChild(addButton);
+
+	const addMessage = document.createElement("div");
+	addMessage.style.color = "#0B7D90";
+	addMessage.textContent = "";
+	resultOutput.appendChild(addMessage);
+
     addButton.addEventListener("click", () => {
       // ここにaddボタンが押された時の処理を書く
       // console.log("Add button clicked!");
@@ -96,10 +102,9 @@ export function setupFriendRequestForm() {
       addButton.textContent = "";
       addButton.textContent = "added";
       addButton.classList.add("btn-secondary");
-      const addMessage = document.createElement("div");
-      addMessage.style.color = "#0B7D90";
-      addMessage.textContent = "Sent friend request.";
-      resultOutput.appendChild(addMessage);
+	//   addMessage.textContent = "";
+	if (addMessage.textContent === "")
+      	addMessage.textContent = "Sent friend request.";
     });
   });
 }
