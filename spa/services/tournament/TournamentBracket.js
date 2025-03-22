@@ -11,6 +11,8 @@ export function renderTournamentBracket(data) {
     init: data,
     skipConsolationRound: true, // 敗者復活戦をスキップ
     teamWidth: 150, // チーム名の表示幅調整
-    matchWidth: 70, // 試合間の幅調整
+    scoreWidth: 50, // スコアの横幅の表示幅調整
+    matchMargin: 100, // 試合間隔を調整
+    roundMargin: 100, // ラウンドの間隔調整
   });
 }
