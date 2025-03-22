@@ -151,11 +151,5 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
 
-CORS_ALLOW_HEADERS = [
-    "content-type",
-    "authorization",
-    "x-csrftoken",
-]
-
 TOURNAMENT_API_BASE_URL = "http://tournament:8002"
 GAME_API_BASE_URL = "http://game:8001"
