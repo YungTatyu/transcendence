@@ -1,4 +1,7 @@
+import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import config from "../config.js";
+import stateManager from "../stateManager.js";
 
 export default function Profile() {
   function UserInfo(className, text) {
@@ -14,14 +17,14 @@ export default function Profile() {
     //Loadingの部分はAPIから取得した値で上書きする
     return `
       <div id="row-data " class="row row-cols-3">
-          <div class="col">loading...</div>
-          <div class="col">loading...</div>
-          <div class="col">loading...</div>
+          <div id="wins" class="col">loading...</div>
+          <div id="losses" class="col">loading...</div>
+          <div id="tournament-wins" class="col">loading...</div>
       </div>
       <div id="row-label " class="row row-cols-3">
-          <div class="col">"Wins"</div>
-          <div class="col">"Losses"</div>
-          <div class="col">"Tournament Wins"</div>
+          <div class="col">Wins game</div>
+          <div class="col">Losses game</div>
+          <div class="col">Tournament wins</div>
       </div>
         `;
   }
@@ -52,4 +55,27 @@ export default function Profile() {
     </div>
 
     `;
+}
+
+export async function setupProfile() {
+  if (!stateManager.state.userId) {
+    return;
+  }
+  const { status, data } = await fetchApiNoBody(
+    "GET",
+    config.matchService,
+    `/matches/statistics/${stateManager.state.userId}`,
+  );
+
+  if (status === null || status >= 400) {
+    console.error("試合統計情報の取得に失敗しました");
+    return;
+  }
+  const wins = document.getElementById("wins");
+  const losses = document.getElementById("losses");
+  const tournamentWins = document.getElementById("tournament-wins");
+
+  wins.textContent = data.matchWinCount;
+  losses.textContent = data.matchLoseCount;
+  tournamentWins.textContent = data.tournamentWinnerCount;
 }
