@@ -1,5 +1,9 @@
 export default function TournamentBracket() {
-  return `<div id="bracket"></div>`;
+  return `
+      <div class="d-flex justify-content-center mt-4">
+        <div id="bracket"></div>
+      </div>
+	`;
 }
 
 export function renderTournamentBracket(data) {
