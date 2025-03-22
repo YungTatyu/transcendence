@@ -86,7 +86,7 @@
   font-size: 4rem;
   font-weight: bold;
   filter: blur(1px); /* 文字をぼかす */
-  text-shadow: 0 0 10px #0ca5bf, 0 0 20px #0ca5bf, 0 0 30px #0ca5bf;
+  text-shadow: #0ca5bf 1px 0 10px;
 }
 
 /* TournamentMatchingRoomのマッチング状況のスタイル */
