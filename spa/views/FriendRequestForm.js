@@ -16,8 +16,8 @@ export default function FriendRequestForm() {
         `;
 
   const formHtml = `
-		
-		<div class="container d-flex justify-content-center align-items-center vh-100">
+		<div class="container d-flex justify-content-center align-items-center vh-100 position-relative" style="max-width: 400px;">
+		  <img src="/assets/batsu.png" alt="batsu" class="position-absolute end-0" style="top: 35%; width: 30px; height: 30px;">
 		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
 			<form class="rounded-pill text-center">
 			  ${formContent}
