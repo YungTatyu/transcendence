@@ -1,0 +1,11 @@
+div.jQBracket .team.win {
+	background-color: #0B7D90;
+}
+
+div.jQBracket .team.lose {
+	background-color: #D9D9D9;
+}
+
+div.jQBracket .team {
+	background-color: #0CC0DF;
+}
