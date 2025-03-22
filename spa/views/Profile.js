@@ -57,8 +57,7 @@ export default function Profile() {
     `;
 }
 
-export function setupProfile() {
-  (async () => {
+export async function setupProfile() {
     if (!stateManager.state.userId) {
       return;
     }
@@ -79,5 +78,4 @@ export function setupProfile() {
     wins.textContent = data.matchWinCount;
     losses.textContent = data.matchLoseCount;
     tournamentWins.textContent = data.tournamentWinnerCount;
-  })();
 }
