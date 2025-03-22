@@ -61,27 +61,26 @@ export async function setupProfile() {
   changeAvatarButton.addEventListener("click", () => {
     SPA.navigate("/profile/avatar");
   });
-  
+
   const changeUsernameButton = document.querySelector(".js-pen-username");
   changeUsernameButton.addEventListener("click", () => {
     SPA.navigate("/profile/username");
   });
-  
+
   const changePasswordButton = document.querySelector(".js-pen-password");
   changePasswordButton.addEventListener("click", () => {
     SPA.navigate("/profile/password");
   });
-  
+
   const changeMailButton = document.querySelector(".js-pen-mail");
   changeMailButton.addEventListener("click", () => {
     SPA.navigate("/profile/mail");
   });
-  
+
   const matchHistoryButton = document.querySelector(".js-match-history-button");
   matchHistoryButton.addEventListener("click", () => {
     SPA.navigate("/history/match");
   });
-
 
   if (stateManager.state.username && stateManager.state.avatar_path) {
     document.querySelector(".js-username").textContent =
@@ -89,8 +88,8 @@ export async function setupProfile() {
     document.querySelector(".js-user-avatar").src =
       stateManager.state.avatar_path;
     return;
-  } 
-  
+  }
+
   const response = await fetch(
     `${config.userService}/users?userid=${stateManager.state.userId}`,
   );
@@ -110,5 +109,4 @@ export async function setupProfile() {
 
   stateManager.setState({ username: data.username });
   stateManager.setState({ avatarPath: data.avatar_path });
-  
 }
