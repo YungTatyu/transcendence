@@ -9,7 +9,7 @@ import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import MatchHistory from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
-import Profile from "./views/Profile.js";
+import Profile, { setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
   setupQuickPlayMatching,
 } from "./views/QuickPlayMatching.js";
@@ -25,7 +25,7 @@ SPA.route("/", Home);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
 SPA.route("/api", ApiData, setupApiData);
-SPA.route("/profile", Profile);
+SPA.route("/profile", Profile, setupProfile);
 SPA.route("/match-history", MatchHistory);
 SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);

@@ -21,6 +21,7 @@ class TournamentMatchView(APIView):
         # Matchレコードの作成
         tournament_match = Match.objects.create(
             mode="Tournament",
+            start_date=None,
             tournament_id=serializer.validated_data["tournamentId"],
             parent_match_id=parent_match,
             round=serializer.validated_data["round"],
