@@ -57,55 +57,58 @@ export default function Profile() {
 }
 
 export async function setupProfile() {
+  const changeAvatarButton = document.querySelector(".js-pen-avatar");
+  changeAvatarButton.addEventListener("click", () => {
+    SPA.navigate("/profile/avatar");
+  });
+  
+  const changeUsernameButton = document.querySelector(".js-pen-username");
+  changeUsernameButton.addEventListener("click", () => {
+    SPA.navigate("/profile/username");
+  });
+  
+  const changePasswordButton = document.querySelector(".js-pen-password");
+  changePasswordButton.addEventListener("click", () => {
+    SPA.navigate("/profile/password");
+  });
+  
+  const changeMailButton = document.querySelector(".js-pen-mail");
+  changeMailButton.addEventListener("click", () => {
+    SPA.navigate("/profile/mail");
+  });
+  
+  const matchHistoryButton = document.querySelector(".js-match-history-button");
+  matchHistoryButton.addEventListener("click", () => {
+    SPA.navigate("/history/match");
+  });
+
+
   if (stateManager.state.username && stateManager.state.avatar_path) {
     document.querySelector(".js-username").textContent =
       stateManager.state.username;
     document.querySelector(".js-user-avatar").src =
       stateManager.state.avatar_path;
-  } else {
-    const response = await fetch(
-      `${config.userService}/users?userid=${stateManager.state.userId}`,
-    );
-    const status = response.status;
-    const data = await response.json();
+    return;
+  } 
+  
+  const response = await fetch(
+    `${config.userService}/users?userid=${stateManager.state.userId}`,
+  );
+  const status = response.status;
+  const data = await response.json();
 
-    if (status === null) {
-      errorOutput.textContent = "Error Occured!";
-      return;
-    }
-    if (status >= 400) {
-      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
-      return;
-    }
-    document.querySelector(".js-username").textContent = data.username;
-    document.querySelector(".js-user-avatar").src = data.avatar_path;
-
-    stateManager.setState({ username: data.username });
-    stateManager.setState({ avatarPath: data.avatar_path });
+  if (status === null) {
+    errorOutput.textContent = "Error Occured!";
+    return;
   }
+  if (status >= 400) {
+    errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+    return;
+  }
+  document.querySelector(".js-username").textContent = data.username;
+  document.querySelector(".js-user-avatar").src = data.avatar_path;
 
-  const changeAvatarButton = document.querySelector(".js-pen-avatar");
-  changeAvatarButton.addEventListener("click", () => {
-    SPA.navigate("/profile/avatar");
-  });
-
-  const changeUsernameButton = document.querySelector(".js-pen-username");
-  changeUsernameButton.addEventListener("click", () => {
-    SPA.navigate("/profile/username");
-  });
-
-  const changePasswordButton = document.querySelector(".js-pen-password");
-  changePasswordButton.addEventListener("click", () => {
-    SPA.navigate("/profile/password");
-  });
-
-  const changeMailButton = document.querySelector(".js-pen-mail");
-  changeMailButton.addEventListener("click", () => {
-    SPA.navigate("/profile/mail");
-  });
-
-  const matchHistoryButton = document.querySelector(".js-match-history-button");
-  matchHistoryButton.addEventListener("click", () => {
-    SPA.navigate("/history/match");
-  });
+  stateManager.setState({ username: data.username });
+  stateManager.setState({ avatarPath: data.avatar_path });
+  
 }
