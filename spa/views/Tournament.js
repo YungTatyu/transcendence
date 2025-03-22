@@ -4,7 +4,13 @@ import TournamentBracket, {
 import { createTournamentData } from "../services/tournament/createTournamentData.js";
 
 export default function Tournament() {
-  return TournamentBracket();
+  return `
+    <div class="match-vs d-flex justify-content-between w-100 mb-5 py-1 mt-5">
+      <div class="w-50 text-center match-left-player px-5">rikeda1</div>
+      <div class="w-50 text-center match-right-player px-5">rikeda2</div>
+    </div>
+    ${TournamentBracket()}
+  `;
 }
 
 export function setupTournament() {
@@ -27,7 +33,11 @@ function getTournamentJsonData() {
           "participants": [
             {
               "id": 41650,
-              "score": null
+              "score": 0
+            },
+            {
+              "id": 32792,
+              "score": 1
             }
           ]
         },
@@ -59,11 +69,11 @@ function getTournamentJsonData() {
           "participants": [
             {
               "id": 32774,
-              "score": null
+              "score": 0
             },
             {
               "id": 32792,
-              "score": null
+              "score": 1
             }
           ]
         }

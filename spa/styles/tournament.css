@@ -9,3 +9,21 @@ div.jQBracket .team.lose {
 div.jQBracket .team {
 	background-color: #0CC0DF;
 }
+
+.match-vs {
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8vh;
+  width: 0%;
+}
+
+.match-left-player {
+  background-color: #7733FF;
+}
+
+.match-right-player {
+  background-color: #9747FF;
+}
