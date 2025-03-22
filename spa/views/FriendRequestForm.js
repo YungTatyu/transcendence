@@ -16,8 +16,9 @@ export default function FriendRequestForm() {
         `;
 	
 		const formHtml = `
+		
 		<div class="container d-flex justify-content-center align-items-center vh-100">
-		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; height: 300px;">
+		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
 			<form class="rounded-pill text-center">
 			  ${formContent}
 			  <div>
@@ -87,13 +88,20 @@ export function setupFriendRequestForm() {
 		addButton.classList.add("btn", "btn-primary", "btn-lg");
 		addButton.textContent = "add";
 		addButton.type = "button";
+		resultOutput.appendChild(addButton);
 		addButton.addEventListener("click", () => {
 			// ここにaddボタンが押された時の処理を書く
-			console.log("Add button clicked!");
+			// console.log("Add button clicked!");
 			addButton.classList.remove("btn-primary");
+			addButton.textContent = "";
+			addButton.textContent = "added"
 			addButton.classList.add("btn-secondary");
+			const addMessage = document.createElement("div");
+			// addMessage.classList("")
+			addMessage.style.color = "#0B7D90";
+			addMessage.textContent = "Sent friend request."
+			resultOutput.appendChild(addMessage);
 		});
-		resultOutput.appendChild(addButton);
 	})
 	
 }
