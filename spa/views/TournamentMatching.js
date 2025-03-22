@@ -19,7 +19,7 @@ export default function TournamentMatching() {
   }
 
   return `
-      ${TitleMatchingRoom("Tournament")}
+      ${TitleMatchingRoom("TOURNAMENT")}
       ${tournamentMatchingInfo()}
       ${MatchingRoom()}
       ${WaitOrStart()}

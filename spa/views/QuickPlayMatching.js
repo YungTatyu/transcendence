@@ -14,7 +14,7 @@ export default function QuickPlayMatching() {
   }
 
   return `
-      ${TitleMatchingRoom("Quick Play")}
+      ${TitleMatchingRoom("QUICK PLAY")}
       ${matchingInfo()}
       ${MatchingRoom()}
       ${WaitOrStart()}
