@@ -24,22 +24,26 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
     FORCED_START_TIME = 10
     ROOM_CAPACITY = 4
 
-    # TODO self.scope["client"][1] -> userId(現状はuserIdではなく、ポート番号の値を使用)
     async def connect(self):
-        # 既にマッチング待機中なら接続を拒否する
-        if self.scope["client"][1] in TournamentMatchingManager.get_waiting_users():
-            await self.close(code=4400)
+        if not self.scope.get("user_id"):
+            await self.close()
             return
 
-        await self.accept()
+        self.user_id = int(self.scope.get("user_id"))
 
         # Lockを用いて1人ずつ処理(パフォーマンスを犠牲に整合性を保つ)
         lock = await TournamentMatchingManager.get_lock()
         async with lock:
+            wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
+
+            if self.user_id in wait_user_ids:
+                await self.close(code=4400)
+                return
+
+            await self.accept()
+
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
-            count = TournamentMatchingManager.add_user(
-                self.scope["client"][1], self.channel_name
-            )
+            count = TournamentMatchingManager.add_user(self.user_id, self.channel_name)
 
             # 1 -> 2人のタイミングでトーナメント強制開始タイマーをセット
             if count == 2:
@@ -67,7 +71,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(
                 self.MATCHING_ROOM, self.channel_name
             )
-            count = TournamentMatchingManager.del_user(self.scope["client"][1])
+            count = TournamentMatchingManager.del_user(self.user_id)
 
             # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
             if count == 1:
