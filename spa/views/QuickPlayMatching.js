@@ -22,14 +22,14 @@ export default function QuickPlayMatching() {
 }
 
 export function setupQuickPlayMatching() {
+  function changeMatchingInfo() {
+    const matchingInfo = document.getElementById("matching-info");
+
+    matchingInfo.innerHTML = "OPPONENT FOUND.";
+    matchingInfo.style.color = "#0CC0DF";
+  }
+
   const jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
 
   renderMatchingRoom(jsonData);
-}
-
-function changeMatchingInfo() {
-  const matchingInfo = document.getElementById("matching-info");
-
-  matchingInfo.innerHTML = "OPPONENT FOUND.";
-  matchingInfo.style.color = "#0CC0DF";
 }
