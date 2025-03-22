@@ -1,42 +1,76 @@
+import TournamentBracket, {
+  renderTournamentBracket,
+} from "../components/TournamentBracket.js";
+import { createTournamentData } from "../services/tournament/createTournamentData.js";
+
 export default function Tournament() {
-  return `<div id="bracket"></div>`;
+  return TournamentBracket();
 }
 
 export function setupTournament() {
-  const tournamentData = {
-    teams: [
-      ["Team 1", "Team 2"],
-      ["Team 3", null],
-      ["Team 4", null],
-      ["Team 5", null],
-    ],
-    results: [
-      [
-        [
-          [1, 0],
-          [null, null],
-          [null, null],
-          [null, null],
-        ],
-        [
-          [null, null],
-          [1, 4],
-        ],
-        [
-          [null, null],
-          [null, null],
-        ],
-      ],
-    ],
-  };
-  renderTournament(tournamentData);
+  const tournamentJsonData = getTournamentJsonData();
+  const tournamentData = createTournamentData(tournamentJsonData);
+  renderTournamentBracket(tournamentData);
 }
 
-function renderTournament(data) {
-  $("#bracket").bracket({
-    init: data,
-    skipConsolationRound: true, // 敗者復活戦をスキップ
-    teamWidth: 150, // チーム名の表示幅調整
-    matchWidth: 70, // 試合間の幅調整
-  });
+function getTournamentJsonData() {
+  const tournamentJsonStr = `
+    {
+      "matches_data": [
+        {
+          "matchId": 2,
+          "winnerUserId": null,
+          "mode": "Tournament",
+          "tournamentId": 2,
+          "parentMatchId": null,
+          "round": 3,
+          "participants": [
+            {
+              "id": 41650,
+              "score": null
+            }
+          ]
+        },
+        {
+          "matchId": 3,
+          "winnerUserId": 41650,
+          "mode": "Tournament",
+          "tournamentId": 2,
+          "parentMatchId": 2,
+          "round": 1,
+          "participants": [
+            {
+              "id": 41650,
+              "score": 0
+            },
+            {
+              "id": 32790,
+              "score": -1
+            }
+          ]
+        },
+        {
+          "matchId": 4,
+          "winnerUserId": null,
+          "mode": "Tournament",
+          "tournamentId": 2,
+          "parentMatchId": 2,
+          "round": 2,
+          "participants": [
+            {
+              "id": 32774,
+              "score": null
+            },
+            {
+              "id": 32792,
+              "score": null
+            }
+          ]
+        }
+      ],
+      "current_round": 2,
+      "state": "ongoing"
+    }
+  `;
+  return JSON.parse(tournamentJsonStr);
 }
