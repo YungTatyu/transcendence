@@ -1,3 +1,4 @@
+import jwt
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
@@ -37,6 +38,12 @@ class TestMatchView:
             offset=offset,
             limit=limit,
         )
+
+        #  Cookieに適当なuser_idのJWTを付与する
+        token_payload = {"user_id": 1}
+        token = jwt.encode(token_payload, "secret_key", algorithm="HS256")
+        client.cookies["access_token"] = token
+
         response = client.get(f"/matches{query_string}")
 
         assert response.status_code == status

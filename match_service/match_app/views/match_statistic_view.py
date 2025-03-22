@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from match_app.jwt_decorators import jwt_required
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import UserIdValidator
 from rest_framework.response import Response
@@ -8,6 +10,7 @@ from rest_framework.views import APIView
 class MatchStatisticView(APIView):
     """user_idに対応する統計情報を取得する"""
 
+    @method_decorator(jwt_required)
     def get(self, _, user_id):
         user_id_validator = UserIdValidator(data={"user_id": user_id})
         if not user_id_validator.is_valid():

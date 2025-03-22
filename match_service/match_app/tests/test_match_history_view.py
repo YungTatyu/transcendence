@@ -1,3 +1,4 @@
+import jwt
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
@@ -12,6 +13,11 @@ class TestMatchHistory:
         client, status, user_id, expect_total, expect_limit, offset=None, limit=None
     ) -> dict:
         query_string = create_query_string(offset=offset, limit=limit)
+
+        token_payload = {"user_id": 1}
+        token = jwt.encode(token_payload, "secret_key", algorithm="HS256")
+        client.cookies["access_token"] = token
+
         response = client.get(f"/matches/histories/{user_id}{query_string}")
         assert response.status_code == status
 

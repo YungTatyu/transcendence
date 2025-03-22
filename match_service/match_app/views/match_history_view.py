@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from match_app.jwt_decorators import jwt_required
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchHistorySerializer, UserIdValidator
 from rest_framework.response import Response
@@ -8,6 +10,7 @@ from rest_framework.views import APIView
 class MatchHistoryView(APIView):
     """user_idに対応する試合履歴情報を取得する"""
 
+    @method_decorator(jwt_required)
     def get(self, request, user_id):
         serializer = MatchHistorySerializer(data=request.query_params)
         user_id_validator = UserIdValidator(data={"user_id": user_id})
