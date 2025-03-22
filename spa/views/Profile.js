@@ -21,9 +21,9 @@ export default function Profile() {
           <div class="col">loading...</div>
       </div>
       <div id="row-label " class="row row-cols-3">
-          <div class="col">"Wins"</div>
-          <div class="col">"Losses"</div>
-          <div class="col">"Tournament Wins"</div>
+          <div class="col">Wins</div>
+          <div class="col">Losses</div>
+          <div class="col">Tournament Wins</div>
       </div>
         `;
   }
@@ -85,27 +85,27 @@ export async function setupProfile() {
   }
 
   const changeAvatarButton = document.querySelector(".js-pen-avatar");
-  changeAvatarButton.addEventListener("click", async () => {
+  changeAvatarButton.addEventListener("click", () => {
     SPA.navigate("/profile/avatar");
   });
 
   const changeUsernameButton = document.querySelector(".js-pen-username");
-  changeUsernameButton.addEventListener("click", async () => {
+  changeUsernameButton.addEventListener("click", () => {
     SPA.navigate("/profile/username");
   });
 
   const changePasswordButton = document.querySelector(".js-pen-password");
-  changePasswordButton.addEventListener("click", async () => {
+  changePasswordButton.addEventListener("click", () => {
     SPA.navigate("/profile/password");
   });
 
   const changeMailButton = document.querySelector(".js-pen-mail");
-  changeMailButton.addEventListener("click", async () => {
+  changeMailButton.addEventListener("click", () => {
     SPA.navigate("/profile/mail");
   });
 
   const matchHistoryButton = document.querySelector(".js-match-history-button");
-  matchHistoryButton.addEventListener("click", async () => {
+  matchHistoryButton.addEventListener("click", () => {
     SPA.navigate("/history/match");
   });
 }
