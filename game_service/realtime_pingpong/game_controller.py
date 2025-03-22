@@ -22,9 +22,7 @@ class PlayerManager:
             self.players[player_id] = False
 
     def is_active(self, player_id):
-        if self.players.get(player_id) is None:
-            return False
-        return self.players[player_id]
+        return self.players.get(player_id, False)
 
     def has_active_players(self):
         """
