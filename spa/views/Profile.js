@@ -58,24 +58,24 @@ export default function Profile() {
 }
 
 export async function setupProfile() {
-    if (!stateManager.state.userId) {
-      return;
-    }
-    const { status, data } = await fetchApiNoBody(
-      "GET",
-      config.matchService,
-      `/matches/statistics/${stateManager.state.userId}`,
-    );
+  if (!stateManager.state.userId) {
+    return;
+  }
+  const { status, data } = await fetchApiNoBody(
+    "GET",
+    config.matchService,
+    `/matches/statistics/${stateManager.state.userId}`,
+  );
 
-    if (status === null || status >= 400) {
-      console.error("試合統計情報の取得に失敗しました");
-      return;
-    }
-    const wins = document.getElementById("wins");
-    const losses = document.getElementById("losses");
-    const tournamentWins = document.getElementById("tournament-wins");
+  if (status === null || status >= 400) {
+    console.error("試合統計情報の取得に失敗しました");
+    return;
+  }
+  const wins = document.getElementById("wins");
+  const losses = document.getElementById("losses");
+  const tournamentWins = document.getElementById("tournament-wins");
 
-    wins.textContent = data.matchWinCount;
-    losses.textContent = data.matchLoseCount;
-    tournamentWins.textContent = data.tournamentWinnerCount;
+  wins.textContent = data.matchWinCount;
+  losses.textContent = data.matchLoseCount;
+  tournamentWins.textContent = data.tournamentWinnerCount;
 }
