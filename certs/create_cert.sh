@@ -79,11 +79,10 @@ print_and_exit() {
   exit $exit_code
 }
 
-make_service_dir {
+make_service_dir() {
   mkdir -p "${OUT_DIR}"
 }
 
-# メイン処理
 main() {
   # check_files_exist && print_and_exit "Secret key and certificate already exist." 0
   make_service_dir
