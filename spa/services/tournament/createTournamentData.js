@@ -94,8 +94,15 @@ function sortParticipants(participants, teams) {
 }
 
 function padTeamsWithNull(teams) {
+  /*
+   * teamsのサイズが2のN乗になるまで要素数2の配列を分割し、nullをパディング
+   *
+   * ex) [[1,2],[3,null],[4,5]] -> [[1,2],[3,null],[4,null],[5,null]]
+   *     [[1,2],[3,4],[5,6]] -> [[1,2],[3,4],[5,null],[6,null]]
+   *     [[1,2],[3,4],[5,6],[7,null]] -> [[1,2],[3,4],[5,6],[7,null]]
+   */
   // 2のN乗になるまで処理する
-  while (Number.isInteger(Math.log2(teams.length)) !== true) {
+  while (!Number.isInteger(Math.log2(teams.length))) {
     for (let i = teams.length - 1; i >= 0; i--) {
       if (teams[i].length !== 2) {
         continue;
