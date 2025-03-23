@@ -1,6 +1,3 @@
-import config from "../config.js";
-import stateManager from "../stateManager.js";
-
 export default function FriendRequestForm() {
   let formContent = "";
   formContent += `
