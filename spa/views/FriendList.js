@@ -1,18 +1,15 @@
-import config from "../config.js";
 import stateManager from "../stateManager.js";
+import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
 export default function FriendList() {
   return `
 	<div class="container">
-		<h1 class="title text-light ">FRIENDS LIST</h1>
-		<a href="#" class="home_bottan position-absolute top-0 end-0">
-			<img src="/assets/home.png" alt="home" width="90" height="80">
-		</a>
-		<div class="botton_position d-flex flex-column justify-content-center align-items-end gap-3">
-			<button type="button" class="find_bottan btn btn-primary">+ Find Friend</button>
-			<button type="button" class="request_bottan btn btn-primary">+ Request Friend</button>
+    ${TitileAndHomeButton("FRIEND LIST")}
+		<div class="botton-position d-flex flex-column justify-content-center align-items-end gap-3">
+			<button type="button" class="find-bottan btn btn-primary">+ Find Friend</button>
+			<button type="button" class="request-bottan btn btn-primary">+ Request Friend</button>
 		</div>
-		<div class="friend_list js-friend_list ml-4">
+		<div class="friend-list js-friend-list ml-4">
 			
 		</div>
 	</div>
@@ -47,7 +44,7 @@ const data = {
 };
 
 export const setupFriendList = async () => {
-  const friendsList = document.querySelector(".js-friend_list");
+  const friendsList = document.querySelector(".js-friend-list");
   friendsList.innerHTML = "";
   async function getFriendUserList() {
     // friend_apiを叩く
@@ -99,13 +96,13 @@ export const setupFriendList = async () => {
 
   friendInfo.forEach((friend, index) => {
     const friendItem = document.createElement("div");
-    friendItem.classList.add("js-friend_list_item");
+    friendItem.classList.add("js-friend-list-item");
     friendItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
 			<img src=${friend.avatarPath}>
 			<div class="text-white fs-2">${friend.username}</div>
-			<div class="user_status">${friend.status}</div>
-			<button type="button" class="remove_bottan btn btn-primary">remove</button>
+			<div class="user-status">${friend.status}</div>
+			<button type="button" class="remove-bottan btn btn-primary">remove</button>
 		</div>
 		`;
     friendsList.appendChild(friendItem);
