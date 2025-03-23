@@ -16,6 +16,8 @@ function createTeams(matchesData) {
 
   for (const matchData of matchesData) {
     const ids = [];
+    // INFO 並び順が固定されるようにソートする
+    sortParticipants(matchData.participants, teams);
     for (const participant of matchData.participants) {
       // INFO すでにteamsに登録したユーザーは登録しない
       if (teams.some((subArray) => subArray.includes(participant.id))) {
@@ -77,4 +79,25 @@ function getLeafNodeCount(depth) {
 function getTreeDepth(nodeCount) {
   // 木の深さを算出
   return Math.floor(Math.log2(nodeCount)) + 1;
+}
+
+function sortParticipants(participants, teams) {
+  const teamIds = teams.flat();
+
+  participants.sort((a, b) => {
+    const aIndex = teamIds.indexOf(a.id);
+    const bIndex = teamIds.indexOf(b.id);
+
+    // teamIdsに存在する場合、indexが-1ではないので優先順位をつける
+    if (aIndex !== -1 && bIndex !== -1) {
+      return aIndex - bIndex; // 既に登録されているidはteamIdsの順に並べる
+    }
+    if (aIndex !== -1) {
+      return -1; // a.idが登録されていれば先に
+    }
+    if (bIndex !== -1) {
+      return 1; // b.idが登録されていれば先に
+    }
+    return 0; // どちらも登録されていなければ元の順番を保つ
+  });
 }
