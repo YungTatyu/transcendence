@@ -43,16 +43,24 @@ check_files_exist() {
 # 秘密鍵を生成
 generate_keys() {
   echo "Generating keys..."
-  openssl genrsa -out "${CA_KEY}" "${KEY_LENGTH}" || return 1
-  openssl genrsa -out "${CLIENT_KEY}" "${KEY_LENGTH}" || return 1
+  if [[ ! -f "${CA_KEY}" ]]; then
+    openssl genrsa -out "${CA_KEY}" "${KEY_LENGTH}" || return 1
+  fi
+  if [[ ! -f "${CLIENT_KEY}" ]]; then
+    openssl genrsa -out "${CLIENT_KEY}" "${KEY_LENGTH}" || return 1
+  fi
   openssl genrsa -out "${SERVER_KEY}" "${KEY_LENGTH}" || return 1
 }
 
 # 証明書署名要求 (CSR) を生成
 generate_csr() {
   echo "Generating CSR for client and server..."
-  openssl req -new -key "${CLIENT_KEY}" -out "${CLIENT_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
-  openssl req -new -key "${SERVER_KEY}" -out "${SERVER_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
+  if [[ ! -f "${CLIENT_CSR}" ]]; then
+    openssl req -new -key "${CLIENT_KEY}" -out "${CLIENT_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
+  fi
+  if [[ ! -f "${SERVER_CSR}" ]]; then
+    openssl req -new -key "${SERVER_KEY}" -out "${SERVER_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
+  fi
 }
 
 # 証明書を生成
@@ -67,8 +75,12 @@ generate_certificates() {
   # トラップを設定して、TMP_CONFIGを削除
   trap 'rm -f ${TMP_CONFIG}' EXIT
 
-  openssl req -new -x509 -days "${VALIDITY_DAYS}" -key "${CA_KEY}" -out "${CA_CRT}" -config "${TMP_CONFIG}" -extensions v3_ca -sha256 -subj "${SUBJ}" || return 1
-  openssl x509 -req -days "${VALIDITY_DAYS}" -in "${CLIENT_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${CLIENT_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_client -sha256 || return 1
+  if [[ ! -f "${CA_CRT}" ]]; then
+    openssl req -new -x509 -days "${VALIDITY_DAYS}" -key "${CA_KEY}" -out "${CA_CRT}" -config "${TMP_CONFIG}" -extensions v3_ca -sha256 -subj "${SUBJ}" || return 1
+  fi
+  if [[ ! -f "${CLIENT_CRT}" ]]; then
+    openssl x509 -req -days "${VALIDITY_DAYS}" -in "${CLIENT_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${CLIENT_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_client -sha256 || return 1
+  fi
   openssl x509 -req -days "${VALIDITY_DAYS}" -in "${SERVER_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${SERVER_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_server -sha256 || return 1
 }
 
