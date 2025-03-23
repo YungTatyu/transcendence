@@ -12,7 +12,6 @@ export function createTournamentData(tournamentJsonData) {
 
 function createTeams(matchesData) {
   const teams = [];
-  let byeWinFlag = false;
 
   for (const matchData of matchesData) {
     const ids = [];
@@ -28,20 +27,12 @@ function createTeams(matchesData) {
 
     if (ids.length === 0) continue;
 
-    // INFO 1人の場合、不戦勝として扱い、これ以降のユーザーも不戦勝として扱う
     if (ids.length === 1) {
-      teams.push([ids[0], null]);
-      byeWinFlag = true;
-      continue;
+      ids.push(null);
     }
-
-    // 不戦勝フラグが立っている場合、残りのユーザーも不戦勝として扱う
-    if (byeWinFlag) {
-      teams.push(...ids.map((id) => [id, null]));
-    } else {
-      teams.push(ids);
-    }
+    teams.push(ids);
   }
+  padTeamsWithNull(teams);
   return teams;
 }
 
@@ -100,4 +91,21 @@ function sortParticipants(participants, teams) {
     }
     return 0; // どちらも登録されていなければ元の順番を保つ
   });
+}
+
+function padTeamsWithNull(teams) {
+  // 2のN乗になるまで処理する
+  while (Number.isInteger(Math.log2(teams.length)) !== true) {
+    for (let i = teams.length - 1; i >= 0; i--) {
+      if (teams[i].length !== 2) {
+        continue;
+      }
+      const [a, b] = teams[i];
+      const l1 = [a, null];
+      const l2 = [b, null];
+      // 元の配列の同じ位置に挿入
+      teams.splice(i, 1, l1, l2);
+      break;
+    }
+  }
 }
