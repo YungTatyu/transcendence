@@ -145,6 +145,20 @@ services:
     networks:
       - app_network
 
+  friends_activity_proxy:
+    build: ./waf_proxy_service
+    container_name: friends_activity_proxy_server
+    networks:
+      - app_network
+    ports:
+      - "10001:10001"
+    env_file: ./docker_env/friends_activity.env
+    restart: always
+    depends_on:
+      - friends_activity_app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:10001/healthz"]
+
   friends:
     build: ./friends_service
     container_name: friends
@@ -235,8 +249,8 @@ services:
     volumes:
       - ./certs/client.crt:/vault/certs/client.crt:ro
       - ./certs/client.key:/vault/certs/client.key:ro
-      - ./certs/server.crt:/vault/certs/server.crt:ro
-      - ./certs/server.key:/vault/certs/server.key:ro
+      - ./certs/vault/server.crt:/vault/certs/server.crt:ro
+      - ./certs/vault/server.key:/vault/certs/server.key:ro
       - ./certs/ca.crt:/vault/certs/ca.crt:ro
       - ./docker_env/vault.env:/etc/vault.env:ro
     tmpfs: [/tmp, /run]
