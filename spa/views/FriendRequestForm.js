@@ -17,8 +17,10 @@ export default function FriendRequestForm() {
 
   const formHtml = `
 		<div class="container d-flex justify-content-center align-items-center vh-100 position-relative" style="max-width: 400px;">
-		  <img src="/assets/batsu.png" alt="batsu" class="position-absolute end-0" style="top: 35%; width: 30px; height: 30px;">
 		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+            <div class="position-absolute" style="top: -30px; right: -20px;">
+              <img src="/assets/batsu.png" alt="batsu" style="width: 30px; height: 30px;">
+            </div>
 			<form class="rounded-pill text-center">
 			  ${formContent}
 			  <div>
@@ -110,7 +112,7 @@ export function setupFriendRequestForm() {
       const fDataError = {
         error: "already friend",
       };
-      const fStatus = 400;
+      const fStatus = 200;
       if (fStatus >= 400)
         if (!message.textContent) message.textContent = fDataError.error;
         else {
