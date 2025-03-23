@@ -4,15 +4,15 @@ import stateManager from "../stateManager.js";
 export default function FriendRequestForm() {
   let formContent = "";
   formContent += `
-          <div class="mb-3">
-            <label class="form-label">Find Your Friend</label>
-			<div class="d-flex gap-3">
-				<input type="username" class="form-control" id="fieldUsername" required>
-				<button id="searchButton" class="btn btn-primary btn-lg" type="button">
-				  search
-				</button>
-			</div>
-          </div>
+      <div class="mb-3">
+        <label class="form-label">Find Your Friend</label>
+			  <div class="d-flex gap-3">
+				  <input type="username" class="form-control" id="field-username" required>
+				  <button id="search-button" class="btn btn-primary btn-lg" type="button">
+				    search
+				  </button>
+			  </div>
+      </div>
         `;
 
   const formHtml = `
@@ -22,7 +22,7 @@ export default function FriendRequestForm() {
 			<form class="rounded-pill text-center">
 			  ${formContent}
 			  <div>
-				<p id="resultOutput" class="text-center text-danger fw-bold fs-6"></p>
+				<p id="result-output" class="text-center text-danger fw-bold fs-6"></p>
 			  </div>
 			</form>
 		  </div>
@@ -32,22 +32,23 @@ export default function FriendRequestForm() {
 }
 
 export function setupFriendRequestForm() {
-  const searchButton = document.getElementById("searchButton");
+  const searchButton = document.getElementById("search-button");
+  let previousUsername = "";
 
   searchButton.addEventListener("click", async () => {
-    const username = document.getElementById("fieldUsername").value;
-    const resultOutput = document.getElementById("resultOutput");
+    const username = document.getElementById("field-username").value;
+    const resultOutput = document.getElementById("result-output");
     // /user?username=usernameを叩いてuserIdに変換
 
+    //formに入力されたusernameが同じまたは複数回serachボタンを押した時、再び,apiを叩かないようにする
+    if (!username || previousUsername === username) return;
+    previousUsername = username;
     resultOutput.textContent = "";
 
     // /friends/requests/useridを叩く
     // const { status, data } = await fetchApiWithBody(
     // 	"POST"
     // )
-
-    //TODO
-    //formに入力されたusernameが同じまたは複数回serachボタンを押した時、再び,apiを叩かないようにする
 
     const status = 200;
     const errorData = {
@@ -66,45 +67,59 @@ export function setupFriendRequestForm() {
       resultOutput.textContent = errorData.error;
       return;
     }
+    resultOutput.appendChild(createUserCard(data));
 
-    const divContainer = document.createElement("div");
-    divContainer.classList.add("d-flex", "gap-3", "align-items-center");
+    function createUserCard(data) {
+      const divContainer = document.createElement("div");
+      divContainer.classList.add("d-flex", "gap-3", "align-items-center");
 
-    const userImgContainer = document.createElement("img");
-    userImgContainer.style.width = "50px"; // 幅を指定
-    userImgContainer.style.height = "50px"; // 高さを指定
-    userImgContainer.style.objectFit = "cover"; // 画像の縦横比を保つための設定
-    userImgContainer.style.borderRadius = "50%"; // 画像を丸くする
-    userImgContainer.src = data.avatarPath;
-    const usernameContainer = document.createElement("div");
-    usernameContainer.classList.add("text-dark", "fs-5");
-    usernameContainer.textContent = data.username;
+      const userImgContainer = document.createElement("img");
+      Object.assign(userImgContainer.style, {
+        width: "50px",
+        height: "50px",
+        objectFit: "cover",
+        borderRadius: "50%",
+      });
+      userImgContainer.src = data.avatarPath;
 
-    divContainer.appendChild(userImgContainer);
-    divContainer.appendChild(usernameContainer);
-    resultOutput.appendChild(divContainer);
+      const usernameContainer = document.createElement("div");
+      usernameContainer.classList.add("text-dark", "fs-5");
+      usernameContainer.textContent = data.username;
 
-    const addButton = document.createElement("button");
-    addButton.classList.add("btn", "btn-primary", "btn-lg");
-    addButton.textContent = "add";
-    addButton.type = "button";
-    resultOutput.appendChild(addButton);
+      const addButton = document.createElement("button");
+      addButton.classList.add("btn", "btn-primary", "btn-lg");
+      addButton.textContent = "add";
+      addButton.type = "button";
 
-    const addMessage = document.createElement("div");
-    addMessage.style.color = "#0B7D90";
-    addMessage.textContent = "";
-    resultOutput.appendChild(addMessage);
+      const addMessage = document.createElement("div");
+      addMessage.textContent = "";
 
-    addButton.addEventListener("click", () => {
-      // ここにaddボタンが押された時の処理を書く
-      // console.log("Add button clicked!");
-      addButton.classList.remove("btn-primary");
-      addButton.textContent = "";
-      addButton.textContent = "added";
-      addButton.classList.add("btn-secondary");
-      //   addMessage.textContent = "";
-      if (addMessage.textContent === "")
-        addMessage.textContent = "Sent friend request.";
-    });
+      addButton.addEventListener("click", () =>
+        handleAddFriend(addButton, addMessage),
+      );
+
+      divContainer.append(userImgContainer, usernameContainer);
+
+      const wrapper = document.createElement("div");
+      wrapper.append(divContainer, addButton, addMessage);
+      return wrapper;
+    }
+
+    function handleAddFriend(button, message) {
+      //リクエストを送る(api)
+      const fDataError = {
+        error: "already friend",
+      };
+      const fStatus = 400;
+      if (fStatus >= 400)
+        if (!message.textContent) message.textContent = fDataError.error;
+        else {
+          message.style.color = "#0B7D90";
+          button.classList.replace("btn-primary", "btn-secondary");
+          button.textContent = "added";
+          if (!message.textContent)
+            message.textContent = "Sent friend request.";
+        }
+    }
   });
 }
