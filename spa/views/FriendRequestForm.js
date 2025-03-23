@@ -1,15 +1,15 @@
 export default function FriendRequestForm() {
   let formContent = "";
   formContent += `
-      <div class="mb-3">
-        <label class="form-label">Find Your Friend</label>
-			  <div class="d-flex gap-3">
-				  <input type="username" class="form-control" id="field-username" required>
-				  <button id="search-button" class="btn btn-primary btn-lg" type="button">
-				    search
-				  </button>
-			  </div>
-      </div>
+    <div class="mb-3">
+      <label class="form-label">Find Your Friend</label>
+			<div class="d-flex gap-3">
+				<input type="username" class="form-control" id="field-username" required>
+				<button id="search-button" class="btn btn-primary btn-lg" type="button">
+				  search
+				</button>
+			</div>
+    </div>
         `;
 
   const formHtml = `
