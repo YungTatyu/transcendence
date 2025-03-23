@@ -1,17 +1,15 @@
 import stateManager from "../stateManager.js";
+import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 
 export default function FriendRequestList() {
   return `
 	<div class="container">
-		<h1 class="title text-light ">FRIENDS REQUEST</h1>
-		<a href="#" class="home_bottan position-absolute top-0 end-0">
-			<img src="/assets/home.png" alt="home" width="90" height="80">
-		</a>
-		<div class="botton_position d-flex flex-column justify-content-center align-items-end gap-3">
-			<button type="button" class="find_bottan btn btn-primary">+ Find Friend</button>
-			<button type="button" class="request_bottan btn btn-primary">+ Request Friend</button>
+    ${TitileAndHomeButton("FRIEND REQUEST")}
+		<div class="button-position d-flex flex-column justify-content-center align-items-end gap-3">
+			<button type="button" class="find-button btn btn-primary">+ Find Friend</button>
+			<button type="button" class="request-button btn btn-primary">+ Request Friend</button>
 		</div>
-		<div class="js-friend_request_list">
+		<div class="js-friend-request-list">
 			
 		</div>
 	</div>
@@ -46,7 +44,7 @@ const data = {
 };
 
 export const setupFriendRequestList = async () => {
-  const friendsList = document.querySelector(".js-friend_request_list");
+  const friendsList = document.querySelector(".js-friend-request-list");
   friendsList.innerHTML = "";
   async function getFriendUserList() {
     // friend_apiを叩く
@@ -88,13 +86,13 @@ export const setupFriendRequestList = async () => {
 
   friendInfo.forEach((friend, index) => {
     const friendRequestItem = document.createElement("div");
-    friendRequestItem.classList.add("js-friend_list_item");
+    friendRequestItem.classList.add("js-friend-request-item");
     friendRequestItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
 			<img src=${friend.avatarPath}>
 			<div class="text-white">${friend.username}</div>
-			<button type="button" class="approved_bottan btn btn-primary">approved</button>
-			<button type="button" class="reject_bottan btn btn-primary">reject</button>
+			<button type="button" class="approved-button btn btn-primary">approved</button>
+			<button type="button" class="reject-button btn btn-primary">reject</button>
 		</div>
 		`;
     friendsList.appendChild(friendRequestItem);

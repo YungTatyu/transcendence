@@ -5,9 +5,9 @@ export default function FriendList() {
   return `
 	<div class="container">
     ${TitileAndHomeButton("FRIEND LIST")}
-		<div class="botton-position d-flex flex-column justify-content-center align-items-end gap-3">
-			<button type="button" class="find-bottan btn btn-primary">+ Find Friend</button>
-			<button type="button" class="request-bottan btn btn-primary">+ Request Friend</button>
+		<div class="button-position d-flex flex-column justify-content-center align-items-end gap-3">
+			<button type="button" class="find-button btn btn-primary">+ Find Friend</button>
+			<button type="button" class="request-button btn btn-primary">+ Request Friend</button>
 		</div>
 		<div class="friend-list js-friend-list ml-4">
 			
@@ -102,7 +102,7 @@ export const setupFriendList = async () => {
 			<img src=${friend.avatarPath}>
 			<div class="text-white fs-2">${friend.username}</div>
 			<div class="user-status">${friend.status}</div>
-			<button type="button" class="remove-bottan btn btn-primary">remove</button>
+			<button type="button" class="remove-button btn btn-primary">remove</button>
 		</div>
 		`;
     friendsList.appendChild(friendItem);

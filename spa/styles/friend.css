@@ -1,13 +1,9 @@
-body {
-  background-color: black;
-}
-
-.botton-position {
+.button-position {
   margin-right: 100px;
   margin-top: 40px;
 }
 
-.find-bottan {
+.find-button {
   font-family: "League Spartan", sans-serif;
   background-color: #0bb0cc;
   /* display: flex; */
@@ -21,7 +17,7 @@ body {
   font-size: 30px;
 }
 
-.request-bottan {
+.request-button {
   font-family: "League Spartan", sans-serif;
   background-color: #0bb0cc;
   /* display: flex; */
@@ -53,7 +49,7 @@ body {
   gap: 10%;
 }
 
-.remove-bottan {
+.remove-button {
   font-family: "League Spartan", sans-serif;
   background-color: #7733ff;
   font-size: 30px;
@@ -70,14 +66,14 @@ body {
   color: #0cc0df;
 }
 
-.friend_request_item {
+.js-friend-request-item {
   /* display: flex; */
   font-size: 30px;
   /* align-items: center; 縦方向に中央揃え */
   /* margin: 10px 100px 40px; */
 }
 
-.approved_bottan {
+.approved-button {
   font-family: "League Spartan", sans-serif;
   background-color: #02ae5b;
   font-size: 30px;
@@ -90,7 +86,7 @@ body {
   border-radius: 20px;
 }
 
-.reject_bottan {
+.reject-button {
   font-family: "League Spartan", sans-serif;
   background-color: #7733ff;
   font-size: 30px;
@@ -103,7 +99,7 @@ body {
   border-radius: 20px;
 }
 
-.js-friend_request_list img {
+.js-friend-request-item img {
   width: 50px; /* 表示したい範囲(100%) */
   height: 50px; /* 表示したい範囲(100%) */
   object-fit: cover; /* 画像をトリミング */
