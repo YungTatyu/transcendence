@@ -22,7 +22,7 @@ class PlayerManager:
             self.players[player_id] = False
 
     def is_active(self, player_id):
-        return self.players[player_id]
+        return self.players.get(player_id, False)
 
     def has_active_players(self):
         """
@@ -48,6 +48,10 @@ class GameController:
     @property
     def game(self):
         return self.__game
+
+    @property
+    def player_manager(self):
+        return self.__player_manager
 
     def start_game(self, group_name):
         self.__player_manager.add_players(
@@ -126,7 +130,7 @@ class GameController:
 
     def __get_game_result(self, match_id):
         return {
-            "matchId": match_id,
+            "matchId": int(match_id),
             "results": [
                 {
                     "userId": self.__game.left_player.id,

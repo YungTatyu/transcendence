@@ -32,24 +32,21 @@ class ActionHandler:
         if user_id not in match.players:
             return (False, 1008)
 
-        # TODO: user認証
-
         game_contoroller = match_dict[MatchManager.KEY_GAME_CONTROLLER]
+        if game_contoroller.player_manager.is_active(user_id):
+            return (False, 1008)
         game = game_contoroller.game
-        game.add_player(user_id)
+        game.add_player(user_id, match.players.index(user_id))
         return (True, 200)
 
     @staticmethod
-    def handle_player_action(json, game):
+    def handle_player_action(json, game, user_id):
         type = json.get("type")
         key = json.get("key")
-        user_id = json.get("userid")
-        if type is None or key is None or user_id is None:
-            return
-        if not user_id.isdigit():
+        if not all([type, key]):
             return
         if type == ActionHandler.ACTION_PADDLE:
-            game.player_action(int(user_id), key)
+            game.player_action(user_id, key)
 
     @staticmethod
     async def handle_game_connection(match_id, player_id):
@@ -91,9 +88,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         # group nameはstrである必要がある
         self.group_name = self.scope["url_route"]["kwargs"]["matchId"]
         self.match_id = int(self.group_name)
-        # TODO
-        # 本来はuriに含めないが認証の処理に影響するため、一旦仕様を変える
-        self.user_id = int(self.scope["url_route"]["kwargs"]["userId"])
+        if self.scope.get("user_id") is None:
+            await self.close()
+            return
+        self.user_id = int(self.scope.get("user_id"))
 
         re, status_code = ActionHandler.handle_new_connection(
             self.match_id, self.user_id
@@ -122,7 +120,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
         game = match_dict[MatchManager.KEY_GAME_CONTROLLER].game
         text_data_json = json.loads(text_data)
-        ActionHandler.handle_player_action(text_data_json, game)
+        ActionHandler.handle_player_action(text_data_json, game, self.user_id)
 
     # channel_layer.group_sendのtypeがgame.messageのときにこの関数が呼ばれる
     async def game_message(self, event):

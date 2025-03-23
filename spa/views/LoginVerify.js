@@ -41,7 +41,6 @@ export function setupLoginVerify() {
       errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
-    console.log(data);
 
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
@@ -66,6 +65,5 @@ export function setupLoginVerify() {
       errorOutput.textContent = JSON.stringify(data2.error, null, "\n");
       return;
     }
-    console.log(data2);
   });
 }

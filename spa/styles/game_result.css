@@ -1,0 +1,71 @@
+.wl-container {
+  position: relative;
+  height: 30%;
+  white-space: nowrap;
+}
+
+.game-win-lose {
+  font-family: "Angkor", serif;
+  font-weight: 400;
+  font-style: normal;
+  display: inline-block;
+  transform: rotate(-4deg); /* 文字全体を傾ける */
+  font-size: 20vh; /* 高さの20%をフォントサイズに */
+  width: auto;
+  position: absolute;
+  margin: 0;
+  top: 50%; /* 垂直方向中央に配置 */
+  left: 50%; /* 水平方向中央に配置 */
+}
+
+.wl-first {
+  z-index: 2;
+  transform: translate(-50%, -50%) rotate(-4deg) translate(0, 0);
+  color: #bd3bab;
+}
+
+.wl-second {
+  z-index: 3;
+  transform: translate(-50%, -50%) rotate(-4deg) translate(6px, -3px);
+  color: #0bb0cc;
+}
+
+.wl-third {
+  z-index: 1;
+  transform: translate(-50%, -50%) rotate(-4deg) translate(12px, -6px);
+  color: #59e6fe;
+}
+
+.game-result {
+  font-family: "Roboto Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12vh;
+  width: 0%;
+}
+
+.game-result-left-player-bgc {
+  background-color: rgba(11, 176, 204, 0.7);
+}
+
+.game-result-right-player-bgc {
+  background-color: rgba(159, 43, 218, 0.7);
+}
+
+.game-result-button {
+  font-size: 5vh;
+  color: white;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), /* 白 (少し透明) */ 0 0 4px
+    rgba(255, 255, 255, 0.4), /* 白 (さらに透明) */ 0 0 6px
+    rgba(255, 255, 0, 0.5), /* 黄色 (少し透明) */ 0 0 8px rgba(255, 255, 0, 0.3), /* 黄色 (さらに透明) */
+    0 0 10px rgba(255, 255, 0, 0.2); /* 黄色 (さらに透明) */
+  background-color: #0bb0cc;
+  border-radius: 100px;
+}
+
+.game-result-button:hover {
+  filter: brightness(0.9);
+}
