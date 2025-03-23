@@ -1,6 +1,9 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
+import FriendRequestForm, {
+  setupFriendRequestForm,
+} from "./views/FriendRequestForm.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home from "./views/Home.js";
@@ -14,9 +17,6 @@ import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
-import FriendRequestForm, {
-  setupFriendRequestForm,
-} from "./views/FriendRequestForm.js";
 
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
