@@ -32,6 +32,10 @@ const wsEventHandler = {
           rightPlayer: updatedState.right_player,
         });
       } else if (type === "game.message" && gameMessage === "timer") {
+        // 対戦相手が再接続の際に、メッセージが送られる
+        if (WsConnectionManager.intervalId !== null) {
+          return;
+        }
         const endTime = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
         WsConnectionManager.intervalId = startTimer(endTime);
       } else if (type === "game.finish.message" && gameMessage === "gameover") {
@@ -74,9 +78,8 @@ const WsConnectionManager = {
   intervalId: null,
 
   connect(matchId) {
-    // TODO: uriを変更する
     this.socket = new WebSocket(
-      `${config.realtimeGameService}/games/ws/enter-room/${matchId}/${stateManager.state?.userId}`,
+      `${config.realtimeGameService}/games/ws/enter-room/${matchId}`,
     );
     this.registerEventHandler();
   },
