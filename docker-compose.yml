@@ -11,6 +11,9 @@ services:
       - auth_db
       - auth_redis
     env_file: ./docker_env/auth.env
+    volumes:
+      - ./certs/auth_app/server.crt:/app/server.crt:ro
+      - ./certs/auth_app/server.key:/app/server.key:ro
 
   auth_db:
     image: postgres:15

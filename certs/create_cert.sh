@@ -58,9 +58,7 @@ generate_csr() {
   if [[ ! -f "${CLIENT_CSR}" ]]; then
     openssl req -new -key "${CLIENT_KEY}" -out "${CLIENT_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
   fi
-  if [[ ! -f "${SERVER_CSR}" ]]; then
-    openssl req -new -key "${SERVER_KEY}" -out "${SERVER_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
-  fi
+  openssl req -new -key "${SERVER_KEY}" -out "${SERVER_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
 }
 
 # 証明書を生成

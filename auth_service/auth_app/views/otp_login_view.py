@@ -88,8 +88,8 @@ class OTPLoginVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=False,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
-            samesite="Lax",  # CSRF 対策 (Lax か Strict)
+            secure=True,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
+            samesite="None",  # CSRF 対策 (Lax か Strict)
             path="/",
         )
         response.set_cookie(
