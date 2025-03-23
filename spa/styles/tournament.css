@@ -27,3 +27,26 @@ div.jQBracket .team {
 .match-right-player {
   background-color: #9747ff;
 }
+
+.diamond-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.diamond {
+  width: 5vw;
+  aspect-ratio: 1 / 1; /* 正方形を維持 */
+  background-color: white;
+  position: absolute;
+  transform: rotate(45deg); /* ひし形に変形 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.diamond-text {
+  color: black;
+  font-size: 75%;
+  font-weight: bold;
+  transform: rotate(-45deg); /* 文字を正しい向きに */
+}
