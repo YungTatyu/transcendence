@@ -96,8 +96,8 @@ class OTPLoginVerificationView(APIView):
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
-            secure=False,  # TODO revert True
-            samesite="Lax",
+            secure=True,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
+            samesite="None",  # CSRF 対策 (Lax か Strict)
             path="/",
         )
 
