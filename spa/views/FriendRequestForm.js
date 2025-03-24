@@ -1,6 +1,5 @@
 export default function FriendRequestForm() {
-  let formContent = "";
-  formContent = `
+  const formContent = `
     <div class="mb-3">
       <label class="form-label">Find Your Friend</label>
 			<div class="d-flex gap-3">
@@ -12,7 +11,7 @@ export default function FriendRequestForm() {
     </div>
         `;
 
-  const formHtml = `
+  return  `
 		<div class="container d-flex justify-content-center align-items-center vh-100 position-relative" style="max-width: 400px;">
 		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
             <div class="position-absolute" style="top: -25px; right: -60px;">
@@ -27,7 +26,6 @@ export default function FriendRequestForm() {
 		  </div>
 		</div>
 	  `;
-  return formHtml;
 }
 
 export function setupFriendRequestForm() {
