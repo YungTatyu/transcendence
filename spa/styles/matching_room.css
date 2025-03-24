@@ -80,15 +80,6 @@
   margin-top: 10%;
 }
 
-/* WaitかStartかのUIのスタイル */
-#wait-or-start {
-  color: #0ca5bf;
-  font-size: 4rem;
-  font-weight: bold;
-  filter: blur(1px); /* 文字をぼかす */
-  text-shadow: #0ca5bf 1px 0 10px;
-}
-
 /* TournamentMatchingRoomのマッチング状況のスタイル */
 #tournament-matching-info {
   color: #ffffff;

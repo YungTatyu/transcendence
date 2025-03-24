@@ -2,7 +2,7 @@ import MatchingRoom, {
   renderMatchingRoom,
 } from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
-import WaitOrStart from "../components/WaitOrStart.js";
+import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
 
 export default function TournamentMatching() {
   function tournamentMatchingInfo() {
@@ -46,4 +46,5 @@ export function setupTournamentMatching() {
 
   renderMatchingRoom(jsonData);
   changeMatchingInfo(4, 16, 9);
+  renderWaitOrStart("Wait...", "#0ca5bf");
 }
