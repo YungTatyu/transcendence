@@ -2,7 +2,7 @@ version: '3'
 services:
   auth:
     build: ./auth_service
-    container_name: auth_app
+    container_name: auth
     ports:
       - "8000:8000"
     networks:
@@ -12,8 +12,8 @@ services:
       - auth_redis
     env_file: ./docker_env/auth.env
     volumes:
-      - ./certs/auth_app/server.crt:/app/server.crt:ro
-      - ./certs/auth_app/server.key:/app/server.key:ro
+      - ./certs/auth/server.crt:/app/server.crt:ro
+      - ./certs/auth/server.key:/app/server.key:ro
 
   auth_db:
     image: postgres:15

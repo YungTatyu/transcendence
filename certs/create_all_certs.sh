@@ -9,7 +9,7 @@ err() {
 
 main() {
   services=(
-    "auth_app"
+    "auth"
     "game"
     "tournament"
     "user_app"

@@ -4,7 +4,7 @@ const config = {
     matchService: "http://localhost:8003",
     gameService: "http://localhost:8001",
     realtimeGameService: "wss://game:8001",
-    authService: "https://auth_app:8000",
+    authService: "https://auth:8000",
   },
   production: {
     userService: "",
