@@ -110,14 +110,14 @@ export function setupFriendRequestForm() {
         error: "already friend",
       };
       const fStatus = 200;
-      if (fStatus >= 400){
+      if (fStatus >= 400) {
         message.textContent = fDataError.error;
       } else {
-          message.style.color = "#0B7D90";
-          button.classList.replace("btn-primary", "btn-secondary");
-          button.textContent = "added";
-            message.textContent = "Sent friend request.";
-        }
+        message.style.color = "#0B7D90";
+        button.classList.replace("btn-primary", "btn-secondary");
+        button.textContent = "added";
+        message.textContent = "Sent friend request.";
+      }
     }
   });
 }
