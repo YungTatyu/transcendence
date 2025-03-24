@@ -98,7 +98,7 @@ export function setupFriendRequestForm() {
         message.textContent = "Sent friend request.";
       }
     }
-    
+
     const status = 200;
     const errorData = {
       error: "Error Now",
@@ -117,6 +117,5 @@ export function setupFriendRequestForm() {
       return;
     }
     resultOutput.appendChild(createUserCard(data));
-
   });
 }
