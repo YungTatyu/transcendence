@@ -1,4 +1,5 @@
-import TitileAndHomeButton from "../components/TitleAndHomeButton.js";
+import fetchApiNoBody from "../api/fetchApiNoBody.js";
+import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
@@ -16,21 +17,21 @@ export default function Profile() {
     //Loadingの部分はAPIから取得した値で上書きする
     return `
       <div id="row-data " class="row row-cols-3">
-          <div class="col">loading...</div>
-          <div class="col">loading...</div>
-          <div class="col">loading...</div>
+          <div id="wins" class="col">loading...</div>
+          <div id="losses" class="col">loading...</div>
+          <div id="tournament-wins" class="col">loading...</div>
       </div>
       <div id="row-label " class="row row-cols-3">
-          <div class="col">Wins</div>
-          <div class="col">Losses</div>
-          <div class="col">Tournament Wins</div>
+          <div class="col">Wins game</div>
+          <div class="col">Losses game</div>
+          <div class="col">Tournament wins</div>
       </div>
         `;
   }
 
   return `
 
-    ${TitileAndHomeButton("PROFILE")}
+    ${TitleAndHomeButton("PROFILE")}
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
@@ -90,23 +91,44 @@ export async function setupProfile() {
     return;
   }
 
-  const response = await fetch(
-    `${config.userService}/users?userid=${stateManager.state.userId}`,
+  const { u_status, u_data } = await fetchApiNoBody(
+    "GET",
+    config.userService,
+    `/users?userid=${stateManager.state.userId}`,
   );
-  const status = response.status;
-  const data = await response.json();
 
-  if (status === null) {
+  if (u_status === null) {
     errorOutput.textContent = "Error Occured!";
     return;
   }
-  if (status >= 400) {
-    errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+  if (u_status >= 400) {
+    errorOutput.textContent = JSON.stringify(u_data.error, null, "\n");
     return;
   }
-  document.querySelector(".js-username").textContent = data.username;
-  document.querySelector(".js-user-avatar").src = data.avatar_path;
+  document.querySelector(".js-username").textContent = u_data.username;
+  document.querySelector(".js-user-avatar").src = u_data.avatar_path;
 
-  stateManager.setState({ username: data.username });
-  stateManager.setState({ avatarPath: data.avatar_path });
+  stateManager.setState({ username: u_data.username });
+  stateManager.setState({ avatarPath: u_data.avatar_path });
+
+  if (!stateManager.state.userId) {
+    return;
+  }
+  const { status, data } = await fetchApiNoBody(
+    "GET",
+    config.matchService,
+    `/matches/statistics/${stateManager.state.userId}`,
+  );
+
+  if (status === null || status >= 400) {
+    console.error("試合統計情報の取得に失敗しました");
+    return;
+  }
+  const wins = document.getElementById("wins");
+  const losses = document.getElementById("losses");
+  const tournamentWins = document.getElementById("tournament-wins");
+
+  wins.textContent = data.matchWinCount;
+  losses.textContent = data.matchLoseCount;
+  tournamentWins.textContent = data.tournamentWinnerCount;
 }

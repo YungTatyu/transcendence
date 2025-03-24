@@ -1,4 +1,4 @@
-export default function TitileAndHomeButton(titleText) {
+export default function TitleAndHomeButton(titleText) {
   return `
         <div class="container text-center">
             <div class="row">

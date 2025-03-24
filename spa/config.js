@@ -5,6 +5,7 @@ const config = {
     gameService: "http://localhost:8001",
     realtimeGameService: "ws://localhost:8001",
     authService: "http://localhost:8000",
+    friendService: "http://localhost:7500",
   },
   production: {
     userService: "",
@@ -12,6 +13,7 @@ const config = {
     gameService: "",
     realtimeGameService: "",
     authService: "",
+    friendService: "",
   },
 };
 
