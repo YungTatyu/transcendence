@@ -1,8 +1,8 @@
+import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
 import TournamentBracket, {
   renderTournamentBracket,
 } from "../services/tournament/TournamentBracket.js";
 import { createTournamentData } from "../services/tournament/createTournamentData.js";
-import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
 
 export default function Tournament() {
   return `
