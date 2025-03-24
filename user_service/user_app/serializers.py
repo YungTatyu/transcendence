@@ -36,7 +36,11 @@ class QueryParamSerializer(serializers.Serializer):
 
         if username is not None and userid is not None:
             raise serializers.ValidationError(
-                {"error": ["query parameter 'username' or 'userid' must not be provided together."]}
+                {
+                    "error": [
+                        "query parameter 'username' or 'userid' must not be provided together."
+                    ]
+                }
             )
 
         return data
@@ -85,9 +89,7 @@ class AvatarSerializer(serializers.ModelSerializer):
         avatar_file = data["avatar_path"]
 
         if avatar_file.size > self.MAX_FILE_SIZE:
-            raise serializers.ValidationError(
-                {"error": ["Invalid image format."]}
-            )
+            raise serializers.ValidationError({"error": ["Invalid image format."]})
 
         # ファイルの拡張子を取得
         ext = os.path.splitext(avatar_file.name)[1].lower()
