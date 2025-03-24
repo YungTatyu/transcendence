@@ -1,5 +1,5 @@
-import stateManager from "../stateManager.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import stateManager from "../stateManager.js";
 
 export default function FriendList() {
   return `
@@ -86,12 +86,13 @@ export const setupFriendList = async () => {
 
   const friendList = await getFriendUserList();
 
-  await Promise.all(friendList.map(async (friend_id) => {
-    const friendItem = document.createElement("div");
-    const friend = await getUserNameAndAvatar(friend_id);
-    const status = await getUserStatus(friend_id);
-    friendItem.classList.add("js-friend-list-item");
-    friendItem.innerHTML = `
+  await Promise.all(
+    friendList.map(async (friendId) => {
+      const friendItem = document.createElement("div");
+      const friend = await getUserNameAndAvatar(friendId);
+      const status = await getUserStatus(friendId);
+      friendItem.classList.add("js-friend-list-item");
+      friendItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
 			<img src=${friend.avatarPath} alt="avotor">
 			<div class="text-white fs-2">${friend.username}</div>
@@ -99,10 +100,13 @@ export const setupFriendList = async () => {
 			<button type="button" class="remove-button btn btn-primary">remove</button>
 		</div>
 		`;
-    friendItem.querySelector(".remove-button").addEventListener("click", async () => {
-      // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
-      friendItem.remove(); // 承認後、要素を削除
-    });
-    friendsList.appendChild(friendItem);
-  }));
+      friendItem
+        .querySelector(".remove-button")
+        .addEventListener("click", async () => {
+          // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
+          friendItem.remove(); // 要素を削除
+        });
+      friendsList.appendChild(friendItem);
+    }),
+  );
 };

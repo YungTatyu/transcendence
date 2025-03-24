@@ -1,5 +1,5 @@
-import stateManager from "../stateManager.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import stateManager from "../stateManager.js";
 
 export default function FriendRequestList() {
   return `
@@ -77,11 +77,12 @@ export const setupFriendRequestList = async () => {
 
   const friendRequestList = await getFriendUserList();
 
-  await Promise.all(friendRequestList.map(async (request_id) => {
-    const friendRequestItem = document.createElement("div");
-    const friend = await getUserNameAndAvatar(request_id);
-    friendRequestItem.classList.add("js-friend-request-item");
-    friendRequestItem.innerHTML = `
+  await Promise.all(
+    friendRequestList.map(async (requestId) => {
+      const friendRequestItem = document.createElement("div");
+      const friend = await getUserNameAndAvatar(requestId);
+      friendRequestItem.classList.add("js-friend-request-item");
+      friendRequestItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
 			<img src=${friend.avatarPath}>
 			<div class="text-white">${friend.username}</div>
@@ -89,17 +90,21 @@ export const setupFriendRequestList = async () => {
 			<button type="button" class="reject-button btn btn-primary">reject</button>
 		</div>
 		`;
-    friendRequestItem.querySelector(".approved-button").addEventListener("click", async () => {
-      // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
-      friendRequestItem.remove(); // 承認後、要素を削除
-    });
+      friendRequestItem
+        .querySelector(".approved-button")
+        .addEventListener("click", async () => {
+          // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
+          friendRequestItem.remove(); // 承認後、要素を削除
+        });
 
-    // 拒否ボタン
-    friendRequestItem.querySelector(".reject-button").addEventListener("click", async () => {
-      // await fetch(`/friend/reject/${request_id}`, { method: "POST" }); // APIを叩く
-      friendRequestItem.remove(); // 拒否後、要素を削除
-    });
-    friendsList.appendChild(friendRequestItem);
-  }));
-
+      // 拒否ボタン
+      friendRequestItem
+        .querySelector(".reject-button")
+        .addEventListener("click", async () => {
+          // await fetch(`/friend/reject/${request_id}`, { method: "POST" }); // APIを叩く
+          friendRequestItem.remove(); // 拒否後、要素を削除
+        });
+      friendsList.appendChild(friendRequestItem);
+    }),
+  );
 };

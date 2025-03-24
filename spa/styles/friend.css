@@ -32,7 +32,8 @@
   font-size: 30px;
 }
 
-.find-button:hover, .reject-button:hover {
+.find-button:hover,
+.reject-button:hover {
   background-color: #0bb0cc;
 }
 
