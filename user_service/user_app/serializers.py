@@ -36,11 +36,7 @@ class QueryParamSerializer(serializers.Serializer):
 
         if username is not None and userid is not None:
             raise serializers.ValidationError(
-                {
-                    "error": [
-                        "query parameter 'username' or 'userid' must not be provided together."
-                    ]
-                }
+                {"error": ["query parameter 'username' or 'userid' is required."]}
             )
 
         return data
