@@ -1,6 +1,9 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
+import FriendRequestForm, {
+  setupFriendRequestForm,
+} from "./views/FriendRequestForm.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home from "./views/Home.js";
@@ -37,4 +40,9 @@ SPA.route("/game/setup", InitMatch, setupInitMatch);
 SPA.route("/matching/quick-play", QuickPlayMatching, setupQuickPlayMatching);
 SPA.route("/matching/tournament", TournamentMatching, setupTournamentMatching);
 
+SPA.route(
+  "/friend/friend-request-form",
+  FriendRequestForm,
+  setupFriendRequestForm,
+);
 SPA.init({ containerId: "app" });
