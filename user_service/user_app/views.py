@@ -23,6 +23,8 @@ from .serializers import (
     UsernameSerializer,
 )
 
+from rest_framework import serializers
+
 
 class UserView(APIView):
     def post(self, request):
@@ -88,8 +90,17 @@ class UsernameView(APIView):
         user = User.objects.get(user_id=user_id)
 
         serializer = UsernameSerializer(instance=user, data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_409_CONFLICT)
+        try:
+                serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+                # エラーフィールド名を統一して400か409で返す
+                error_dict = e.detail
+                error_value = error_dict.get("error")
+
+                if isinstance(error_value, str) and "A username is already used." in error_value:
+                    return Response({"error": error_value}, status=HTTP_409_CONFLICT)
+                else:
+                    return Response({"error": "Invalid input."}, status=HTTP_400_BAD_REQUEST)
 
         updated_user = serializer.save()
 
