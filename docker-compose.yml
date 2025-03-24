@@ -127,7 +127,9 @@ services:
     depends_on:
       - user_db
     env_file: ./docker_env/user.env
-
+    volumes:
+     - user_media:/app/user_app/media/
+     
   user_db:
     image: postgres:15
     container_name: user_db
@@ -253,6 +255,7 @@ services:
     volumes:
       - ./spa:/usr/share/nginx/html:ro
       - ./spa/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - user_media:/media/
 
 
 networks:
@@ -265,3 +268,4 @@ volumes:
   friends_db_data:
   user_db_data:
   match_db_data:
+  user_media:
