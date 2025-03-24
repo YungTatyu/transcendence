@@ -15,6 +15,12 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         return cls.GROUP_NAME_FORMAT.format(tournament_id)
 
     async def connect(self):
+        if not self.scope.get("user_id"):
+            await self.close()
+            return
+
+        self.user_id = int(self.scope.get("user_id"))
+
         # tournamentIdをURL から取得
         self.tournament_id = int(self.scope["url_route"]["kwargs"]["tournamentId"])
         # tournamentIdに紐づいたルーム
@@ -23,6 +29,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         # TournamentSessionが存在しない場合、接続を拒否する
         tournament_session = TournamentSession.search(self.tournament_id)
         if tournament_session is None:
+            await self.close(code=4400)
+            return
+
+        # 参加者ではないユーザーがトーナメントに参加しようとしている
+        if self.user_id not in tournament_session.user_ids:
             await self.close(code=4400)
             return
 

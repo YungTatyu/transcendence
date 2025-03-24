@@ -1,7 +1,4 @@
-from unittest.mock import MagicMock
-
 import pytest
-import requests
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
@@ -18,28 +15,6 @@ from .set_up_utils import (
 
 
 class TestMatchFinish:
-    @pytest.fixture()
-    def requests_post_mocker(self, mocker):
-        """モック対象の処理は正常処理時にResponseを返すため、Responseをモックする"""
-        mock_response = MagicMock(spec=requests.Response)
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"message": "Match ended normally"}
-        return mocker.patch(
-            "match_app.client.tournament_client.TournamentClient.finish_match",
-            return_value=mock_response,
-        )
-
-    @pytest.fixture()
-    def requests_post_faild_mocker(self, mocker):
-        """モック対象の処理はエラー時に例外を投げるため、例外の発生をモックする"""
-        mock_response = MagicMock(spec=requests.Response)
-        mock_response.status_code = 500
-        mock_response.json.return_value = {"error": "Internal Server Error"}
-        return mocker.patch(
-            "match_app.client.tournament_client.TournamentClient.finish_match",
-            return_value=mock_response,
-        )
-
     def request_match_finish(self, client, status, match_id, results) -> dict:
         """
         RequestBodyを作成し/matches/finish/エンドポイントを叩く
@@ -111,7 +86,7 @@ class TestMatchFinish:
     )
     @pytest.mark.django_db
     def test_simple_tournament_match_finish(
-        self, requests_post_mocker, client, user_ids, request_body
+        self, request_finish_match_success_mocker, client, user_ids, request_body
     ):
         """Tournamentモードの試合が終了"""
         match = self.__insert_tournament_match(user_ids)
@@ -192,7 +167,9 @@ class TestMatchFinish:
         self.request_match_finish(client, HTTP_400_BAD_REQUEST, match_id, results)
 
     @pytest.mark.django_db
-    def test_faild_tournament_api_request(self, requests_post_faild_mocker, client):
+    def test_faild_tournament_api_request(
+        self, request_finish_match_error_mocker, client
+    ):
         """
         TournamentAPIを叩く処理が失敗 + ロールバック処理のテスト
         """

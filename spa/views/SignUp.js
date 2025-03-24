@@ -33,7 +33,6 @@ export function setupSignUp() {
       "/auth/otp/signup",
       requestBody,
     );
-    console.log(data);
 
     if (status === null) {
       errorOutput.textContent = "Error Occured!";

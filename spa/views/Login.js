@@ -29,7 +29,6 @@ export function setupLogin() {
       "/auth/otp/login",
       requestBody,
     );
-    console.log(data);
 
     if (status === null) {
       errorOutput.textContent = "Error Occured!";
