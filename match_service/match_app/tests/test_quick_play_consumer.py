@@ -25,14 +25,13 @@ def create_jwt_for_user(user_id):
     return token
 
 
-async def create_communicator(user_id: int, expect_connected=True):
+async def create_communicator(user_id: int):
     """JWTをCookieに含んでWebSocketコネクションを作成"""
     access_token = create_jwt_for_user(user_id)
     communicator = WebsocketCommunicator(application, PATH_MATCHING)
     communicator.scope["cookies"] = {"access_token": access_token}
     connected, _ = await communicator.connect()
-    assert connected == expect_connected
-    return communicator
+    return communicator, connected
 
 
 @database_sync_to_async
@@ -47,7 +46,7 @@ async def test_fetch_games_success(mock_fetch_games_success):
     comms = []
     for i in range(QuickPlayConsumer.ROOM_CAPACITY):
         user_id = i + 1
-        communicator = await create_communicator(user_id)
+        communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -73,7 +72,7 @@ async def test_featch_games_error(mock_fetch_games_error):
     comms = []
     user_ids = [(i + 10) for i in range(QuickPlayConsumer.ROOM_CAPACITY)]
     for user_id in user_ids:
-        communicator = await create_communicator(user_id)
+        communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -95,13 +94,13 @@ async def test_featch_games_error(mock_fetch_games_error):
 async def test_user_exit_case(mock_fetch_games_success):
     """ルームに入ったUserが退出し、別Usersがマッチングするケース"""
     first_time_user_id = 123
-    communicator = await create_communicator(first_time_user_id)
+    communicator, _ = await create_communicator(first_time_user_id)
     await communicator.disconnect()
 
     comms = []
     for i in range(QuickPlayConsumer.ROOM_CAPACITY):
         user_id = i + 1
-        communicator = await create_communicator(user_id)
+        communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -124,7 +123,7 @@ async def test_fetch_games_success_2_groups(mock_fetch_games_success):
     comms = []
     for i in range(QuickPlayConsumer.ROOM_CAPACITY):
         user_id = i + 1
-        communicator = await create_communicator(user_id)
+        communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
     for communicator in comms:
@@ -139,7 +138,7 @@ async def test_fetch_games_success_2_groups(mock_fetch_games_success):
     comms2 = []
     for i in range(QuickPlayConsumer.ROOM_CAPACITY):
         user_id = i + 1
-        communicator = await create_communicator(user_id)
+        communicator, _ = await create_communicator(user_id)
         comms2.append(communicator)
 
     for communicator in comms2:
@@ -170,7 +169,10 @@ async def test_enter_room_same_user():
     """同一ユーザーがマッチングルームに入った場合、コネクションが確立できない"""
     user_id = 1
 
-    communicator = await create_communicator(user_id)
-    await create_communicator(user_id, expect_connected=False)
-    await communicator.disconnect()
+    communicator1, connected1 = await create_communicator(user_id)
+    assert connected1
+    _, connected2 = await create_communicator(user_id)
+    assert not connected2
+
+    await communicator1.disconnect()
     QuickPlayMatchingManager.clear_waiting_users()

@@ -1,6 +1,10 @@
+from unittest.mock import MagicMock
+
 import pytest
+import requests
 
 from match_app.models import Match
+from match_app.utils.tournament_match_waiter import TournamentMatchWaiter
 
 from .set_up_utils import (
     insert_match_participants_record,
@@ -120,3 +124,33 @@ def mock_fetch_games_error(mocker):
         "match_app.client.game_client.GameClient.fetch_games",
         return_value={"error": "Invalid params provided for game room creation."},
     )
+
+
+@pytest.fixture()
+def request_finish_match_success_mocker(mocker):
+    """モック対象の処理は正常処理時にResponseを返すため、Responseをモックする"""
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"message": "Match ended normally"}
+    return mocker.patch(
+        "match_app.client.tournament_client.TournamentClient.finish_match",
+        return_value=mock_response,
+    )
+
+
+@pytest.fixture()
+def request_finish_match_error_mocker(mocker):
+    """モック対象の処理はエラー時に500を投げるため、500の発生をモックする"""
+    mock_response = MagicMock(spec=requests.Response)
+    mock_response.status_code = 500
+    mock_response.json.return_value = {"error": "Internal Server Error"}
+    return mocker.patch(
+        "match_app.client.tournament_client.TournamentClient.finish_match",
+        return_value=mock_response,
+    )
+
+
+@pytest.fixture()
+def mock_limit_wait_sec(mocker):
+    """TournamentMatchWaiter.LIMIT_WAIT_SEC をモックして値を変更"""
+    mocker.patch.object(TournamentMatchWaiter, "LIMIT_WAIT_SEC", 1)
