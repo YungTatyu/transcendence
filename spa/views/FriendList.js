@@ -99,6 +99,10 @@ export const setupFriendList = async () => {
 			<button type="button" class="remove-button btn btn-primary">remove</button>
 		</div>
 		`;
+    friendItem.querySelector(".remove-button").addEventListener("click", async () => {
+      // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
+      friendItem.remove(); // 承認後、要素を削除
+    });
     friendsList.appendChild(friendItem);
   }));
 };

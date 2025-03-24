@@ -77,27 +77,6 @@ export const setupFriendRequestList = async () => {
 
   const friendRequestList = await getFriendUserList();
 
-  // const friendInfo = await Promise.all(
-  //   friendList.map(async (userid) => {
-  //     const user = await getUserNameAndAvatar(userid);
-  //     return { ...user };
-  //   }),
-  // );
-
-  // friendInfo.forEach((friend, index) => {
-  //   const friendRequestItem = document.createElement("div");
-  //   friendRequestItem.classList.add("js-friend-request-item");
-  //   friendRequestItem.innerHTML = `
-	// 	<div class="gap-wrap d-flex align-items-center mt-4">
-	// 		<img src=${friend.avatarPath}>
-	// 		<div class="text-white">${friend.username}</div>
-	// 		<button type="button" class="approved-button btn btn-primary">approved</button>
-	// 		<button type="button" class="reject-button btn btn-primary">reject</button>
-	// 	</div>
-	// 	`;
-  //   friendsList.appendChild(friendRequestItem);
-  // });
-
   await Promise.all(friendRequestList.map(async (request_id) => {
     const friendRequestItem = document.createElement("div");
     const friend = await getUserNameAndAvatar(request_id);
@@ -110,6 +89,17 @@ export const setupFriendRequestList = async () => {
 			<button type="button" class="reject-button btn btn-primary">reject</button>
 		</div>
 		`;
+    friendRequestItem.querySelector(".approved-button").addEventListener("click", async () => {
+      // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
+      friendRequestItem.remove(); // 承認後、要素を削除
+    });
+
+    // 拒否ボタン
+    friendRequestItem.querySelector(".reject-button").addEventListener("click", async () => {
+      // await fetch(`/friend/reject/${request_id}`, { method: "POST" }); // APIを叩く
+      friendRequestItem.remove(); // 拒否後、要素を削除
+    });
     friendsList.appendChild(friendRequestItem);
   }));
+
 };
