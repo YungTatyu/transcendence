@@ -2,6 +2,7 @@ import TournamentBracket, {
   renderTournamentBracket,
 } from "../services/tournament/TournamentBracket.js";
 import { createTournamentData } from "../services/tournament/createTournamentData.js";
+import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
 
 export default function Tournament() {
   return `
@@ -15,6 +16,7 @@ export default function Tournament() {
       <div class="w-50 text-center match-right-player px-5">rikeda2</div>
     </div>
     ${TournamentBracket()}
+    ${WaitOrStart()}
   `;
 }
 
@@ -22,6 +24,7 @@ export function setupTournament() {
   const tournamentJsonData = getTournamentJsonData();
   const tournamentData = createTournamentData(tournamentJsonData);
   renderTournamentBracket(tournamentData);
+  renderWaitOrStart("WAIT...", "#0ca5bf");
 }
 
 function getTournamentJsonData() {
