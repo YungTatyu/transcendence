@@ -11,7 +11,7 @@ export default function FriendRequestForm() {
     </div>
         `;
 
-  return  `
+  return `
 		<div class="container d-flex justify-content-center align-items-center vh-100 position-relative" style="max-width: 400px;">
 		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
             <div class="position-absolute" style="top: -25px; right: -60px;">
@@ -46,25 +46,6 @@ export function setupFriendRequestForm() {
     // const { status, data } = await fetchApiWithBody(
     // 	"POST"
     // )
-
-    const status = 200;
-    const errorData = {
-      error: "Error Now",
-    };
-    const data = {
-      username: "test",
-      avatarPath: "/assets/42.png",
-    };
-
-    if (status === null) {
-      resultOutput.textContent = "Error Occured!";
-      return;
-    }
-    if (status >= 400) {
-      resultOutput.textContent = errorData.error;
-      return;
-    }
-    resultOutput.appendChild(createUserCard(data));
 
     function createUserCard(data) {
       const divContainer = document.createElement("div");
@@ -117,5 +98,25 @@ export function setupFriendRequestForm() {
         message.textContent = "Sent friend request.";
       }
     }
+    
+    const status = 200;
+    const errorData = {
+      error: "Error Now",
+    };
+    const data = {
+      username: "test",
+      avatarPath: "/assets/42.png",
+    };
+
+    if (status === null) {
+      resultOutput.textContent = "Error Occured!";
+      return;
+    }
+    if (status >= 400) {
+      resultOutput.textContent = errorData.error;
+      return;
+    }
+    resultOutput.appendChild(createUserCard(data));
+
   });
 }
