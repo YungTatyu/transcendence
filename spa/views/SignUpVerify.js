@@ -59,7 +59,6 @@ export function setupSignUpVerify() {
       errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
-    console.log(data);
 
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
@@ -82,7 +81,6 @@ export function setupSignUpVerify() {
         errorOutput.textContent = JSON.stringify(data.error, null, "\n");
         return;
       }
-      console.log(data);
     });
   });
 }

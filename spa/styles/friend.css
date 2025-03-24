@@ -1,0 +1,117 @@
+.button-position {
+  margin-right: 100px;
+  margin-top: 40px;
+}
+
+.find-button {
+  font-family: "League Spartan", sans-serif;
+  background-color: #0bb0cc;
+  color: white;
+  width: 300px;
+  height: 50px;
+  font-size: 30px;
+}
+
+.request-button {
+  font-family: "League Spartan", sans-serif;
+  background-color: #0bb0cc;
+  color: white;
+  width: 300px;
+  height: 50px;
+  font-size: 30px;
+}
+
+.list-button {
+  font-family: "League Spartan", sans-serif;
+  background-color: #0bb0cc;
+  color: white;
+  width: 300px;
+  height: 50px;
+  font-size: 30px;
+}
+
+.find-button:hover,
+.reject-button:hover {
+  background-color: #0bb0cc;
+}
+
+.friend-list img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.js-friend-list-item {
+  font-size: 30px;
+}
+
+.gap-wrap {
+  gap: 10%;
+}
+
+.remove-button {
+  font-family: "League Spartan", sans-serif;
+  background-color: #7733ff;
+  font-size: 30px;
+  color: white;
+  width: 150px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.remove-button:hover {
+  background-color: #7733ff;
+}
+
+.user-status {
+  color: #0cc0df;
+}
+
+.js-friend-request-item {
+  font-size: 30px;
+}
+
+.approved-button {
+  font-family: "League Spartan", sans-serif;
+  background-color: #02ae5b;
+  font-size: 30px;
+  color: white;
+  width: 150px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.approved-button:hover {
+  background-color: #02ae5b;
+}
+
+.reject-button {
+  font-family: "League Spartan", sans-serif;
+  background-color: #7733ff;
+  font-size: 30px;
+  color: white;
+  width: 150px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.reject-button:hover {
+  background-color: #7733ff;
+}
+
+.js-friend-request-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}

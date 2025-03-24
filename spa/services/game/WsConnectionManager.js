@@ -1,20 +1,23 @@
 import config from "../../config.js";
+import SPA from "../../spa.js";
+import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { gameRender } from "../../views/Game.js";
 
 const startTimer = (endTime) => {
-  const interval = setInterval(() => {
+  const intervalId = setInterval(() => {
     const remainingTime = calcRemaingTime(endTime);
     gameRender.renderTimer(remainingTime);
-    if (time <= 0) {
-      clearInterval(interval);
+    if (remainingTime <= 0) {
+      clearInterval(intervalId);
     }
   }, 1000); // 1秒ごとに実行
+  return intervalId;
 };
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log("Connected to match");
+    console.log("Connected to game");
   },
   handleMessage(message) {
     try {
@@ -23,15 +26,38 @@ const wsEventHandler = {
       const gameMessage = parsedMessage.message;
       if (type === "game.message" && gameMessage === "update") {
         const updatedState = parsedMessage.data.state;
-        gameRender.renderGame(updatedState);
+        gameRender.renderGame({
+          ball: updatedState.ball,
+          leftPlayer: updatedState.left_player,
+          rightPlayer: updatedState.right_player,
+        });
       } else if (type === "game.message" && gameMessage === "timer") {
+        // 対戦相手が再接続の際に、メッセージが送られる
+        if (WsConnectionManager.intervalId !== null) {
+          return;
+        }
         const endTime = Number(parsedMessage.end_time) * 1000; // Unixタイム(秒) → ミリ秒に変換
-        startTimer(endTime);
+        WsConnectionManager.intervalId = startTimer(endTime);
       } else if (type === "game.finish.message" && gameMessage === "gameover") {
         const results = parsedMessage.results;
-        alert(
-          `game·over:\n${results.map((r) => `User ${r.userId}: ${r.score}`).join("\n")}`,
-        );
+        const highestScore = results.reduce((max, r) => {
+          return r.score > max ? r.score : max;
+        }, 0);
+        const leftScore = results[0]?.score;
+        const rightScore = results[1]?.score;
+        const userId = stateManager.state?.userId;
+        const win =
+          userId &&
+          results.some(
+            (r) =>
+              r.userId === Number.parseInt(userId, 10) &&
+              r.score === highestScore,
+          );
+        SPA.navigate("/game/result", {
+          left: leftScore,
+          right: rightScore,
+          win: win,
+        });
       }
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
@@ -42,25 +68,31 @@ const wsEventHandler = {
   },
   handleError(message) {
     console.error("WebSocket error:", message);
+    gameRender.renderError("failed to establish game connection.");
   },
 };
 
 const WsConnectionManager = {
   socket: null,
   eventHandler: wsEventHandler,
+  intervalId: null,
 
   connect(matchId) {
     this.socket = new WebSocket(
-      `ws://${config.gameService}/games/ws/enter-room/${matchId}`,
+      `${config.realtimeGameService}/games/ws/enter-room/${matchId}`,
     );
+    this.registerEventHandler();
   },
 
   disconnect() {
-    if (this.socket === null) {
-      return;
+    if (this.socket !== null) {
+      this.socket.close();
+      this.socket = null;
     }
-    this.socket.close();
-    this.socket = null;
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   },
 
   sendMessage(message) {
@@ -72,10 +104,6 @@ const WsConnectionManager = {
   },
 
   registerEventHandler() {
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      console.error("Socket is not open. Unable to send message.");
-      return;
-    }
     this.socket.onopen = this.eventHandler.handleOpen.bind(this.eventHandler);
     this.socket.onmessage = this.eventHandler.handleMessage.bind(
       this.eventHandler,

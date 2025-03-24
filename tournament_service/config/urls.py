@@ -15,26 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.conf import settings
 from django.conf.urls import include
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, re_path
-from django.views.static import serve
+from django.urls import path
 
 urlpatterns = [
-    # TODO 手動確認用の設定なので最終的に削除する
-    re_path(
-        r"^$",
-        serve,
-        {"document_root": settings.STATICFILES_DIRS[0], "path": "index.html"},
-    ),
     path("admin/", admin.site.urls),
     path("", include("tournament_app.urls")),
 ]
-
-# TODO 手動確認用の設定なので最終的に削除する
-if settings.DEBUG:
-    urlpatterns += static(
-        settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]
-    )

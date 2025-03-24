@@ -1,5 +1,8 @@
 import config from "../config.js";
 import PlayerActionHandler from "../services/game/PlayerActionHandler.js";
+import WsConnectionManager from "../services/game/WsConnectionManager.js";
+import SPA from "../spa.js";
+import stateManager from "../stateManager.js";
 
 const GAME_HEIGHT = 500;
 const GAME_WIDTH = 800;
@@ -17,7 +20,6 @@ export default function Game() {
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
             <div class="player-name left-player-bgc col display-5 text-truncate rounded js-left-player">
-              player1
             </div>
           </div>
         </div>
@@ -26,12 +28,14 @@ export default function Game() {
         </div>
         <div class="col-4 px-5 align-self-center">
           <div class="row py-1">
-            <div class="player-name right-player-bgc col display-5 text-truncate rounded js-right-player">player2
+            <div class="player-name right-player-bgc col display-5 text-truncate rounded js-right-player">
             </div>
           </div>
         </div>
       </div>
       <h1 class="game-timer display-3 js-game-timer p-0 m-0">60</h1>
+      <h1 class="js-game-error fs-1 text-center text-danger fw-bold text-wrap"></h1>
+      <p class="js-game-error-detail fs-2 text-center text-danger text-wrap"></p>
     </div>
     `;
   }
@@ -61,12 +65,20 @@ export const gameRender = {
     },
   ) {
     const scoreEle = document.querySelector(".js-game-score");
+    if (scoreEle === null) {
+      return;
+    }
     scoreEle.textContent = `${state.leftPlayer.score}:${state.rightPlayer.score}`;
 
     const canvas = document.querySelector(".game-canvas");
+    if (canvas === null) {
+      return;
+    }
     const ctx = canvas.getContext("2d");
 
-    const centerX = canvas.width / 2;
+    // 背景クリア
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     ctx.setLineDash([15, 5]); // 5pxの線と5pxの間隔の点線
     ctx.lineWidth = 2; // 線の太さ
@@ -74,6 +86,7 @@ export const gameRender = {
 
     // 垂直線を描画
     ctx.beginPath();
+    const centerX = canvas.width / 2;
     ctx.moveTo(centerX, 0);
     ctx.lineTo(centerX, canvas.height);
     ctx.stroke();
@@ -87,7 +100,13 @@ export const gameRender = {
       color: "white",
     };
     ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.width / 2, 0, Math.PI * 2);
+    ctx.arc(
+      ball.x + ball.width / 2,
+      ball.y + ball.height / 2,
+      ball.width / 2,
+      0,
+      Math.PI * 2,
+    );
     ctx.fillStyle = ball.color;
     ctx.fill();
     ctx.closePath();
@@ -126,20 +145,35 @@ export const gameRender = {
   },
   renderTimer(time = 60) {
     const timerEle = document.querySelector(".js-game-timer");
-    timerEle.textContent = time;
+    if (timerEle) {
+      timerEle.textContent = time;
+    }
   },
   renderPlayerNames(players = []) {
-    const nameClasses = [".js-left-player", ".js-left-player"];
+    const nameClasses = [".js-left-player", ".js-right-player"];
     nameClasses.forEach((nameClass, index) => {
-      const player = players[index];
+      const playerName = players[index] ?? "";
       const element = document.querySelector(nameClass);
-
-      if (element && player) {
-        element.textContent = player.name;
-      } else if (element) {
-        element.textContent = "player";
+      if (element) {
+        element.textContent = playerName;
       }
     });
+  },
+  renderError(errMessage) {
+    const canvas = document.querySelector(".game-canvas");
+    // 画面をクリア
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    const errEle = document.querySelector(".js-game-error");
+    const errDetail = document.querySelector(".js-game-error-detail");
+    if (errEle) {
+      errEle.textContent = "Error occured.";
+    }
+    if (errDetail) {
+      errDetail.textContent = errMessage;
+    }
   },
 };
 
@@ -148,27 +182,30 @@ const fetchUsername = async (userid) => {
   if (!res.ok) {
     throw new Error(`failed to fetch user data: ${res.status}`);
   }
-  return await res.json().username;
+  const data = await res.json();
+  return data.username;
 };
 
 export const setupGame = async () => {
   try {
-    // TODO apiを叩くので一旦実行しない
-    // const matchId = 1;
-    // const res = await fetch(`${config.matchService}/matches?matchId=${matchId}`);
-    // if (!res.ok) {
-    //   throw new Error(`failed to fetch match data: ${res.status}`);
-    // }
-    // const match = await res.json().results[0];
-    // const ids = match.participants.map((player) => player.id);
-    // const gamePlayers = await Promise.all(ids.map(async (id) => await fetchUsername(id)));
-    // gameRender.renderPlayerNames(gamePlayers);
-
-    PlayerActionHandler.registerEventHandler();
+    if (!stateManager.state?.players || !stateManager.state?.matchId) {
+      SPA.navigate("/");
+      return;
+    }
     gameRender.renderGame();
+    const names = await Promise.all(
+      stateManager.state.players.map(fetchUsername),
+    );
+    gameRender.renderPlayerNames(names);
+    WsConnectionManager.connect(stateManager.state.matchId);
+    PlayerActionHandler.registerEventHandler();
   } catch (error) {
     console.error(error);
-    // 配列を初期化する
-    gamePlayers.splice(0, gamePlayers.length);
+    gameRender.renderError("failed to setup game.");
   }
+};
+
+export const cleanupGame = () => {
+  PlayerActionHandler.cleanup();
+  WsConnectionManager.disconnect();
 };
