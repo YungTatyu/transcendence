@@ -24,6 +24,11 @@ import TournamentMatching, {
 } from "./views/TournamentMatching.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 
+import FriendList, { setupFriendList } from "./views/FriendList.js";
+import FriendRequestList, {
+  setupFriendRequestList,
+} from "./views/FriendRequestList.js";
+
 SPA.route("/", Home);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
@@ -34,6 +39,8 @@ SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
+SPA.route("/friend", FriendList, setupFriendList);
+SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/game/setup", InitMatch, setupInitMatch);
