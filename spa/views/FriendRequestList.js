@@ -45,7 +45,7 @@ const data = {
 export const setupFriendRequestList = async () => {
   const friendsList = document.querySelector(".js-friend-request-list");
   friendsList.innerHTML = "";
-  async function getFriendUserList() {
+  async function fetchFriendUserList() {
     // friend_apiを叩く
     // const response = await fetch("/friend?status=pending");
     // const data = awit response.json();
@@ -61,7 +61,7 @@ export const setupFriendRequestList = async () => {
   }
 
   // 取得したしたユーザIDからUser
-  async function getUserNameAndAvatar(userid) {
+  async function fetchUserNameAndAvatar(userid) {
     // const response = await fetch("/users");
     // const data = await response.json();
     // return {
@@ -74,12 +74,12 @@ export const setupFriendRequestList = async () => {
     };
   }
 
-  const friendRequestList = await getFriendUserList();
+  const friendRequestList = await fetchFriendUserList();
 
   await Promise.all(
     friendRequestList.map(async (requestId) => {
       const friendRequestItem = document.createElement("div");
-      const friend = await getUserNameAndAvatar(requestId);
+      const friend = await fetchUserNameAndAvatar(requestId);
       friendRequestItem.classList.add("js-friend-request-item");
       friendRequestItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
