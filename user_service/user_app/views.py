@@ -23,7 +23,18 @@ from .serializers import (
     UsernameSerializer,
 )
 
-from rest_framework import serializers
+
+def format_validation_errors(errors):
+    """
+    バリデーションエラーのメッセージのキーを"error"に統一する
+    """
+    messages = []
+    for field_errors in errors.values():
+        if isinstance(field_errors, list):
+            messages.extend(str(err) for err in field_errors)
+        else:
+            messages.append(str(field_errors))
+    return {"error": messages}
 
 
 class UserView(APIView):
@@ -57,7 +68,9 @@ class UserView(APIView):
         # クエリパラメーターのvalidation
         serializer = QueryParamSerializer(data=request.GET)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(
+                format_validation_errors(serializer.errors), status=HTTP_400_BAD_REQUEST
+            )
 
         validated_data = serializer.validated_data
         username = validated_data.get("username")
@@ -90,17 +103,10 @@ class UsernameView(APIView):
         user = User.objects.get(user_id=user_id)
 
         serializer = UsernameSerializer(instance=user, data=request.data)
-        try:
-                serializer.is_valid(raise_exception=True)
-        except serializers.ValidationError as e:
-                # エラーフィールド名を統一して400か409で返す
-                error_dict = e.detail
-                error_value = error_dict.get("error")
-
-                if isinstance(error_value, str) and "A username is already used." in error_value:
-                    return Response({"error": error_value}, status=HTTP_409_CONFLICT)
-                else:
-                    return Response({"error": "Invalid input."}, status=HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(
+                format_validation_errors(serializer.errors), status=HTTP_409_CONFLICT
+            )
 
         updated_user = serializer.save()
 
@@ -123,8 +129,11 @@ class AvatarView(APIView):
         serializer = AvatarSerializer(
             instance=user, data=request.data, context={"user_id": user_id}
         )
+
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(
+                format_validation_errors(serializer.errors), status=HTTP_400_BAD_REQUEST
+            )
 
         updated_user = serializer.save()
 

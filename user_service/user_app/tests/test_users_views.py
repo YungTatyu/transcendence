@@ -31,7 +31,7 @@ class TestUserViewPost:
             reverse("users"), data={"username": "longerusername"}
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "error" in response.data 
+        assert "error" in response.data
 
     def test_post_validation_error_emptyusernme(self, api_client):
         """POST: バリデーションエラー(username空文字列)"""
@@ -43,8 +43,7 @@ class TestUserViewPost:
         """POST: 既に存在するユーザーの登録(エラー)"""
         response = api_client.post(reverse("users"), data={"username": "testuser"})
         assert response.status_code == status.HTTP_409_CONFLICT
-        assert response.data["error"] == "A username is already used."
-
+        assert "error" in response.data
 
     def test_post_create_user_success(self, api_client):
         """POST: ユーザーを正常に作成(成功)"""
@@ -104,5 +103,4 @@ class TestUserViewGet:
         """GET: 空文字のusername で検索 (シリアライザの仕様によりバリデーションエラー)"""
         response = api_client.get(reverse("users"), {"username": " "})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert "username" in response.data
         assert "error" in response.data

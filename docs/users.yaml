@@ -163,17 +163,6 @@ paths:
                     type: string
                     description: "更新後のユーザー名。"
                     example: "updated_username"
-        "400":
-          description: "入力データが無効"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: "発生したエラーの詳細"
-                    example: "Username is invalid."
         "401":
           $ref: '#/components/responses/UnauthorizedResponse'
         "409":
