@@ -1,6 +1,6 @@
 export default function FriendRequestForm() {
   let formContent = "";
-  formContent += `
+  formContent = `
     <div class="mb-3">
       <label class="form-label">Find Your Friend</label>
 			<div class="d-flex gap-3">
@@ -15,8 +15,8 @@ export default function FriendRequestForm() {
   const formHtml = `
 		<div class="container d-flex justify-content-center align-items-center vh-100 position-relative" style="max-width: 400px;">
 		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-            <div class="position-absolute" style="top: -30px; right: -20px;">
-              <img src="/assets/batsu.png" alt="batsu" style="width: 30px; height: 30px;">
+            <div class="position-absolute" style="top: -25px; right: -60px;">
+              <img src="/assets/batsu.png" alt="batsu" style="width: 40px; height: 40px;">
             </div>
 			<form class="rounded-pill text-center">
 			  ${formContent}
