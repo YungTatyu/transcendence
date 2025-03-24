@@ -1,4 +1,4 @@
-import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import TitileAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 

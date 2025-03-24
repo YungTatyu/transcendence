@@ -1,4 +1,4 @@
-import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import TitileAndHomeButton from "../components/TitleAndHomeButton.js";
 
 export default function MatchHistory() {
   function MatchHistoryData() {
