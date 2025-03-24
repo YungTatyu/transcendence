@@ -1,7 +1,7 @@
 export default function TournamentBracket() {
   return `
-      <div class="d-flex justify-content-center mt-4">
-        <div id="bracket" class="mt-4"></div>
+      <div class="d-flex justify-content-center">
+        <div id="bracket"></div>
       </div>
 	`;
 }
