@@ -31,12 +31,12 @@ class QueryParamSerializer(serializers.Serializer):
 
         if username is None and userid is None:
             raise serializers.ValidationError(
-                "query parameter 'username' or 'userid' is required."
+                {"error": ["query parameter 'username' or 'userid' is required."]}
             )
 
         if username is not None and userid is not None:
             raise serializers.ValidationError(
-                "query parameter 'username' or 'userid' must not be provided together."
+                {"error": ["query parameter 'username' or 'userid' must not be provided together."]}
             )
 
         return data
@@ -60,7 +60,7 @@ class UsernameSerializer(serializers.ModelSerializer):
             .exists()
         ):
             raise serializers.ValidationError(
-                {"username": "A username is already used."}
+                {"error": ["A username is already used."]}
             )
         return data
 
@@ -80,13 +80,13 @@ class AvatarSerializer(serializers.ModelSerializer):
         user_id = self.context.get("user_id")
 
         if "avatar_path" not in data:
-            raise serializers.ValidationError({"avatar_path": "No file uploaded."})
+            raise serializers.ValidationError({"error": ["Invalid image format."]})
 
         avatar_file = data["avatar_path"]
 
         if avatar_file.size > self.MAX_FILE_SIZE:
             raise serializers.ValidationError(
-                {"avatar_path": "File size must be less than 4MB."}
+                {"error": ["Invalid image format."]}
             )
 
         # ファイルの拡張子を取得

@@ -29,12 +29,12 @@ class UserView(APIView):
         # リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response({"error": "Username is invalid."}, status=HTTP_400_BAD_REQUEST)
 
         # 既存のユーザーがいるか確認
         username = serializer.validated_data["username"]
         if User.objects.filter(username=username).exists():
-            return Response({"error": "User arledy exists"}, status=HTTP_409_CONFLICT)
+            return Response({"error": "A user with this email already exists."}, status=HTTP_409_CONFLICT)
 
         # user新規作成
         user = User.objects.create(username=username)
