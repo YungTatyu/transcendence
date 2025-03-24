@@ -7,7 +7,7 @@ export default function FriendList() {
 		${TitileAndHomeButton("FRIENDS LIST")}
 		<div class="button-position d-flex flex-column justify-content-center align-items-end gap-3">
 			<button type="button" class="find-button btn btn-primary">+ Find Friend</button>
-			<button type="button" class="request-button btn btn-primary">+ Request Friend</button>
+			<button type="button" class="request-button btn btn-primary">+ Friends Request</button>
 		</div>
 		<div class="friend-list js-friend-list ml-4">
 		</div>
