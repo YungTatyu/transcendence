@@ -1,0 +1,37 @@
+.btn-quickplay {
+  background: linear-gradient(45deg, #0bb0cc, #0c49ba);
+  border-radius: 4rem;
+  color: white;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  font-family: "Turret Road", sans-serif;
+  font-size: 4.0em;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.btn-tournament {
+  background: linear-gradient(45deg, #0bb0cc, #6709cc);
+  border-radius: 4rem;
+  color: white;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  font-family: "Turret Road", sans-serif;
+  font-size: 4.0em;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.profile-icon {
+  position: fixed;
+  top: 100px;
+  left: 40px;
+  width: 100px;
+  height: auto;
+}
+
+.friend-icon {
+  position: fixed;
+  top: 240px;
+  left: 40px;
+  width: 100px;
+  height: auto;
+}
