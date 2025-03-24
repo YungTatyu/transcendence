@@ -86,25 +86,27 @@ export const setupFriendList = async () => {
 
   const friendList = await getFriendUserList();
 
-  const friendInfo = await Promise.all(
-    friendList.map(async (userid) => {
-      const user = await getUserNameAndAvatar(userid);
-      const status = await getUserStatus(userid);
-      return { ...user, status: status.status };
-    }),
-  );
+  // const friendInfo = await Promise.all(
+  //   friendList.map(async (userid) => {
+  //     const user = await getUserNameAndAvatar(userid);
+  //     const status = await getUserStatus(userid);
+  //     return { ...user, status: status.status };
+  //   }),
+  // );
 
-  friendInfo.forEach((friend, index) => {
-    const friendItem = document.createElement("div");
-    friendItem.classList.add("js-friend-list-item");
-    friendItem.innerHTML = `
-		<div class="gap-wrap d-flex align-items-center mt-4">
-			<img src=${friend.avatarPath}>
-			<div class="text-white fs-2">${friend.username}</div>
-			<div class="user-status">${friend.status}</div>
-			<button type="button" class="remove-button btn btn-primary">remove</button>
-		</div>
-		`;
-    friendsList.appendChild(friendItem);
-  });
+  // friendInfo.forEach((friend, index) => {
+  //   const friendItem = document.createElement("div");
+  //   friendItem.classList.add("js-friend-list-item");
+  //   friendItem.innerHTML = `
+	// 	<div class="gap-wrap d-flex align-items-center mt-4">
+	// 		<img src=${friend.avatarPath}>
+	// 		<div class="text-white fs-2">${friend.username}</div>
+	// 		<div class="user-status">${friend.status}</div>
+	// 		<button type="button" class="remove-button btn btn-primary">remove</button>
+	// 	</div>
+	// 	`;
+  //   friendsList.appendChild(friendItem);
+  // });
+
+  
 };
