@@ -10,7 +10,6 @@ export default function FriendRequestList() {
 			<button type="button" class="request-button btn btn-primary">+ Request Friend</button>
 		</div>
 		<div class="js-friend-request-list">
-			
 		</div>
 	</div>
 	`;
