@@ -75,17 +75,32 @@ export const setupFriendRequestList = async () => {
     };
   }
 
-  const friendList = await getFriendUserList();
+  const friendRequestList = await getFriendUserList();
 
-  const friendInfo = await Promise.all(
-    friendList.map(async (userid) => {
-      const user = await getUserNameAndAvatar(userid);
-      return { ...user };
-    }),
-  );
+  // const friendInfo = await Promise.all(
+  //   friendList.map(async (userid) => {
+  //     const user = await getUserNameAndAvatar(userid);
+  //     return { ...user };
+  //   }),
+  // );
 
-  friendInfo.forEach((friend, index) => {
+  // friendInfo.forEach((friend, index) => {
+  //   const friendRequestItem = document.createElement("div");
+  //   friendRequestItem.classList.add("js-friend-request-item");
+  //   friendRequestItem.innerHTML = `
+	// 	<div class="gap-wrap d-flex align-items-center mt-4">
+	// 		<img src=${friend.avatarPath}>
+	// 		<div class="text-white">${friend.username}</div>
+	// 		<button type="button" class="approved-button btn btn-primary">approved</button>
+	// 		<button type="button" class="reject-button btn btn-primary">reject</button>
+	// 	</div>
+	// 	`;
+  //   friendsList.appendChild(friendRequestItem);
+  // });
+
+  await Promise.all(friendRequestList.map(async (request_id) => {
     const friendRequestItem = document.createElement("div");
+    const friend = await getUserNameAndAvatar(request_id);
     friendRequestItem.classList.add("js-friend-request-item");
     friendRequestItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
@@ -96,5 +111,5 @@ export const setupFriendRequestList = async () => {
 		</div>
 		`;
     friendsList.appendChild(friendRequestItem);
-  });
+  }));
 };
