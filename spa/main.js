@@ -1,11 +1,15 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
+import ChangeAvatar from "./views/ChangeAvatar.js";
+import ChangeMail from "./views/ChangeMail.js";
+import ChangePassword from "./views/ChangePassword.js";
+import ChangeUsername, { setupChageUsername } from "./views/ChangeUsername.js";
 import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
-import GameHome, {setupGameHome} from "./views/GameHome.js";
+import GameHome, { setupGameHome } from "./views/GameHome.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home from "./views/Home.js";
 import InitMatch, { setupInitMatch } from "./views/InitMatch.js";
@@ -34,8 +38,6 @@ SPA.route("/", Home);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
 SPA.route("/api", ApiData, setupApiData);
-SPA.route("/profile", Profile, setupProfile);
-SPA.route("/match-history", MatchHistory);
 SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
@@ -46,6 +48,12 @@ SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/home", GameHome, setupGameHome);
 SPA.route("/game/setup", InitMatch, setupInitMatch);
+SPA.route("/profile", Profile, setupProfile);
+SPA.route("/profile/username", ChangeUsername, setupChageUsername);
+SPA.route("/profile/mail", ChangeMail);
+SPA.route("/profile/password", ChangePassword);
+SPA.route("/profile/avatar", ChangeAvatar);
+SPA.route("/history/match", MatchHistory);
 SPA.route("/matching/quick-play", QuickPlayMatching, setupQuickPlayMatching);
 SPA.route("/matching/tournament", TournamentMatching, setupTournamentMatching);
 
