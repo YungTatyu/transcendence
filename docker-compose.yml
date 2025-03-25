@@ -56,6 +56,9 @@ services:
       - game_redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+    volumes:
+      - ./certs/game/server.crt:/app/server.crt:ro
+      - ./certs/game/server.key:/app/server.key:ro
 
   game_redis:
     image: redis:alpine

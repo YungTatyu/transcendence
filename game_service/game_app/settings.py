@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-4b#2i4h#x3tadq0=#c093f%43bpdz4$3%e-gxm@3j@9tbd!(6i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["game"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "core",
     "realtime_pingpong",
     "corsheaders",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,10 @@ MIDDLEWARE = [
 ]
 
 MATCH_SERVICE = os.getenv("MATCH_SERVICE")
+
+CORS_ALLOW_ALL_ORIGINS = (
+    True  # すべてのオリジンを許可（開発用）TODO: frontのサーバーから受け付ける
+)
 
 CORS_ALLOWED_ORIGINS = [
     os.getenv("FE_SERVER"),  # フロントエンドのURL
