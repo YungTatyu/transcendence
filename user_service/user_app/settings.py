@@ -144,5 +144,5 @@ CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
 
 
 # アップロードファイルの保存先
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

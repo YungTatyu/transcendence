@@ -1,10 +1,10 @@
-import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import stateManager from "../stateManager.js";
 
 export default function FriendList() {
   return `
 	<div class="container">
-		${TitileAndHomeButton("FRIENDS LIST")}
+		${TitleAndHomeButton("FRIENDS LIST")}
 		<div class="button-position d-flex flex-column justify-content-center align-items-end gap-3">
 			<button type="button" class="find-button btn btn-primary">+ Find Friend</button>
 			<button type="button" class="request-button btn btn-primary">+ Friends Request</button>

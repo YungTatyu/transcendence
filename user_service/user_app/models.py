@@ -4,6 +4,7 @@ from django.utils.timezone import now
 
 # アップロード画像は /media/images/uploads/ に保存される
 
+
 class User(models.Model):
     DEFAULT_AVATAR_PATH = "images/default/default_image.png"
 

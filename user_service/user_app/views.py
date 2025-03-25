@@ -3,6 +3,7 @@ import os
 from django.core.files.storage import default_storage
 from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
@@ -92,6 +93,8 @@ class UsernameView(APIView):
 
 
 class AvatarView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     @method_decorator(jwt_required)
     def put(self, request):
         """
