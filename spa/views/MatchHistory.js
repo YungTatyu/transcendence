@@ -1,4 +1,4 @@
-import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 
 export default function MatchHistory() {
   function MatchHistoryData() {
@@ -19,7 +19,7 @@ export default function MatchHistory() {
   }
   return `
 
-    ${TitileAndHomeButton("MATCH HISTORY")}
+    ${TitleAndHomeButton("MATCH HISTORY")}
 
     <div class="container text-center match-history-container">
       <div class="row row-cols-5 match-history-table-header">
