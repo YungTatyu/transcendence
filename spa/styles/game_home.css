@@ -35,3 +35,15 @@
   width: 100px;
   height: auto;
 }
+
+.icon-table-tennis {
+  width: 40px;
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
+
+.icon-tournament {
+  width: 40px;
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
