@@ -68,17 +68,17 @@ class TestUsernameViewPut:
         response = self.api_client.put(url, {"username": ""}, format="json")
 
         assert response.status_code == status.HTTP_409_CONFLICT
-        assert "username" in response.data
+        assert "error" in response.data
 
     def test_put_username_validation_longer(self):
-        """PUT: username が10文字以上の場合（バリデーションエラー）"""
+        """PUT: username が10文字以上の場合(バリデーションエラー)"""
         url = reverse("update-username")
         response = self.api_client.put(
             url, {"username": "longerusername"}, format="json"
         )
 
         assert response.status_code == status.HTTP_409_CONFLICT
-        assert "username" in response.data
+        assert "error" in response.data
 
     def test_put_username_already_taken(self, create_another_user):
         """PUT: すでに存在する username を指定した場合（重複エラー）"""
@@ -86,6 +86,7 @@ class TestUsernameViewPut:
         response = self.api_client.put(url, {"username": "existuser"}, format="json")
 
         assert response.status_code == status.HTTP_409_CONFLICT
+        assert "error" in response.data
 
 
 @pytest.mark.usefixtures("setup_test")
@@ -123,6 +124,7 @@ class TestAvatarViewPut:
         response = self.api_client.put(url, {"avatar_path": ""}, format="multipart")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "error" in response.data
 
     def test_put_avatar_oversized(self):
         """PUT: 4MBを超える画像ファイルをアップロード (エラー)"""
@@ -150,3 +152,4 @@ class TestAvatarViewPut:
         )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "error" in response.data
