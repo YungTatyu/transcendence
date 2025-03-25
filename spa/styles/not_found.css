@@ -1,13 +1,13 @@
-.number {
-  font-size: 2.0em;
+.not-found-number {
+  font-size: 15.0em;
   font-family: "League Spartan", sans-serif;
   font-weight: 700;
   font-style: normal;
-  color: #f44336;
+  color: #0bb0cc;
 }
 
-.text {
-  font-size: 1.0em;
+.not-found-text {
+  font-size: 8.0em;
   font-family: "League Spartan", sans-serif;
   font-weight: 700;
   font-style: normal;

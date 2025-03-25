@@ -70,7 +70,7 @@ SecArgumentsLimit 1000
 SecRule &ARGS "@ge 1000" \
 "id:'200007', phase:2,t:none,log,deny,status:400,msg:'Failed to fully parse request body due to large argument count',severity:2"
 
-# Verify that we've correctly processed the request body.
+# Verify that we've correctly processed the request .
 # As a rule of thumb, when failing to process a request body
 # you should reject the request (when deployed in blocking mode)
 # or log a high-severity alert (when deployed in detection-only mode).

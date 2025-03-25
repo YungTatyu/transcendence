@@ -1,7 +1,10 @@
 export default function NotFound() {
   return `
-        <h1 class="number">404</h1>
-        <p class="text">Not Found</p>
-        <button onclick="SPA.navigate('/')">ホームへ戻る</button>
+      <div class="d-flex vh-100 align-items-center justify-content-center text-center">
+        <div>
+          <h1 class="not-found-number">404</h1>
+          <p class="not-found-text">Not Found</p>
+        </div>
+      </div>
     `;
 }
