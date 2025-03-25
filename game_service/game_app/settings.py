@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "core",
     "realtime_pingpong",
     "corsheaders",
-    "django_extensions",
 ]
 
 MIDDLEWARE = [
