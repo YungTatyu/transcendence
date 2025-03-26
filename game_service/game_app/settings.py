@@ -62,8 +62,12 @@ CORS_ALLOW_ALL_ORIGINS = (
     True  # すべてのオリジンを許可（開発用）TODO: frontのサーバーから受け付ける
 )
 
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     os.getenv("FE_SERVER"),  # フロントエンドのURL
+    "https://auth:8000",
+    "https://game:8001",
 ]
 
 ROOT_URLCONF = "game_app.urls"
