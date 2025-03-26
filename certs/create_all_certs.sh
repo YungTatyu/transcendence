@@ -17,7 +17,7 @@ main() {
     "friends"
     "match"
     "vault"
-    "auth_proxy_server"
+    "auth-proxy.transcen.com"
     "game_proxy_server"
     "tournament_proxy_server"
     "user_proxy_server"
