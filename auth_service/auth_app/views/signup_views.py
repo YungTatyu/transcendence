@@ -8,7 +8,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
 from auth_app.client.user_client import UserClient
+from auth_app.vault_client.vault_client import VaultClient
 from auth_app.models import CustomUser
 from auth_app.serializers.signup_serializer import (
     OTPVerificationSerializer,
@@ -56,6 +58,20 @@ class OTPVerificationView(APIView):
     """
 
     def post(self, request, *args, **kwargs):
+        vault_client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+        token = vault_client.fetch_token()
+        if token is None:
+            return Response(
+                {"error": "Internal Server Error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        api_keys = vault_client.fetch_api_key(token, "users")
+        if api_keys is None:
+            return Response(
+                {"error": "Internal Server Error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
         serializer = OTPVerificationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -88,7 +104,7 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user_id = self.__register_user(user_data)
+        user_id = self.__register_user(user_data, api_keys["value"])
         if user_id is None:
             logger.fatal("Failed to register user.")
             return Response(
@@ -145,7 +161,7 @@ class OTPVerificationView(APIView):
 
         return json.loads(redis_data)
 
-    def __register_user(self, user_data: dict) -> Optional[int]:
+    def __register_user(self, user_data: dict, api_key: str) -> Optional[int]:
         """
         本登録データをデータベースに保存する
         :param user_data: 仮登録データ
@@ -155,7 +171,7 @@ class OTPVerificationView(APIView):
             base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
         )
         try:
-            res = client.create_user(user_data["username"])
+            res = client.create_user(user_data["username"], api_key)
             user_id = res.json()["userId"]
 
             CustomUser.objects.create_user(
