@@ -24,7 +24,7 @@ main() {
     "friends_activity_proxy_server"
     "friends_proxy_server"
     "match_proxy_server"
-    "spa_nginx"
+    "www.transcen.com"
   )
   for service in "${services[@]}"; do
     ${CREATE_CERT} $service || err "$service cert creation failed"
