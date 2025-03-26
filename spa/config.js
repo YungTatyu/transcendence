@@ -12,7 +12,7 @@ const config = {
     matchService: "",
     gameService: "",
     realtimeGameService: "",
-    authService: "",
+    authService: "https://auth_proxy_server:8005",
     friendService: "",
   },
 };
