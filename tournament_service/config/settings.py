@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -141,3 +143,23 @@ CHANNEL_LAYERS = {
 }
 
 MATCH_API_BASE_URL = "http://match:8003"
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND"),
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
+
+# 許可するHTTPヘッダー
+CORS_ALLOW_HEADERS = [
+    "Content-Type",
+]
