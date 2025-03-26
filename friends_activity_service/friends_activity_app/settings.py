@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     "channels",
     "rest_framework",
     "friends_activity_app",
+    "corsheaders",
 ]
 
 ASGI_APPLICATION = "friends_activity_app.asgi.application"
@@ -52,6 +54,7 @@ CHANNEL_LAYERS = {
 }
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -133,3 +136,23 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND"),
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
+
+# 許可するHTTPヘッダー
+CORS_ALLOW_HEADERS = [
+    "Content-Type",
+]
