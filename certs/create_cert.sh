@@ -40,6 +40,13 @@ check_files_exist() {
   return 1
 }
 
+add_read_permission() {
+  for file in "$@"; do
+    chmod +r "$file" || print_and_exit "failed to give permission to ${file}"
+  done
+  return 0
+}
+
 # 秘密鍵を生成
 generate_keys() {
   echo "Generating keys..."
@@ -50,6 +57,7 @@ generate_keys() {
     openssl genrsa -out "${CLIENT_KEY}" "${KEY_LENGTH}" || return 1
   fi
   openssl genrsa -out "${SERVER_KEY}" "${KEY_LENGTH}" || return 1
+  add_read_permission ${CA_KEY} ${CLIENT_KEY} ${SERVER_KEY}
 }
 
 # 証明書署名要求 (CSR) を生成
@@ -59,6 +67,7 @@ generate_csr() {
     openssl req -new -key "${CLIENT_KEY}" -out "${CLIENT_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
   fi
   openssl req -new -key "${SERVER_KEY}" -out "${SERVER_CSR}" -config "${CONFIG}" -sha256 -subj "${SUBJ}" || return 1
+  add_read_permission ${CLIENT_CSR} ${SERVER_CSR}
 }
 
 # 証明書を生成
@@ -80,6 +89,7 @@ generate_certificates() {
     openssl x509 -req -days "${VALIDITY_DAYS}" -in "${CLIENT_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${CLIENT_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_client -sha256 || return 1
   fi
   openssl x509 -req -days "${VALIDITY_DAYS}" -in "${SERVER_CSR}" -CA "${CA_CRT}" -CAkey "${CA_KEY}" -CAcreateserial -out "${SERVER_CRT}" -extfile "${TMP_CONFIG}" -extensions v3_server -sha256 || return 1
+  add_read_permission ${CA_CRT} ${CLIENT_CRT} ${SERVER_CRT}
 }
 
 print_and_exit() {
