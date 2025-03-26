@@ -59,7 +59,7 @@ MIDDLEWARE = [
 MATCH_SERVICE = os.getenv("MATCH_SERVICE")
 
 CORS_ALLOWED_ORIGINS = [
-    os.getenv("FE_SERVER"),  # フロントエンドのURL
+    os.getenv("FRONTEND"),
 ]
 
 ROOT_URLCONF = "game_app.urls"
