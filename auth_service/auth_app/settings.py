@@ -197,7 +197,7 @@ LOGGING = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://www.transcen.com:8080",
+    os.getenv("FRONTEND"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
