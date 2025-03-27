@@ -67,6 +67,7 @@ services:
   game_proxy:
     build: ./waf_proxy_service
     container_name: game_proxy_server
+    hostname: game-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -77,6 +78,9 @@ services:
       - game
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8004/healthz"]
+    volumes:
+      - ./certs/game-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/game-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   tournament:
     build: ./tournament_service
@@ -110,6 +114,7 @@ services:
   tournament_proxy:
     build: ./waf_proxy_service
     container_name: tournament_proxy_server
+    hostname: tournament-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -120,6 +125,9 @@ services:
       - tournament
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8006/healthz"]
+    volumes:
+      - ./certs/tournament-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/tournament-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   user:
     build: ./user_service
@@ -152,6 +160,7 @@ services:
   friends_activity_proxy:
     build: ./waf_proxy_service
     container_name: friends_activity_proxy_server
+    hostname: friends-activity-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -162,6 +171,9 @@ services:
       - friends_activity_app
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:10001/healthz"]
+    volumes:
+      - ./certs/friends-activity-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/friends-activity-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   friends:
     build: ./friends_service
@@ -186,6 +198,7 @@ services:
   friends_proxy:
     build: ./waf_proxy_service
     container_name: friends_proxy_server
+    hostname: friends-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -196,6 +209,9 @@ services:
       - friends
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8007/healthz"]
+    volumes:
+      - ./certs/friends-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/friends-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   match:
     build: ./match_service
@@ -229,6 +245,7 @@ services:
   match_proxy:
     build: ./waf_proxy_service
     container_name: match_proxy_server
+    hostname: match-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -239,6 +256,9 @@ services:
       - match
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8008/healthz"]
+    volumes:
+      - ./certs/match-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/match-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   vault:
     build: ./vault_service
