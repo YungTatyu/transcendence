@@ -26,11 +26,11 @@ SECRET_KEY = "django-insecure-duo9jt1+evp70s#u%kq)lvnsvtxvf)*oj!@acb#q2k2&&pfndm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -144,9 +144,4 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "PATCH",
     "OPTIONS",
-]
-
-# 許可するHTTPヘッダー
-CORS_ALLOW_HEADERS = [
-    "Content-Type",
 ]

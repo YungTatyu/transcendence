@@ -27,6 +27,10 @@ SECRET_KEY = "django-insecure-(6$k27bfa80g@9sops2j0my@8l4h@i652dw65u*=5odt2w3%kf
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+# TODO: proxy対応次第変更
+# ALLOWED_HOSTS = [
+#     os.getenv("PROXY"),
+# ]
 
 
 # Application definition
@@ -148,9 +152,4 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "PATCH",
     "OPTIONS",
-]
-
-# 許可するHTTPヘッダー
-CORS_ALLOW_HEADERS = [
-    "Content-Type",
 ]

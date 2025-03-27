@@ -26,7 +26,9 @@ SECRET_KEY = "django-insecure-lpa@_gys^w-zq=1b9zgh2rj=m=tu2&iu%nm-=&-$&^l_gi_bx8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 
 # Application definition
@@ -157,11 +159,6 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "PATCH",
     "OPTIONS",
-]
-
-# 許可するHTTPヘッダー
-CORS_ALLOW_HEADERS = [
-    "Content-Type",
 ]
 
 TOURNAMENT_API_BASE_URL = "http://tournament:8002"
