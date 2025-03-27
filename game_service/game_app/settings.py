@@ -26,11 +26,11 @@ SECRET_KEY = "django-insecure-4b#2i4h#x3tadq0=#c093f%43bpdz4$3%e-gxm@3j@9tbd!(6i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     "daphne",
     "django.contrib.admin",
@@ -57,10 +57,6 @@ MIDDLEWARE = [
 ]
 
 MATCH_SERVICE = os.getenv("MATCH_SERVICE")
-
-CORS_ALLOWED_ORIGINS = [
-    os.getenv("FRONTEND"),
-]
 
 ROOT_URLCONF = "game_app.urls"
 
@@ -198,3 +194,18 @@ LOGGING = {
         },
     },
 }
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND"),
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]

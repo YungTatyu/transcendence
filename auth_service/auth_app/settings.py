@@ -210,8 +210,3 @@ CORS_ALLOW_METHODS = [
     "PATCH",
     "OPTIONS",
 ]
-
-# 許可するHTTPヘッダー
-CORS_ALLOW_HEADERS = [
-    "Content-Type",
-]
