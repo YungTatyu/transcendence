@@ -18,12 +18,12 @@ main() {
     "match"
     "vault"
     "auth-proxy.transcen.com"
-    "game_proxy_server"
-    "tournament_proxy_server"
-    "user_proxy_server"
-    "friends_activity_proxy_server"
-    "friends_proxy_server"
-    "match_proxy_server"
+    "game-proxy.transcen.com"
+    "tournament-proxy.transcen.com"
+    "user-proxy.transcen.com"
+    "friends-activity-proxy.transcen.com"
+    "friends-proxy.transcen.com"
+    "match-proxy.transcen.com"
     "www.transcen.com"
   )
   for service in "${services[@]}"; do
