@@ -32,8 +32,9 @@ SECRET_KEY = "django-insecure-!uhu!%ckkkx)v36-@p5f_&w%eqner=wm22!9j&(k*w$#(n+2kd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# TODO
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 # Application definition
 
