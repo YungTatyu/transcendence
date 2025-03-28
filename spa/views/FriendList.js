@@ -84,7 +84,7 @@ export const setupFriendList = async () => {
     return {
       status: 200, // 成功ステータス
       data: {
-        status: "online"
+        status: "online",
       },
     };
   }
@@ -95,37 +95,30 @@ export const setupFriendList = async () => {
     friendList.map(async (friendId) => {
       const friendItem = document.createElement("div");
       const friend = await fetchUserNameAndAvatar(friendId);
-      const status_response = await fetchUserStatus(friendId);
+      const statusResponse = await fetchUserStatus(friendId);
 
-      if (friend.status == null || status_response.status == null)
-      {
+      if (friend.status == null || statusResponse.status == null) {
         friendItem.textContent = "Error Occured!";
-        return ;
+        return;
       }
-      if (friend.status >= 400)
-      {
+      if (friend.status >= 400) {
+        friendItem.textContent = JSON.stringify(friend.data.error, null, "\n");
+        return;
+      }
+      if (statusResponse.status >= 400) {
         friendItem.textContent = JSON.stringify(
-          friend.data.error,
+          statusResponse.data.error,
           null,
           "\n",
         );
-        return ;
-      }
-      if (status_response.status >= 400)
-      {
-        friendItem.textContent = JSON.stringify(
-          status_response.data.error,
-          null,
-          "\n",
-        );
-        return ;
+        return;
       }
       friendItem.classList.add("js-friend-list-item");
       friendItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
 			<img src=${friend.data.avatarPath} alt="avotor">
 			<div class="text-white fs-2">${friend.data.username}</div>
-			<div class="user-status">${status_response.data.status}</div>
+			<div class="user-status">${statusResponse.data.status}</div>
 			<button type="button" class="remove-button btn btn-primary">remove</button>
 		</div>
 		`;
@@ -134,16 +127,16 @@ export const setupFriendList = async () => {
         .addEventListener("click", async () => {
           // テスト用
           console.log(friendId);
-          const delete_response = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${friendId}`);
-          if (delete_response.status == null)
-          {
-
-            return ;
+          const deleteResponse = await fetchApiNoBody(
+            "DELETE",
+            config.friendService,
+            `/friends/requests/${friendId}`,
+          );
+          if (deleteResponse.status == null) {
+            return;
           }
-          if (delete_response.status >= 400)
-          {
-
-            return ;
+          if (deleteResponse.status >= 400) {
+            return;
           }
           friendItem.remove(); // 要素を削除
         });
