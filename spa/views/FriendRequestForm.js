@@ -1,5 +1,5 @@
-import config from "../config.js";
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
+import config from "../config.js";
 
 export default function FriendRequestForm() {
   const formContent = `
@@ -31,7 +31,7 @@ export default function FriendRequestForm() {
 	  `;
 }
 
-export function setupFriendRequestForm () {
+export function setupFriendRequestForm() {
   const searchButton = document.getElementById("search-button");
   let previousUsername = "";
 
@@ -44,15 +44,23 @@ export function setupFriendRequestForm () {
     resultOutput.textContent = "";
 
     // /user?username=usernameを叩いてuserIdに変換
-    const userInfo = await fetchApiNoBody("GET", config.userService, `/users?username=${username}`);
+    const userInfo = await fetchApiNoBody(
+      "GET",
+      config.userService,
+      `/users?username=${username}`,
+    );
     console.log("Yes");
     if (userInfo.status == null) {
       resultOutput.textContent = "Error Occured!";
-      return ;
+      return;
     }
     if (userInfo.status >= 400) {
-      resultOutput.textContent = JSON.stringify(userInfo.data.error, null, "\n");
-      return ;
+      resultOutput.textContent = JSON.stringify(
+        userInfo.data.error,
+        null,
+        "\n",
+      );
+      return;
     }
 
     function createUserCard(data) {
@@ -80,7 +88,10 @@ export function setupFriendRequestForm () {
       const addMessage = document.createElement("div");
       addMessage.textContent = "";
 
-      addButton.addEventListener("click", async () => await handleAddFriend(addButton, addMessage));
+      addButton.addEventListener(
+        "click",
+        async () => await handleAddFriend(addButton, addMessage),
+      );
 
       divContainer.append(userImgContainer, usernameContainer);
 
@@ -91,9 +102,17 @@ export function setupFriendRequestForm () {
 
     async function handleAddFriend(button, message) {
       //リクエストを送る(api)
-      const requestInfo = await fetchApiNoBody("POST", config.friendService, `/friends/requests/${userInfo.data.userId}`)
+      const requestInfo = await fetchApiNoBody(
+        "POST",
+        config.friendService,
+        `/friends/requests/${userInfo.data.userId}`,
+      );
       if (requestInfo.status >= 400) {
-        message.textContent = JSON.stringify(requestInfo.data.error, null, "\n");
+        message.textContent = JSON.stringify(
+          requestInfo.data.error,
+          null,
+          "\n",
+        );
       } else {
         message.style.color = "#0B7D90";
         button.classList.replace("btn-primary", "btn-secondary");
@@ -107,4 +126,6 @@ export function setupFriendRequestForm () {
 }
 
 //addMessageで毎回、中身を空にするべきか
-//自身にフレンドリクエストを送ろうとした時、自分のアイコンが出てきてしまう
+//自身にフレンドリクエストを送ろうとした時、自分のアイコンが出てきて検索できてしまう
+//const requestInfo = await fetchApiNoBody("POST", config.friendService, `/friends/requests/${userInfo.data.userId}`)でaddした後エラーが出てくる
+//searchボタンを押した時、エラーを出すべき？
