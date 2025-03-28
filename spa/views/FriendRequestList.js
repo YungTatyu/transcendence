@@ -1,6 +1,6 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
-import config from "../config.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function FriendRequestList() {
@@ -84,15 +84,17 @@ export const setupFriendRequestList = async () => {
     friendRequestList.map(async (requestId) => {
       const friendRequestItem = document.createElement("div");
       const friend = await fetchUserNameAndAvatar(requestId);
-      if (friend.status == null)
-      {
+      if (friend.status == null) {
         friendRequestItem.textContent = "Error Occured!";
-        return ;
+        return;
       }
-      if (friend.status >= 400)
-      {
-        friendRequestItem.textContent =  JSON.stringify(friend.data.error, null, "\n");
-        return ;
+      if (friend.status >= 400) {
+        friendRequestItem.textContent = JSON.stringify(
+          friend.data.error,
+          null,
+          "\n",
+        );
+        return;
       }
       friendRequestItem.classList.add("js-friend-request-item");
       friendRequestItem.innerHTML = `
@@ -108,18 +110,20 @@ export const setupFriendRequestList = async () => {
         .addEventListener("click", async () => {
           //テスト用
           console.log(requestId);
-          const approved = await fetchApiNoBody("PATCH", config.friendService, `/friends/requests/${requestId}`);
-          if (approved.status == null)
-          {
+          const approved = await fetchApiNoBody(
+            "PATCH",
+            config.friendService,
+            `/friends/requests/${requestId}`,
+          );
+          if (approved.status == null) {
             // friendRequestItem.innerHTML = "";
             // friendRequestItem.textContent = "Error Occured";
-            return ;
+            return;
           }
-          if (approved.status >= 400)
-          {
+          if (approved.status >= 400) {
             // friendRequestItem.innerHTML = "";
             // friendRequestItem.textContent = "Error Occured";
-            return ;
+            return;
           }
           friendRequestItem.remove(); // 承認後、要素を削除
         });
@@ -128,14 +132,16 @@ export const setupFriendRequestList = async () => {
       friendRequestItem
         .querySelector(".reject-button")
         .addEventListener("click", async () => {
-          const rejected = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${requestId}`);
-          if (rejected.status == null)
-          {
-            return ;
+          const rejected = await fetchApiNoBody(
+            "DELETE",
+            config.friendService,
+            `/friends/requests/${requestId}`,
+          );
+          if (rejected.status == null) {
+            return;
           }
-          if (rejected >= 400)
-          {
-            return ;
+          if (rejected >= 400) {
+            return;
           }
           friendRequestItem.remove(); // 拒否後、要素を削除
         });
@@ -148,3 +154,4 @@ export const setupFriendRequestList = async () => {
 // const approved = await fetchApiNoBody("PATCH", config.friendService, `/friends/requests/${requestId}`);および
 // const rejected = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${requestId}`);
 //　のエラー処理はどうするか？　エラー文は必要ない？
+// console.logでどのユーザのフレンドリクエストか確認できる
