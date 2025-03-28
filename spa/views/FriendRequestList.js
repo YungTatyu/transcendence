@@ -1,3 +1,5 @@
+import fetchApiNoBody from "../api/fetchApiNoBody.js";
+import config from "../config.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
 import stateManager from "../stateManager.js";
 
@@ -47,30 +49,32 @@ export const setupFriendRequestList = async () => {
   friendsList.innerHTML = "";
   async function fetchFriendUserList() {
     // friend_apiを叩く
-    // const response = await fetch("/friend?status=pending");
-    // const data = awit response.json();
+    // const requestResponse = await fetchApiNoBody("GET", config.friendService, '/friends?status=pending');
 
+    // エラー処理を入れる
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    let userId = stateManager.state?.userId;
-    //テストのためuser_idを1にする
-    userId = 1;
+    // let userId = stateManager.state?.userId;
 
-    //arrayまたはmap
+    //テスト用
+    // userId = 1;
     const useridList = data.friends.map((friend) => friend.fromUserId);
+
+    // const useridList = requestResponse.data.friends.map((friend) => friend.fromUserId);
     return useridList;
   }
 
   // 取得したしたユーザIDからUser
-  async function fetchUserNameAndAvatar(userid) {
-    // const response = await fetch("/users");
-    // const data = await response.json();
-    // return {
-    // 	username: data.username,
-    // 	avatarPath: data.avatarPath
-    // };
+  async function fetchUserNameAndAvatar(userId) {
+    //return userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
+
+    //テスト用
     return {
-      username: "player",
-      avatarPath: "/assets/42.png",
+      status: 200, // 成功ステータス
+      data: {
+        userId: userId, // 固定のユーザーID
+        avatarPath: "/assets/42.png", // 固定のアバターパス
+        username: "akazukin", // 仮のユーザー名
+      },
     };
   }
 
@@ -80,11 +84,21 @@ export const setupFriendRequestList = async () => {
     friendRequestList.map(async (requestId) => {
       const friendRequestItem = document.createElement("div");
       const friend = await fetchUserNameAndAvatar(requestId);
+      if (friend.status == null)
+      {
+        friendRequestItem.textContent = "Error Occured!";
+        return ;
+      }
+      if (friend.status >= 400)
+      {
+        friendRequestItem.textContent =  JSON.stringify(friend.data.error, null, "\n");
+        return ;
+      }
       friendRequestItem.classList.add("js-friend-request-item");
       friendRequestItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
-			<img src=${friend.avatarPath}>
-			<div class="text-white">${friend.username}</div>
+			<img src=${friend.data.avatarPath}>
+			<div class="text-white">${friend.data.username}</div>
 			<button type="button" class="approved-button btn btn-primary">approved</button>
 			<button type="button" class="reject-button btn btn-primary">reject</button>
 		</div>
@@ -92,7 +106,21 @@ export const setupFriendRequestList = async () => {
       friendRequestItem
         .querySelector(".approved-button")
         .addEventListener("click", async () => {
-          // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
+          //テスト用
+          console.log(requestId);
+          const approved = await fetchApiNoBody("PATCH", config.friendService, `/friends/requests/${requestId}`);
+          if (approved.status == null)
+          {
+            // friendRequestItem.innerHTML = "";
+            // friendRequestItem.textContent = "Error Occured";
+            return ;
+          }
+          if (approved.status >= 400)
+          {
+            // friendRequestItem.innerHTML = "";
+            // friendRequestItem.textContent = "Error Occured";
+            return ;
+          }
           friendRequestItem.remove(); // 承認後、要素を削除
         });
 
@@ -100,10 +128,23 @@ export const setupFriendRequestList = async () => {
       friendRequestItem
         .querySelector(".reject-button")
         .addEventListener("click", async () => {
-          // await fetch(`/friend/reject/${request_id}`, { method: "POST" }); // APIを叩く
+          const rejected = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${requestId}`);
+          if (rejected.status == null)
+          {
+            return ;
+          }
+          if (rejected >= 400)
+          {
+            return ;
+          }
           friendRequestItem.remove(); // 拒否後、要素を削除
         });
       friendsList.appendChild(friendRequestItem);
     }),
   );
 };
+
+// jwtの関係上テストできない？
+// const approved = await fetchApiNoBody("PATCH", config.friendService, `/friends/requests/${requestId}`);および
+// const rejected = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${requestId}`);
+//　のエラー処理はどうするか？　エラー文は必要ない？
