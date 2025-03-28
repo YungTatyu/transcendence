@@ -69,8 +69,17 @@ export const setupFriendList = async () => {
     //return userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
 
     // テスト用
+    // return {
+    //   status: 200, // 成功ステータス
+    //   data: {
+    //     userId: userid, // 固定のユーザーID
+    //     avatarPath: "/assets/42.png", // 固定のアバターパス
+    //     username: "akazukin", // 仮のユーザー名
+    //   },
+    // };
+
     return {
-      status: 200, // 成功ステータス
+      status: null, // 成功ステータス
       data: {
         userId: userid, // 固定のユーザーID
         avatarPath: "/assets/42.png", // 固定のアバターパス
@@ -97,8 +106,9 @@ export const setupFriendList = async () => {
       const friend = await fetchUserNameAndAvatar(friendId);
       const statusResponse = await fetchUserStatus(friendId);
 
-      if (friend.status == null || statusResponse.status == null) {
+      if (friend.status === null || statusResponse.status === null) {
         friendItem.textContent = "Error Occured!";
+        friendsList.appendChild(friendItem);
         return;
       }
       if (friend.status >= 400) {
@@ -144,3 +154,5 @@ export const setupFriendList = async () => {
     }),
   );
 };
+
+//error occuredがいい一度でも出たらmap文をbreakしたい
