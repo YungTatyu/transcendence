@@ -138,9 +138,11 @@ export const setupFriendRequestList = async () => {
             `/friends/requests/${requestId}`,
           );
           if (rejected.status == null) {
+
             return;
           }
           if (rejected >= 400) {
+            
             return;
           }
           friendRequestItem.remove(); // 拒否後、要素を削除

@@ -1,4 +1,6 @@
+import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function FriendList() {
@@ -64,22 +66,26 @@ export const setupFriendList = async () => {
 
   // 取得したしたユーザIDからUser
   async function fetchUserNameAndAvatar(userid) {
-    // const response = await fetch("/users");
-    // const data = await response.json();
-    // return {
-    // 	username: data.username,
-    // 	avatarPath: data.avatarPath
-    // };
+    //return userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
+
+    // テスト用
     return {
-      username: "player",
-      avatarPath: "/assets/42.png",
+      status: 200, // 成功ステータス
+      data: {
+        userId: userid, // 固定のユーザーID
+        avatarPath: "/assets/42.png", // 固定のアバターパス
+        username: "akazukin", // 仮のユーザー名
+      },
     };
   }
 
   async function fetchUserStatus(userId) {
     // statusを得るapiを叩く
     return {
-      status: "online",
+      status: 200, // 成功ステータス
+      data: {
+        status: "online"
+      },
     };
   }
 
@@ -89,20 +95,56 @@ export const setupFriendList = async () => {
     friendList.map(async (friendId) => {
       const friendItem = document.createElement("div");
       const friend = await fetchUserNameAndAvatar(friendId);
-      const status = await fetchUserStatus(friendId);
+      const status_response = await fetchUserStatus(friendId);
+
+      if (friend.status == null || status_response.status == null)
+      {
+        friendItem.textContent = "Error Occured!";
+        return ;
+      }
+      if (friend.status >= 400)
+      {
+        friendItem.textContent = JSON.stringify(
+          friend.data.error,
+          null,
+          "\n",
+        );
+        return ;
+      }
+      if (status_response.status >= 400)
+      {
+        friendItem.textContent = JSON.stringify(
+          status_response.data.error,
+          null,
+          "\n",
+        );
+        return ;
+      }
       friendItem.classList.add("js-friend-list-item");
       friendItem.innerHTML = `
 		<div class="gap-wrap d-flex align-items-center mt-4">
-			<img src=${friend.avatarPath} alt="avotor">
-			<div class="text-white fs-2">${friend.username}</div>
-			<div class="user-status">${status.status}</div>
+			<img src=${friend.data.avatarPath} alt="avotor">
+			<div class="text-white fs-2">${friend.data.username}</div>
+			<div class="user-status">${status_response.data.status}</div>
 			<button type="button" class="remove-button btn btn-primary">remove</button>
 		</div>
 		`;
       friendItem
         .querySelector(".remove-button")
         .addEventListener("click", async () => {
-          // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
+          // テスト用
+          console.log(friendId);
+          const delete_response = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${friendId}`);
+          if (delete_response.status == null)
+          {
+
+            return ;
+          }
+          if (delete_response.status >= 400)
+          {
+
+            return ;
+          }
           friendItem.remove(); // 要素を削除
         });
       friendsList.appendChild(friendItem);

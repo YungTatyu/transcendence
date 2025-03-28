@@ -21,6 +21,7 @@ export default function Home() {
         <button onclick="SPA.navigate('/matching/tournament')">TournamentMatchingへ</button>
         <button onclick="SPA.navigate('/friend/friend-request-form')">requestformへ</button>
         <button onclick="SPA.navigate('/friend/request')">requestListへ</button>
+        <button onclick="SPA.navigate('/friend')">friendListへ</button>
         ${Footer({ text: "© 2025 My Company" })}
         <div> store sample</div>
         ${stateManager.state.count}
