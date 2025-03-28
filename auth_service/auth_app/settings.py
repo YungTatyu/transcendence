@@ -66,9 +66,8 @@ JWT_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, "auth_app/keys/public.pem")
 
 REST_FRAMEWORK = {}
 
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
+# proxyがhttpsだったらcookieを送信する
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ROOT_URLCONF = "auth_app.urls"
 
