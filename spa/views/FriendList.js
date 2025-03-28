@@ -154,5 +154,4 @@ export const setupFriendList = async () => {
     }),
   );
 };
-
-//error occuredがいい一度でも出たらmap文をbreakしたい
+//error occuredが一度でも出たらmap文をbreakしたい
