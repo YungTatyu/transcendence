@@ -63,24 +63,24 @@ export function setupSignUpVerify() {
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
 
-    const updateEmailButton = document.getElementById("updateEmail");
-    updateEmailButton.addEventListener("click", async () => {
-      const email = document.getElementById("fieldNewEmail").value;
-      const { status, data } = await fetchApiWithBody(
-        "PUT",
-        config.authService,
-        "/auth/me/email",
-        { email: email },
-      );
+    // const updateEmailButton = document.getElementById("updateEmail");
+    // updateEmailButton.addEventListener("click", async () => {
+    //   const email = document.getElementById("fieldNewEmail").value;
+    //   const { status, data } = await fetchApiWithBody(
+    //     "PUT",
+    //     config.authService,
+    //     "/auth/me/email",
+    //     { email: email },
+    //   );
 
-      if (status === null) {
-        errorOutput.textContent = "Error Occured!";
-        return;
-      }
-      if (status >= 400) {
-        errorOutput.textContent = JSON.stringify(data.error, null, "\n");
-        return;
-      }
-    });
+    //   if (status === null) {
+    //     errorOutput.textContent = "Error Occured!";
+    //     return;
+    //   }
+    //   if (status >= 400) {
+    //     errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+    //     return;
+    //   }
+    // });
   });
 }

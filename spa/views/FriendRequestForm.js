@@ -1,9 +1,12 @@
+import config from "../config.js";
+import fetchApiNoBody from "../api/fetchApiNoBody.js";
+
 export default function FriendRequestForm() {
   const formContent = `
     <div class="mb-3">
       <label class="form-label">Find Your Friend</label>
 			<div class="d-flex gap-3">
-				<input type="username" class="form-control" id="field-username" required>
+				<input type="text" class="form-control" id="field-username" required>
 				<button id="search-button" class="btn btn-primary btn-lg" type="button">
 				  search
 				</button>
@@ -28,24 +31,29 @@ export default function FriendRequestForm() {
 	  `;
 }
 
-export function setupFriendRequestForm() {
+export function setupFriendRequestForm () {
   const searchButton = document.getElementById("search-button");
   let previousUsername = "";
 
   searchButton.addEventListener("click", async () => {
     const username = document.getElementById("field-username").value;
     const resultOutput = document.getElementById("result-output");
-    // /user?username=usernameを叩いてuserIdに変換
-
     //formに入力されたusernameが同じまたは複数回serachボタンを押した時、再び,apiを叩かないようにする
     if (!username || previousUsername === username) return;
     previousUsername = username;
     resultOutput.textContent = "";
 
-    // /friends/requests/useridを叩く
-    // const { status, data } = await fetchApiWithBody(
-    // 	"POST"
-    // )
+    // /user?username=usernameを叩いてuserIdに変換
+    const userInfo = await fetchApiNoBody("GET", config.userService, `/users?username=${username}`);
+    console.log("Yes");
+    if (userInfo.status == null) {
+      resultOutput.textContent = "Error Occured!";
+      return ;
+    }
+    if (userInfo.status >= 400) {
+      resultOutput.textContent = JSON.stringify(userInfo.data.error, null, "\n");
+      return ;
+    }
 
     function createUserCard(data) {
       const divContainer = document.createElement("div");
@@ -72,9 +80,7 @@ export function setupFriendRequestForm() {
       const addMessage = document.createElement("div");
       addMessage.textContent = "";
 
-      addButton.addEventListener("click", () =>
-        handleAddFriend(addButton, addMessage),
-      );
+      addButton.addEventListener("click", async () => await handleAddFriend(addButton, addMessage));
 
       divContainer.append(userImgContainer, usernameContainer);
 
@@ -83,14 +89,11 @@ export function setupFriendRequestForm() {
       return wrapper;
     }
 
-    function handleAddFriend(button, message) {
+    async function handleAddFriend(button, message) {
       //リクエストを送る(api)
-      const fDataError = {
-        error: "already friend",
-      };
-      const fStatus = 200;
-      if (fStatus >= 400) {
-        message.textContent = fDataError.error;
+      const requestInfo = await fetchApiNoBody("POST", config.friendService, `/friends/requests/${userInfo.data.userId}`)
+      if (requestInfo.status >= 400) {
+        message.textContent = JSON.stringify(requestInfo.data.error, null, "\n");
       } else {
         message.style.color = "#0B7D90";
         button.classList.replace("btn-primary", "btn-secondary");
@@ -99,23 +102,9 @@ export function setupFriendRequestForm() {
       }
     }
 
-    const status = 200;
-    const errorData = {
-      error: "Error Now",
-    };
-    const data = {
-      username: "test",
-      avatarPath: "/assets/42.png",
-    };
-
-    if (status === null) {
-      resultOutput.textContent = "Error Occured!";
-      return;
-    }
-    if (status >= 400) {
-      resultOutput.textContent = errorData.error;
-      return;
-    }
-    resultOutput.appendChild(createUserCard(data));
+    resultOutput.appendChild(createUserCard(userInfo.data));
   });
 }
+
+//addMessageで毎回、中身を空にするべきか
+//自身にフレンドリクエストを送ろうとした時、自分のアイコンが出てきてしまう
