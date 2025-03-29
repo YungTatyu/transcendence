@@ -68,6 +68,7 @@ REST_FRAMEWORK = {}
 
 # proxyがhttpsだったらcookieを送信する
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")
 
 ROOT_URLCONF = "auth_app.urls"
 
