@@ -16,6 +16,10 @@ proxy_read_timeout 36000s;
 proxy_redirect off;
 
 proxy_pass_header Authorization;
+proxy_pass_header Content-Type;
+proxy_pass_header Access-Control-Allow-Origin;
+proxy_pass_header Access-Control-Allow-Headers;
+proxy_pass_header Access-Control-Allow-Methods;
 proxy_pass ${BACKEND};
 
 SET_REAL_IP_FROM

@@ -26,7 +26,9 @@ SECRET_KEY = "django-insecure-lpa@_gys^w-zq=1b9zgh2rj=m=tu2&iu%nm-=&-$&^l_gi_bx8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 
 # Application definition
@@ -145,11 +147,19 @@ CHANNEL_LAYERS = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
+    os.getenv("FRONTEND"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
 
 TOURNAMENT_API_BASE_URL = "http://tournament:8002"
 GAME_API_BASE_URL = "http://game:8001"
