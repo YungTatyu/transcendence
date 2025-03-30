@@ -49,24 +49,37 @@ export const setupFriendList = async () => {
   friendsList.innerHTML = "";
   async function fetchFriendUserList() {
     // friend_apiを叩く
-    // const response = await fetch("/friend?status=approved");
-    // const data = awit response.json();
+    const response = await fetchApiNoBody(
+      "GET",
+      config.friendService,
+      "/friends?status=approved",
+    );
+
+    const userId = stateManager.state?.userId;
+    //テストのためuser_idを1にする
+    // userId = 1;
+
+    // テスト用
+    // const useridList = data.friends.map((friend) =>
+    //   friend.fromUserId === 1 ? friend.toUserId : friend.fromUserId,
+    // );
 
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    let userId = stateManager.state?.userId;
-    //テストのためuser_idを1にする
-    userId = 1;
-
-    //arrayまたはmap
-    const useridList = data.friends.map((friend) =>
-      friend.fromUserId === 1 ? friend.toUserId : friend.fromUserId,
+    const useridList = response.data.friends.map((friend) =>
+      friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
     );
     return useridList;
   }
 
   // 取得したしたユーザIDからUser
   async function fetchUserNameAndAvatar(userid) {
-    //return userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
+    const userInfo = await fetchApiNoBody(
+      "GET",
+      config.userService,
+      `/users?userid=${userid}`,
+    );
+    // const userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
+    return userInfo;
 
     // テスト用
     // return {
@@ -78,14 +91,14 @@ export const setupFriendList = async () => {
     //   },
     // };
 
-    return {
-      status: null, // 成功ステータス
-      data: {
-        userId: userid, // 固定のユーザーID
-        avatarPath: "/assets/42.png", // 固定のアバターパス
-        username: "akazukin", // 仮のユーザー名
-      },
-    };
+    // return {
+    //   status: null, // 成功ステータス
+    //   data: {
+    //     userId: userid, // 固定のユーザーID
+    //     avatarPath: "/assets/42.png", // 固定のアバターパス
+    //     username: "akazukin", // 仮のユーザー名
+    //   },
+    // };
   }
 
   async function fetchUserStatus(userId) {
@@ -140,7 +153,7 @@ export const setupFriendList = async () => {
           const deleteResponse = await fetchApiNoBody(
             "DELETE",
             config.friendService,
-            `/friends/requests/${friendId}`,
+            `/friends/${friendId}`,
           );
           if (deleteResponse.status == null) {
             return;
@@ -155,3 +168,5 @@ export const setupFriendList = async () => {
   );
 };
 //error occuredが一度でも出たらmap文をbreakしたい
+
+/// homebuttonのnavigate

@@ -49,33 +49,51 @@ export const setupFriendRequestList = async () => {
   friendsList.innerHTML = "";
   async function fetchFriendUserList() {
     // friend_apiを叩く
-    // const requestResponse = await fetchApiNoBody("GET", config.friendService, '/friends?status=pending');
-
+    const requestResponse = await fetchApiNoBody(
+      "GET",
+      config.friendService,
+      "/friends?status=pending",
+    );
     // エラー処理を入れる
+    if (requestResponse.status == null) {
+      return;
+    }
+    if (requestResponse.status >= 400) {
+      rreturn;
+    }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
     // let userId = stateManager.state?.userId;
 
     //テスト用
     // userId = 1;
-    const useridList = data.friends.map((friend) => friend.fromUserId);
+    // const useridList = data.friends.map((friend) => friend.fromUserId);
 
-    // const useridList = requestResponse.data.friends.map((friend) => friend.fromUserId);
+    const useridList = requestResponse.data.friends.map(
+      (friend) => friend.fromUserId,
+    );
     return useridList;
   }
 
   // 取得したしたユーザIDからUser
   async function fetchUserNameAndAvatar(userId) {
-    //return userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
+    const userInfo = await fetchApiNoBody(
+      "GET",
+      config.userService,
+      `/users?userid=${userId}`,
+    );
+    // const userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
+    return userInfo;
+    // エラー処理を入れる
 
     //テスト用
-    return {
-      status: 200, // 成功ステータス
-      data: {
-        userId: userId, // 固定のユーザーID
-        avatarPath: "/assets/42.png", // 固定のアバターパス
-        username: "akazukin", // 仮のユーザー名
-      },
-    };
+    // return {
+    //   status: 200, // 成功ステータス
+    //   data: {
+    //     userId: userId, // 固定のユーザーID
+    //     avatarPath: "/assets/42.png", // 固定のアバターパス
+    //     username: "akazukin", // 仮のユーザー名
+    //   },
+    // };
   }
 
   const friendRequestList = await fetchFriendUserList();
