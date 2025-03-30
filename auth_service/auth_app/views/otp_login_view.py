@@ -89,8 +89,8 @@ class OTPLoginVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=True,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
-            samesite="None",  # CSRF 対策 (Lax か Strict)
+            secure=True,
+            samesite="None",
             path="/",
             domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
@@ -98,8 +98,8 @@ class OTPLoginVerificationView(APIView):
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
-            secure=True,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
-            samesite="None",  # CSRF 対策 (Lax か Strict)
+            secure=True,
+            samesite="None",
             path="/",
             domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
