@@ -285,7 +285,7 @@ services:
     container_name: spa_nginx
     hostname: www.transcen.com
     ports:
-      - "8080:80"
+      - "443:443"
     networks:
       - app_network
     volumes:
