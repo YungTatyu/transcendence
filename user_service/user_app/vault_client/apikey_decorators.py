@@ -2,11 +2,12 @@ from functools import wraps
 
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
-from user_app.settings import VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT
-from user_app.vault_client.vault_client import VaultClient
+from .vault_client import VaultClient
 
 
-def apikey_required(api_name: str):
+def apikey_required(
+    api_name: str, vault_addr: str, client_cert: str, client_key: str, ca_cert: str
+):
     def decorator(func):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
@@ -17,7 +18,7 @@ def apikey_required(api_name: str):
                     {"error": "x-api-key is required"}, status=HTTP_401_UNAUTHORIZED
                 )
 
-            client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+            client = VaultClient(vault_addr, client_cert, client_key, ca_cert)
             is_verify = client.verify_api_key(api_key, api_name)
             if is_verify is None:
                 return Response(
@@ -28,6 +29,38 @@ def apikey_required(api_name: str):
                 return Response(
                     {"error": "x-api-key is invalid"}, status=HTTP_401_UNAUTHORIZED
                 )
+
+            return func(request, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def apikey_fetcher(
+    api_name: str, vault_addr: str, client_cert: str, client_key: str, ca_cert: str
+):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(request, *args, **kwargs):
+            vault_client = VaultClient(vault_addr, client_cert, client_key, ca_cert)
+            token = vault_client.fetch_token()
+            if token is None:
+                return Response(
+                    {"error": "Internal Server Error"},
+                    status=HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            api_keys = vault_client.fetch_api_key(token, api_name)
+            if api_keys is None:
+                return Response(
+                    {"error": "Internal Server Error"},
+                    status=HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            # APIキーとVaultトークンをセット
+            request.api_key = api_keys["value"]
+            request.token = token
 
             return func(request, *args, **kwargs)
 

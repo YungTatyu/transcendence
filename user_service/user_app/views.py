@@ -23,10 +23,13 @@ from .serializers import (
     UsernameSerializer,
 )
 from user_app.vault_client.apikey_decorators import apikey_required
+from user_app.settings import VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT
 
 
 class UserView(APIView):
-    @method_decorator(apikey_required("users"))
+    @method_decorator(
+        apikey_required("users", VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    )
     def post(self, request):
         # リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)

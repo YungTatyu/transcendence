@@ -18,6 +18,7 @@ from auth_app.serializers.signup_serializer import (
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
 from auth_app.vault_client.apikey_decorators import apikey_fetcher
+from auth_app.settings import VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,9 @@ class OTPVerificationView(APIView):
     サインアップ時のOTP検証
     """
 
-    @method_decorator(apikey_fetcher("users"))
+    @method_decorator(
+        apikey_fetcher("users", VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    )
     def post(self, request, *args, **kwargs):
         serializer = OTPVerificationSerializer(data=request.data)
         if not serializer.is_valid():
