@@ -35,7 +35,7 @@ export default function Profile() {
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
-          <img src="/assets/42.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
+          <img src="/assets/user.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
           <img src="/assets/pencil.png" class="pencil-icon align-self-start mt-n1 js-pen-avatar">
       </div>
 
@@ -87,7 +87,7 @@ export async function setupProfile() {
     document.querySelector(".js-username").textContent =
       stateManager.state.username;
     document.querySelector(".js-user-avatar").src =
-      stateManager.state.avatar_path;
+      stateManager.state.avatarPath;
     return;
   }
 
@@ -103,10 +103,10 @@ export async function setupProfile() {
   }
 
   document.querySelector(".js-username").textContent = uData.username;
-  document.querySelector(".js-user-avatar").src = uData.avatar_path;
+  document.querySelector(".js-user-avatar").src = uData.avatarPath;
 
   stateManager.setState({ username: uData.username });
-  stateManager.setState({ avatarPath: uData.avatar_path });
+  stateManager.setState({ avatarPath: uData.avatarPath });
 
   if (!stateManager.state.userId) {
     return;
