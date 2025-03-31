@@ -9,9 +9,9 @@ import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
-import GameHome, { setupGameHome } from "./views/GameHome.js";
+import Home, { setupHome } from "./views/Home.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
-import Home from "./views/Home.js";
+import TmpHome from "./views/TmpHome.js";
 import InitMatch, { setupInitMatch } from "./views/InitMatch.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
@@ -34,7 +34,7 @@ import FriendRequestList, {
   setupFriendRequestList,
 } from "./views/FriendRequestList.js";
 
-SPA.route("/", Home);
+SPA.route("/", TmpHome);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
 SPA.route("/api", ApiData, setupApiData);
@@ -46,7 +46,7 @@ SPA.route("/friend", FriendList, setupFriendList);
 SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
-SPA.route("/home", GameHome, setupGameHome);
+SPA.route("/home", Home, setupHome);
 SPA.route("/game/setup", InitMatch, setupInitMatch);
 SPA.route("/profile", Profile, setupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
