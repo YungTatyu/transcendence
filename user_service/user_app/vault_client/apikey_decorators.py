@@ -9,6 +9,11 @@ from .vault_client import VaultClient
 def apikey_required(
     api_name: str, vault_addr: str, client_cert: str, client_key: str, ca_cert: str
 ):
+    """
+    APIキーを受け取る側のサーバ用のデコレータ
+    APIキー認証でエラーとなる場合、エラーレスポンスが返る
+    """
+
     def decorator(func):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
@@ -41,6 +46,11 @@ def apikey_required(
 def apikey_fetcher(
     api_name: str, vault_addr: str, client_cert: str, client_key: str, ca_cert: str
 ):
+    """
+    APIキーを送信する側のサーバ用デコレータ
+    requestにAPIキーとVaultトークンをセットする
+    """
+
     def decorator(func):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
