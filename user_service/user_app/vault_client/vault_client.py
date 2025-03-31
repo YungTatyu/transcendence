@@ -97,7 +97,6 @@ class VaultClient:
             return None
 
         api_keys = self.fetch_api_key(token, api_key_name)
-        print("[API KEYS]", api_keys, file=sys.stderr)
 
         if api_keys is None:
             return None

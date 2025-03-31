@@ -2,13 +2,20 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
+from user_app.vault_client.vault_client import VaultClient
+from user_app.settings import VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT
 
 from ..models import User
 
 
 @pytest.fixture
 def api_client():
-    return APIClient()
+    client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    token = client.fetch_token()
+    api_keys = client.fetch_api_key(token, "users")
+    api_client = APIClient()
+    api_client.credentials(HTTP_X_API_KEY=api_keys["value"])
+    return api_client
 
 
 @pytest.fixture
