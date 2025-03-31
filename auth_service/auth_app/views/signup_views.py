@@ -7,10 +7,9 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
 
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
 from auth_app.client.user_client import UserClient
-from auth_app.vault_client.vault_client import VaultClient
 from auth_app.models import CustomUser
 from auth_app.serializers.signup_serializer import (
     OTPVerificationSerializer,
@@ -18,6 +17,7 @@ from auth_app.serializers.signup_serializer import (
 )
 from auth_app.services.otp_service import OTPService
 from auth_app.utils.redis_handler import RedisHandler
+from auth_app.vault_client.apikey_decorators import apikey_fetcher
 
 logger = logging.getLogger(__name__)
 
@@ -57,21 +57,8 @@ class OTPVerificationView(APIView):
     サインアップ時のOTP検証
     """
 
+    @method_decorator(apikey_fetcher("users"))
     def post(self, request, *args, **kwargs):
-        vault_client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
-        token = vault_client.fetch_token()
-        if token is None:
-            return Response(
-                {"error": "Internal Server Error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-        api_keys = vault_client.fetch_api_key(token, "users")
-        if api_keys is None:
-            return Response(
-                {"error": "Internal Server Error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
         serializer = OTPVerificationSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -104,7 +91,7 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user_id = self.__register_user(user_data, api_keys["value"])
+        user_id = self.__register_user(user_data, request.api_key)
         if user_id is None:
             logger.fatal("Failed to register user.")
             return Response(
