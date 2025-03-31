@@ -2,8 +2,9 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
+
+from user_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
 from user_app.vault_client.vault_client import VaultClient
-from user_app.settings import VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT
 
 from ..models import User
 
