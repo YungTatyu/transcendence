@@ -3,12 +3,8 @@ import logging
 from typing import Optional
 
 import requests
+from auth_app.vault_client.jwt_utils import PublicKeyType
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from auth_app.vault_client.jwt_utils import (
-    PublicKeyType,
-    create_unsigned_jwt,
-    verify_jwt,
-)
 
 logger = logging.getLogger(__name__)
 

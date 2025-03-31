@@ -4,10 +4,10 @@ from typing import Optional
 
 import jwt
 from django.conf import settings
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
 
 from auth_app.client.user_client import UserClient
 from auth_app.models import CustomUser
@@ -16,9 +16,9 @@ from auth_app.serializers.signup_serializer import (
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
 from auth_app.utils.redis_handler import RedisHandler
 from auth_app.vault_client.apikey_decorators import apikey_fetcher
-from auth_app.settings import VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT
 
 logger = logging.getLogger(__name__)
 
