@@ -9,9 +9,8 @@ import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
-import Home, { setupHome } from "./views/Home.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
-import TmpHome from "./views/TmpHome.js";
+import Home, { setupHome } from "./views/Home.js";
 import InitMatch, { setupInitMatch } from "./views/InitMatch.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
@@ -24,6 +23,7 @@ import QuickPlayMatching, {
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
+import TmpHome from "./views/TmpHome.js";
 import TournamentMatching, {
   setupTournamentMatching,
 } from "./views/TournamentMatching.js";
