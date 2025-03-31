@@ -22,12 +22,7 @@ export default function ChangeAvatar() {
       `;
 }
 
-async function fetchAvatarApi(
-  method,
-  baseUrl,
-  endpoint,
-  requestBody,
-) {
+async function fetchAvatarApi(method, baseUrl, endpoint, requestBody) {
   try {
     const response = await fetch(`${baseUrl}${endpoint}`, {
       method,
@@ -43,7 +38,6 @@ async function fetchAvatarApi(
     return { status: null, data: null };
   }
 }
-
 
 // Avatarをアップロードする処理
 async function handleEditAvatar(fileInput, avatarImage) {
@@ -69,7 +63,6 @@ async function handleEditAvatar(fileInput, avatarImage) {
   stateManager.setState({ avatarPath: data.avatarPath });
 }
 
-
 // Avatarを削除する処理
 async function handleDeleteAvatar(avatarImage) {
   const { status, data } = await fetchApiNoBody(
@@ -86,31 +79,30 @@ async function handleDeleteAvatar(avatarImage) {
   avatarImage.src = "/assets/user.png"; // 削除後にデフォルト画像に戻す
 }
 
-
-
 export async function setupChangeAvatar() {
   const deleteButton = document.querySelector(".js-delete-avatar");
   const editButton = document.querySelector(".js-edit-avatar");
   const fileInput = document.querySelector(".js-avatar-input");
   const avatarImage = document.querySelector(".js-new-avatar");
-  
-   // Editボタン
-   editButton.addEventListener("click", () => fileInput.click());
-   fileInput.addEventListener("change", () => handleEditAvatar(fileInput, avatarImage));
-  
-   // Deleteボタン
-   deleteButton.addEventListener("click", () => handleDeleteAvatar(avatarImage));
 
-  
-  if(stateManager.state.avatarPath){
+  // Editボタン
+  editButton.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", () =>
+    handleEditAvatar(fileInput, avatarImage),
+  );
+
+  // Deleteボタン
+  deleteButton.addEventListener("click", () => handleDeleteAvatar(avatarImage));
+
+  if (stateManager.state.avatarPath) {
     avatarImage.src = stateManager.state.avatarPath;
-  }else{
-    const { status: status, data: data } = await fetchApiNoBody(
+  } else {
+    const { status, data } = await fetchApiNoBody(
       "GET",
       config.userService,
       `/users?userid=${stateManager.state.userId}`,
     );
-  
+
     if (status === null || status >= 400) {
       console.error("ユーザー情報の取得に失敗しました");
       return;
@@ -118,5 +110,4 @@ export async function setupChangeAvatar() {
     avatarImage.src = data.avatarPath;
     stateManager.setState({ avatarPath: data.avatarPath });
   }
-
 }
