@@ -8,10 +8,8 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST,
-    HTTP_401_UNAUTHORIZED,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
-    HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.views import APIView
 
@@ -24,36 +22,12 @@ from .serializers import (
     UserDataSerializer,
     UsernameSerializer,
 )
-from user_app.vault_client.vault_client import VaultClient
-from user_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
-import sys
+from user_app.vault_client.apikey_decorators import apikey_required
 
 
 class UserView(APIView):
+    @method_decorator(apikey_required("users"))
     def post(self, request):
-        # x-api-keyヘッダを取得
-        api_key = request.headers.get("x-api-key")
-        print("[API KEY]", api_key, file=sys.stderr)
-
-        # api_keyが存在しない場合はエラーレスポンスを返す
-        if not api_key:
-            return Response(
-                {"error": "x-api-key is required"}, status=HTTP_401_UNAUTHORIZED
-            )
-
-        client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
-        is_verify = client.verify_api_key(api_key, "users")
-        if is_verify is None:
-            return Response(
-                {"error": "Internal Server Error"},
-                status=HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-        if not is_verify:
-            return Response(
-                {"error": "x-api-key is required"}, status=HTTP_401_UNAUTHORIZED
-            )
-
         # リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)
         if not serializer.is_valid():
