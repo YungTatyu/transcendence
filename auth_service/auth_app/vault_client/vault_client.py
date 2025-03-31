@@ -3,8 +3,8 @@ import logging
 from typing import Optional
 
 import requests
-from auth_app.vault_client.jwt_utils import PublicKeyType
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from .jwt_utils import PublicKeyType
 
 logger = logging.getLogger(__name__)
 
@@ -100,4 +100,4 @@ class VaultClient:
         if api_keys is None:
             return None
 
-        return api_key in api_keys
+        return api_key in api_keys.values()

@@ -1,11 +1,10 @@
 import base64
 import logging
-import sys
 from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from user_app.vault_client.jwt_utils import PublicKeyType
+from .jwt_utils import PublicKeyType
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +74,7 @@ class VaultClient:
         pubkey = load_pem_public_key(pubkey_pem.encode())
         return pubkey
 
-    def fetch_api_key(self, token: str, api_key_name: str) -> Optional[dict[str, int]]:
+    def fetch_api_key(self, token: str, api_key_name: str) -> Optional[dict[str, str]]:
         """APIキーを取得(自動ローテーションするため、APIキーのDictを返す)"""
         url = f"{self.__base_url}/v1/kv/apikeys/{api_key_name}"
         headers = {"X-Vault-Token": token}
