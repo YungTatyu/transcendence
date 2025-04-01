@@ -9,11 +9,11 @@ const config = {
   },
   production: {
     userService: "",
-    matchService: "",
-    gameService: "",
-    realtimeGameService: "",
-    authService: "",
-    friendService: "",
+    matchService: "https://match-proxy.transcen.com:8008",
+    gameService: "https://game-proxy.transcen.com:8004",
+    realtimeGameService: "wss://game-proxy.transcen.com:8004",
+    authService: "https://auth-proxy.transcen.com:8005",
+    friendService: "https://friends-proxy.transcen.com:8007",
   },
 };
 

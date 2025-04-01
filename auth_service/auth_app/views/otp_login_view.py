@@ -10,6 +10,7 @@ from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,
     OTPVerificationSerializer,
 )
+from auth_app.settings import COOKIE_DOMAIN
 
 logger = logging.getLogger(__name__)
 
@@ -88,17 +89,19 @@ class OTPLoginVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=False,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
-            samesite="Lax",  # CSRF 対策 (Lax か Strict)
+            secure=True,
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
         response.set_cookie(
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
-            secure=False,  # TODO revert True
-            samesite="Lax",
+            secure=True,
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
 
         response.delete_cookie("email", path="/")
