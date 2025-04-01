@@ -188,7 +188,8 @@ const fetchUsername = async (userid) => {
 
 export const setupGame = async () => {
   try {
-    if (!stateManager.state?.players || !stateManager.state?.matchId) {
+    const accessToken = sessionStorage.getItem("access_token");
+    if (!accessToken || !stateManager.state?.players || !stateManager.state?.matchId) {
       SPA.navigate("/");
       return;
     }
@@ -197,7 +198,7 @@ export const setupGame = async () => {
       stateManager.state.players.map(fetchUsername),
     );
     gameRender.renderPlayerNames(names);
-    WsConnectionManager.connect(stateManager.state.matchId);
+    WsConnectionManager.connect(stateManager.state.matchId, accessToken);
     PlayerActionHandler.registerEventHandler();
   } catch (error) {
     console.error(error);

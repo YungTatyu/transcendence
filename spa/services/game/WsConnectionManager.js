@@ -77,9 +77,10 @@ const WsConnectionManager = {
   eventHandler: wsEventHandler,
   intervalId: null,
 
-  connect(matchId) {
+  connect(matchId, accessToken) {
     this.socket = new WebSocket(
       `${config.realtimeGameService}/games/ws/enter-room/${matchId}`,
+      [accessToken]
     );
     this.registerEventHandler();
   },
