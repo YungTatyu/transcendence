@@ -17,7 +17,7 @@ def generate_signed_jwt(user_id: str):
     if not token:
         logger.error("Failed to fetch token from Vault")
         return None
-    jwt_payload = {"sub": "1234567890", "userId": user_id}
+    jwt_payload = {"userId": user_id}
     jwt_data = create_unsigned_jwt(JWT_HEADER, jwt_payload)
     signature = client.fetch_signature(token, jwt_data)
     if not signature:

@@ -104,7 +104,7 @@ if __name__ == "__main__":
     token = client.fetch_token()
     if token:
         jwt_header = {"alg": "RS256", "typ": "JWT"}
-        jwt_payload = {"sub": "1234567890", "userId": "1"}
+        jwt_payload = {"userId": "1"}
         jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
         signature = client.fetch_signature(token, jwt_data)
         pubkey = client.fetch_pubkey(token)
