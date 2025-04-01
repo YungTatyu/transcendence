@@ -78,6 +78,9 @@ class OTPLoginVerificationView(APIView):
 
         # TODO userIDを取得する
         tokens = generate_tokens("1")
+        if not tokens:
+            logger.error("Failed to generate tokens from Vault")
+            return Response({"error": "Failed to generate tokens from Vault"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         response = Response(
             {
