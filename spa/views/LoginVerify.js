@@ -44,8 +44,10 @@ export function setupLoginVerify() {
 
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
+    sessionStorage.setItem("access_token", data.accessToken);
 
     // INFO JWTが必要なユーザー名の更新エンドポイントを叩く
+    // TODO: 削除すること
     const newName = Math.random()
       .toString(36)
       .slice(2, 2 + 9);

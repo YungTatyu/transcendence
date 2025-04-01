@@ -2,7 +2,7 @@ import MatchingRoom, {
   renderMatchingRoom,
 } from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
-import WaitOrStart from "../components/WaitOrStart.js";
+import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
 
 export default function QuickPlayMatching() {
   function matchingInfo() {
@@ -32,4 +32,5 @@ export function setupQuickPlayMatching() {
   const jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
 
   renderMatchingRoom(jsonData);
+  renderWaitOrStart("START", "#ffffff");
 }
