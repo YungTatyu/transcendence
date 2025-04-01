@@ -1,10 +1,11 @@
 import logging
 
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.core.exceptions import ObjectDoesNotExist
+
 from auth_app.models import CustomUser
 from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,

@@ -30,6 +30,7 @@ def generate_signed_jwt(user_id: str):
 
     return signed_jwt
 
+
 def generate_tokens(user_id: int):
     signed_jwt = generate_signed_jwt(str(user_id))
     if not signed_jwt:
