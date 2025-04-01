@@ -32,8 +32,9 @@ SECRET_KEY = "django-insecure-!uhu!%ckkkx)v36-@p5f_&w%eqner=wm22!9j&(k*w$#(n+2kd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# TODO
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 # Application definition
 
@@ -65,9 +66,9 @@ JWT_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, "auth_app/keys/public.pem")
 
 REST_FRAMEWORK = {}
 
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
+# proxyがhttpsだったらcookieを送信する
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")
 
 ROOT_URLCONF = "auth_app.urls"
 
@@ -197,8 +198,7 @@ LOGGING = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
+    os.getenv("FRONTEND"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
@@ -207,3 +207,12 @@ VAULT_ADDR = "https://vault:8200"
 CLIENT_CERT = "/certs/client.crt"
 CLIENT_KEY = "/certs/client.key"
 CA_CERT = "/certs/ca.crt"
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]

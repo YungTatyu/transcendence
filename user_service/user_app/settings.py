@@ -27,6 +27,10 @@ SECRET_KEY = "django-insecure-(6$k27bfa80g@9sops2j0my@8l4h@i652dw65u*=5odt2w3%kf
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+# TODO: proxy対応次第変更
+# ALLOWED_HOSTS = [
+#     os.getenv("PROXY"),
+# ]
 
 
 # Application definition
@@ -136,8 +140,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
+    os.getenv("FRONTEND"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
@@ -146,3 +149,12 @@ VAULT_ADDR = "https://vault:8200"
 CLIENT_CERT = "/certs/client.crt"
 CLIENT_KEY = "/certs/client.key"
 CA_CERT = "/certs/ca.crt"
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
