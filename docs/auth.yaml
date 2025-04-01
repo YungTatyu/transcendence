@@ -264,6 +264,10 @@ paths:
                     type: integer
                     description: "ユーザーID"
                     example: 1
+                  accessToken:
+                    type: string
+                    description: "アクセストークン"
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: "Invalid OTP or username."
           content:
@@ -330,6 +334,10 @@ paths:
                     type: integer
                     description: "ユーザーID"
                     example: 1
+                  accessToken:
+                    type: string
+                    description: "アクセストークン"
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: "Invalid OTP or email."
           content:
@@ -372,14 +380,22 @@ paths:
       responses:
         "200":
           description: "New access token generated."
+          headers:
+            Set-Cookie:
+              description: "新しく発行したaccess_tokenをcookieにセット"
+              schema:
+                type: string
+                example: |
+                  access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; Path=/; SameSite=Lax;
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  access:
+                  accessToken:
                     type: string
                     description: "The new access token."
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         "400":
           description: "Missing refresh token."
           content:
