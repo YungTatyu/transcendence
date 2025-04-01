@@ -20,7 +20,7 @@ from auth_app.serializers.signup_serializer import (
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR, COOKIE_DOMAIN
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR, COOKIE_DOMAIN, JWT_HEADER
 
 from auth_app.utils.redis_handler import RedisHandler
 
@@ -116,9 +116,8 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        jwt_header = {"alg": "RS256", "typ": "JWT"}
         jwt_payload = {"sub": "1234567890", "userId": "1"}
-        jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
+        jwt_data = create_unsigned_jwt(JWT_HEADER, jwt_payload)
         signature = client.fetch_signature(token, jwt_data)
         signed_jwt = add_signature_to_jwt(jwt_data, signature)
 

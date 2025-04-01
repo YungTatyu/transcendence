@@ -25,6 +25,9 @@ CLIENT_CERT = "/certs/client.crt"
 CLIENT_KEY = "/certs/client.key"
 CA_CERT = "/certs/ca.crt"
 
+# JWT関連
+JWT_HEADER = {"alg": "RS256", "typ": "JWT"}
+
 # モックモードの設定
 # TODO user api 実装後にFalseとする
 USER_API_USE_MOCK = False
