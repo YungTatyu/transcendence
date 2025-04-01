@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.core.exceptions import ObjectDoesNotExist
+from auth_app.models import CustomUser
 from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,
     OTPVerificationSerializer,
@@ -73,9 +74,18 @@ class OTPLoginVerificationView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.validated_data["user"]
+        email = serializer.validated_data["email"]
 
-        # TODO userIDを取得する
-        tokens = generate_tokens("1")
+        try:
+            user = CustomUser.objects.get(email=email)
+            user_id = user.user_id
+        except ObjectDoesNotExist:
+            logger.error(f"User not found for email: {email}")
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        tokens = generate_tokens(user_id)
         if not tokens:
             logger.error("Failed to generate tokens from Vault")
             return Response(
