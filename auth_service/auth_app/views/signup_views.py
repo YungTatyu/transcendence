@@ -3,6 +3,7 @@ import logging
 from typing import Optional
 
 from django.conf import settings
+from django.db import transaction
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -91,23 +92,29 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user_id = self.__register_user(user_data)
-        if user_id is None:
-            logger.fatal("Failed to register user.")
-            return Response(
-                {"error": "Failed to register user."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-        self.__cleanup_pending_user(username)
+        try:
+            with transaction.atomic():
+                user_id = self.__register_user(user_data)
+                if user_id is None:
+                    logger.fatal("Failed to register user.")
+                    return Response(
+                        {"error": "Failed to register user."},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
 
-        # TODO userIDを取得する
-        tokens = generate_tokens("1")
-        if not tokens:
-            logger.error("Failed to generate tokens from Vault")
+                tokens = generate_tokens(user_id)
+                if not tokens:
+                    logger.error("Failed to generate tokens from Vault")
+                    raise Exception("Token generation failed")
+
+        except Exception as e:
+            logger.error(f"Error during OTP verification: {e}")
             return Response(
-                {"error": "Failed to generate tokens from Vault"},
+                {"error": "Failed to complete registration"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+        self.__cleanup_pending_user(username)
 
         response = Response(
             {

@@ -30,15 +30,14 @@ def generate_signed_jwt(user_id: str):
 
     return signed_jwt
 
-
-def generate_tokens(user_id: str):
-    signed_jwt = generate_signed_jwt(user_id)
+def generate_tokens(user_id: int):
+    signed_jwt = generate_signed_jwt(str(user_id))
     if not signed_jwt:
         return None
 
     tokens = {
         "access": signed_jwt,
-        "refresh": jwt.encode({"user_id": user_id}, None, algorithm=None),
+        "refresh": jwt.encode({"user_id": str(user_id)}, None, algorithm=None),
     }
     return tokens
 
