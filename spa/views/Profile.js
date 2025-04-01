@@ -102,6 +102,8 @@ export async function setupProfile() {
     return;
   }
 
+  console.log("avatarPath ", uData.avatarPath);
+
   document.querySelector(".js-username").textContent = uData.username;
   document.querySelector(".js-user-avatar").src = uData.avatarPath;
 
