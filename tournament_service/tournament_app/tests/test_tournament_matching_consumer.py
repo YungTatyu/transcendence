@@ -2,41 +2,21 @@ import asyncio
 import time
 
 import pytest
-from channels.testing import WebsocketCommunicator
 
 from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
+from tournament_app.tests.conftest import create_communicator
 from tournament_app.utils.tournament_matching_manager import (
     TournamentMatchingManager as Tmm,
 )
 from tournament_app.utils.tournament_session import TournamentSession
 
-PATH = "/tournament/ws/enter-room"
-
-
-class CustomWebsocketCommunicator(WebsocketCommunicator):
-    def __init__(self, application, path, scope_override=None):
-        super().__init__(application, path)
-        if scope_override:
-            self.scope.update(scope_override)
-
-
-async def create_communicator(port: int):
-    communicator = CustomWebsocketCommunicator(
-        Tmc.as_asgi(),
-        PATH,
-        scope_override={"client": ("127.0.0.1", port)},
-    )
-    connected, _ = await communicator.connect()
-    assert connected
-    return communicator
-
 
 @pytest.mark.asyncio(loop_scope="function")
 async def test_enter_room_from_empty_with_one_user():
     """0 -> 1人時は{'tournament_start_time': 'None'}がSendされる"""
-    communicator = await create_communicator(10000)
+    communicator, _ = await create_communicator(10000)
     act_data = await communicator.receive_json_from()
     assert act_data["tournament_start_time"] == "None"
     await communicator.disconnect()
@@ -48,9 +28,9 @@ async def test_enter_room_with_second_user():
     1 -> 2人時はマッチング待機中の全員に
     トーナメント開始UNIX時刻(1->2人になった時刻+FORCED_START_TIME)がSendされる
     """
-    communicator1 = await create_communicator(10001)
+    communicator1, _ = await create_communicator(10001)
     await communicator1.receive_json_from()
-    communicator2 = await create_communicator(10002)
+    communicator2, _ = await create_communicator(10002)
 
     data1 = await communicator1.receive_json_from()
     data2 = await communicator2.receive_json_from()
@@ -67,10 +47,10 @@ async def test_enter_room_with_second_user():
 @pytest.mark.asyncio(loop_scope="function")
 async def test_exit_room_with_two_users():
     """2 -> 1人時は{'tournament_start_time': 'None'}がSendされる"""
-    communicator1 = await create_communicator(10001)
+    communicator1, _ = await create_communicator(10001)
     await communicator1.receive_json_from()
 
-    communicator2 = await create_communicator(10002)
+    communicator2, _ = await create_communicator(10002)
     await communicator1.receive_json_from()
     await communicator2.receive_json_from()
 
@@ -82,21 +62,15 @@ async def test_exit_room_with_two_users():
 
 
 @pytest.mark.asyncio(loop_scope="function")
-async def test_same_port():
+async def test_same_user_id():
     """
-    同じポート番号のWebSocketを拒否するか
-    TODO ポート番号 -> userIdを用いたユーザーの識別に変更時、このテストも変更する
+    同じuser_idを拒否するか
     """
-    port = 10000
-    communicator1 = await create_communicator(port)
+    user_id = 10000
+    communicator1, _ = await create_communicator(user_id)
     await communicator1.receive_json_from()
-    communicator2 = CustomWebsocketCommunicator(
-        Tmc.as_asgi(),
-        PATH,
-        scope_override={"client": ("127.0.0.1", port)},
-    )
-    connected, _ = await communicator2.connect()
-    assert connected is False  # 接続が拒否される
+    _, connected = await create_communicator(user_id)
+    assert not connected  # 接続が拒否される
 
     await communicator1.disconnect()
 
@@ -105,11 +79,14 @@ async def test_same_port():
 # INFO @pytest.mark.django_dbを付与したテストで作成されたレコードはテスト後にロールバックされ、永続化しない。
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 async def test_start_tournament_by_room_capacity(create_match_records_mocker):
     """ROOM_CAPACITYに達した時にtournament_idが送信されるか"""
     communicators = []
     for i in range(Tmc.ROOM_CAPACITY):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         # tournament_start_timeの通知はWebSocketが作成されるたびにルーム内の全員にSendされる
         [await communicator.receive_json_from() for communicator in communicators]
 
@@ -123,13 +100,18 @@ async def test_start_tournament_by_room_capacity(create_match_records_mocker):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_start_tournament_by_force_start_time(create_match_records_mocker):
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
+async def test_start_tournament_by_force_start_time(
+    create_match_records_mocker, mock_tournament_forced_start_sec
+):
     """FORCED_START_TIMEに達した時にtournament_idが送信されるか"""
     communicators = []
 
     # ROOM_CAPACITYに満たない数のWebSocketを作成する
     for i in range(Tmc.ROOM_CAPACITY - 1):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators]
 
     # FORCED_START_TIME秒以上待機
@@ -145,13 +127,16 @@ async def test_start_tournament_by_force_start_time(create_match_records_mocker)
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
-async def test_not_start_tournament():
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
+async def test_not_start_tournament(mock_tournament_forced_start_sec):
     """FORCED_START_TIMEに達していない場合にtournament_idが送信されないか"""
     communicators = []
 
     # ROOM_CAPACITYに満たない数のWebSocketを作成する
     for i in range(Tmc.ROOM_CAPACITY - 1):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators]
 
     # FORCED_START_TIMEに満たない秒数待機
@@ -167,6 +152,7 @@ async def test_not_start_tournament():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 async def test_init_matching_room_after_start_tournament(create_match_records_mocker):
     """
     トーナメント開始後、マッチングルームが初期化され、別ユーザーがマッチングできるか
@@ -176,7 +162,9 @@ async def test_init_matching_room_after_start_tournament(create_match_records_mo
     """
     communicators_1 = []
     for i in range(Tmc.ROOM_CAPACITY):
-        communicators_1.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators_1.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators_1]
 
     for communicator in communicators_1:
@@ -188,7 +176,9 @@ async def test_init_matching_room_after_start_tournament(create_match_records_mo
 
     communicators_2 = []
     for i in range(Tmc.ROOM_CAPACITY):
-        communicators_2.append(await create_communicator(20000 + i))
+        user_id = 20000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators_2.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators_2]
 
     for communicator in communicators_2:
@@ -208,11 +198,14 @@ async def test_init_matching_room_after_start_tournament(create_match_records_mo
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 async def test_create_resource(create_match_records_mocker):
     """トーナメント開始後、リソースが作成されたか"""
     communicators = []
     for i in range(Tmc.ROOM_CAPACITY):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators]
 
     tournament_id = await communicators[0].receive_json_from()
@@ -226,6 +219,7 @@ async def test_create_resource(create_match_records_mocker):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 async def test_start_after_timer_cancel(create_match_records_mocker):
     """
     2人の状態で1人抜け、トーナメント強制開始タイマーがcancelされた後、トーナメントが正常に開始されるか
@@ -233,7 +227,9 @@ async def test_start_after_timer_cancel(create_match_records_mocker):
     communicators = []
     # 2人が待機している状態
     for i in range(2):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators]
 
     # １人ルームから出る
@@ -245,7 +241,9 @@ async def test_start_after_timer_cancel(create_match_records_mocker):
 
     # トーナメント開始できるまでWebSocketを作成
     for i in range(1, Tmc.ROOM_CAPACITY):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         [await communicator.receive_json_from() for communicator in communicators]
 
     # tournament_idが正常に送信されたか
@@ -259,17 +257,17 @@ async def test_start_after_timer_cancel(create_match_records_mocker):
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 async def test_receive_matching_wait_user_ids():
     """
     マッチング待機中ユーザーのIDが送信されるか
-    TODO ポート番号 -> userIdを用いたユーザーの識別に変更時、このテストも変更する
     """
-    communicator1 = await create_communicator(10000)
+    communicator1, _ = await create_communicator(10000)
 
     data1 = await communicator1.receive_json_from()
     assert data1["wait_user_ids"] == "[10000]"
 
-    communicator2 = await create_communicator(20000)
+    communicator2, _ = await create_communicator(20000)
 
     data2 = await communicator1.receive_json_from()
     assert data2["wait_user_ids"] == "[10000, 20000]"
@@ -287,11 +285,14 @@ async def test_receive_matching_wait_user_ids():
 
 @pytest.mark.asyncio(loop_scope="function")
 @pytest.mark.django_db
+@pytest.mark.usefixtures("dummy_matches_data_mocker")
 async def test_create_match_error(create_match_records_error_mocker):
     """Matchリソース作成処理が失敗する場合、NoneがSendされる"""
     communicators = []
     for i in range(Tmc.ROOM_CAPACITY):
-        communicators.append(await create_communicator(10000 + i))
+        user_id = 10000 + i
+        communicator, _ = await create_communicator(user_id)
+        communicators.append(communicator)
         # tournament_start_timeの通知はWebSocketが作成されるたびにルーム内の全員にSendされる
         [await communicator.receive_json_from() for communicator in communicators]
 

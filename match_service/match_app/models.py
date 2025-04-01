@@ -12,7 +12,7 @@ class Match(models.Model):
     MODE_CHOICES = [("QuickPlay", "QuickPlay"), ("Tournament", "Tournament")]
     mode = models.CharField(choices=MODE_CHOICES, max_length=20)
 
-    start_date = models.DateField(default=now)
+    start_date = models.DateField(default=now, null=True)
     finish_date = models.DateField(null=True, blank=True)
     tournament_id = models.IntegerField(
         null=True, blank=True, validators=[MinValueValidator(0)]
@@ -29,7 +29,7 @@ class MatchParticipant(models.Model):
     match_id = models.ForeignKey(Match, on_delete=models.CASCADE)
     user_id = models.IntegerField(validators=[MinValueValidator(0)])
     score = models.IntegerField(
-        null=True, blank=True, validators=[MinValueValidator(0)]
+        null=True, blank=True, validators=[MinValueValidator(-1)]
     )
 
     class Meta:

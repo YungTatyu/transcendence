@@ -18,10 +18,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import UserView, health_check
+from .views import AvatarView, UsernameView, UserView, health_check
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin", admin.site.urls),
     path("health", health_check, name="health"),
     path("users", UserView.as_view(), name="users"),
+    path("users/me/username", UsernameView.as_view(), name="update-username"),
+    path("users/me/avatar", AvatarView.as_view(), name="update-avatar"),
 ]

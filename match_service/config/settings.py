@@ -26,13 +26,17 @@ SECRET_KEY = "django-insecure-lpa@_gys^w-zq=1b9zgh2rj=m=tu2&iu%nm-=&-$&^l_gi_bx8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "channels",
     "match_app",
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -50,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -129,4 +135,31 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-TOURNAMENT_API_BASE_URL = "https://tournaments.42.fr"
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv("REDIS_HOST"), os.getenv("REDIS_PORT"))],
+        },
+    },
+}
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND"),
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
+
+TOURNAMENT_API_BASE_URL = "http://tournament:8002"
+GAME_API_BASE_URL = "http://game:8001"

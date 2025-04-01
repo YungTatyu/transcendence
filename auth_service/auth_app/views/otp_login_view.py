@@ -1,5 +1,6 @@
 import logging
 
+import jwt
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
@@ -14,7 +15,8 @@ from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,
     OTPVerificationSerializer,
 )
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
+
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR, COOKIE_DOMAIN
 
 logger = logging.getLogger(__name__)
 
@@ -99,13 +101,19 @@ class OTPLoginVerificationView(APIView):
         # if extracted_signature and pubkey:
         #     logger.error("Verify JWT: ", verify_jwt(pubkey, jwt_data, extracted_signature))
 
+        # TODO 署名を組み込んだJWTの生成
         tokens = {
             "access": signed_jwt,
-            "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+            # refresh tokenの生成方法も要検討
+            "refresh": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
         }
 
         response = Response(
-            {"message": "OTP verification successful."},
+            {
+                "message": "OTP verification successful.",
+                "userId": user.user_id,
+                "accessToken": tokens.get("access"),
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -114,17 +122,19 @@ class OTPLoginVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=True,  # HTTPS のみで送信 (本番環境では必須)
-            samesite="Lax",  # CSRF 対策 (Lax か Strict)
+            secure=True,
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
         response.set_cookie(
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
 
         response.delete_cookie("email", path="/")

@@ -26,7 +26,9 @@ SECRET_KEY = "django-insecure-3s^wg%e*nq3s+f3bu9f9-(4r1*m5(@b520k_jps4-vqm0*tow3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 
 # Application definition
@@ -42,9 +44,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -125,10 +129,6 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -144,4 +144,19 @@ CHANNEL_LAYERS = {
     },
 }
 
-MATCH_API_BASE_URL = "https://matches.42.fr"
+MATCH_API_BASE_URL = "http://match:8003"
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND"),
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]

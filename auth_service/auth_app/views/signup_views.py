@@ -1,6 +1,8 @@
 import json
 import logging
+from typing import Optional
 
+import jwt
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
@@ -18,7 +20,8 @@ from auth_app.serializers.signup_serializer import (
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR, COOKIE_DOMAIN
+
 from auth_app.utils.redis_handler import RedisHandler
 
 logger = logging.getLogger(__name__)
@@ -67,7 +70,7 @@ class OTPVerificationView(APIView):
             )
 
         username = serializer.validated_data["username"]
-        otp_token = serializer.validated_data["otp_token"]
+        otp_token = serializer.validated_data["otp"]
 
         # Redisから仮登録データを取得
         user_data = self.__get_pending_user_data(username)
@@ -92,7 +95,8 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not self.__register_user(user_data):
+        user_id = self.__register_user(user_data)
+        if user_id is None:
             logger.fatal("Failed to register user.")
             return Response(
                 {"error": "Failed to register user."},
@@ -123,13 +127,20 @@ class OTPVerificationView(APIView):
         # if extracted_signature and pubkey:
         #     logger.error("Verify JWT: ", verify_jwt(pubkey, jwt_data, extracted_signature))
 
+        # TODO 署名を組み込んだJWTの生成
         tokens = {
-            "access": signed_jwt,
-            "refresh": "refresh_token_placeholder",  # refresh tokenの生成方法も要検討
+             "access": signed_jwt,
+            # refresh tokenの生成方法も要検討
+            "refresh": jwt.encode({"user_id": user_id}, None, algorithm=None),
+
         }
 
         response = Response(
-            {"message": "OTP verification successful."},
+            {
+                "message": "OTP verification successful.",
+                "userId": user_id,
+                "accessToken": tokens.get("access"),
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -138,17 +149,19 @@ class OTPVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=True,  # HTTPS のみで送信 (本番環境では必須)
-            samesite="Lax",  # CSRF 対策 (Lax か Strict)
+            secure=True,
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
         response.set_cookie(
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
 
         # emailクッキーを削除
@@ -169,7 +182,7 @@ class OTPVerificationView(APIView):
 
         return json.loads(redis_data)
 
-    def __register_user(self, user_data: dict) -> bool:
+    def __register_user(self, user_data: dict) -> Optional[int]:
         """
         本登録データをデータベースに保存する
         :param user_data: 仮登録データ
@@ -189,10 +202,10 @@ class OTPVerificationView(APIView):
                 hashed_password=user_data["password_hash"],
             )
 
-            return True
+            return user_id
         except Exception as e:
             logger.error(f"Error saving user: {str(e)}")
-            return False
+            return None
 
     def __cleanup_pending_user(self, username: str) -> None:
         """

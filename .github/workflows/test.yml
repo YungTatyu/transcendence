@@ -14,11 +14,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Create certs
-      run: ./certs/create_cert.sh
-
     - name: Build and start services
-      run: docker compose up -d --build
+      run: make
 
     - name: Wait for services to be ready
       run: |
@@ -65,7 +62,7 @@ jobs:
     - name: Run tests
       run: |
         docker compose exec auth python manage.py test
-        docker compose exec game python manage.py test
+        docker compose exec game pytest -vv -s
         docker compose exec tournament pytest
         docker compose exec friends_activity_app pytest
         docker compose exec friends python manage.py test

@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+import aiohttp
 import requests
 
 logger = logging.getLogger(__name__)
@@ -75,3 +76,74 @@ class MatchClient:
                 "POST", f"{self.base_url}/{endpoint}"
             ).prepare()
             return response
+
+    def fetch_matches_data(self, tournament_id: int, offset: int = 0, limit: int = 100):
+        """
+        /matchesを叩き、トーナメントIDに紐づくMatches情報を取得
+        エラーの場合INTERNAL_SERVER_ERRORを返す
+        INFO 引数のlimitはmatchesエンドポイントの最大レコード取得数に合わせています
+        """
+        endpoint = "matches"
+
+        params = {
+            "tournamentId": tournament_id,
+            "offset": offset,
+            "limit": limit,
+        }
+
+        try:
+            return self.__send_request("GET", endpoint, params=params)
+        except Exception as e:
+            logger.error(
+                f"Error occurred while get tournament matches. "
+                f"Exception: {str(e)} "
+                f"Endpoint: {self.base_url}/{endpoint} "
+                f"Request params: {params}",
+            )
+            response = requests.Response()
+            response.status_code = 500
+            response._content = b'{"error": "Internal Server Error"}'
+            response.headers["Content-Type"] = "application/json"
+            response.request = requests.Request(
+                "GET", f"{self.base_url}/{endpoint}"
+            ).prepare()
+            return response
+
+    async def fetch_tournament_match_finish(self, match_id: int, results: list[dict]):
+        """
+        /matches/finishを叩き、トーナメント試合終了処理を行う
+        エラーの場合{"error": "Internal Server Error"}を返す
+
+        INFO MatchAPIを叩いた後、MatchAPI側がTournamentAPIのエンドポイントを叩きます。
+             その時、MatchAPIを叩く処理が同期処理だと、MatchAPIから叩かれた時、
+             TournamentAPIがブロッキングされていてデッドロック状態になるため、
+             非同期でMatchAPIを叩きます。
+
+             TournamentAPI ──> MatchAPI (同期リクエスト)
+             TournamentAPI <── MatchAPI (同期リクエスト)   <== デッドロック状態
+
+             TournamentAPI ──> MatchAPI (非同期リクエスト)
+             TournamentAPI <── MatchAPI (同期リクエスト)   <== デッドロックしない
+        """
+        endpoint = "matches/finish"
+        url = f"{self.base_url}/{endpoint}"
+
+        body = {
+            "matchId": match_id,
+            "results": results,
+        }
+
+        try:
+            async with (
+                aiohttp.ClientSession() as session,
+                session.post(url, json=body, timeout=5) as response,
+            ):
+                return await response.json()
+        except Exception as e:
+            logger.error(
+                f"Error occurred while finish tournament matches. "
+                f"Exception: {str(e)} "
+                f"Endpoint: {self.base_url}/{endpoint} "
+                f"Request body: {body}",
+            )
+            return {"error": "Internal Server Error"}

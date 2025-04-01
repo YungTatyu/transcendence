@@ -2,7 +2,8 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get -y install \
 	curl \
-	systemd \
+	supervisor \
+	tini \
 	gnupg \
 	lsb-release
 
@@ -14,9 +15,11 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/sh
 	rm -rf /var/lib/apt/lists/*
 
 COPY config/ /vault/config/
-COPY init_vault.sh /usr/local/bin/init_vault.sh
-RUN chmod +x /usr/local/bin/init_vault.sh
+COPY init_vault_and_rotate_api_key.sh /usr/local/bin/init_vault_and_rotate_api_key.sh
+RUN chmod +x /usr/local/bin/init_vault_and_rotate_api_key.sh
 
-COPY vault.service /etc/systemd/system/
-RUN systemctl enable vault
-ENTRYPOINT ["/bin/systemd"]
+# supervisord を PID1 で起動
+COPY supervisord.conf /etc/supervisord.conf
+RUN mkdir -p /var/log/supervisor
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

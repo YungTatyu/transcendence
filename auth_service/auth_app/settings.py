@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # APIベースURL
-USER_API_BASE_URL = "https://users.transcendence.com"
+USER_API_BASE_URL = "http://user:9000"
 
 # VAULT関連の設定
 VAULT_ADDR = "https://vault:8200"
@@ -27,7 +27,7 @@ CA_CERT = "/certs/ca.crt"
 
 # モックモードの設定
 # TODO user api 実装後にFalseとする
-USER_API_USE_MOCK = True
+USER_API_USE_MOCK = False
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -38,8 +38,9 @@ SECRET_KEY = "django-insecure-!uhu!%ckkkx)v36-@p5f_&w%eqner=wm22!9j&(k*w$#(n+2kd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# TODO
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+]
 
 # Application definition
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "auth_app",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +64,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 JWT_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, "auth_app/keys/private.pem")
@@ -69,9 +72,9 @@ JWT_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, "auth_app/keys/public.pem")
 
 REST_FRAMEWORK = {}
 
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
+# proxyがhttpsだったらcookieを送信する
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")
 
 ROOT_URLCONF = "auth_app.urls"
 
@@ -199,3 +202,18 @@ LOGGING = {
         },
     },
 }
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND"),
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
