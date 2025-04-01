@@ -20,8 +20,14 @@ from auth_app.serializers.signup_serializer import (
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR, COOKIE_DOMAIN, JWT_HEADER
-
+from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    COOKIE_DOMAIN,
+    JWT_HEADER,
+    VAULT_ADDR,
+)
 from auth_app.utils.redis_handler import RedisHandler
 
 logger = logging.getLogger(__name__)
@@ -128,10 +134,9 @@ class OTPVerificationView(APIView):
 
         # TODO 署名を組み込んだJWTの生成
         tokens = {
-             "access": signed_jwt,
+            "access": signed_jwt,
             # refresh tokenの生成方法も要検討
             "refresh": jwt.encode({"user_id": user_id}, None, algorithm=None),
-
         }
 
         response = Response(

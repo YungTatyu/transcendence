@@ -15,8 +15,14 @@ from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,
     OTPVerificationSerializer,
 )
-
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR, COOKIE_DOMAIN, JWT_HEADER
+from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    COOKIE_DOMAIN,
+    JWT_HEADER,
+    VAULT_ADDR,
+)
 
 logger = logging.getLogger(__name__)
 
