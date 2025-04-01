@@ -267,18 +267,12 @@ services:
     networks:
       - app_network
     env_file: ./docker_env/vault.env
-    cap_add:
-      - IPC_LOCK
     volumes:
       - ./certs/client.crt:/vault/certs/client.crt:ro
       - ./certs/client.key:/vault/certs/client.key:ro
       - ./certs/vault/server.crt:/vault/certs/server.crt:ro
       - ./certs/vault/server.key:/vault/certs/server.key:ro
       - ./certs/ca.crt:/vault/certs/ca.crt:ro
-      - ./docker_env/vault.env:/etc/vault.env:ro
-    tmpfs: [/tmp, /run]
-    privileged: true
-    stop_signal: SIGRTMIN+3
 
   spa_nginx:
     image: nginx:alpine
