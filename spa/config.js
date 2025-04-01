@@ -5,13 +5,15 @@ const config = {
     gameService: "http://localhost:8001",
     realtimeGameService: "ws://localhost:8001",
     authService: "http://localhost:8000",
+    friendService: "http://localhost:7500",
   },
   production: {
     userService: "",
-    matchService: "",
-    gameService: "",
-    realtimeGameService: "",
-    authService: "",
+    matchService: "https://match-proxy.transcen.com:8008",
+    gameService: "https://game-proxy.transcen.com:8004",
+    realtimeGameService: "wss://game-proxy.transcen.com:8004",
+    authService: "https://auth-proxy.transcen.com:8005",
+    friendService: "https://friends-proxy.transcen.com:8007",
   },
 };
 

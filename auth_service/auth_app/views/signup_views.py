@@ -15,6 +15,7 @@ from auth_app.serializers.signup_serializer import (
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
+from auth_app.settings import COOKIE_DOMAIN
 from auth_app.utils.redis_handler import RedisHandler
 
 logger = logging.getLogger(__name__)
@@ -114,17 +115,19 @@ class OTPVerificationView(APIView):
             key="access_token",
             value=tokens["access"],
             httponly=True,  # JavaScript からアクセス不可 (XSS 対策)
-            secure=False,  # HTTPS のみで送信 (本番環境では必須) TODO revert True
-            samesite="Lax",  # CSRF 対策 (Lax か Strict)
+            secure=True,
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
         response.set_cookie(
             key="refresh_token",
             value=tokens["refresh"],
             httponly=True,
-            secure=False,  # TODO revert True
-            samesite="Lax",
+            secure=True,
+            samesite="None",
             path="/",
+            domain=COOKIE_DOMAIN,  # 親ドメインを設定
         )
 
         # emailクッキーを削除

@@ -43,6 +43,7 @@ export function setupInitMatch() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         matchId: matchId,
         userIdList: [leftPlayerId, rightPlayerId],
