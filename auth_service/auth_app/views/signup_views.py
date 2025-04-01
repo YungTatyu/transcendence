@@ -106,7 +106,11 @@ class OTPVerificationView(APIView):
         }
 
         response = Response(
-            {"message": "OTP verification successful.", "userId": user_id},
+            {
+                "message": "OTP verification successful.",
+                "userId": user_id,
+                "accessToken": tokens.get("access"),
+            },
             status=status.HTTP_200_OK,
         )
 
