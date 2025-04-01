@@ -22,6 +22,7 @@ export default function Home() {
         <button onclick="SPA.navigate('/game')">gameへ</button>
         <button onclick="SPA.navigate('/game/setup')">setupgameへ</button>
         <button onclick="SPA.navigate('/game/result')">gameresultへ</button>
+        <button onclick="SPA.navigate('/tournament')">tournamentへ</button>
         <button onclick="SPA.navigate('/matching/quick-play')">QuickPlayMatchingへ</button>
         <button onclick="SPA.navigate('/matching/tournament')">TournamentMatchingへ</button>
         ${Footer({ text: "© 2025 My Company" })}
