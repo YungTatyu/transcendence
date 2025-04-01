@@ -86,7 +86,7 @@ if __name__ == "__main__":
     # INFO tokenは一定期間同じものを使用できます
     token = client.fetch_token()
     if token:
-        jwt_header = {"alg": "RS256", "typ": "JWT"}
+        jwt_header = {"alg": "PS256", "typ": "JWT"}
         jwt_payload = {"userId": "1"}
         jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
         signature = client.fetch_signature(token, jwt_data)
