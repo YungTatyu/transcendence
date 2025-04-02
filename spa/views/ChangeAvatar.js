@@ -1,7 +1,7 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import config from "../config.js";
-import stateManager from "../stateManager.js";
 import SPA from "../spa.js";
+import stateManager from "../stateManager.js";
 
 export default function ChangeAvatar() {
   return `
