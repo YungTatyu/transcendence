@@ -60,10 +60,10 @@ async function handleEditAvatar(fileInput, avatarImage) {
     return;
   }
 
-  const newPath = `${config.userService}${data.avatarPath}`;
+  const newAvatarUrl = `${config.userService}${data.avatarPath}`;
 
-  avatarImage.src = newPath;
-  stateManager.setState({ avatarPath: newPath });
+  avatarImage.src = newAvatarUrl;
+  stateManager.setState({ avatarUrl: newAvatarUrl });
   SPA.navigate("/profile");
 }
 
@@ -79,6 +79,7 @@ async function handleDeleteAvatar(avatarImage) {
     console.error("アバター画像の削除に失敗しました");
     return;
   }
+  stateManager.setState({ avatarUrl: `${config.userService}/media/images/default/default_image.png` });
   SPA.navigate("/profile");
 }
 
@@ -110,8 +111,8 @@ export async function setupChangeAvatar() {
       console.error("ユーザー情報の取得に失敗しました");
       return;
     }
-    const avatarPath = `${config.userService}${data.avatarPath}`;
-    avatarImage.src = avatarPath;
-    stateManager.setState({ avatarPath: avatarPath });
+    const avatarUrl = `${config.userService}${data.avatarPath}`;
+    avatarImage.src = avatarUrl;
+    stateManager.setState({ avatarUrl: avatarUrl });
   }
 }

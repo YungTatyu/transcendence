@@ -83,11 +83,11 @@ export async function setupProfile() {
     SPA.navigate("/history/match");
   });
 
-  if (stateManager.state.username && stateManager.state.avatar_path) {
+  if (stateManager.state.username && stateManager.state.avatarUrl) {
     document.querySelector(".js-username").textContent =
       stateManager.state.username;
     document.querySelector(".js-user-avatar").src =
-      stateManager.state.avatarPath;
+      stateManager.state.avatarUrl;
     return;
   }
 
@@ -101,13 +101,13 @@ export async function setupProfile() {
     console.error("ユーザー情報の取得に失敗しました");
     return;
   }
+  const avatarUrl = `${config.userService}${uData.avatarPath}`;
 
   document.querySelector(".js-username").textContent = uData.username;
-  document.querySelector(".js-user-avatar").src =
-    `${config.userService}${uData.avatarPath}`;
+  document.querySelector(".js-user-avatar").src = avatarUrl;
 
   stateManager.setState({ username: uData.username });
-  stateManager.setState({ avatarPath: uData.avatarPath });
+  stateManager.setState({ avatarUrl: avatarUrl });
 
   if (!stateManager.state.userId) {
     return;
