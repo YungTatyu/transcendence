@@ -1,4 +1,3 @@
-
 export default function Title() {
   return `
         <div class="d-flex justify-content-center align-items-center flex-column vh-100 position-relative">
@@ -9,4 +8,17 @@ export default function Title() {
             </div>
         </div>
     `;
+}
+
+export function setupTitile() {
+  const btnSinup = document.querySelector(".js-btn-signup");
+  const btnLogin = document.querySelector(".js-btn-login");
+
+  btnSinup.addEventListener("click", () => {
+    SPA.navigate("/signup");
+  });
+
+  btnLogin.addEventListener("click", () => {
+    SPA.navigate("/login");
+  });
 }
