@@ -35,7 +35,7 @@ export default function Profile() {
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
-          <img src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
+          <img src="${config.userService}/media/images/default/default.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
           <img src="/assets/pencil.png" class="pencil-icon align-self-start mt-n1 js-pen-avatar">
       </div>
 
@@ -104,14 +104,8 @@ export async function setupProfile() {
   const avatarUrl = `${config.userService}${uData.avatarPath}`;
 
   document.querySelector(".js-username").textContent = uData.username;
-  const avatarImg = document.querySelector(".js-user-avatar");
-  avatarImg.src = avatarUrl;
+  document.querySelector(".js-user-avatar") = avatarUrl;
 
-  // imgタグの読み込み失敗時
-  avatarImg.onerror = function () {
-    this.onerror = null; // 無限ループ防止
-    this.src = `${config.userService}/media/images/default/default_avatar.png`; // デフォルト画像に変更
-  };
 
   stateManager.setState({ username: uData.username });
   stateManager.setState({ avatarUrl: avatarUrl });

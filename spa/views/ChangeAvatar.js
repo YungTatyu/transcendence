@@ -133,10 +133,4 @@ export async function setupChangeAvatar() {
     avatarImg.src = avatarUrl;
     stateManager.setState({ avatarUrl: avatarUrl });
   }
-
-  // imgタグの読み込み失敗時
-  avatarImg.onerror = function () {
-    this.onerror = null; // 無限ループ防止
-    this.src = `${config.userService}/media/images/default/default_avatar.png`; // デフォルト画像に変更
-  };
 }
