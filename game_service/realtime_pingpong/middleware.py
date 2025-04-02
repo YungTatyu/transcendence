@@ -17,8 +17,9 @@ class JWTAuthMiddleware:
         subprotocol = subprotocols[0] if subprotocols else None
         token = subprotocols[1] if len(subprotocols) > 1 else None
 
-        if token is None:
+        if not all([subprotocol, token]):
             await send({"type": "websocket.close", "code": 1008})
+            logger.warn("bad request: missing subprotocol or token")
             return
 
         try:
