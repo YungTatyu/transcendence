@@ -12,6 +12,9 @@ export default function ChangeAvatar() {
                
               <!-- 隠しファイル入力 -->
               <input type="file" class="js-avatar-input d-none" accept="image/*">
+              <div>
+                <p class="text-center text-danger fw-bold fs-6 errorOutput"></p>
+              </div>
           
               <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary w-50 js-edit-avatar" type="button">Edit</button>
@@ -42,6 +45,8 @@ async function fetchAvatarApi(method, baseUrl, endpoint, requestBody) {
 
 // Avatarをアップロードする処理
 async function handleEditAvatar(fileInput, avatarImage) {
+  const errorOutput = document.querySelector(".errorOutput");
+
   const file = fileInput.files[0];
   if (!file) return;
 
@@ -55,8 +60,12 @@ async function handleEditAvatar(fileInput, avatarImage) {
     formData,
   );
 
-  if (status === null || status >= 400) {
-    console.error("アバター画像のアップロードに失敗しました");
+  if (status === null) {
+    errorOutput.textContent = "Error Occured!";
+    return;
+  }
+  if (status >= 400) {
+    errorOutput.textContent = JSON.stringify(data.error, null, "\n");
     return;
   }
 
@@ -69,16 +78,23 @@ async function handleEditAvatar(fileInput, avatarImage) {
 
 // Avatarを削除する処理
 async function handleDeleteAvatar(avatarImage) {
+  const errorOutput = document.querySelector(".errorOutput");
+
   const { status, data } = await fetchApiNoBody(
     "DELETE",
     config.userService,
     "/users/me/avatar",
   );
 
-  if (status === null || status >= 400) {
-    console.error("アバター画像の削除に失敗しました");
+  if (status === null) {
+    errorOutput.textContent = "Error Occured!";
     return;
   }
+  if (status >= 400) {
+    errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+    return;
+  }
+
   stateManager.setState({ avatarUrl: `${config.userService}/media/images/default/default_image.png` });
   SPA.navigate("/profile");
 }
@@ -98,8 +114,8 @@ export async function setupChangeAvatar() {
   // Deleteボタン
   deleteButton.addEventListener("click", () => handleDeleteAvatar(avatarImage));
 
-  if (stateManager.state.avatarPath) {
-    avatarImage.src = stateManager.state.avatarPath;
+  if (stateManager.state.avatarUrl) {
+    avatarImage.src = stateManager.state.avatarUrl;
   } else {
     const { status, data } = await fetchApiNoBody(
       "GET",

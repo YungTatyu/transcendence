@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
@@ -168,7 +169,7 @@ class AvatarView(APIView):
         user.avatar_path = User.DEFAULT_AVATAR_PATH
         user.save()
 
-        return Response(status=HTTP_200_OK)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 @api_view(["GET"])
