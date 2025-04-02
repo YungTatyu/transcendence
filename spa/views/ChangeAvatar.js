@@ -1,13 +1,14 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
+import SPA from "../spa.js";
 
 export default function ChangeAvatar() {
   return `
         <div class="container d-flex justify-content-center align-items-center vh-100">
           <div class="card shadow-lg p-4 align-items-center" style="width: 100%; max-width: 400px;">
             <form>    
-              <img id="user-avatar" src="/assets/user.png" class="square-img-user-avatar rounded-circle mb-3 js-new-avatar" >
+              <img id="user-avatar" src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle mb-3 js-new-avatar" >
                
               <!-- 隠しファイル入力 -->
               <input type="file" class="js-avatar-input d-none" accept="image/*">
@@ -59,8 +60,11 @@ async function handleEditAvatar(fileInput, avatarImage) {
     return;
   }
 
-  avatarImage.src = data.avatarPath;
-  stateManager.setState({ avatarPath: data.avatarPath });
+  const newPath = `${config.userService}${data.avatarPath}`;
+
+  avatarImage.src = newPath;
+  stateManager.setState({ avatarPath: newPath });
+  SPA.navigate("/profile");
 }
 
 // Avatarを削除する処理
@@ -75,8 +79,7 @@ async function handleDeleteAvatar(avatarImage) {
     console.error("アバター画像の削除に失敗しました");
     return;
   }
-
-  avatarImage.src = "/assets/user.png"; // 削除後にデフォルト画像に戻す
+  SPA.navigate("/profile");
 }
 
 export async function setupChangeAvatar() {
