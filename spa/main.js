@@ -23,6 +23,7 @@ import QuickPlayMatching, {
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
+import Title from "./views/Title.js";
 import TmpHome from "./views/TmpHome.js";
 import Tournament, { setupTournament } from "./views/Tournament.js";
 import TournamentMatching, {
@@ -35,6 +36,7 @@ import FriendRequestList, {
   setupFriendRequestList,
 } from "./views/FriendRequestList.js";
 
+SPA.route("/title", Title);
 SPA.route("/", TmpHome);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
