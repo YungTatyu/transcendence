@@ -104,8 +104,7 @@ export async function setupProfile() {
   const avatarUrl = `${config.userService}${uData.avatarPath}`;
 
   document.querySelector(".js-username").textContent = uData.username;
-  document.querySelector(".js-user-avatar") = avatarUrl;
-
+  document.querySelector(".js-user-avatar").src = avatarUrl;
 
   stateManager.setState({ username: uData.username });
   stateManager.setState({ avatarUrl: avatarUrl });
