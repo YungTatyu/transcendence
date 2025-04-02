@@ -38,7 +38,7 @@ server {
     }
 
     location /media/ {
-        alias /media/;
+        alias /var/www/media/;
         autoindex off;
     }
 

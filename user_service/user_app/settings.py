@@ -29,7 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     os.getenv("PROXY"),
+    "auth_app",
 ]
+# ALLOWED_HOSTS = ['*']
 
 
 # Application definition

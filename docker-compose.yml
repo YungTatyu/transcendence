@@ -167,7 +167,7 @@ services:
     volumes:
       - ./certs/user-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/user-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
-      - user_media:/media/
+      - user_media:/var/www/media/
       - ./user_service/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template
   
   friends_activity_app:
