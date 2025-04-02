@@ -13,6 +13,10 @@ export default async function fetchApiNoBody(method, baseUrl, endpoint) {
     });
 
     const status = response.status;
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+    return { status, data: null }; // JSON以外のレスポンスの場合はnullを返す
+    }
     const data = await response.json();
     return { status, data };
   } catch (error) {
