@@ -59,7 +59,7 @@ export default function Game() {
 export const gameRender = {
   renderGame(
     state = {
-      ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
+      ball: { x: GAME_WIDTH / 2 - BALL_WIDTH / 2, y: GAME_HEIGHT / 2 },
       leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
       rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
     },
@@ -93,7 +93,7 @@ export const gameRender = {
 
     // ボールの描画
     const ball = {
-      x: state.ball.x - BALL_WIDTH / 2,
+      x: state.ball.x,
       y: state.ball.y,
       width: BALL_WIDTH,
       height: BALL_HEIGHT,
