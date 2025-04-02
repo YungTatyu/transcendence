@@ -93,7 +93,7 @@ export const gameRender = {
 
     // ボールの描画
     const ball = {
-      x: state.ball.x,
+      x: state.ball.x - BALL_WIDTH / 2,
       y: state.ball.y,
       width: BALL_WIDTH,
       height: BALL_HEIGHT,
@@ -189,13 +189,11 @@ const fetchUsername = async (userid) => {
 export const setupGame = async () => {
   try {
     const accessToken = sessionStorage.getItem("access_token");
-    if (
-      !(
-        accessToken &&
-        stateManager.state?.players &&
-        stateManager.state?.matchId
-      )
-    ) {
+    if (!(
+      accessToken &&
+      stateManager.state?.players &&
+      stateManager.state?.matchId
+    )) {
       SPA.navigate("/");
       return;
     }
