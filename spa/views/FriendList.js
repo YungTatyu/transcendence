@@ -13,10 +13,6 @@ export default function FriendList() {
 		</div>
 		<div class="friend-list js-friend-list ml-4">
 		</div>
-    <div class="paging d-flex align-items-end justify-content-end position-absolute bottom-0 end-0 p-3">
-      <button type="button" class="back-button">back</button>
-			<button type="button" class="next-button">next</button>
-    </div>
 	</div>
 	`;
 }
@@ -44,13 +40,83 @@ const data = {
       requestSentAt: "2025-03-17T12:00:00.000Z",
       approvedAt: "2025-03-18T13:00:00.000Z",
     },
+    {
+      fromUserId: 4,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 5,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 6,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 7,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 8,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 9,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 10,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 11,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 12,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 13,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    }
   ],
   total: 100,
 };
 
 export const setupFriendList = async () => {
   let currentPage = 0;
-  const limit = 1;
+  const limit = 10;
 
   async function fetchFriendUserList(offset, limit) {
     // friend_apiを叩く
@@ -99,7 +165,7 @@ export const setupFriendList = async () => {
       data: {
         userId: userid, // 固定のユーザーID
         avatarPath: "/assets/42.png", // 固定のアバターパス
-        username: "akazukin", // 仮のユーザー名
+        username: userid, // 仮のユーザー名
       },
     };
 
@@ -183,35 +249,20 @@ export const setupFriendList = async () => {
     );
   }
 
+  console.log("before");
+  function handleScroll() {
+    loadFriendList();
+    console.log("test");
+  }
   
-  // const nextButton = document.createElement("button");
-  // nextButton.textContent = "Next";
-  // nextButton.classList.add("btn", "btn-secondary", "mt-3", "position-absolute", "bottom-0", "end-0");
-  // const friendsList = document.querySelector(".js-friend-list");
-  // friendsList.appendChild(nextButton);
-  // nextButton.addEventListener("click", () => {
-  //   currentPage++;
-  //   loadFriendList();
-  // });
+  // スクロールイベントを登録
+  window.addEventListener("scroll", handleScroll);
+  
   loadFriendList();
-  const nextButton = document.querySelector(".next-button");
-  if (nextButton) {
-    nextButton.addEventListener("click", () => {
-      console.log("Next button clicked");
-      currentPage++;
-      loadFriendList();
-    });
-  }
-  const backButton = document.querySelector(".back-button");
-  if (backButton) {
-    backButton.addEventListener("click", () => {
-      if (currentPage > 0) {
-        currentPage--;
-        loadFriendList();
-      }
-    });
-  }
+  
 };
 //error occuredが一度でも出たらmap文をbreakしたい
 
 /// homebuttonのnavigate
+
+//
