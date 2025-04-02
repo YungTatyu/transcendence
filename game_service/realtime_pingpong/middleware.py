@@ -12,9 +12,10 @@ class JWTAuthMiddleware:
         self.inner = inner
 
     async def __call__(self, scope, receive, send):
-        logger.debug("starting to build ws connection")
-        token = scope.get("cookies", {}).get("access_token")
-        logger.debug(f"access token: {token}")
+        logger.debug("starting to establish ws connection")
+        subprotocols = scope.get("subprotocols", [])
+        subprotocol = subprotocols[0] if subprotocols else None
+        token = subprotocols[1] if len(subprotocols) > 1 else None
 
         if token is None:
             await send({"type": "websocket.close", "code": 1008})
@@ -24,11 +25,12 @@ class JWTAuthMiddleware:
             decoded_token = jwt.decode(
                 token, options={"verify_signature": False}, algorithms=["HS256"]
             )
+            scope["subprotocol"] = subprotocol
             scope["user_id"] = str(decoded_token.get("user_id"))
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, jwt.DecodeError):
             await send({"type": "websocket.close", "code": 1008})
-            logger.warn("jwt auth failed")
+            logger.warn("jwt verification failed")
             return
 
-        logger.debug("jwt auth success")
+        logger.debug("jwt verification success")
         return await self.inner(scope, receive, send)
