@@ -83,5 +83,6 @@ export function setupSignUpVerify() {
         return;
       }
     });
+    SPA.navigate("/home");
   });
 }
