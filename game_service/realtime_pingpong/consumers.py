@@ -1,6 +1,5 @@
 import json
 from dataclasses import dataclass
-from sys import stderr
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer

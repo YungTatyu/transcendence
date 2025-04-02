@@ -80,7 +80,7 @@ const WsConnectionManager = {
   connect(matchId, accessToken) {
     this.socket = new WebSocket(
       `${config.realtimeGameService}/games/ws/enter-room/${matchId}`,
-      ["app-protocol", accessToken]
+      ["app-protocol", accessToken],
     );
     this.registerEventHandler();
   },

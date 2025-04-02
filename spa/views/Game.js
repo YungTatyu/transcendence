@@ -189,7 +189,11 @@ const fetchUsername = async (userid) => {
 export const setupGame = async () => {
   try {
     const accessToken = sessionStorage.getItem("access_token");
-    if (!accessToken || !stateManager.state?.players || !stateManager.state?.matchId) {
+    if (
+      !accessToken ||
+      !stateManager.state?.players ||
+      !stateManager.state?.matchId
+    ) {
       SPA.navigate("/");
       return;
     }
