@@ -61,7 +61,7 @@ class TestGameConsumer:
     async def create_communicator(self, match_id, user_id):
         communicator = WebsocketCommunicator(application, self.get_uri(match_id))
         access_token = self.create_jwt_for_user(user_id)
-        communicator.scope["cookies"] = {"access_token": access_token}
+        communicator.scope["subprotocols"] = ["app-protocol", access_token]
         connected, _ = await communicator.connect()
         if connected:
             self.clients.append(communicator)
