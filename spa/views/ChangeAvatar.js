@@ -77,7 +77,7 @@ async function handleEditAvatar(fileInput, avatarImage) {
 }
 
 // Avatarを削除する処理
-async function handleDeleteAvatar(avatarImage) {
+async function handleDeleteAvatar() {
   const errorOutput = document.querySelector(".errorOutput");
 
   const { status, data } = await fetchApiNoBody(
@@ -110,11 +110,11 @@ export async function setupChangeAvatar() {
   // Editボタン
   editButton.addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", () =>
-    handleEditAvatar(fileInput, avatarImage),
+    handleEditAvatar(fileInput, avatarImg),
   );
 
   // Deleteボタン
-  deleteButton.addEventListener("click", () => handleDeleteAvatar(avatarImage));
+  deleteButton.addEventListener("click", () => handleDeleteAvatar());
 
   if (stateManager.state.avatarUrl) {
     avatarImg.src = stateManager.state.avatarUrl;
