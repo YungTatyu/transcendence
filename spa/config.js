@@ -8,7 +8,7 @@ const config = {
     friendService: "http://localhost:7500",
   },
   production: {
-    userService: "",
+    userService: "https://user-proxy.transcen.com:8009",
     matchService: "https://match-proxy.transcen.com:8008",
     gameService: "https://game-proxy.transcen.com:8004",
     realtimeGameService: "wss://game-proxy.transcen.com:8004",

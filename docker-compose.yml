@@ -149,6 +149,26 @@ services:
       - app_network
     volumes:
       - user_db_data:/var/lib/postgresql/data
+
+  user_proxy:
+    build: ./waf_proxy_service
+    container_name: user_proxy_server
+    hostname: user-proxy.transcen.com
+    networks:
+      - app_network
+    ports:
+      - "8009:8009"
+    env_file: ./docker_env/user.env
+    restart: always
+    depends_on:
+      - user
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8009/healthz"]
+    volumes:
+      - ./certs/user-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/user-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - user_media:/media/
+      - ./user_service/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template
   
   friends_activity_app:
     build: ./friends_activity_service
@@ -293,7 +313,6 @@ services:
     volumes:
       - ./spa:/usr/share/nginx/html:ro
       - ./spa/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - user_media:/media/
       - ./certs/www.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/www.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
