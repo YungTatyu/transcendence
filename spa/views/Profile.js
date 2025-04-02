@@ -104,7 +104,14 @@ export async function setupProfile() {
   const avatarUrl = `${config.userService}${uData.avatarPath}`;
 
   document.querySelector(".js-username").textContent = uData.username;
-  document.querySelector(".js-user-avatar").src = avatarUrl;
+  const avatarImg = document.querySelector(".js-user-avatar");
+  avatarImg.src = avatarUrl;
+
+  // imgタグの読み込み失敗時
+  avatarImg.onerror = function () {
+    this.onerror = null; // 無限ループ防止
+    this.src = `${config.userService}/media/images/default/default_avatar.png`; // デフォルト画像に変更
+  };
 
   stateManager.setState({ username: uData.username });
   stateManager.setState({ avatarUrl: avatarUrl });

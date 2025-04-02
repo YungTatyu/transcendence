@@ -95,7 +95,9 @@ async function handleDeleteAvatar(avatarImage) {
     return;
   }
 
-  stateManager.setState({ avatarUrl: `${config.userService}/media/images/default/default_image.png` });
+  stateManager.setState({
+    avatarUrl: `${config.userService}/media/images/default/default_image.png`,
+  });
   SPA.navigate("/profile");
 }
 
@@ -103,7 +105,7 @@ export async function setupChangeAvatar() {
   const deleteButton = document.querySelector(".js-delete-avatar");
   const editButton = document.querySelector(".js-edit-avatar");
   const fileInput = document.querySelector(".js-avatar-input");
-  const avatarImage = document.querySelector(".js-new-avatar");
+  const avatarImg = document.querySelector(".js-new-avatar");
 
   // Editボタン
   editButton.addEventListener("click", () => fileInput.click());
@@ -115,7 +117,7 @@ export async function setupChangeAvatar() {
   deleteButton.addEventListener("click", () => handleDeleteAvatar(avatarImage));
 
   if (stateManager.state.avatarUrl) {
-    avatarImage.src = stateManager.state.avatarUrl;
+    avatarImg.src = stateManager.state.avatarUrl;
   } else {
     const { status, data } = await fetchApiNoBody(
       "GET",
@@ -128,7 +130,13 @@ export async function setupChangeAvatar() {
       return;
     }
     const avatarUrl = `${config.userService}${data.avatarPath}`;
-    avatarImage.src = avatarUrl;
+    avatarImg.src = avatarUrl;
     stateManager.setState({ avatarUrl: avatarUrl });
   }
+
+  // imgタグの読み込み失敗時
+  avatarImg.onerror = function () {
+    this.onerror = null; // 無限ループ防止
+    this.src = `${config.userService}/media/images/default/default_avatar.png`; // デフォルト画像に変更
+  };
 }
