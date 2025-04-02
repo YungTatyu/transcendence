@@ -8,7 +8,7 @@ export default function ChangeAvatar() {
         <div class="container d-flex justify-content-center align-items-center vh-100">
           <div class="card shadow-lg p-4 align-items-center" style="width: 100%; max-width: 400px;">
             <form>    
-              <img id="user-avatar" src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle mb-3 js-new-avatar" >
+              <img src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle mb-3 js-new-avatar" >
                
               <!-- 隠しファイル入力 -->
               <input type="file" class="js-avatar-input d-none" accept="image/*">
@@ -110,7 +110,8 @@ export async function setupChangeAvatar() {
       console.error("ユーザー情報の取得に失敗しました");
       return;
     }
-    avatarImage.src = data.avatarPath;
-    stateManager.setState({ avatarPath: data.avatarPath });
+    const avatarPath = `${config.userService}${data.avatarPath}`;
+    avatarImage.src = avatarPath;
+    stateManager.setState({ avatarPath: avatarPath });
   }
 }
