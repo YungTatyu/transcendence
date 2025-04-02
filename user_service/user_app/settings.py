@@ -31,7 +31,6 @@ ALLOWED_HOSTS = [
     os.getenv("PROXY"),
     "user",
 ]
-# ALLOWED_HOSTS = ['*']
 
 
 # Application definition
