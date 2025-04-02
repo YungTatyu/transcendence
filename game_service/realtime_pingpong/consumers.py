@@ -102,7 +102,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             return
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
-        await self.accept()
+        selected_protocol = self.scope.get("subprotocol")
+        await self.accept(subprotocol=selected_protocol)
         await ActionHandler.handle_game_connection(self.match_id, self.user_id)
 
     async def disconnect(self, close_code=1000):

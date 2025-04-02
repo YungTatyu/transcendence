@@ -59,7 +59,7 @@ export default function Game() {
 export const gameRender = {
   renderGame(
     state = {
-      ball: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 },
+      ball: { x: GAME_WIDTH / 2 - BALL_WIDTH / 2, y: GAME_HEIGHT / 2 },
       leftPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
       rightPlayer: { id: "", y: GAME_HEIGHT / 2, score: 0 },
     },
@@ -188,7 +188,14 @@ const fetchUsername = async (userid) => {
 
 export const setupGame = async () => {
   try {
-    if (!stateManager.state?.players || !stateManager.state?.matchId) {
+    const accessToken = sessionStorage.getItem("access_token");
+    if (
+      !(
+        accessToken &&
+        stateManager.state?.players &&
+        stateManager.state?.matchId
+      )
+    ) {
       SPA.navigate("/");
       return;
     }
@@ -197,7 +204,7 @@ export const setupGame = async () => {
       stateManager.state.players.map(fetchUsername),
     );
     gameRender.renderPlayerNames(names);
-    WsConnectionManager.connect(stateManager.state.matchId);
+    WsConnectionManager.connect(stateManager.state.matchId, accessToken);
     PlayerActionHandler.registerEventHandler();
   } catch (error) {
     console.error(error);
