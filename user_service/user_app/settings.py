@@ -26,11 +26,11 @@ SECRET_KEY = "django-insecure-(6$k27bfa80g@9sops2j0my@8l4h@i652dw65u*=5odt2w3%kf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-# TODO: proxy対応次第変更
-# ALLOWED_HOSTS = [
-#     os.getenv("PROXY"),
-# ]
+
+ALLOWED_HOSTS = [
+    os.getenv("PROXY"),
+    "user",
+]
 
 
 # Application definition
@@ -158,3 +158,7 @@ CORS_ALLOW_METHODS = [
     "PATCH",
     "OPTIONS",
 ]
+
+# アップロードファイルの保存先
+MEDIA_URL = "/media/"
+MEDIA_ROOT = "/app/user_app/media/"
