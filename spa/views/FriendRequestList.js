@@ -17,7 +17,6 @@ export default function FriendRequestList() {
 	`;
 }
 
-
 export const setupFriendRequestList = async () => {
   let currentPage = 0;
   const limit = 10;
