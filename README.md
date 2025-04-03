@@ -13,6 +13,7 @@ Run the following commands to clone the project and generate SSL certificates:
 ```bash
 git clone https://github.com/YungTatyu/transcendence.git
 cd transcendence
+./certs/create_all_certs.sh
 ```
 Then, import the `./certs/ca.crt` file into your browser’s certificate store to enable HTTPS connections.
 
