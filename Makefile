@@ -13,6 +13,10 @@ up:
 
 .PHONY: down
 down:
+	${DCCOMPOSE} down --remove-orphans
+
+.PHONY: clean
+clean:
 	${DCCOMPOSE} down --rmi all --volumes --remove-orphans
 
 .PHONY: re

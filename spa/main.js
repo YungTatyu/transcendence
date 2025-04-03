@@ -1,7 +1,7 @@
 import SPA from "./spa.js";
 window.SPA = SPA;
 
-import ChangeAvatar from "./views/ChangeAvatar.js";
+import ChangeAvatar, { setupChangeAvatar } from "./views/ChangeAvatar.js";
 import ChangeMail from "./views/ChangeMail.js";
 import ChangePassword from "./views/ChangePassword.js";
 import ChangeUsername, { setupChageUsername } from "./views/ChangeUsername.js";
@@ -54,7 +54,7 @@ SPA.route("/profile", Profile, setupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
 SPA.route("/profile/mail", ChangeMail);
 SPA.route("/profile/password", ChangePassword);
-SPA.route("/profile/avatar", ChangeAvatar);
+SPA.route("/profile/avatar", ChangeAvatar, setupChangeAvatar);
 SPA.route("/history/match", MatchHistory);
 SPA.route("/matching/quick-play", QuickPlayMatching, setupQuickPlayMatching);
 SPA.route("/matching/tournament", TournamentMatching, setupTournamentMatching);

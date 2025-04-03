@@ -4,7 +4,7 @@ const stateManager = {
     items: [],
     userId: null,
     username: null,
-    avatarPath: null,
+    avatarUrl: null,
     matchId: null,
     players: null,
   },
