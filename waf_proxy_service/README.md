@@ -19,3 +19,15 @@
 
 **注意:**  
 `config` ファイルを直接編集しても、テンプレートファイルから上書きされるため、変更は反映されません。
+
+## **以下のようにすることでWAFの設定をOFFにできます**
+modsecurity.conf.template の line19 をOnからOffに
+```
+# -- Request body handling ---------------------------------------------------
+
+# Allow ModSecurity to access request bodies. If you don't, ModSecurity
+# won't be able to see any POST parameters, which opens a large security
+# hole for attackers to exploit.
+#
+SecRequestBodyAccess Off
+```
