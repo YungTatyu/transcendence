@@ -59,29 +59,24 @@ export default function Profile() {
 
 export async function setupProfile() {
   const changeAvatarButton = document.querySelector(".js-pen-avatar");
-  changeAvatarButton.addEventListener("click", () => {
-    SPA.navigate("/profile/avatar");
-  });
+  const toChangeAvatar = () => SPA.navigate("/profile/avatar");
+  changeAvatarButton.addEventListener("click", toChangeAvatar);
 
   const changeUsernameButton = document.querySelector(".js-pen-username");
-  changeUsernameButton.addEventListener("click", () => {
-    SPA.navigate("/profile/username");
-  });
+  const toChangeUsername = () =>SPA.navigate("/profile/username");
+  changeUsernameButton.addEventListener("click", toChangeUsername);
 
   const changePasswordButton = document.querySelector(".js-pen-password");
-  changePasswordButton.addEventListener("click", () => {
-    SPA.navigate("/profile/password");
-  });
+  const tochnagePassword = () => SPA.navigate("/profile/password");
+  changePasswordButton.addEventListener("click", tochnagePassword);
 
   const changeMailButton = document.querySelector(".js-pen-mail");
-  changeMailButton.addEventListener("click", () => {
-    SPA.navigate("/profile/mail");
-  });
+  const toChangeMail = () => SPA.navigate("/profile/mail");
+  changeMailButton.addEventListener("click", toChangeMail);
 
   const matchHistoryButton = document.querySelector(".js-match-history-button");
-  matchHistoryButton.addEventListener("click", () => {
-    SPA.navigate("/history/match");
-  });
+  const toMatchHistory = () => SPA.navigate("/history/match");
+  matchHistoryButton.addEventListener("click", toMatchHistory);
 
   if (stateManager.state.username && stateManager.state.avatarUrl) {
     document.querySelector(".js-username").textContent =
@@ -129,4 +124,12 @@ export async function setupProfile() {
   wins.textContent = data.matchWinCount;
   losses.textContent = data.matchLoseCount;
   tournamentWins.textContent = data.tournamentWinnerCount;
+
+  return () => {
+    changeAvatarButton.removeEventListener("click", toChangeAvatar);
+    changeUsernameButton.removeEventListener("click", toChangeUsername);
+    changePasswordButton.removeEventListener("click", tochnagePassword);
+    changeMailButton.removeEventListener("click", toChangeMail);
+    matchHistoryButton.removeEventListener("click", toMatchHistory);
+  };
 }
