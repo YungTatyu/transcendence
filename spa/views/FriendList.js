@@ -17,166 +17,37 @@ export default function FriendList() {
 	`;
 }
 
-const data = {
-  friends: [
-    {
-      fromUserId: 0,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-18T10:58:38.293Z",
-      approvedAt: "2025-03-18T10:58:38.293Z",
-    },
-    {
-      fromUserId: 2,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 3,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 4,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 5,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 6,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 7,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 8,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 9,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 10,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 11,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 12,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 13,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    }
-  ],
-  total: 100,
-};
-
 export const setupFriendList = async () => {
   let currentPage = 0;
   const limit = 10;
+  const friendsList = document.querySelector(".js-friend-list");
+  friendsList.innerHTML = "";
 
   async function fetchFriendUserList(offset, limit) {
     // friend_apiを叩く
-    // const response = await fetchApiNoBody(
-    //   "GET",
-    //   config.friendService,
-    //   `/friends?status=approved&offset=${offset}&limit=${limit}`
-    // );
-    
-
-    let userId = stateManager.state?.userId;
-    //テストのためuser_idを1にする
-    userId = 1;
-
-    // テスト用
-    const paginatedFriends = data.friends.slice(offset, offset + limit);
-    const useridList = paginatedFriends.map((friend) =>
-      friend.fromUserId === 1 ? friend.toUserId : friend.fromUserId,
+    const response = await fetchApiNoBody(
+      "GET",
+      config.friendService,
+      `/friends?status=approved&offset=${offset}&limit=${limit}`
     );
-
+    
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-
-    //本番用
-    // const userId = stateManager.state?.userId;
-    // const useridList = response.data.friends.map((friend) =>
-    //   friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
-    // );
+    const userId = stateManager.state?.userId;
+    const useridList = response.data.friends.map((friend) =>
+      friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
+    );
     return useridList;
   }
 
   // 取得したしたユーザIDからUser
   async function fetchUserNameAndAvatar(userid) {
-    // const userInfo = await fetchApiNoBody(
-    //   "GET",
-    //   config.userService,
-    //   `/users?userid=${userid}`,
-    // );
-
+    const userInfo = await fetchApiNoBody(
+      "GET",
+      config.userService,
+      `/users?userid=${userid}`,
+    );
     // const userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
-
-    // return userInfo;
-
-    // テスト用
-    return {
-      status: 200, // 成功ステータス
-      data: {
-        userId: userid, // 固定のユーザーID
-        avatarPath: "/assets/42.png", // 固定のアバターパス
-        username: userid, // 仮のユーザー名
-      },
-    };
-
-    // return {
-    //   status: null, // 成功ステータス
-    //   data: {
-    //     userId: userid, // 固定のユーザーID
-    //     avatarPath: "/assets/42.png", // 固定のアバターパス
-    //     username: "akazukin", // 仮のユーザー名
-    //   },
-    // };
+    return userInfo;
   }
 
   async function fetchUserStatus(userId) {
@@ -190,10 +61,12 @@ export const setupFriendList = async () => {
   }
 
   async function loadFriendList() {
-    const friendsList = document.querySelector(".js-friend-list");
-    friendsList.innerHTML = "";
+    // console.log(currentPage * limit);
     const friendList = await fetchFriendUserList(currentPage * limit, limit);
-
+    if (friendList.length === 0) {
+      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
+      return;
+    }
     await Promise.all(
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
@@ -206,15 +79,17 @@ export const setupFriendList = async () => {
           return;
         }
         if (friend.status >= 400) {
-          friendItem.textContent = JSON.stringify(friend.data.error, null, "\n");
+          // friendItem.textContent = JSON.stringify(friend.data.error, null, "\n");
+          console.log(friend.data.error);
           return;
         }
         if (statusResponse.status >= 400) {
-          friendItem.textContent = JSON.stringify(
-            statusResponse.data.error,
-            null,
-            "\n",
-          );
+          // friendItem.textContent = JSON.stringify(
+          //   statusResponse.data.error,
+          //   null,
+          //   "\n",
+          // );
+          console.log(statusResponse.data.error);
           return;
         }
         friendItem.classList.add("js-friend-list-item");
@@ -230,7 +105,7 @@ export const setupFriendList = async () => {
           .querySelector(".remove-button")
           .addEventListener("click", async () => {
             // テスト用
-            console.log(friendId);
+            // console.log(friendId);
             const deleteResponse = await fetchApiNoBody(
               "DELETE",
               config.friendService,
@@ -247,22 +122,27 @@ export const setupFriendList = async () => {
         friendsList.appendChild(friendItem);
       }),
     );
+    currentPage++;
   }
 
-  console.log("before");
-  function handleScroll() {
-    loadFriendList();
-    console.log("test");
-  }
+  // 無限スクロールの実装
+  async function handleScroll() {
+    if (loading) return;
   
+    const scrollTop = window.scrollY;
+    const documentHeight = document.documentElement.scrollHeight;
+    const windowHeight = window.innerHeight;
+  
+    if (scrollTop + windowHeight >= documentHeight - 10) { // 誤差を考慮
+      loading = true;
+      await loadFriendList(); //スクロールした時のapiを叩く関数
+      loading = false;
+    }
+  }
   // スクロールイベントを登録
-  window.addEventListener("scroll", handleScroll);
-  
+  let loading = false;
+
   loadFriendList();
-  
+
+  window.addEventListener("scroll", handleScroll);
 };
-//error occuredが一度でも出たらmap文をbreakしたい
-
-/// homebuttonのnavigate
-
-//
