@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import requests
+from auth_app.settings import CA_CERT
 
 
 class MockResponse:
@@ -74,7 +75,7 @@ class UserClient:
             print("Using mock response.")
             return self.mock_post_user(payload)
 
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, verify=CA_CERT)
         response.raise_for_status()
         return response
 
@@ -96,5 +97,5 @@ class UserClient:
             print("Using mock response for search_users.")
             return self.mock_get_user(query)
 
-        response = requests.get(url, params=query)
+        response = requests.get(url, params=query, verify=CA_CERT)
         return response
