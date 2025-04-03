@@ -16,8 +16,13 @@ from auth_app.serializers.signup_serializer import (
     SignupSerializer,
 )
 from auth_app.services.otp_service import OTPService
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
-from auth_app.settings import COOKIE_DOMAIN
+from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    COOKIE_DOMAIN,
+    VAULT_ADDR,
+)
 from auth_app.utils.redis_handler import RedisHandler
 from auth_app.vault_client.apikey_decorators import apikey_fetcher
 

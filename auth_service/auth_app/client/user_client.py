@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import requests
+
 from auth_app.settings import CA_CERT
 
 
