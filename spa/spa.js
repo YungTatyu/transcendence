@@ -6,9 +6,9 @@ const SPA = (() => {
   const init = ({ containerId }) => {
     container = document.getElementById(containerId);
     window.addEventListener("popstate", () => {
-      if (currentRoute?.cleanup) {
-        currentRoute.cleanup();
-      }
+      // if (currentRoute?.cleanup) {
+      //   currentRoute.cleanup();
+      // }
       renderRoute();
     });
     window.addEventListener("DOMContentLoaded", renderRoute);
@@ -29,6 +29,12 @@ const SPA = (() => {
   };
 
   const renderRoute = async (params) => {
+    //前回のルートのcleanupを実行
+    if (typeof currentRoute?.cleanup === "function") {
+      currentRoute.cleanup();
+      currentRoute.cleanup = null;
+    }
+    
     const path = window.location.pathname;
     const route = routes[path] || routes["/404"];
     if (route && container) {
