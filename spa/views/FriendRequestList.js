@@ -128,7 +128,7 @@ export const setupFriendRequestList = async () => {
       `/friends?status=pending&offset=${offset}&limit=${limit}`,
     );
     if (requestResponse.status === null) {
-      console.log("Error Occured!")
+      console.log("Error Occured!");
       return [];
     }
     if (requestResponse.status >= 400) {
@@ -136,22 +136,28 @@ export const setupFriendRequestList = async () => {
       return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    let userId = stateManager.state?.userId;
+    const userId = stateManager.state?.userId;
     return useridList;
   }
 
-  async function loadFriendRequestList()
-  {
-    const friendRequestList = await fetchFriendUserList(currentPage * limit, limit);
+  async function loadFriendRequestList() {
+    const friendRequestList = await fetchFriendUserList(
+      currentPage * limit,
+      limit,
+    );
     if (friendRequestList.length === 0) {
       window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
       return;
     }
-  
+
     await Promise.all(
       friendRequestList.map(async (requestId) => {
         const friendRequestItem = document.createElement("div");
-        const friend = await fetchApiNoBody("Get", config.userService,`/users?userid=${requestId}`,);
+        const friend = await fetchApiNoBody(
+          "Get",
+          config.userService,
+          `/users?userid=${requestId}`,
+        );
         if (friend.status == null) {
           friendRequestItem.textContent = "Error Occured!";
           return;
@@ -195,7 +201,7 @@ export const setupFriendRequestList = async () => {
             }
             friendRequestItem.remove(); // 承認後、要素を削除
           });
-  
+
         // 拒否ボタン
         friendRequestItem
           .querySelector(".reject-button")

@@ -30,13 +30,11 @@ export const setupFriendList = async () => {
       config.friendService,
       `/friends?status=approved&offset=${offset}&limit=${limit}`,
     );
-    if (response.status === null)
-    {
+    if (response.status === null) {
       console.log("Error Occured");
       return [];
     }
-    if (response.status >= 400)
-    {
+    if (response.status >= 400) {
       console.log(response.data.error);
       return [];
     }
@@ -69,7 +67,11 @@ export const setupFriendList = async () => {
     await Promise.all(
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
-        const friend = await fetchApiNoBody("Get", config.userService,`/users?userid=${friendId}`,);;
+        const friend = await fetchApiNoBody(
+          "Get",
+          config.userService,
+          `/users?userid=${friendId}`,
+        );
         const statusResponse = await fetchUserStatus(friendId);
 
         if (friend.status === null || statusResponse.status === null) {
