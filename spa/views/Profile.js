@@ -63,7 +63,7 @@ export async function setupProfile() {
   changeAvatarButton.addEventListener("click", toChangeAvatar);
 
   const changeUsernameButton = document.querySelector(".js-pen-username");
-  const toChangeUsername = () =>SPA.navigate("/profile/username");
+  const toChangeUsername = () => SPA.navigate("/profile/username");
   changeUsernameButton.addEventListener("click", toChangeUsername);
 
   const changePasswordButton = document.querySelector(".js-pen-password");
