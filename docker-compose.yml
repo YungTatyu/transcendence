@@ -1,4 +1,3 @@
-version: '3'
 services:
   auth:
     build: ./auth_service
@@ -30,6 +29,7 @@ services:
   auth_proxy:
     build: ./waf_proxy_service
     container_name: auth_proxy_server
+    hostname: auth-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -40,6 +40,9 @@ services:
       - auth
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8005/healthz"]
+    volumes:
+      - ./certs/auth-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/auth-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   game:
     build: ./game_service
@@ -63,6 +66,7 @@ services:
   game_proxy:
     build: ./waf_proxy_service
     container_name: game_proxy_server
+    hostname: game-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -73,6 +77,9 @@ services:
       - game
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8004/healthz"]
+    volumes:
+      - ./certs/game-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/game-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   tournament:
     build: ./tournament_service
@@ -106,6 +113,7 @@ services:
   tournament_proxy:
     build: ./waf_proxy_service
     container_name: tournament_proxy_server
+    hostname: tournament-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -116,6 +124,9 @@ services:
       - tournament
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8006/healthz"]
+    volumes:
+      - ./certs/tournament-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/tournament-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   user:
     build: ./user_service
@@ -127,7 +138,9 @@ services:
     depends_on:
       - user_db
     env_file: ./docker_env/user.env
-
+    volumes:
+     - user_media:/app/user_app/media/
+     
   user_db:
     image: postgres:15
     container_name: user_db
@@ -136,6 +149,26 @@ services:
       - app_network
     volumes:
       - user_db_data:/var/lib/postgresql/data
+
+  user_proxy:
+    build: ./waf_proxy_service
+    container_name: user_proxy_server
+    hostname: user-proxy.transcen.com
+    networks:
+      - app_network
+    ports:
+      - "8009:8009"
+    env_file: ./docker_env/user.env
+    restart: always
+    depends_on:
+      - user
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8009/healthz"]
+    volumes:
+      - ./certs/user-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/user-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - user_media:/var/www/media/
+      - ./user_service/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
   
   friends_activity_app:
     build: ./friends_activity_service
@@ -144,6 +177,24 @@ services:
       - "10000:10000"
     networks:
       - app_network
+
+  friends_activity_proxy:
+    build: ./waf_proxy_service
+    container_name: friends_activity_proxy_server
+    hostname: friends-activity-proxy.transcen.com
+    networks:
+      - app_network
+    ports:
+      - "10001:10001"
+    env_file: ./docker_env/friends_activity.env
+    restart: always
+    depends_on:
+      - friends_activity_app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:10001/healthz"]
+    volumes:
+      - ./certs/friends-activity-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/friends-activity-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   friends:
     build: ./friends_service
@@ -168,6 +219,7 @@ services:
   friends_proxy:
     build: ./waf_proxy_service
     container_name: friends_proxy_server
+    hostname: friends-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -178,6 +230,9 @@ services:
       - friends
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8007/healthz"]
+    volumes:
+      - ./certs/friends-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/friends-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   match:
     build: ./match_service
@@ -211,6 +266,7 @@ services:
   match_proxy:
     build: ./waf_proxy_service
     container_name: match_proxy_server
+    hostname: match-proxy.transcen.com
     networks:
       - app_network
     ports:
@@ -221,6 +277,9 @@ services:
       - match
     healthcheck:
       test: ["CMD", "curl", "-f", "https://localhost:8008/healthz"]
+    volumes:
+      - ./certs/match-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/match-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
   vault:
     build: ./vault_service
@@ -230,29 +289,26 @@ services:
     networks:
       - app_network
     env_file: ./docker_env/vault.env
-    cap_add:
-      - IPC_LOCK
     volumes:
       - ./certs/client.crt:/vault/certs/client.crt:ro
       - ./certs/client.key:/vault/certs/client.key:ro
-      - ./certs/server.crt:/vault/certs/server.crt:ro
-      - ./certs/server.key:/vault/certs/server.key:ro
+      - ./certs/vault/server.crt:/vault/certs/server.crt:ro
+      - ./certs/vault/server.key:/vault/certs/server.key:ro
       - ./certs/ca.crt:/vault/certs/ca.crt:ro
-      - ./docker_env/vault.env:/etc/vault.env:ro
-    tmpfs: [/tmp, /run]
-    privileged: true
-    stop_signal: SIGRTMIN+3
 
   spa_nginx:
     image: nginx:alpine
     container_name: spa_nginx
+    hostname: www.transcen.com
     ports:
-      - "8080:80"
+      - "443:443"
     networks:
       - app_network
     volumes:
       - ./spa:/usr/share/nginx/html:ro
       - ./spa/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs/www.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/www.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
 
 networks:
@@ -265,3 +321,4 @@ volumes:
   friends_db_data:
   user_db_data:
   match_db_data:
+  user_media:

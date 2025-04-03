@@ -1,0 +1,49 @@
+.btn-quickplay {
+  background: linear-gradient(45deg, #0bb0cc, #0c49ba);
+  border-radius: 4rem;
+  color: white;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  font-family: "Turret Road", sans-serif;
+  font-size: 4.0rem;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.btn-tournament {
+  background: linear-gradient(45deg, #0bb0cc, #6709cc);
+  border-radius: 4rem;
+  color: white;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  font-family: "Turret Road", sans-serif;
+  font-size: 4.0rem;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.profile-icon {
+  position: fixed;
+  top: 100px;
+  left: 40px;
+  width: 6.0rem;
+  height: auto;
+}
+
+.friend-icon {
+  position: fixed;
+  top: 240px;
+  left: 40px;
+  width: 6.5rem;
+  height: auto;
+}
+
+.icon-table-tennis {
+  width: 4.0rem;
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
+
+.icon-tournament {
+  width: 4.0rem;
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}

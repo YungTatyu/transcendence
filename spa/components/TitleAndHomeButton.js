@@ -1,4 +1,4 @@
-export default function TitileAndHomeButton(titleText) {
+export default function TitleAndHomeButton(titleText) {
   return `
         <div class="container text-center">
             <div class="row">
@@ -7,7 +7,7 @@ export default function TitileAndHomeButton(titleText) {
                 </div>
                 <div class="col align-self-end">
                     <div class="position-relative">
-                        <img src="/assets/home.png" class="home-icon position-absolute top-0 end-0">
+                        <img src="/assets/home.png" class="home-icon position-absolute top-0 end-0" onclick="SPA.navigate('/home')">
                     </div>
                 </div>
             </div>

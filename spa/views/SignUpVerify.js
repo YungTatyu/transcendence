@@ -62,6 +62,7 @@ export function setupSignUpVerify() {
 
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
+    sessionStorage.setItem("access_token", data.accessToken);
 
     // const updateEmailButton = document.getElementById("updateEmail");
     // updateEmailButton.addEventListener("click", async () => {
@@ -73,14 +74,14 @@ export function setupSignUpVerify() {
     //     { email: email },
     //   );
 
-    //   if (status === null) {
-    //     errorOutput.textContent = "Error Occured!";
-    //     return;
-    //   }
-    //   if (status >= 400) {
-    //     errorOutput.textContent = JSON.stringify(data.error, null, "\n");
-    //     return;
-    //   }
-    // });
+    if (status === null) {
+      errorOutput.textContent = "Error Occured!";
+      return;
+    }
+    if (status >= 400) {
+      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+      return;
+    }
+    SPA.navigate("/home");
   });
 }

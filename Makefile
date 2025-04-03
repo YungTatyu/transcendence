@@ -8,11 +8,15 @@ all: up
 
 .PHONY: up
 up:
-	./certs/create_cert.sh
+	./certs/create_all_certs.sh
 	${DCCOMPOSE} up -d --build
 
 .PHONY: down
 down:
+	${DCCOMPOSE} down --remove-orphans
+
+.PHONY: clean
+clean:
 	${DCCOMPOSE} down --rmi all --volumes --remove-orphans
 
 .PHONY: re

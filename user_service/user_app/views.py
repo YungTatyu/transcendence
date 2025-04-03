@@ -3,10 +3,12 @@ import os
 from django.core.files.storage import default_storage
 from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
@@ -24,17 +26,35 @@ from .serializers import (
 )
 
 
+def format_validation_errors(errors):
+    """
+    バリデーションエラーのメッセージのキーを"error"に統一する
+    """
+    messages = []
+    for field_errors in errors.values():
+        if isinstance(field_errors, list):
+            messages.extend(str(err) for err in field_errors)
+        else:
+            messages.append(str(field_errors))
+    return {"error": messages}
+
+
 class UserView(APIView):
     def post(self, request):
         # リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Username is invalid."}, status=HTTP_400_BAD_REQUEST
+            )
 
         # 既存のユーザーがいるか確認
         username = serializer.validated_data["username"]
         if User.objects.filter(username=username).exists():
-            return Response({"error": "User arledy exists"}, status=HTTP_409_CONFLICT)
+            return Response(
+                {"error": "A user with this email already exists."},
+                status=HTTP_409_CONFLICT,
+            )
 
         # user新規作成
         user = User.objects.create(username=username)
@@ -50,7 +70,9 @@ class UserView(APIView):
         # クエリパラメーターのvalidation
         serializer = QueryParamSerializer(data=request.GET)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(
+                format_validation_errors(serializer.errors), status=HTTP_400_BAD_REQUEST
+            )
 
         validated_data = serializer.validated_data
         username = validated_data.get("username")
@@ -84,7 +106,9 @@ class UsernameView(APIView):
 
         serializer = UsernameSerializer(instance=user, data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_409_CONFLICT)
+            return Response(
+                format_validation_errors(serializer.errors), status=HTTP_409_CONFLICT
+            )
 
         updated_user = serializer.save()
 
@@ -92,6 +116,8 @@ class UsernameView(APIView):
 
 
 class AvatarView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     @method_decorator(jwt_required)
     def put(self, request):
         """
@@ -107,8 +133,11 @@ class AvatarView(APIView):
         serializer = AvatarSerializer(
             instance=user, data=request.data, context={"user_id": user_id}
         )
+
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(
+                format_validation_errors(serializer.errors), status=HTTP_400_BAD_REQUEST
+            )
 
         updated_user = serializer.save()
 
@@ -140,7 +169,7 @@ class AvatarView(APIView):
         user.avatar_path = User.DEFAULT_AVATAR_PATH
         user.save()
 
-        return Response(status=HTTP_200_OK)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 @api_view(["GET"])

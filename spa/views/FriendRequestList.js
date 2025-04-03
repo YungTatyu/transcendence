@@ -6,7 +6,7 @@ import stateManager from "../stateManager.js";
 export default function FriendRequestList() {
   return `
 	<div class="container">
-		${TitileAndHomeButton("FRIEND REQUEST")}
+		${TitleAndHomeButton("FRIEND REQUEST")}
 		<div class="button-position d-flex flex-column justify-content-center align-items-end gap-3">
 			<button type="button" class="find-button btn btn-primary">+ Find Friend</button>
 			<button type="button" class="list-button btn btn-primary">+ Friends List</button>
