@@ -16,7 +16,7 @@ import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import MatchHistory from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
-import Profile, { cleanupProfile,setupProfile } from "./views/Profile.js";
+import Profile, { cleanupProfile, setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
   setupQuickPlayMatching,
 } from "./views/QuickPlayMatching.js";

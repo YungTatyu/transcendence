@@ -57,7 +57,7 @@ export default function Profile() {
     `;
 }
 
-function getobjs(){
+function getobjs() {
   const changeAvatarButton = document.querySelector(".js-pen-avatar");
   const changeUnameButton = document.querySelector(".js-pen-username");
   const changePasswordButton = document.querySelector(".js-pen-password");
@@ -67,54 +67,40 @@ function getobjs(){
   return {
     changeAvatarBtn: {
       btn: changeAvatarButton,
-      handle: () => SPA.navigate("/profile/avatar")
+      handle: () => SPA.navigate("/profile/avatar"),
     },
     changeUnameBtn: {
       btn: changeUnameButton,
-      handle: () => SPA.navigate("/profile/username")
+      handle: () => SPA.navigate("/profile/username"),
     },
     changePassBtn: {
       btn: changePasswordButton,
-      handle: () => SPA.navigate("/profile/password")
+      handle: () => SPA.navigate("/profile/password"),
     },
     changeMailBtn: {
       btn: changeMailButton,
-      handle: () => SPA.navigate("/profile/mail")
+      handle: () => SPA.navigate("/profile/mail"),
     },
     matchHistoryBtn: {
       btn: matchHistoryButton,
-      handle: () => SPA.navigate("/history/match")
-    }
-  }
+      handle: () => SPA.navigate("/history/match"),
+    },
+  };
 }
 
-
 export async function setupProfile() {
-  // const changeAvatarButton = document.querySelector(".js-pen-avatar");
-  // const toChangeAvatar = () => SPA.navigate("/profile/avatar");
-  // changeAvatarButton.addEventListener("click", toChangeAvatar);
-
-  // const changeUsernameButton = document.querySelector(".js-pen-username");
-  // const toChangeUsername = () => SPA.navigate("/profile/username");
-  // changeUsernameButton.addEventListener("click", toChangeUsername);
-
-  // const changePasswordButton = document.querySelector(".js-pen-password");
-  // const tochnagePassword = () => SPA.navigate("/profile/password");
-  // changePasswordButton.addEventListener("click", tochnagePassword);
-
-  // const changeMailButton = document.querySelector(".js-pen-mail");
-  // const toChangeMail = () => SPA.navigate("/profile/mail");
-  // changeMailButton.addEventListener("click", toChangeMail);
-
-  // const matchHistoryButton = document.querySelector(".js-match-history-button");
-  // const toMatchHistory = () => SPA.navigate("/history/match");
-  // matchHistoryButton.addEventListener("click", toMatchHistory);
   const btns = getobjs();
-  btns.changeAvatarBtn.btn.addEventListener("click", btns.changeAvatarBtn.handle);
+  btns.changeAvatarBtn.btn.addEventListener(
+    "click",
+    btns.changeAvatarBtn.handle,
+  );
   btns.changeUnameBtn.btn.addEventListener("click", btns.changeUnameBtn.handle);
   btns.changePassBtn.btn.addEventListener("click", btns.changePassBtn.handle);
   btns.changeMailBtn.btn.addEventListener("click", btns.changeMailBtn.handle);
-  btns.matchHistoryBtn.btn.addEventListener("click", btns.matchHistoryBtn.handle);
+  btns.matchHistoryBtn.btn.addEventListener(
+    "click",
+    btns.matchHistoryBtn.handle,
+  );
 
   if (stateManager.state.username && stateManager.state.avatarUrl) {
     document.querySelector(".js-username").textContent =
@@ -162,16 +148,28 @@ export async function setupProfile() {
   wins.textContent = data.matchWinCount;
   losses.textContent = data.matchLoseCount;
   tournamentWins.textContent = data.tournamentWinnerCount;
-
 }
 
 export function cleanupProfile() {
-  console.log("[cleanupProfile] called");
-
   const btns = getobjs();
-  btns.changeAvatarBtn.btn.removeEventListener("click", btns.changeAvatarBtn.handle);
-  btns.changeUnameBtn.btn.removeEventListener("click", btns.changeUnameBtn.handle);
-  btns.changePassBtn.btn.removeEventListener("click", btns.changePassBtn.handle);
-  btns.changeMailBtn.btn.removeEventListener("click", btns.changeMailBtn.handle);
-  btns.matchHistoryBtn.btn.removeEventListener("click", btns.matchHistoryBtn.handle);
+  btns.changeAvatarBtn.btn.removeEventListener(
+    "click",
+    btns.changeAvatarBtn.handle,
+  );
+  btns.changeUnameBtn.btn.removeEventListener(
+    "click",
+    btns.changeUnameBtn.handle,
+  );
+  btns.changePassBtn.btn.removeEventListener(
+    "click",
+    btns.changePassBtn.handle,
+  );
+  btns.changeMailBtn.btn.removeEventListener(
+    "click",
+    btns.changeMailBtn.handle,
+  );
+  btns.matchHistoryBtn.btn.removeEventListener(
+    "click",
+    btns.matchHistoryBtn.handle,
+  );
 }
