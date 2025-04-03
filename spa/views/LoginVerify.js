@@ -67,5 +67,6 @@ export function setupLoginVerify() {
       errorOutput.textContent = JSON.stringify(data2.error, null, "\n");
       return;
     }
+    SPA.navigate("/home");
   });
 }
