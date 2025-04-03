@@ -40,136 +40,202 @@ const data = {
       requestSentAt: "2025-03-17T12:00:00.000Z",
       approvedAt: "2025-03-18T13:00:00.000Z",
     },
+    {
+      fromUserId: 4,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 5,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 6,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 7,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 8,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 9,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 10,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 11,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 12,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
+    {
+      fromUserId: 13,
+      toUserId: 1,
+      status: "approved",
+      requestSentAt: "2025-03-17T12:00:00.000Z",
+      approvedAt: "2025-03-18T13:00:00.000Z",
+    },
   ],
   total: 100,
 };
 
 export const setupFriendRequestList = async () => {
+  let currentPage = 0;
+  const limit = 10;
   const friendsList = document.querySelector(".js-friend-request-list");
   friendsList.innerHTML = "";
-  async function fetchFriendUserList() {
+
+  async function fetchFriendUserList(offset, limit) {
     // friend_apiを叩く
     const requestResponse = await fetchApiNoBody(
       "GET",
       config.friendService,
-      "/friends?status=pending",
+      `/friends?status=pending&offset=${offset}&limit=${limit}`,
     );
-    // エラー処理を入れる
-    if (requestResponse.status == null) {
-      return;
+    if (requestResponse.status === null) {
+      console.log("Error Occured!")
+      return [];
     }
     if (requestResponse.status >= 400) {
-      rreturn;
+      console.log(requestResponse.data.error);
+      return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    // let userId = stateManager.state?.userId;
-
-    //テスト用
-    // userId = 1;
-    // const useridList = data.friends.map((friend) => friend.fromUserId);
-
-    const useridList = requestResponse.data.friends.map(
-      (friend) => friend.fromUserId,
-    );
+    let userId = stateManager.state?.userId;
     return useridList;
   }
 
-  // 取得したしたユーザIDからUser
-  async function fetchUserNameAndAvatar(userId) {
-    const userInfo = await fetchApiNoBody(
-      "GET",
-      config.userService,
-      `/users?userid=${userId}`,
+  async function loadFriendRequestList()
+  {
+    const friendRequestList = await fetchFriendUserList(currentPage * limit, limit);
+    if (friendRequestList.length === 0) {
+      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
+      return;
+    }
+  
+    await Promise.all(
+      friendRequestList.map(async (requestId) => {
+        const friendRequestItem = document.createElement("div");
+        const friend = await fetchApiNoBody("Get", config.userService,`/users?userid=${requestId}`,);
+        if (friend.status == null) {
+          friendRequestItem.textContent = "Error Occured!";
+          return;
+        }
+        if (friend.status >= 400) {
+          friendRequestItem.textContent = JSON.stringify(
+            friend.data.error,
+            null,
+            "\n",
+          );
+          return;
+        }
+        friendRequestItem.classList.add("js-friend-request-item");
+        friendRequestItem.innerHTML = `
+      <div class="gap-wrap d-flex align-items-center mt-4">
+        <img src=${friend.data.avatarPath}>
+        <div class="text-white">${friend.data.username}</div>
+        <button type="button" class="approved-button btn btn-primary">approved</button>
+        <button type="button" class="reject-button btn btn-primary">reject</button>
+      </div>
+      `;
+        friendRequestItem
+          .querySelector(".approved-button")
+          .addEventListener("click", async () => {
+            //テスト用
+            console.log(requestId);
+            const approved = await fetchApiNoBody(
+              "PATCH",
+              config.friendService,
+              `/friends/requests/${requestId}`,
+            );
+            if (approved.status == null) {
+              // friendRequestItem.innerHTML = "";
+              // friendRequestItem.textContent = "Error Occured";
+              return;
+            }
+            if (approved.status >= 400) {
+              // friendRequestItem.innerHTML = "";
+              // friendRequestItem.textContent = "Error Occured";
+              return;
+            }
+            friendRequestItem.remove(); // 承認後、要素を削除
+          });
+  
+        // 拒否ボタン
+        friendRequestItem
+          .querySelector(".reject-button")
+          .addEventListener("click", async () => {
+            const rejected = await fetchApiNoBody(
+              "DELETE",
+              config.friendService,
+              `/friends/requests/${requestId}`,
+            );
+            if (rejected.status == null) {
+              return;
+            }
+            if (rejected >= 400) {
+              return;
+            }
+            friendRequestItem.remove(); // 拒否後、要素を削除
+          });
+        friendsList.appendChild(friendRequestItem);
+      }),
     );
-    // const userInfo = await fetchApiNoBody("GET", config.userService,  `/users?userId=${userId}`);
-    return userInfo;
-    // エラー処理を入れる
-
-    //テスト用
-    // return {
-    //   status: 200, // 成功ステータス
-    //   data: {
-    //     userId: userId, // 固定のユーザーID
-    //     avatarPath: "/assets/42.png", // 固定のアバターパス
-    //     username: "akazukin", // 仮のユーザー名
-    //   },
-    // };
+    currentPage++;
   }
+  async function handleScroll() {
+    if (loading) return;
 
-  const friendRequestList = await fetchFriendUserList();
+    const scrollTop = window.scrollY;
+    const documentHeight = document.documentElement.scrollHeight;
+    const windowHeight = window.innerHeight;
 
-  await Promise.all(
-    friendRequestList.map(async (requestId) => {
-      const friendRequestItem = document.createElement("div");
-      const friend = await fetchUserNameAndAvatar(requestId);
-      if (friend.status == null) {
-        friendRequestItem.textContent = "Error Occured!";
-        return;
-      }
-      if (friend.status >= 400) {
-        friendRequestItem.textContent = JSON.stringify(
-          friend.data.error,
-          null,
-          "\n",
-        );
-        return;
-      }
-      friendRequestItem.classList.add("js-friend-request-item");
-      friendRequestItem.innerHTML = `
-		<div class="gap-wrap d-flex align-items-center mt-4">
-			<img src=${friend.data.avatarPath}>
-			<div class="text-white">${friend.data.username}</div>
-			<button type="button" class="approved-button btn btn-primary">approved</button>
-			<button type="button" class="reject-button btn btn-primary">reject</button>
-		</div>
-		`;
-      friendRequestItem
-        .querySelector(".approved-button")
-        .addEventListener("click", async () => {
-          //テスト用
-          console.log(requestId);
-          const approved = await fetchApiNoBody(
-            "PATCH",
-            config.friendService,
-            `/friends/requests/${requestId}`,
-          );
-          if (approved.status == null) {
-            // friendRequestItem.innerHTML = "";
-            // friendRequestItem.textContent = "Error Occured";
-            return;
-          }
-          if (approved.status >= 400) {
-            // friendRequestItem.innerHTML = "";
-            // friendRequestItem.textContent = "Error Occured";
-            return;
-          }
-          friendRequestItem.remove(); // 承認後、要素を削除
-        });
+    if (scrollTop + windowHeight >= documentHeight - 10) {
+      // 誤差を考慮
+      loading = true;
+      await loadFriendRequestList(); //スクロールした時のapiを叩く関数
+      loading = false;
+    }
+  }
+  // スクロールイベントを登録
+  let loading = false;
 
-      // 拒否ボタン
-      friendRequestItem
-        .querySelector(".reject-button")
-        .addEventListener("click", async () => {
-          const rejected = await fetchApiNoBody(
-            "DELETE",
-            config.friendService,
-            `/friends/requests/${requestId}`,
-          );
-          if (rejected.status == null) {
-            return;
-          }
-          if (rejected >= 400) {
-            return;
-          }
-          friendRequestItem.remove(); // 拒否後、要素を削除
-        });
-      friendsList.appendChild(friendRequestItem);
-    }),
-  );
+  loadFriendRequestList();
+
+  window.addEventListener("scroll", handleScroll);
 };
-
-// jwtの関係上テストできない？
-// const approved = await fetchApiNoBody("PATCH", config.friendService, `/friends/requests/${requestId}`);および
-// const rejected = await fetchApiNoBody("DELETE", config.friendService, `/friends/requests/${requestId}`);
-//　のエラー処理はどうするか？　エラー文は必要ない？
-// console.logでどのユーザのフレンドリクエストか確認できる
