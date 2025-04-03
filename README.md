@@ -13,10 +13,8 @@ Run the following commands to clone the project and generate SSL certificates:
 ```bash
 git clone https://github.com/YungTatyu/transcendence.git
 cd transcendence
-Then, import the `./certs/ca.crt` file into your browser’s certificate store to enable HTTPS connections.
-
 ```
-Import the `./certs/ca.crt` file into your browser’s certificate store to enable HTTPS connections.
+Then, import the `./certs/ca.crt` file into your browser’s certificate store to enable HTTPS connections.
 
 ### 3. Build the Project
 Execute the following command to build and launch the application:
@@ -24,5 +22,5 @@ Execute the following command to build and launch the application:
 make
 ```
 ### 4. Access the Application
-Once the setup is complete, open your browser and navigate to:
+Once the setup is complete, open your browser and navigate to:  
 **[https://www.transcen.com/](https://www.transcen.com/)**
