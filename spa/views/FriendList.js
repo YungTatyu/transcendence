@@ -28,9 +28,9 @@ export const setupFriendList = async () => {
     const response = await fetchApiNoBody(
       "GET",
       config.friendService,
-      `/friends?status=approved&offset=${offset}&limit=${limit}`
+      `/friends?status=approved&offset=${offset}&limit=${limit}`,
     );
-    
+
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
     const userId = stateManager.state?.userId;
     const useridList = response.data.friends.map((friend) =>
@@ -72,7 +72,7 @@ export const setupFriendList = async () => {
         const friendItem = document.createElement("div");
         const friend = await fetchUserNameAndAvatar(friendId);
         const statusResponse = await fetchUserStatus(friendId);
-  
+
         if (friend.status === null || statusResponse.status === null) {
           friendItem.textContent = "Error Occured!";
           friendsList.appendChild(friendItem);
@@ -128,12 +128,13 @@ export const setupFriendList = async () => {
   // 無限スクロールの実装
   async function handleScroll() {
     if (loading) return;
-  
+
     const scrollTop = window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
-  
-    if (scrollTop + windowHeight >= documentHeight - 10) { // 誤差を考慮
+
+    if (scrollTop + windowHeight >= documentHeight - 10) {
+      // 誤差を考慮
       loading = true;
       await loadFriendList(); //スクロールした時のapiを叩く関数
       loading = false;
