@@ -44,10 +44,9 @@ export function setupFriendRequestForm() {
     resultOutput.textContent = "";
 
     // 自身にリクエストを送る時、friend/requestではなく/user?username=usernameの前にエラー処理
-    const  seted_username= stateManager.state?.username;
-    if (seted_username ===username)
-    {
-      resultOutput.textContent = "You cannot send a request to yourself."
+    const setedUsername = stateManager.state?.username;
+    if (setedUsername === username) {
+      resultOutput.textContent = "You cannot send a request to yourself.";
       return;
     }
     // /user?username=usernameを叩いてuserIdに変換
