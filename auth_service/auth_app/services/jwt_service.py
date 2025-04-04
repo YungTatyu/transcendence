@@ -57,7 +57,28 @@ def verify_signed_jwt(signed_jwt: str):
     extracted_signature = extract_signature_from_jwt(signed_jwt)
     pubkey = client.fetch_pubkey(token)
 
-    if extracted_signature and pubkey:
-        return verify_jwt(pubkey, signed_jwt, extracted_signature)
+    if not extracted_signature or not pubkey:
+        return False
+
+    if not verify_jwt(pubkey, signed_jwt, extracted_signature):
+        return False
+
+    try:
+        payload = jwt.decode(signed_jwt, options={"verify_signature": False})
+        exp = payload.get("exp")
+        if exp is None:
+            logger.error("JWT does not contain an 'exp' claim")
+            return False
+
+        if datetime.datetime.utcnow().timestamp() > exp:
+            logger.error("JWT has expired")
+            return False
+
+    except jwt.DecodeError:
+        logger.error("Failed to decode JWT")
+        return False
+    except jwt.ExpiredSignatureError:
+        logger.error("JWT has expired")
+        return False
 
     return False
