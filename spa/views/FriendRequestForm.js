@@ -43,6 +43,13 @@ export function setupFriendRequestForm() {
     previousUsername = username;
     resultOutput.textContent = "";
 
+    //
+    const  seted_username= stateManager.state?.username;
+    if (seted_username ===username)
+    {
+      resultOutput.textContent = "You cannot send a request to yourself."
+      return;
+    }
     // /user?username=usernameを叩いてuserIdに変換
     const userInfo = await fetchApiNoBody(
       "GET",
@@ -123,8 +130,3 @@ export function setupFriendRequestForm() {
     resultOutput.appendChild(createUserCard(userInfo.data));
   });
 }
-
-//addMessageで毎回、中身を空にするべきか
-//自身にフレンドリクエストを送ろうとした時、自分のアイコンが出てきて検索できてしまう
-//const requestInfo = await fetchApiNoBody("POST", config.friendService, `/friends/requests/${userInfo.data.userId}`)でaddした後エラーが出てくる
-//searchボタンを押した時、エラーを出すべき？
