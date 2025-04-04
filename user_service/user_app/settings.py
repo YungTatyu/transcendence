@@ -142,10 +142,10 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
 
-VAULT_ADDR = "https://vault:8200"
-CLIENT_CERT = "/certs/client.crt"
-CLIENT_KEY = "/certs/client.key"
-CA_CERT = "/certs/ca.crt"
+VAULT_ADDR = os.getenv("VAULT_ADDR")
+CLIENT_CERT = os.getenv("CLIENT_CERT")
+CLIENT_KEY = os.getenv("CLIENT_KEY")
+CA_CERT = os.getenv("CA_CERT")
 
 CORS_ALLOW_METHODS = [
     "GET",
