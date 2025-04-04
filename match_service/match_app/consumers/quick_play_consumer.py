@@ -29,7 +29,9 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
                 await self.close()
                 return
 
-            await self.accept()
+            selected_protocol = self.scope.get("subprotocol")
+            await self.accept(subprotocol=selected_protocol)
+
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
             count = QuickPlayMatchingManager.add_user(self.user_id, self.channel_name)
 

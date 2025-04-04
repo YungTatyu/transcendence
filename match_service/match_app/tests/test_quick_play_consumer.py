@@ -29,7 +29,7 @@ async def create_communicator(user_id: int):
     """JWTをCookieに含んでWebSocketコネクションを作成"""
     access_token = create_jwt_for_user(user_id)
     communicator = WebsocketCommunicator(application, PATH_MATCHING)
-    communicator.scope["cookies"] = {"access_token": access_token}
+    communicator.scope["subprotocols"] = ["app-protocol", access_token]
     connected, _ = await communicator.connect()
     return communicator, connected
 
