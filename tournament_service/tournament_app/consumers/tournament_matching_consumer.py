@@ -40,7 +40,8 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 await self.close(code=4400)
                 return
 
-            await self.accept()
+            selected_protocol = self.scope.get("subprotocol")
+            await self.accept(subprotocol=selected_protocol)
 
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
             count = TournamentMatchingManager.add_user(self.user_id, self.channel_name)
@@ -125,12 +126,10 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         start_time = event["tournament_start_time"]
         wait_user_ids = event["wait_user_ids"]
         await self.send(
-            text_data=json.dumps(
-                {
-                    "tournament_start_time": start_time,
-                    "wait_user_ids": wait_user_ids,
-                }
-            )
+            text_data=json.dumps({
+                "tournament_start_time": start_time,
+                "wait_user_ids": wait_user_ids,
+            })
         )
 
     @database_sync_to_async
