@@ -4,6 +4,7 @@ import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
+import { renderMatchingInfo } from "./MatchingInfo.js";
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -17,17 +18,22 @@ const wsEventHandler = {
       const userIdList = parsedMessage.user_id_list;
       const playersData = await fetchPlayersData(userIdList);
       renderMatchingRoom(playersData);
-      if (matchId !== undefined && matchId !== "None") {
-        renderWaitOrStart("START", "#ffffff");
-        changeMatchingInfo();
-        stateManager.setState({ players: userIdList });
-        stateManager.setState({ matchId: matchId });
-        // ユーザーが対戦相手を確認するためにSleepを挟む
-        const sleep = (msec) =>
-          new Promise((resolve) => setTimeout(resolve, msec));
-        await sleep(1000);
-        SPA.navigate("/game");
+      if (matchId === undefined) {
+        return;
       }
+      if (matchId === "None") {
+        renderMatchingInfo("Error occurred", "#FF0000");
+        return;
+      }
+      renderWaitOrStart("START", "#ffffff");
+      renderMatchingInfo("OPPONENT FOUND.", "#0CC0DF");
+      stateManager.setState({ players: userIdList });
+      stateManager.setState({ matchId: matchId });
+      // ユーザーが対戦相手を確認するためにSleepを挟む
+      const sleep = (msec) =>
+        new Promise((resolve) => setTimeout(resolve, msec));
+      await sleep(1000);
+      SPA.navigate("/game");
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
     }
@@ -54,13 +60,6 @@ async function fetchPlayersData(userIdList) {
   } catch (error) {
     console.error("Error");
   }
-}
-
-function changeMatchingInfo() {
-  const matchingInfo = document.getElementById("matching-info");
-
-  matchingInfo.innerHTML = "OPPONENT FOUND.";
-  matchingInfo.style.color = "#0CC0DF";
 }
 
 const WsQuickPlayMatchingManager = {

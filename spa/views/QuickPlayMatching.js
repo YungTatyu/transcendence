@@ -3,20 +3,15 @@ import MatchingRoom, {
 } from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
+import MatchingInfo, {
+  renderMatchingInfo,
+} from "../services/match/MatchingInfo.js";
 import WsQuickPlayMatchingManager from "../services/match/WsQuickPlayMatchingManager.js";
 
 export default function QuickPlayMatching() {
-  function matchingInfo() {
-    return `
-      <p id="matching-info" class="d-flex justify-content-center align-items-center">
-        LOOKING FOR AN OPPONENT.
-      </p>
-    `;
-  }
-
   return `
       ${TitleMatchingRoom("QUICK PLAY")}
-      ${matchingInfo()}
+      ${MatchingInfo()}
       ${MatchingRoom()}
       ${WaitOrStart()}
   `;
@@ -31,9 +26,11 @@ export function setupQuickPlayMatching() {
     }
     renderMatchingRoom([]);
     renderWaitOrStart("WAIT...", "#0CC0DF");
+    renderMatchingInfo("LOOKING FOR AN OPPONENT.", "#7733ff");
     WsQuickPlayMatchingManager.connect(accessToken);
   } catch (error) {
-    console.err(error);
+    console.error(error);
+    renderMatchingInfo("faild quickplay matching.", "#FF0000");
   }
 }
 
