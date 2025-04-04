@@ -1,5 +1,5 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
-import TitileAndHomeButton from "../components/titleAndHomeButton.js";
+import TitleAndHomeButton from "../components/titleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
@@ -147,4 +147,15 @@ export const setupFriendList = async () => {
   loadFriendList();
 
   window.addEventListener("scroll", handleScroll);
+
+  const findButton = document.querySelector(".find-button");
+  const requestButton = document.querySelector(".request-button");
+
+  findButton.addEventListener("click", () => {
+    SPA.navigate("/friend/friend-request-form");
+  });
+
+  requestButton.addEventListener("click", () => {
+    SPA.navigate("/friend/request");
+  });
 };

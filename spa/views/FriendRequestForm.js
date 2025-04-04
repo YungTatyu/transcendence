@@ -18,7 +18,7 @@ export default function FriendRequestForm() {
 		<div class="container d-flex justify-content-center align-items-center vh-100 position-relative" style="max-width: 400px;">
 		  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
             <div class="position-absolute" style="top: -25px; right: -60px;">
-              <img src="/assets/batsu.png" alt="batsu" style="width: 40px; height: 40px;">
+              <img src="/assets/batsu.png" alt="batsu" style="width: 40px; height: 40px;" onclick="SPA.navigate('/home')">
             </div>
 			<form class="rounded-pill text-center">
 			  ${formContent}
