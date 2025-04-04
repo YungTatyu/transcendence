@@ -64,7 +64,7 @@ export const setupFriendRequestList = async () => {
           `/users?userid=${requestId}`,
         );
         if (friend.status == null) {
-          console.error("Error Occured!")
+          console.error("Error Occured!");
         }
         if (friend.status >= 400) {
           console.error(friend.data.error);

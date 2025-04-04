@@ -49,7 +49,6 @@ export function setupFriendRequestForm() {
       config.userService,
       `/users?username=${username}`,
     );
-    console.log("Yes");
     if (userInfo.status == null) {
       resultOutput.textContent = "Error Occured!";
       return;
