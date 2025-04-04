@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # APIベースURL
-USER_API_BASE_URL = "https://user-proxy.transcen.com:8009"
+USER_API_BASE_URL = os.getenv("USER_PROXY_URL")
 
 # モックモードの設定
 # TODO user api 実装後にFalseとする
