@@ -58,11 +58,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def send_matches_data(self, event):
         """試合状況をクライアントに送信"""
         await self.send(
-            text_data=json.dumps({
-                "matches_data": event["matches_data"],
-                "current_round": event["current_round"],
-                "state": event["state"],
-            })
+            text_data=json.dumps(
+                {
+                    "matches_data": event["matches_data"],
+                    "current_round": event["current_round"],
+                    "state": event["state"],
+                }
+            )
         )
 
     async def force_disconnect(self, _):

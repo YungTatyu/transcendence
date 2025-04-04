@@ -1,10 +1,10 @@
 import logging
-
-import aiohttp
 import ssl
 
-logger = logging.getLogger(__name__)
+import aiohttp
 from config.settings import CA_CERT
+
+logger = logging.getLogger(__name__)
 
 
 class GameClient:
