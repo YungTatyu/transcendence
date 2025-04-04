@@ -2,6 +2,8 @@ import fetchApiNoBody from "../../api/fetchApiNoBody.js";
 import { renderMatchingRoom } from "../../components/MatchingRoom.js";
 import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import config from "../../config.js";
+import SPA from "../../spa.js";
+import stateManager from "../../stateManager.js";
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -18,6 +20,13 @@ const wsEventHandler = {
       if (matchId !== undefined && matchId !== "None") {
         renderWaitOrStart("START", "#ffffff");
         changeMatchingInfo();
+        stateManager.setState({ players: userIdList });
+        stateManager.setState({ matchId: matchId });
+        // ユーザーが対戦相手を確認するためにSleepを挟む
+        const sleep = (msec) =>
+          new Promise((resolve) => setTimeout(resolve, msec));
+        await sleep(1000);
+        SPA.navigate("/game");
       }
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
