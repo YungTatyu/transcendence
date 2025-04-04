@@ -31,11 +31,11 @@ export const setupFriendList = async () => {
       `/friends?status=approved&offset=${offset}&limit=${limit}`,
     );
     if (response.status === null) {
-      console.log("Error Occured");
+      console.error("Error Occured");
       return [];
     }
     if (response.status >= 400) {
-      console.log(response.data.error);
+      console.error(response.data.error);
       return [];
     }
 
@@ -75,22 +75,15 @@ export const setupFriendList = async () => {
         const statusResponse = await fetchUserStatus(friendId);
 
         if (friend.status === null || statusResponse.status === null) {
-          friendItem.textContent = "Error Occured!";
-          friendsList.appendChild(friendItem);
+          console.error("Error Occured!");
           return;
         }
         if (friend.status >= 400) {
-          // friendItem.textContent = JSON.stringify(friend.data.error, null, "\n");
-          console.log(friend.data.error);
+          console.error(friend.data.error);
           return;
         }
         if (statusResponse.status >= 400) {
-          // friendItem.textContent = JSON.stringify(
-          //   statusResponse.data.error,
-          //   null,
-          //   "\n",
-          // );
-          console.log(statusResponse.data.error);
+          console.error(statusResponse.data.error);
           return;
         }
         friendItem.classList.add("js-friend-list-item");

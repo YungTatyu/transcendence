@@ -31,11 +31,11 @@ export const setupFriendRequestList = async () => {
       `/friends?status=pending&offset=${offset}&limit=${limit}`,
     );
     if (requestResponse.status === null) {
-      console.log("Error Occured!");
+      console.error("Error Occured!");
       return [];
     }
     if (requestResponse.status >= 400) {
-      console.log(requestResponse.data.error);
+      console.error(requestResponse.data.error);
       return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
@@ -64,15 +64,10 @@ export const setupFriendRequestList = async () => {
           `/users?userid=${requestId}`,
         );
         if (friend.status == null) {
-          friendRequestItem.textContent = "Error Occured!";
-          return;
+          console.error("Error Occured!")
         }
         if (friend.status >= 400) {
-          friendRequestItem.textContent = JSON.stringify(
-            friend.data.error,
-            null,
-            "\n",
-          );
+          console.error(friend.data.error);
           return;
         }
         const totalLength = 10;
@@ -90,7 +85,7 @@ export const setupFriendRequestList = async () => {
           .querySelector(".approved-button")
           .addEventListener("click", async () => {
             //テスト用
-            console.log(requestId);
+            // console.log(requestId);
             const approved = await fetchApiNoBody(
               "PATCH",
               config.friendService,
