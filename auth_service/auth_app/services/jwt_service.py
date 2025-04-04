@@ -1,6 +1,7 @@
 import logging
 
 import jwt
+import datetime
 
 from auth_app.client.jwt_utils import (
     add_signature_to_jwt,
@@ -15,12 +16,16 @@ logger = logging.getLogger(__name__)
 client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
 
 
-def generate_signed_jwt(user_id: str):
+def generate_signed_jwt(user_id: str, expires_in: int = 3600):
     token = client.fetch_token()
     if not token:
         logger.error("Failed to fetch token from Vault")
         return None
-    jwt_payload = {"userId": user_id}
+    exp_time = datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in)
+    jwt_payload = {
+        "userId": user_id,
+        "exp": int(exp_time.timestamp()),
+    }
     jwt_data = create_unsigned_jwt(JWT_HEADER, jwt_payload)
     signature = client.fetch_signature(token, jwt_data)
     if not signature:
