@@ -19,6 +19,7 @@ import NotFound from "./views/NotFound.js";
 import Profile, { setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
   setupQuickPlayMatching,
+  cleanupQuickPlayMatching,
 } from "./views/QuickPlayMatching.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
@@ -56,7 +57,12 @@ SPA.route("/profile/mail", ChangeMail);
 SPA.route("/profile/password", ChangePassword);
 SPA.route("/profile/avatar", ChangeAvatar, setupChangeAvatar);
 SPA.route("/history/match", MatchHistory);
-SPA.route("/matching/quick-play", QuickPlayMatching, setupQuickPlayMatching);
+SPA.route(
+  "/matching/quick-play",
+  QuickPlayMatching,
+  setupQuickPlayMatching,
+  cleanupQuickPlayMatching,
+);
 SPA.route("/matching/tournament", TournamentMatching, setupTournamentMatching);
 
 SPA.route(

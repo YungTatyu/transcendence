@@ -36,3 +36,7 @@ export function setupQuickPlayMatching() {
     console.err(error);
   }
 }
+
+export function cleanupQuickPlayMatching() {
+  WsQuickPlayMatchingManager.disconnect();
+}
