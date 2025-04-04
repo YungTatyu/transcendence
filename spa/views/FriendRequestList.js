@@ -39,7 +39,9 @@ export const setupFriendRequestList = async () => {
       return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    const useridList = requestResponse.data.friends.map((friend) => friend.fromUserId);
+    const useridList = requestResponse.data.friends.map(
+      (friend) => friend.fromUserId,
+    );
     return useridList;
   }
 
