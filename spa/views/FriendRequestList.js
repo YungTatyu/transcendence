@@ -39,7 +39,7 @@ export const setupFriendRequestList = async () => {
       return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    const userId = stateManager.state?.userId;
+    const useridList = requestResponse.data.friends.map((friend) => friend.fromUserId);
     return useridList;
   }
 
@@ -158,6 +158,6 @@ export const setupFriendRequestList = async () => {
   });
 
   listButton.addEventListener("click", () => {
-    SPA.navigate("/friend/");
+    SPA.navigate("/friend");
   });
 };
