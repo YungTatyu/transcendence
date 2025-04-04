@@ -34,7 +34,9 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
 
         # WebSocket グループに参加
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+
+        selected_protocol = self.scope.get("subprotocol")
+        await self.accept(subprotocol=selected_protocol)
 
         # TournamentMatchWaiterを取得し、登録されていない場合、登録する
         tournament_match_waiter = TournamentMatchWaiter.search(self.match_id)
@@ -101,10 +103,8 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
 
     async def send_start_game(self, event):
         await self.send(
-            text_data=json.dumps(
-                {
-                    "match_id": event["match_id"],
-                    "user_id_list": event["user_id_list"],
-                }
-            )
+            text_data=json.dumps({
+                "match_id": event["match_id"],
+                "user_id_list": event["user_id_list"],
+            })
         )
