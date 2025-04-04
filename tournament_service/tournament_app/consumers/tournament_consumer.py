@@ -39,7 +39,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
         # WebSocket グループに参加
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+
+        selected_protocol = self.scope.get("subprotocol")
+        await self.accept(subprotocol=selected_protocol)
 
         # 接続してきたClientに試合状況をSend
         event = {
@@ -56,13 +58,11 @@ class TournamentConsumer(AsyncWebsocketConsumer):
     async def send_matches_data(self, event):
         """試合状況をクライアントに送信"""
         await self.send(
-            text_data=json.dumps(
-                {
-                    "matches_data": event["matches_data"],
-                    "current_round": event["current_round"],
-                    "state": event["state"],
-                }
-            )
+            text_data=json.dumps({
+                "matches_data": event["matches_data"],
+                "current_round": event["current_round"],
+                "state": event["state"],
+            })
         )
 
     async def force_disconnect(self, _):
