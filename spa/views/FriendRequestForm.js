@@ -43,7 +43,7 @@ export function setupFriendRequestForm() {
     previousUsername = username;
     resultOutput.textContent = "";
 
-    //
+    // 自身にリクエストを送る時、friend/requestではなく/user?username=usernameの前にエラー処理
     const  seted_username= stateManager.state?.username;
     if (seted_username ===username)
     {
