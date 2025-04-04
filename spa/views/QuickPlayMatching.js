@@ -3,6 +3,8 @@ import MatchingRoom, {
 } from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
+import stateManager from "../stateManager.js";
+import WsQuickPlayMatchingManager from "../services/match/WsQuickPlayMatchingManager.js";
 
 export default function QuickPlayMatching() {
   function matchingInfo() {
@@ -22,15 +24,27 @@ export default function QuickPlayMatching() {
 }
 
 export function setupQuickPlayMatching() {
-  function changeMatchingInfo() {
-    const matchingInfo = document.getElementById("matching-info");
-
-    matchingInfo.innerHTML = "OPPONENT FOUND.";
-    matchingInfo.style.color = "#0CC0DF";
+  try {
+    const accessToken = sessionStorage.getItem("access_token");
+    if (!accessToken) {
+      SPA.navigate("/");
+      return;
+    }
+    renderMatchingRoom([]);
+    WsQuickPlayMatchingManager.connect(accessToken);
+  } catch (error) {
+    console.err(error);
   }
 
-  const jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
+  // const jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
 
-  renderMatchingRoom(jsonData);
+  // renderMatchingRoom(jsonData);
   renderWaitOrStart("START", "#ffffff");
+}
+
+function changeMatchingInfo() {
+  const matchingInfo = document.getElementById("matching-info");
+
+  matchingInfo.innerHTML = "OPPONENT FOUND.";
+  matchingInfo.style.color = "#0CC0DF";
 }
