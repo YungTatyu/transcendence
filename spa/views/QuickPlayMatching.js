@@ -3,7 +3,6 @@ import MatchingRoom, {
 } from "../components/MatchingRoom.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
-import stateManager from "../stateManager.js";
 import WsQuickPlayMatchingManager from "../services/match/WsQuickPlayMatchingManager.js";
 
 export default function QuickPlayMatching() {
@@ -31,20 +30,9 @@ export function setupQuickPlayMatching() {
       return;
     }
     renderMatchingRoom([]);
+    renderWaitOrStart("WAIT...", "#0CC0DF");
     WsQuickPlayMatchingManager.connect(accessToken);
   } catch (error) {
     console.err(error);
   }
-
-  // const jsonData = [{ avatarPath: "/assets/user.png", name: "rikeda" }];
-
-  // renderMatchingRoom(jsonData);
-  renderWaitOrStart("START", "#ffffff");
-}
-
-function changeMatchingInfo() {
-  const matchingInfo = document.getElementById("matching-info");
-
-  matchingInfo.innerHTML = "OPPONENT FOUND.";
-  matchingInfo.style.color = "#0CC0DF";
 }
