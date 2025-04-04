@@ -103,8 +103,10 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
 
     async def send_start_game(self, event):
         await self.send(
-            text_data=json.dumps({
-                "match_id": event["match_id"],
-                "user_id_list": event["user_id_list"],
-            })
+            text_data=json.dumps(
+                {
+                    "match_id": event["match_id"],
+                    "user_id_list": event["user_id_list"],
+                }
+            )
         )

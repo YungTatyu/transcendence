@@ -92,8 +92,8 @@ services:
     depends_on:
       - tournament_db
       - tournament_redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
 
   tournament_db:
     image: postgres:15
@@ -245,8 +245,10 @@ services:
     depends_on:
       - match_db
       - match_redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+    volumes:
+      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
 
   match_db:
     image: postgres:15
