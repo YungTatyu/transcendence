@@ -49,6 +49,12 @@ async def test_fetch_games_success(mock_fetch_games_success):
         communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
+    # INFO マッチング最大人数に達するまでは現在のルームの状況がSendされる
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY - 1):
+        res = await comms[i].receive_json_from()
+        # match_idはSendされない
+        assert res.get("match_id", None) is None
+
     for communicator in comms:
         res = await communicator.receive_json_from()
         assert res.get("match_id", None) is not None
@@ -75,6 +81,11 @@ async def test_featch_games_error(mock_fetch_games_error):
         communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY - 1):
+        res = await comms[i].receive_json_from()
+        # match_idはSendされない
+        assert res.get("match_id", None) is None
+
     for communicator in comms:
         res = await communicator.receive_json_from()
         assert res.get("match_id", None) is not None
@@ -95,6 +106,7 @@ async def test_user_exit_case(mock_fetch_games_success):
     """ルームに入ったUserが退出し、別Usersがマッチングするケース"""
     first_time_user_id = 123
     communicator, _ = await create_communicator(first_time_user_id)
+    await communicator.receive_json_from()
     await communicator.disconnect()
 
     comms = []
@@ -102,6 +114,11 @@ async def test_user_exit_case(mock_fetch_games_success):
         user_id = i + 1
         communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
+
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY - 1):
+        res = await comms[i].receive_json_from()
+        # match_idはSendされない
+        assert res.get("match_id", None) is None
 
     for communicator in comms:
         res = await communicator.receive_json_from()
@@ -126,6 +143,11 @@ async def test_fetch_games_success_2_groups(mock_fetch_games_success):
         communicator, _ = await create_communicator(user_id)
         comms.append(communicator)
 
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY - 1):
+        res = await comms[i].receive_json_from()
+        # match_idはSendされない
+        assert res.get("match_id", None) is None
+
     for communicator in comms:
         res = await communicator.receive_json_from()
         assert res.get("match_id", None) is not None
@@ -140,6 +162,11 @@ async def test_fetch_games_success_2_groups(mock_fetch_games_success):
         user_id = i + 1
         communicator, _ = await create_communicator(user_id)
         comms2.append(communicator)
+
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY - 1):
+        res = await comms2[i].receive_json_from()
+        # match_idはSendされない
+        assert res.get("match_id", None) is None
 
     for communicator in comms2:
         res = await communicator.receive_json_from()
@@ -156,6 +183,7 @@ async def test_fetch_games_success_2_groups(mock_fetch_games_success):
 
 
 @pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
 async def test_has_not_jwt():
     """コネクション確立時にJWTを含まないケースはコネクションが確立できない"""
     communicator = WebsocketCommunicator(application, PATH_MATCHING)
@@ -165,6 +193,7 @@ async def test_has_not_jwt():
 
 
 @pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
 async def test_enter_room_same_user():
     """同一ユーザーがマッチングルームに入った場合、コネクションが確立できない"""
     user_id = 1

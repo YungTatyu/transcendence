@@ -13,10 +13,9 @@ const wsEventHandler = {
       console.log(parsedMessage);
       const matchId = parsedMessage.match_id;
       const userIdList = parsedMessage.user_id_list;
-      if (parsedMessage !== "None") {
-        const playersData = await fetchPlayersData(userIdList);
-        console.log(playersData);
-        renderMatchingRoom(playersData);
+      const playersData = await fetchPlayersData(userIdList);
+      renderMatchingRoom(playersData);
+      if (matchId !== undefined && matchId !== "None") {
         renderWaitOrStart("START", "#ffffff");
         changeMatchingInfo();
       }
