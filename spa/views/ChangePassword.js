@@ -1,4 +1,7 @@
 import Form from "../components/Form.js";
+import fetchApiWithBody from "../api/fetchApiWithBody.js";
+import config from "../config.js";
+import SPA from "../spa.js";
 
 export default function ChangePassword() {
   const ChangePasswordFormField = [
@@ -36,8 +39,8 @@ export function setupChangePassword() {
 
     const { status, data } = await fetchApiWithBody(
       "PUT",
-      config.userService,
-      "/users/me/password",
+      config.authService,
+      "/auth/me/password",
       requestBody,
     );
 
