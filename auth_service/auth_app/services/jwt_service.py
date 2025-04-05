@@ -106,4 +106,4 @@ def verify_signed_jwt(signed_jwt: str):
         logger.error("JWT has expired")
         return False
 
-    return False
+    return True
