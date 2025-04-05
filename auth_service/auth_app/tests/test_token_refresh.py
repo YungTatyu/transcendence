@@ -29,7 +29,7 @@ class TokenRefreshTests(APITestCase):
         """
         正しい refresh token で新しい access token が発行される
         """
-        refresh_token = generate_signed_jwt(self.user_id, REFRESH_TOKEN_EXPIRATION)
+        refresh_token = generate_signed_jwt(str(self.user_id), REFRESH_TOKEN_EXPIRATION)
 
         response = self.client.post(self.url, {"refresh": refresh_token})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
