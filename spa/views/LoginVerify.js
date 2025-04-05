@@ -4,8 +4,7 @@ import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function LoginVerify() {
-  const formHtml = VerifyForm(false, "Verify OTP", "loginVerifyButton");
-  return formHtml;
+  return VerifyForm(false, "Verify OTP", "loginVerifyButton");
 }
 
 export function setupLoginVerify() {
@@ -45,28 +44,6 @@ export function setupLoginVerify() {
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
     sessionStorage.setItem("access_token", data.accessToken);
-
-    // INFO JWTが必要なユーザー名の更新エンドポイントを叩く
-    // TODO: 削除すること
-    const newName = Math.random()
-      .toString(36)
-      .slice(2, 2 + 9);
-
-    const { status: status2, data: data2 } = await fetchApiWithBody(
-      "PUT",
-      config.userService,
-      "/users/me/username",
-      { username: newName },
-    );
-
-    if (status2 === null) {
-      errorOutput.textContent = "Error Occured!";
-      return;
-    }
-    if (status2 >= 400) {
-      errorOutput.textContent = JSON.stringify(data2.error, null, "\n");
-      return;
-    }
     SPA.navigate("/home");
   });
 }

@@ -29,13 +29,24 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
                 await self.close()
                 return
 
-            await self.accept()
+            selected_protocol = self.scope.get("subprotocol")
+            await self.accept(subprotocol=selected_protocol)
+
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
             count = QuickPlayMatchingManager.add_user(self.user_id, self.channel_name)
 
             # マッチング待ちユーザー数がQuickPlayの最大参加者人数に達した
             if count == self.ROOM_CAPACITY:
                 await self.__start_quick_play()
+            else:
+                user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
+                await self.channel_layer.group_send(
+                    self.MATCHING_ROOM,
+                    {
+                        "type": "send_quick_play_start_message",
+                        "user_id_list": user_ids,
+                    },
+                )
 
     async def disconnect(self, _):
         lock = await QuickPlayMatchingManager.get_lock()
@@ -44,6 +55,14 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
                 self.MATCHING_ROOM, self.channel_name
             )
             QuickPlayMatchingManager.del_user(self.user_id)
+            user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
+            await self.channel_layer.group_send(
+                self.MATCHING_ROOM,
+                {
+                    "type": "send_quick_play_start_message",
+                    "user_id_list": user_ids,
+                },
+            )
 
     async def __start_quick_play(self):
         user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
@@ -71,11 +90,11 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
         QuickPlayMatchingManager.clear_waiting_users()
 
     async def send_quick_play_start_message(self, event):
-        match_id = event["match_id"]
-        user_id_list = event["user_id_list"]
-        await self.send(
-            text_data=json.dumps({"match_id": match_id, "user_id_list": user_id_list})
-        )
+        data = {}
+        if event.get("match_id", None) is not None:
+            data["match_id"] = event["match_id"]
+        data["user_id_list"] = event["user_id_list"]
+        await self.send(text_data=json.dumps(data))
 
     @database_sync_to_async
     def __create_quick_play_match(self, user_ids: list[int]) -> int:

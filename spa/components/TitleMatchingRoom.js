@@ -8,7 +8,7 @@ export default function TitleMatchingRoom(titleText) {
           <h1 class="title-matching-room mr-third">${titleText}</h1>
         </div>
           <div class="position-relative">
-            <img src="/assets/home.png" class="home-icon position-absolute top-0 end-0" style="margin-top: 5%;">
+            <img src="/assets/home.png" class="home-icon position-absolute top-0 end-0" style="margin-top: 5%;" onclick="SPA.navigate('/home')">
           </div>
       </div>
     </div>
