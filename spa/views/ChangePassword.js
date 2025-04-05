@@ -33,8 +33,8 @@ export function setupChangePassword() {
     }
 
     const requestBody = {
-      current_password: currentPass,
-      new_password: newPass,
+      "current_password": currentPass,
+      "new_password": newPass,
     };
 
     const { status, data } = await fetchApiWithBody(
