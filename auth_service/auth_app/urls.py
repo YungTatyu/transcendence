@@ -20,6 +20,7 @@ from django.urls import path
 from auth_app.views.health_check_view import HealthCheckView
 from auth_app.views.otp_login_view import OTPLoginVerificationView, OTPLoginView
 from auth_app.views.signup_views import OTPVerificationView, SignupView
+from auth_app.views.token_refresh_view import TokenRefreshView
 from auth_app.views.update_email_view import UpdateEmailView
 from auth_app.views.update_password_view import UpdatePasswordView
 
@@ -38,5 +39,6 @@ urlpatterns = [
         OTPLoginVerificationView.as_view(),
         name="otp-login-verify",
     ),
+    path("auth/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("health", HealthCheckView.as_view(), name="health_check"),
 ]
