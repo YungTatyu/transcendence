@@ -1,5 +1,5 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
-import TitleAndHomeButton from "../components/titleAndHomeButton.js";
+import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
@@ -72,10 +72,11 @@ export const setupFriendRequestList = async () => {
         }
         const totalLength = 10;
         const name = friend.data.username.padEnd(totalLength, " ");
+        const avatarImg = `${config.userService}${friend.data.avatarPath}`;
         friendRequestItem.classList.add("js-friend-request-item");
         friendRequestItem.innerHTML = `
       <div class="gap-wrap d-flex align-items-center mt-4">
-        <img src=${friend.data.avatarPath}>
+        <img src=${avatarImg}>
         <div class="text-white">${name}</div>
         <button type="button" class="approved-button btn btn-primary">approved</button>
         <button type="button" class="reject-button btn btn-primary">reject</button>

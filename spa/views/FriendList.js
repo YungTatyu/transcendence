@@ -1,5 +1,5 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
-import TitleAndHomeButton from "../components/titleAndHomeButton.js";
+import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
@@ -86,10 +86,11 @@ export const setupFriendList = async () => {
           console.error(statusResponse.data.error);
           return;
         }
+        const avatarImg = `${config.userService}${friend.data.avatarPath}`;
         friendItem.classList.add("js-friend-list-item");
         friendItem.innerHTML = `
       <div class="gap-wrap d-flex align-items-center mt-4">
-        <img src=${friend.data.avatarPath} alt="avotor">
+        <img src=${avatarImg} alt="avotor">
         <div class="text-white fs-2">${friend.data.username}</div>
         <div class="user-status">${statusResponse.data.status}</div>
         <button type="button" class="remove-button btn btn-primary">remove</button>
