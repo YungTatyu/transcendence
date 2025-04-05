@@ -13,7 +13,6 @@ const wsEventHandler = {
   async handleMessage(message) {
     try {
       const parsedMessage = JSON.parse(message.data);
-      console.log(parsedMessage);
       const matchId = parsedMessage.match_id;
       const userIdList = parsedMessage.user_id_list;
       const playersData = await fetchPlayersData(userIdList);
