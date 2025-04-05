@@ -2,6 +2,8 @@ from unittest.mock import Mock
 
 import requests
 
+from auth_app.settings import CA_CERT
+
 
 class MockResponse:
     """
@@ -59,7 +61,7 @@ class UserClient:
                 status_code=404,
             )
 
-    def create_user(self, username):
+    def create_user(self, username, api_key: str):
         """
         Create a new user.
 
@@ -68,12 +70,13 @@ class UserClient:
         """
         url = f"{self.base_url}/users"
         payload = {"username": username}
+        headers = {"x-api-key": api_key}
 
         if self.use_mock:
             print("Using mock response.")
             return self.mock_post_user(payload)
 
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, headers=headers, verify=CA_CERT)
         response.raise_for_status()
         return response
 
@@ -95,5 +98,5 @@ class UserClient:
             print("Using mock response for search_users.")
             return self.mock_get_user(query)
 
-        response = requests.get(url, params=query)
+        response = requests.get(url, params=query, verify=CA_CERT)
         return response
