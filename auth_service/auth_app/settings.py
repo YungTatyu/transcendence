@@ -19,6 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # APIベースURL
 USER_API_BASE_URL = os.getenv("USER_PROXY_URL")
 
+# JWT関連
+JWT_HEADER = {"alg": "PS256", "typ": "JWT"}
+JWT_EXPIRATION = 3600
+REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 30
+
 # モックモードの設定
 # TODO user api 実装後にFalseとする
 USER_API_USE_MOCK = False

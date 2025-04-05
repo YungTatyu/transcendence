@@ -16,14 +16,14 @@ import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import MatchHistory from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
-import Profile, { setupProfile } from "./views/Profile.js";
+import Profile, { cleanupProfile, setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
   setupQuickPlayMatching,
 } from "./views/QuickPlayMatching.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Store, { setupStore } from "./views/Store.js";
-import TmpHome from "./views/TmpHome.js";
+import Title, { setupTitile } from "./views/Title.js";
 import Tournament, { setupTournament } from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
@@ -35,7 +35,7 @@ import FriendRequestList, {
   setupFriendRequestList,
 } from "./views/FriendRequestList.js";
 
-SPA.route("/", TmpHome);
+SPA.route("/", Title, setupTitile);
 SPA.route("/404", NotFound);
 SPA.route("/store", Store, setupStore);
 SPA.route("/api", ApiData, setupApiData);
@@ -50,7 +50,7 @@ SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/home", Home, setupHome);
 SPA.route("/game/setup", InitMatch, setupInitMatch);
 SPA.route("/tournament", Tournament, setupTournament);
-SPA.route("/profile", Profile, setupProfile);
+SPA.route("/profile", Profile, setupProfile, cleanupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
 SPA.route("/profile/mail", ChangeMail);
 SPA.route("/profile/password", ChangePassword);
