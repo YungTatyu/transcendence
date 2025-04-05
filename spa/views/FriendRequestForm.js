@@ -2,6 +2,7 @@ import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
+
 export default function FriendRequestForm() {
   const formContent = `
     <div class="mb-3">
@@ -80,7 +81,7 @@ export function setupFriendRequestForm() {
         objectFit: "cover",
         borderRadius: "50%",
       });
-      userImgContainer.src = data.avatarPath;
+      userImgContainer.src = `${config.userService}${data.avatarPath}`;
 
       const usernameContainer = document.createElement("div");
       usernameContainer.classList.add("text-dark", "fs-5");
