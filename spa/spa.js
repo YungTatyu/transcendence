@@ -5,9 +5,7 @@ const SPA = (() => {
 
   const init = ({ containerId }) => {
     container = document.getElementById(containerId);
-    window.addEventListener("popstate", () => {
-      renderRoute();
-    });
+    window.addEventListener("popstate", renderRoute);
     window.addEventListener("DOMContentLoaded", renderRoute);
     renderRoute();
   };
