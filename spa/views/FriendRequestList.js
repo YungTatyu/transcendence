@@ -78,8 +78,8 @@ export const setupFriendRequestList = async () => {
       <div class="gap-wrap d-flex align-items-center mt-4">
         <img src=${avatarImg}>
         <div class="text-white">${name}</div>
-        <button type="button" class="approved-button btn btn-primary">approved</button>
-        <button type="button" class="reject-button btn btn-primary">reject</button>
+        <button type="button" class="approved-button btn btn-primary">Approve</button>
+        <button type="button" class="reject-button btn btn-primary">Reject</button>
       </div>
       `;
         friendRequestItem

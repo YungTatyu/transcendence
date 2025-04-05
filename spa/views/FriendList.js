@@ -93,7 +93,7 @@ export const setupFriendList = async () => {
         <img src=${avatarImg} alt="avotor">
         <div class="text-white fs-2">${friend.data.username}</div>
         <div class="user-status">${statusResponse.data.status}</div>
-        <button type="button" class="remove-button btn btn-primary">remove</button>
+        <button type="button" class="remove-button btn btn-primary">Remove</button>
       </div>
       `;
         friendItem

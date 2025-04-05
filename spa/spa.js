@@ -43,6 +43,4 @@ const SPA = (() => {
   return { init, route, navigate };
 })();
 
-window.SPA = SPA;
-
 export default SPA;
