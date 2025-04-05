@@ -73,15 +73,6 @@ export function setupSignUpVerify() {
     //     "/auth/me/email",
     //     { email: email },
     //   );
-
-    if (status === null) {
-      errorOutput.textContent = "Error Occured!";
-      return;
-    }
-    if (status >= 400) {
-      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
-      return;
-    }
     SPA.navigate("/home");
   });
 }
