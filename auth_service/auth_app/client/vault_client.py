@@ -74,22 +74,3 @@ class VaultClient:
         pubkey_pem = keys_dict[str(latest_version)]["public_key"]
         pubkey = load_pem_public_key(pubkey_pem.encode())
         return pubkey
-
-
-if __name__ == "__main__":
-    VAULT_ADDR = "https://localhost:8200"
-    CLIENT_CERT = "../../certs/client.crt"
-    CLIENT_KEY = "../../certs/client.key"
-    CA_CERT = "../../certs/ca.crt"
-
-    client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
-    # INFO tokenは一定期間同じものを使用できます
-    token = client.fetch_token()
-    if token:
-        jwt_header = {"alg": "PS256", "typ": "JWT"}
-        jwt_payload = {"userId": "1"}
-        jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
-        signature = client.fetch_signature(token, jwt_data)
-        pubkey = client.fetch_pubkey(token)
-        if signature and pubkey:
-            print("Verify JWT: ", verify_jwt(pubkey, jwt_data, signature))
