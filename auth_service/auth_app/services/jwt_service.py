@@ -10,13 +10,13 @@ from auth_app.client.jwt_utils import (
     verify_jwt,
 )
 from auth_app.client.vault_client import VaultClient
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, JWT_HEADER, VAULT_ADDR
+from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, JWT_HEADER, VAULT_ADDR, JWT_EXPIRATION, REFRESH_TOKEN_EXPIRATION
 
 logger = logging.getLogger(__name__)
 client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
 
 
-def generate_signed_jwt(user_id: str, expires_in: int = 3600):
+def generate_signed_jwt(user_id: str, expires_in: int = JWT_EXPIRATION):
     token = client.fetch_token()
     if not token:
         logger.error("Failed to fetch token from Vault")
@@ -40,7 +40,7 @@ def generate_tokens(user_id: int):
     signed_jwt = generate_signed_jwt(str(user_id))
     if not signed_jwt:
         return None
-    refresh_signed_jwt = generate_signed_jwt(str(user_id))
+    refresh_signed_jwt = generate_signed_jwt(str(user_id), REFRESH_TOKEN_EXPIRATION)
     if not refresh_signed_jwt:
         return None
 
