@@ -19,6 +19,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # APIベースURL
 USER_API_BASE_URL = "http://user:9000"
 
+# VAULT関連の設定
+VAULT_ADDR = "https://vault:8200"
+CLIENT_CERT = "/certs/client.crt"
+CLIENT_KEY = "/certs/client.key"
+CA_CERT = "/certs/ca.crt"
+
+# JWT関連
+JWT_HEADER = {"alg": "PS256", "typ": "JWT"}
+JWT_EXPIRATION = 3600
+REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 30
+
 # モックモードの設定
 # TODO user api 実装後にFalseとする
 USER_API_USE_MOCK = False

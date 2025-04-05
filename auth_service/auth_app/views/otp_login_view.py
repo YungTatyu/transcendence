@@ -1,16 +1,20 @@
 import logging
 
-import jwt
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.models import CustomUser
 from auth_app.serializers.login_serializer import (
     OTPLoginSerializer,
     OTPVerificationSerializer,
 )
-from auth_app.settings import COOKIE_DOMAIN
+from auth_app.services.jwt_service import generate_tokens
+from auth_app.settings import (
+    COOKIE_DOMAIN,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -71,13 +75,24 @@ class OTPLoginVerificationView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.validated_data["user"]
+        email = serializer.validated_data["email"]
 
-        # TODO 署名を組み込んだJWTの生成
-        tokens = {
-            "access": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
-            # refresh tokenの生成方法も要検討
-            "refresh": jwt.encode({"user_id": user.user_id}, None, algorithm=None),
-        }
+        try:
+            user = CustomUser.objects.get(email=email)
+            user_id = user.user_id
+        except ObjectDoesNotExist:
+            logger.error(f"User not found for email: {email}")
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        tokens = generate_tokens(user_id)
+        if not tokens:
+            logger.error("Failed to generate tokens from Vault")
+            return Response(
+                {"error": "Failed to generate tokens from Vault"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         response = Response(
             {
