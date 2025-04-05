@@ -69,9 +69,11 @@ def verify_signed_jwt(signed_jwt: str):
     pubkey = client.fetch_pubkey(token)
 
     if not extracted_signature or not pubkey:
+        logger.error("failed to fetch extracted_signature or pubkey")
         return False
 
     if not verify_jwt(pubkey, signed_jwt, extracted_signature):
+        logger.error("JWT is invalid")
         return False
 
     try:
