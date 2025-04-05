@@ -1,10 +1,13 @@
-
 import jwt
 from django.test import TestCase
 
-from auth_app.services.jwt_service import generate_signed_jwt, verify_signed_jwt, extract_signature_from_jwt, verify_jwt
-from auth_app.settings import JWT_EXPIRATION
 from auth_app.client.vault_client import VaultClient
+from auth_app.services.jwt_service import (
+    extract_signature_from_jwt,
+    generate_signed_jwt,
+    verify_jwt,
+    verify_signed_jwt,
+)
 from auth_app.settings import (
     CA_CERT,
     CLIENT_CERT,
@@ -12,6 +15,7 @@ from auth_app.settings import (
     JWT_EXPIRATION,
     VAULT_ADDR,
 )
+
 
 class JwtServiceTests(TestCase):
     def test_generate_signed_jwt_success(self):
@@ -60,8 +64,7 @@ class JwtServiceTests(TestCase):
         parts = signed_jwt.split(".")
         self.assertEqual(len(parts), 3, "JWT の形式が不正です")
 
-        unsigned_jwt = f"{parts[0]}.{parts[1]}".encode("utf-8") 
+        unsigned_jwt = f"{parts[0]}.{parts[1]}".encode()
         result = verify_jwt(pubkey, unsigned_jwt, extracted_signature)
 
         self.assertTrue(result, "JWT の署名検証に失敗しました")
-

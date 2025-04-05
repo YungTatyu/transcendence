@@ -71,8 +71,20 @@ def verify_signed_jwt(signed_jwt: str):
     if not extracted_signature or not pubkey:
         logger.error("failed to fetch extracted_signature or pubkey")
         return False
+    # JWT を分割して header.payload 部分を取得
+    try:
+        parts = signed_jwt.split(".")
+        if len(parts) != 3:
+            raise ValueError(
+                "Invalid JWT format: should contain 3 parts (header.payload.signature)"
+            )
 
-    if not verify_jwt(pubkey, signed_jwt, extracted_signature):
+        unsigned_jwt = f"{parts[0]}.{parts[1]}".encode()  # header.payload 部分
+    except Exception as e:
+        logger.error(f"Error splitting signed JWT: {str(e)}")
+        return False
+
+    if not verify_jwt(pubkey, unsigned_jwt, extracted_signature):
         logger.error("JWT is invalid")
         return False
 
