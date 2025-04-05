@@ -2,7 +2,6 @@ import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
-
 export default function FriendRequestForm() {
   const formContent = `
     <div class="mb-3">
