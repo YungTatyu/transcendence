@@ -56,7 +56,12 @@ class JwtServiceTests(TestCase):
         self.assertIsNotNone(pubkey, "公開鍵の取得に失敗")
 
         extracted_signature = extract_signature_from_jwt(signed_jwt)
-        result = verify_jwt(pubkey, signed_jwt.encode(), extracted_signature)
+        # JWT を分割して header.payload 部分を取得
+        parts = signed_jwt.split(".")
+        self.assertEqual(len(parts), 3, "JWT の形式が不正です")
+
+        unsigned_jwt = f"{parts[0]}.{parts[1]}".encode("utf-8") 
+        result = verify_jwt(pubkey, unsigned_jwt, extracted_signature)
 
         self.assertTrue(result, "JWT の署名検証に失敗しました")
 
