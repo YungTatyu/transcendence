@@ -1,7 +1,7 @@
+import datetime
 import logging
 
 import jwt
-import datetime
 
 from auth_app.client.jwt_utils import (
     add_signature_to_jwt,
