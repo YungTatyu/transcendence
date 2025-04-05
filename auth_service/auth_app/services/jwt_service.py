@@ -10,7 +10,15 @@ from auth_app.client.jwt_utils import (
     verify_jwt,
 )
 from auth_app.client.vault_client import VaultClient
-from auth_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, JWT_HEADER, VAULT_ADDR, JWT_EXPIRATION, REFRESH_TOKEN_EXPIRATION
+from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    JWT_EXPIRATION,
+    JWT_HEADER,
+    REFRESH_TOKEN_EXPIRATION,
+    VAULT_ADDR,
+)
 
 logger = logging.getLogger(__name__)
 client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
