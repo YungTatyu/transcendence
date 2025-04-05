@@ -11,7 +11,6 @@ import FriendRequestForm, {
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home, { setupHome } from "./views/Home.js";
-import InitMatch, { setupInitMatch } from "./views/InitMatch.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import MatchHistory from "./views/MatchHistory.js";
@@ -49,7 +48,6 @@ SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/home", Home, setupHome);
-SPA.route("/game/setup", InitMatch, setupInitMatch);
 SPA.route("/tournament", Tournament, setupTournament);
 SPA.route("/profile", Profile, setupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
