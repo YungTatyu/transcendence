@@ -1,8 +1,9 @@
 import logging
 
 from django.http import JsonResponse
-from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.views import APIView
+
 from auth_app.services import jwt_service
 
 logger = logging.getLogger(__name__)
@@ -29,8 +30,7 @@ class TokenRefreshView(APIView):
 
         try:
             payload = jwt_service.jwt.decode(
-                refresh_token,
-                options={"verify_signature": False}
+                refresh_token, options={"verify_signature": False}
             )
             user_id = payload.get("userId")
             if not user_id:
@@ -57,7 +57,7 @@ class TokenRefreshView(APIView):
             )
             return response
 
-        except Exception as e:
+        except Exception:
             logger.exception("Unexpected error during token refresh")
             return JsonResponse(
                 {"error": "Invalid refresh token."},
