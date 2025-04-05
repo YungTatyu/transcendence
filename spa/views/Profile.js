@@ -20,7 +20,6 @@ export default function Profile() {
   }
 
   function UserMatchHistory(idName) {
-    //Loadingの部分はAPIから取得した値で上書きする
     return `
       <div id="row-data " class="row row-cols-3">
           <div id="wins" class="col">loading...</div>
@@ -80,7 +79,6 @@ function getElements() {
 }
 
 export async function setupProfile() {
-  // エレメントを取得し、イベントリスナーを追加
   for (const { btn, handle } of getElements()) {
     btn.addEventListener("click", handle);
   }
@@ -134,7 +132,6 @@ export async function setupProfile() {
 }
 
 export function cleanupProfile() {
-  // エレメントを取得し、イベントリスナーを削除
   for (const { btn, handle } of getElements()) {
     btn.removeEventListener("click", handle);
   }
