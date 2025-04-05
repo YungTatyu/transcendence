@@ -1,5 +1,5 @@
-import Form from "../components/Form.js";
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
+import Form from "../components/Form.js";
 import config from "../config.js";
 import SPA from "../spa.js";
 
