@@ -2,8 +2,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from auth_app.services.jwt_service import generate_signed_jwt
 from auth_app.models import CustomUser
+from auth_app.services.jwt_service import generate_signed_jwt
 from auth_app.settings import REFRESH_TOKEN_EXPIRATION
 
 
