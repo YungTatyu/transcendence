@@ -33,7 +33,9 @@ export function setupChangePassword() {
     }
 
     const requestBody = {
+      // biome-ignore lint/style/useNamingConvention :reason: "snake_case" is used in the API
       current_password: currentPass,
+      // biome-ignore lint/style/useNamingConvention :reason: "snake_case" is used in the API
       new_password: newPass,
     };
 
