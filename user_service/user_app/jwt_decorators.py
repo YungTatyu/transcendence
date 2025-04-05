@@ -15,7 +15,7 @@ def jwt_required(func):
             # TODO 署名検証なしでデコード
             decoded_token = jwt.decode(token, options={"verify_signature": False})
 
-            request.user_id = decoded_token.get("userId")  # user_id をリクエストに保存
+            request.user_id = decoded_token.get("user_id")  # user_id をリクエストに保存
 
             return func(request, *args, **kwargs)
 
