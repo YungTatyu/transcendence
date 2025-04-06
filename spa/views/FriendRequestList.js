@@ -1,7 +1,6 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
-import stateManager from "../stateManager.js";
 
 export default function FriendRequestList() {
   return `
