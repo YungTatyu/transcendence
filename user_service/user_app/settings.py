@@ -27,10 +27,7 @@ SECRET_KEY = "django-insecure-(6$k27bfa80g@9sops2j0my@8l4h@i652dw65u*=5odt2w3%kf
 DEBUG = True
 
 
-ALLOWED_HOSTS = [
-    os.getenv("PROXY"),
-    "user",
-]
+ALLOWED_HOSTS = [os.getenv("PROXY")]
 
 
 # Application definition
@@ -144,6 +141,11 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+VAULT_ADDR = os.getenv("VAULT_ADDR")
+CLIENT_CERT = os.getenv("CLIENT_CERT")
+CLIENT_KEY = os.getenv("CLIENT_KEY")
+CA_CERT = os.getenv("CA_CERT")
 
 CORS_ALLOW_METHODS = [
     "GET",
