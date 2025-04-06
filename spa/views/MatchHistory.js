@@ -24,259 +24,258 @@ export default function MatchHistory() {
   `;
 }
 
-const test_history_data = {
-  "total": 42,
-  "offset": 0,
-  "limit": 2,
-  "results": [
+const testHistoryData = {
+  total: 42,
+  offset: 0,
+  limit: 2,
+  results: [
     {
-      "mode": "QuickPlay",
-      "result": "win",
-      "date": "2024-12-09",
-      "userScore": 11,
-      "opponents": [
+      mode: "QuickPlay",
+      result: "win",
+      date: "2024-12-09",
+      userScore: 11,
+      opponents: [
         {
-          "id": 1,
-          "score": 5
-        }
-      ]
+          id: 1,
+          score: 5,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 10,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 10,
+      opponents: [
         {
-          "id": 2,
-          "score": 12
-        }
-      ]
+          id: 2,
+          score: 12,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 50
-        }
-      ]
+          id: 2,
+          score: 50,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 50
-        }
-      ]
+          id: 2,
+          score: 50,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 50
-        }
-      ]
+          id: 2,
+          score: 50,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 50
-        }
-      ]
+          id: 2,
+          score: 50,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 50
-        }
-      ]
+          id: 2,
+          score: 50,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "lose",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "lose",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 50
-        }
-      ]
+          id: 2,
+          score: 50,
+        },
+      ],
     },
     {
-      "mode": "Tournament",
-      "result": "win",
-      "date": "2024-12-01",
-      "userScore": 50,
-      "opponents": [
+      mode: "Tournament",
+      result: "win",
+      date: "2024-12-01",
+      userScore: 50,
+      opponents: [
         {
-          "id": 2,
-          "score": 70
-        }
-      ]
-    }
-    
-  ]
+          id: 2,
+          score: 70,
+        },
+      ],
+    },
+  ],
 };
 
-const test_user_data = {
-  "userId": 0,
-  "username": "player",
-  "avatarPath": "/assets/42.png"
+const testUserData = {
+  userId: 0,
+  username: "player",
+  avatarPath: "/assets/42.png",
 };
 
 export const setupMatchHistory = async () => {
@@ -340,14 +339,15 @@ export const setupMatchHistory = async () => {
     // );
 
     // テスト用
-    const userHistory = test_history_data.results.slice(offset, offset + limit);
+    const userHistory = testHistoryData.results.slice(offset, offset + limit);
     await Promise.all(
       userHistory.map(async (matchResult) => {
         const matchItem = document.createElement("div");
-        const opponent = test_user_data;
-        const avatarImg = test_user_data.avatarPath;
+        const opponent = testUserData;
+        const avatarImg = testUserData.avatarPath;
         const score = `${matchResult.userScore} - ${matchResult.opponents[0].score}`;
-        const resultColor = matchResult.result === "win" ? "#0CC0DF" : "#FF0004";
+        const resultColor =
+          matchResult.result === "win" ? "#0CC0DF" : "#FF0004";
         matchItem.innerHTML = `
         <div class="row row-cols-5 mt-2">
           <div class="col">${matchResult.mode}</div>
