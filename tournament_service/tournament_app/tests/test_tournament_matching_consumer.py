@@ -19,6 +19,7 @@ async def test_enter_room_from_empty_with_one_user():
     communicator, _ = await create_communicator(10000)
     act_data = await communicator.receive_json_from()
     assert act_data["tournament_start_time"] == "None"
+    assert act_data.get("tournament_id", None) is None
     await communicator.disconnect()
 
 
@@ -92,7 +93,9 @@ async def test_start_tournament_by_room_capacity(create_match_records_mocker):
 
     for communicator in communicators:
         data = await communicator.receive_json_from()
-        assert "tournament_id" in data
+        assert data["tournament_id"] != "None"
+        assert data["tournament_start_time"] == "None"
+        assert "wait_user_ids" in data
 
     for communicator in communicators:
         await communicator.disconnect()
@@ -119,7 +122,9 @@ async def test_start_tournament_by_force_start_time(
 
     for communicator in communicators:
         data = await communicator.receive_json_from()
-        assert "tournament_id" in data
+        assert data["tournament_id"] != "None"
+        assert data["tournament_start_time"] == "None"
+        assert "wait_user_ids" in data
 
     for communicator in communicators:
         await communicator.disconnect()
