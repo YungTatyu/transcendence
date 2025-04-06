@@ -17,14 +17,16 @@ export default function TournamentMatching() {
 }
 
 export function setupTournamentMatching() {
-  const jsonData = [
-    { avatarPath: "/assets/user.png", name: "rikeda1" },
-    { avatarPath: "/assets/user.png", name: "rikeda2" },
-    { avatarPath: "/assets/user.png", name: "rikeda3" },
-    { avatarPath: "/assets/user.png", name: "rikeda4" },
-  ];
-
-  renderMatchingRoom(jsonData);
-  renderMatchingInfo(4, 16, 9);
-  renderWaitOrStart("Wait...", "#0ca5bf");
+  try {
+    const accessToken = sessionStorage.getItem("access_token");
+    if (!accessToken) {
+      SPA.navigate("/");
+      return;
+    }
+    renderMatchingRoom([]);
+    renderMatchingInfo(0, 16, 60);
+    renderWaitOrStart("Wait...", "#0ca5bf");
+  } catch (error) {
+    console.error(error);
+  }
 }
