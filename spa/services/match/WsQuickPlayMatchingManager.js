@@ -1,4 +1,4 @@
-import fetchApiNoBody from "../../api/fetchApiNoBody.js";
+import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderMatchingRoom } from "../../components/MatchingRoom.js";
 import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import config from "../../config.js";
@@ -44,22 +44,6 @@ const wsEventHandler = {
     console.error("WebSocket error:", message);
   },
 };
-
-async function fetchPlayersData(userIdList) {
-  try {
-    const promises = userIdList.map((id) =>
-      fetchApiNoBody("GET", config.userService, `/users?userid=${id}`),
-    );
-    const results = await Promise.all(promises);
-    const playersData = results.map((item) => ({
-      avatarPath: `${config.userService}/${item.data.avatarPath}`,
-      name: item.data.username,
-    }));
-    return playersData;
-  } catch (error) {
-    console.error("Error");
-  }
-}
 
 const WsQuickPlayMatchingManager = {
   socket: null,
