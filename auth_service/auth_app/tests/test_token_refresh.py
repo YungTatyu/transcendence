@@ -30,8 +30,9 @@ class TokenRefreshTests(APITestCase):
         正しい refresh token で新しい access token が発行される
         """
         refresh_token = generate_signed_jwt(str(self.user_id), REFRESH_TOKEN_EXPIRATION)
+        self.client.cookies["refresh_token"] = refresh_token
 
-        response = self.client.post(self.url, {"refresh": refresh_token})
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("accessToken", response.data)
         self.assertIn("access_token", response.cookies)
@@ -40,7 +41,7 @@ class TokenRefreshTests(APITestCase):
         """
         refresh token が送信されていない場合 400 を返す
         """
-        response = self.client.post(self.url, {})
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["error"], "Refresh token is missing.")
 
@@ -48,6 +49,8 @@ class TokenRefreshTests(APITestCase):
         """
         無効な refresh token の場合 401 を返す
         """
-        response = self.client.post(self.url, {"refresh": "invalid.token.value"})
+        self.client.cookies["refresh_token"] = "invalid.token.value"
+
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data["error"], "Refresh token is missing or invalid.")
