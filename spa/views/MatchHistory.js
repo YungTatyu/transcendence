@@ -4,22 +4,6 @@ import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function MatchHistory() {
-  // function MatchHistoryData() {
-  //   const playerAvatar = "/assets/user.png";
-  //   //APIから取得した値で上書する
-  //   return `
-  // <div class="row row-cols-5 mt-2">
-  //   <div class="col">loading...</div>
-  //   <div class="col text-center">
-  //     <img src="${playerAvatar}" alt="ロゴ" class="square-img rounded-circle me-2" >
-  //     <span>loading...</span>
-  //   </div>
-  //   <div class="col">loading...</div>
-  //   <div class="col">loading...</div>
-  //   <div class="col">loading...</div>
-  // </div>
-  //     `;
-  // }
   return `
 
     ${TitleAndHomeButton("MATCH HISTORY")}
@@ -40,49 +24,330 @@ export default function MatchHistory() {
   `;
 }
 
+const test_history_data = {
+  "total": 42,
+  "offset": 0,
+  "limit": 2,
+  "results": [
+    {
+      "mode": "QuickPlay",
+      "result": "win",
+      "date": "2024-12-09",
+      "userScore": 11,
+      "opponents": [
+        {
+          "id": 1,
+          "score": 5
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 10,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 12
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 50
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 50
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 50
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 50
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 50
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "lose",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 50
+        }
+      ]
+    },
+    {
+      "mode": "Tournament",
+      "result": "win",
+      "date": "2024-12-01",
+      "userScore": 50,
+      "opponents": [
+        {
+          "id": 2,
+          "score": 70
+        }
+      ]
+    }
+    
+  ]
+};
+
+const test_user_data = {
+  "userId": 0,
+  "username": "player",
+  "avatarPath": "/assets/42.png"
+};
+
 export const setupMatchHistory = async () => {
   const matchHistoryTable = document.querySelector(".match-history-table");
   matchHistoryTable.innerHTML = "";
   let currentPage = 0;
-  const limit = 10;
-  myUserId = stateManager.state?.userId;
+  const limit = 15;
+  const myUserId = stateManager.state?.userId;
 
   async function loadHistory(offset, limit) {
-    userHistory = fetchApiNoBody(
-      "GET",
-      config.matchService,
-      `/matches/statistics/${myUserId}?offset=${offset}&limit=${limit}`,
-    );
-    if (userHistory.status === null) {
-      console.error("Error Occured");
-      return;
-    }
-    if (userHistory.status >= 400) {
-      console.error(userHistory.data.error);
-      return;
-    }
-    if (userHistory.length === 0) {
-      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
-      return;
-    }
+    // 本番用
+    // userHistory = fetchApiNoBody(
+    //   "GET",
+    //   config.matchService,
+    //   `/matches/histories/${myUserId}?offset=${offset}&limit=${limit}`,
+    // );
+    // if (userHistory.status === null) {
+    //   console.error("Error Occured");
+    //   return;
+    // }
+    // if (userHistory.status >= 400) {
+    //   console.error(userHistory.data.error);
+    //   return;
+    // }
+    // if (userHistory.length === 0) {
+    //   window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
+    //   return;
+    // }
+    // await Promise.all(
+    //   userHistory.data.results.map(async (matchResult) => {
+    //     const matchItem = document.createElement("div");
+    //     const opponent = await fetchUserNameAndAvatar(
+    //       "GET",
+    //       config.friendService,
+    //       `/users?userid=${matchResult.opponents[0].id}`,
+    //     );
+    //     if (opponent.status === null) {
+    //       console.error("Error Occured");
+    //       return;
+    //     }
+    //     if (opponent.status >= 400) {
+    //       console.error(opponent.data.error);
+    //       return;
+    //     }
+    //     const avatarImg = `${config.userService}${friend.data.avatarPath}`;
+    //     const score = `${matchResult.userScore} - ${matchResult.opponent[0].score}`;
+    //     matchItem.innerHTML = `
+    //     <div class="row row-cols-5 mt-2">
+    //       <div class="col">${matchResult.mode}</div>
+    //       <div class="col text-center">
+    //         <img src=${avatarImg} alt="ロゴ" class="square-img rounded-circle me-2" >
+    //         <span>${opponent.username}</span>
+    //       </div>
+    //       <div class="col">${matchResult.result}</div>
+    //       <div class="col">${score}</div>
+    //       <div class="col">${matchResult.date}</div>
+    //       </div>
+    //     `;
+    //     matchHistoryTable.appendChild(matchItem);
+    //   }),
+    // );
+
+    // テスト用
+    const userHistory = test_history_data.results.slice(offset, offset + limit);
     await Promise.all(
-      userHistory.data.map(async (matchResult) => {
+      userHistory.map(async (matchResult) => {
         const matchItem = document.createElement("div");
-        const opponent = await fetchUserNameAndAvatar(
-          "Get",
-          config.friendService,
-          `/users?userid=${matchResult.opponents.id}`,
-        );
-        if (opponent.status === null) {
-          console.error("Error Occured");
-          return;
-        }
-        if (opponent.status >= 400) {
-          console.error(opponent.data.error);
-          return;
-        }
-        const avatarImg = `${config.userService}${friend.data.avatarPath}`;
-        const score = `${matchResult.userScore}-${matchResult.opponent.score}`;
+        const opponent = test_user_data;
+        const avatarImg = test_user_data.avatarPath;
+        const score = `${matchResult.userScore} - ${matchResult.opponents[0].score}`;
+        const resultColor = matchResult.result === "win" ? "#0CC0DF" : "#FF0004";
         matchItem.innerHTML = `
         <div class="row row-cols-5 mt-2">
           <div class="col">${matchResult.mode}</div>
@@ -90,7 +355,7 @@ export const setupMatchHistory = async () => {
             <img src=${avatarImg} alt="ロゴ" class="square-img rounded-circle me-2" >
             <span>${opponent.username}</span>
           </div>
-          <div class="col">${matchResult.result}</div>
+          <div class="col" style="color: ${resultColor}">${matchResult.result}</div>
           <div class="col">${score}</div>
           <div class="col">${matchResult.date}</div>
           </div>
