@@ -27,9 +27,10 @@ const wsEventHandler = {
       const parsedMessage = JSON.parse(message.data);
       const tournamentId = parsedMessage.tournament_id;
       const userIdList = parsedMessage.wait_user_ids;
+      const roomCapacity = parsedMessage.room_capacity;
       const startTime = parsedMessage.tournament_start_time;
 
-      console.log(startTime);
+      // INFO startTimeがNoneならTimerをリセット
       if (startTime === "None") {
         clearInterval(WsTournamentMatchingManager.intervalId);
         renderTimer("-");
@@ -40,7 +41,7 @@ const wsEventHandler = {
 
       const playersData = await fetchPlayersData(userIdList);
       renderMatchingRoom(playersData);
-      renderMatchingInfo(userIdList.length, 16);
+      renderMatchingInfo(userIdList.length, roomCapacity);
 
       if (tournamentId === undefined) {
         return;
