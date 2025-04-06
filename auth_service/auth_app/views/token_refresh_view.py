@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class TokenRefreshView(APIView):
-    authentication_classes = []
-    permission_classes = []
 
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
