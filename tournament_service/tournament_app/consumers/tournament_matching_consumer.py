@@ -94,7 +94,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             {
                 "type": "send.matching.room.state",
                 "tournament_start_time": str(start_time),
-                "wait_user_ids": str(wait_user_ids),
+                "wait_user_ids": wait_user_ids,
             },
         )
 
@@ -113,7 +113,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 "type": "send.matching.room.state",
                 "tournament_id": str(tournament_id),
                 "tournament_start_time": str(None),
-                "wait_user_ids": str(wait_user_ids),
+                "wait_user_ids": wait_user_ids,
             },
         )
         for channel_name in TournamentMatchingManager.get_waiting_users().values():

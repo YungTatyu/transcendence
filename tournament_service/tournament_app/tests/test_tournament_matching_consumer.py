@@ -270,20 +270,20 @@ async def test_receive_matching_wait_user_ids():
     communicator1, _ = await create_communicator(10000)
 
     data1 = await communicator1.receive_json_from()
-    assert data1["wait_user_ids"] == "[10000]"
+    assert data1["wait_user_ids"] == [10000]
 
     communicator2, _ = await create_communicator(20000)
 
     data2 = await communicator1.receive_json_from()
-    assert data2["wait_user_ids"] == "[10000, 20000]"
+    assert data2["wait_user_ids"] == [10000, 20000]
 
     data3 = await communicator2.receive_json_from()
-    assert data3["wait_user_ids"] == "[10000, 20000]"
+    assert data3["wait_user_ids"] == [10000, 20000]
 
     await communicator1.disconnect()
 
     data4 = await communicator2.receive_json_from()
-    assert data4["wait_user_ids"] == "[20000]"
+    assert data4["wait_user_ids"] == [20000]
 
     await communicator2.disconnect()
 
