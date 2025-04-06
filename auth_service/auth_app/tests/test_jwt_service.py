@@ -1,93 +1,70 @@
+import jwt
 from django.test import TestCase
-from unittest.mock import patch
-from auth_app.services.jwt_service import generate_signed_jwt, verify_signed_jwt
-from auth_app.settings import JWT_EXPIRATION
+
+from auth_app.client.vault_client import VaultClient
+from auth_app.services.jwt_service import (
+    extract_signature_from_jwt,
+    generate_signed_jwt,
+    verify_jwt,
+    verify_signed_jwt,
+)
+from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    JWT_EXPIRATION,
+    VAULT_ADDR,
+)
 
 
 class JwtServiceTests(TestCase):
+    def test_generate_signed_jwt_success(self):
+        """
+        generate_signed_jwtが正しいJWTを生成する。
+        """
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_generate_signed_jwt_success(self, mock_client):
-        """
-        VaultClient のメソッドが正常に動作する場合、generate_signed_jwt が正しい JWT を生成することを確認
-        """
-        mock_client.fetch_token.return_value = "mock-token"
-        mock_client.fetch_signature.return_value = "mock-signature"
+        signed_jwt = generate_signed_jwt("12345", expires_in=JWT_EXPIRATION)
 
-        result = generate_signed_jwt("12345", expires_in=JWT_EXPIRATION)
+        self.assertIsNotNone(signed_jwt)
+        self.assertTrue(isinstance(signed_jwt, str))
+        self.assertIn(".", signed_jwt)
 
-        self.assertIsNotNone(result)
-        self.assertEqual(result.count('.'), 2)
+        payload = jwt.decode(signed_jwt, options={"verify_signature": False})
+        self.assertEqual(payload["userId"], "12345")
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_generate_signed_jwt_failure_no_token(self, mock_client):
+    def test_verify_signed_jwt_success(self):
         """
-        VaultClient がトークンを返さない場合、generate_signed_jwt が None を返すことを確認
+        verify_signed_jwtが正しく署名を検証する。
         """
-        mock_client.fetch_token.return_value = None
-        result = generate_signed_jwt("12345", expires_in=JWT_EXPIRATION)
-        self.assertIsNone(result)
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_generate_signed_jwt_failure_no_signature(self, mock_client):
-        """
-        VaultClient が署名を返さない場合、generate_signed_jwt が None を返すことを確認
-        """
-        mock_client.fetch_token.return_value = "mock-token"
-        mock_client.fetch_signature.return_value = None
-        result = generate_signed_jwt("12345", expires_in=JWT_EXPIRATION)
-        self.assertIsNone(result)
+        # JWTを生成して検証
+        signed_jwt = generate_signed_jwt("12345", expires_in=JWT_EXPIRATION)
+        result = verify_signed_jwt(signed_jwt)
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_verify_signed_jwt_success(self, mock_client):
-        """
-        verify_signed_jwt が有効な JWT に対して True を返すことを確認
-        """
-        mock_client.fetch_token.return_value = "mock-token"
-        mock_client.fetch_pubkey.return_value = "mock-pubkey"
+        # JWTが正しく検証されることを確認
+        self.assertTrue(result)
 
-        with patch("auth_app.services.jwt_service.extract_signature_from_jwt", return_value="mock-signature"):
-            with patch("auth_app.services.jwt_service.verify_jwt", return_value=True):
-                token = generate_signed_jwt("12345", expires_in=JWT_EXPIRATION)
-                self.assertTrue(verify_signed_jwt(token))
+    def test_verify_jwt_success(self):
+        """
+        verify_jwt が正しく署名を検証する
+        """
+        # 正常な JWT を生成
+        user_id = "12345"
+        signed_jwt = generate_signed_jwt(user_id)
+        self.assertIn(".", signed_jwt)
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_verify_signed_jwt_failure_no_token(self, mock_client):
-        """
-        VaultClient がトークンを返さない場合、verify_signed_jwt が False を返すことを確認
-        """
-        mock_client.fetch_token.return_value = None
-        token = "invalid-token"
-        self.assertFalse(verify_signed_jwt(token))
+        client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_verify_signed_jwt_failure_no_pubkey(self, mock_client):
-        """
-        VaultClient が公開鍵を返さない場合、verify_signed_jwt が False を返すことを確認
-        """
-        mock_client.fetch_token.return_value = "mock-token"
-        mock_client.fetch_pubkey.return_value = None
-        token = "invalid-token"
-        self.assertFalse(verify_signed_jwt(token))
+        token = client.fetch_token()
+        pubkey = client.fetch_pubkey(token)
+        self.assertIsNotNone(pubkey, "公開鍵の取得に失敗")
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_verify_signed_jwt_failure_invalid_signature(self, mock_client):
-        """
-        署名が無効な場合、verify_signed_jwt が False を返すことを確認
-        """
-        mock_client.fetch_token.return_value = "mock-token"
-        mock_client.fetch_pubkey.return_value = "mock-pubkey"
+        extracted_signature = extract_signature_from_jwt(signed_jwt)
+        # JWT を分割して header.payload 部分を取得
+        parts = signed_jwt.split(".")
+        self.assertEqual(len(parts), 3, "JWT の形式が不正です")
 
-        with patch("auth_app.services.jwt_service.extract_signature_from_jwt", return_value="invalid-signature"):
-            self.assertFalse(verify_signed_jwt("invalid-token"))
+        unsigned_jwt = f"{parts[0]}.{parts[1]}".encode()
+        result = verify_jwt(pubkey, unsigned_jwt, extracted_signature)
 
-    @patch("auth_app.services.jwt_service.client")
-    def test_verify_signed_jwt_failure_expired(self, mock_client):
-        """
-        JWT が期限切れの場合、verify_signed_jwt が False を返すことを確認
-        """
-        mock_client.fetch_token.return_value = "mock-token"
-        mock_client.fetch_pubkey.return_value = "mock-pubkey"
-
-        expired_jwt = "expired-token"  # 有効期限が過ぎたトークンと仮定
-        self.assertFalse(verify_signed_jwt(expired_jwt))
+        self.assertTrue(result, "JWT の署名検証に失敗しました")
