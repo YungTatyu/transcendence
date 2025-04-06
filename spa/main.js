@@ -27,6 +27,7 @@ import Title, { setupTitile } from "./views/Title.js";
 import Tournament, { setupTournament } from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
+  cleanupTournamentMatching,
 } from "./views/TournamentMatching.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 
@@ -61,7 +62,12 @@ SPA.route(
   setupQuickPlayMatching,
   cleanupQuickPlayMatching,
 );
-SPA.route("/matching/tournament", TournamentMatching, setupTournamentMatching);
+SPA.route(
+  "/matching/tournament",
+  TournamentMatching,
+  setupTournamentMatching,
+  cleanupTournamentMatching,
+);
 
 SPA.route(
   "/friend/friend-request-form",
