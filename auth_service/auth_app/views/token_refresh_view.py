@@ -14,7 +14,7 @@ class TokenRefreshView(APIView):
     permission_classes = []
 
     def post(self, request):
-        refresh_token = request.data.get("refresh")
+        refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
             return Response(
                 {"error": "Refresh token is missing."},
