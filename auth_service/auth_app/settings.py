@@ -17,7 +17,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # APIベースURL
-USER_API_BASE_URL = "http://user:9000"
+USER_API_BASE_URL = os.getenv("USER_PROXY_URL")
+
+# JWT関連
+JWT_HEADER = {"alg": "PS256", "typ": "JWT"}
+JWT_EXPIRATION = 3600
+REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 30
 
 # モックモードの設定
 # TODO user api 実装後にFalseとする
@@ -202,6 +207,11 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Cookie を許可
+
+VAULT_ADDR = os.getenv("VAULT_ADDR")
+CLIENT_CERT = os.getenv("CLIENT_CERT")
+CLIENT_KEY = os.getenv("CLIENT_KEY")
+CA_CERT = os.getenv("CA_CERT")
 
 CORS_ALLOW_METHODS = [
     "GET",

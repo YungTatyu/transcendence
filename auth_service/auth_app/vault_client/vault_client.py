@@ -4,7 +4,8 @@ from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from jwt_utils import PublicKeyType, create_unsigned_jwt, verify_jwt
+
+from .jwt_utils import PublicKeyType
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class VaultClient:
         pubkey = load_pem_public_key(pubkey_pem.encode())
         return pubkey
 
-    def fetch_api_key(self, token: str, api_key_name: str) -> Optional[dict[str, int]]:
+    def fetch_api_key(self, token: str, api_key_name: str) -> Optional[dict[str, str]]:
         """APIキーを取得(自動ローテーションするため、APIキーのDictを返す)"""
         url = f"{self.__base_url}/v1/kv/apikeys/{api_key_name}"
         headers = {"X-Vault-Token": token}
@@ -90,32 +91,14 @@ class VaultClient:
 
         return response.json()["data"]
 
+    def verify_api_key(self, api_key: str, api_key_name) -> Optional[bool]:
+        token = self.fetch_token()
+        if token is None:
+            return None
 
-if __name__ == "__main__":
-    # INFO localhostからvaultAPIを叩く場合、CNの設定上、
-    #      "/etc/hostsファイルに127.0.0.1 vault" を追加する必要がある
-    VAULT_ADDR = "https://vault:8200"
-    CLIENT_CERT = "../../certs/client.crt"
-    CLIENT_KEY = "../../certs/client.key"
-    CA_CERT = "../../certs/ca.crt"
+        api_keys = self.fetch_api_key(token, api_key_name)
 
-    client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
-    # INFO tokenは一定期間同じものを使用できます
-    token = client.fetch_token()
-    if token:
-        jwt_header = {"alg": "PS256", "typ": "JWT"}
-        jwt_payload = {"userId": "1"}
-        jwt_data = create_unsigned_jwt(jwt_header, jwt_payload)
-        signature = client.fetch_signature(token, jwt_data)
-        pubkey = client.fetch_pubkey(token)
-        if signature and pubkey:
-            print("Verify JWT: ", verify_jwt(pubkey, jwt_data, signature))
+        if api_keys is None:
+            return None
 
-        users_apikeys = client.fetch_api_key(token, "users")
-        matches_apikeys = client.fetch_api_key(token, "matches")
-        tournaments_apikeys = client.fetch_api_key(token, "tournaments")
-        games_apikeys = client.fetch_api_key(token, "games")
-        print("APIKEY[users]: ", users_apikeys)
-        print("APIKEY[matches]: ", matches_apikeys)
-        print("APIKEY[tournaments]: ", tournaments_apikeys)
-        print("APIKEY[games]: ", games_apikeys)
+        return api_key in api_keys.values()
