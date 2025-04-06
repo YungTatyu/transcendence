@@ -127,6 +127,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             data["tournament_id"] = event["tournament_id"]
         data["tournament_start_time"] = event["tournament_start_time"]
         data["wait_user_ids"] = event["wait_user_ids"]
+        data["room_capacity"] = TournamentMatchingConsumer.ROOM_CAPACITY
         await self.send(text_data=json.dumps(data))
 
     @database_sync_to_async

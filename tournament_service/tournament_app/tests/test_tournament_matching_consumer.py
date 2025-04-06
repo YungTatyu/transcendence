@@ -4,6 +4,9 @@ import time
 import pytest
 
 from tournament_app.consumers.tournament_matching_consumer import (
+    TournamentMatchingConsumer,
+)
+from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
 from tournament_app.tests.conftest import create_communicator
@@ -20,6 +23,7 @@ async def test_enter_room_from_empty_with_one_user():
     act_data = await communicator.receive_json_from()
     assert act_data["tournament_start_time"] == "None"
     assert act_data.get("tournament_id", None) is None
+    assert act_data["room_capacity"] == TournamentMatchingConsumer.ROOM_CAPACITY
     await communicator.disconnect()
 
 
@@ -96,6 +100,7 @@ async def test_start_tournament_by_room_capacity(create_match_records_mocker):
         assert data["tournament_id"] != "None"
         assert data["tournament_start_time"] == "None"
         assert "wait_user_ids" in data
+        assert data["room_capacity"] == TournamentMatchingConsumer.ROOM_CAPACITY
 
     for communicator in communicators:
         await communicator.disconnect()
