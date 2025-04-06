@@ -23,7 +23,7 @@ class TokenRefreshView(APIView):
 
         try:
             is_valid = jwt_service.verify_signed_jwt(refresh_token)
-        except Exception as e:
+        except Exception:
             logger.exception("Error verifying signed JWT")
             return Response(
                 {"error": "Refresh token is missing or invalid."},
@@ -39,7 +39,7 @@ class TokenRefreshView(APIView):
             payload = jwt_service.jwt.decode(
                 refresh_token, options={"verify_signature": False}
             )
-            user_id = payload.get("userId")
+            user_id = payload.get("user_id")
             if not user_id:
                 return Response(
                     {"error": "Invalid refresh token payload."},
