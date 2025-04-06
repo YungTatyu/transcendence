@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from auth_app.services import jwt_service
+from auth_app.settings import (
+    COOKIE_DOMAIN,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +62,8 @@ class TokenRefreshView(APIView):
                 value=new_access_token,
                 httponly=True,
                 secure=True,
-                samesite="Lax",
+                samesite="None",
+                domain=COOKIE_DOMAIN,
                 path="/",
             )
             return response
