@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from auth_app.models import CustomUser
-
+from auth_app.services.jwt_service import generate_signed_jwt
 
 class UpdateEmailViewTest(TestCase):
     """
@@ -27,9 +27,8 @@ class UpdateEmailViewTest(TestCase):
             hashed_password=make_password("securepassword"),
         )
 
-        # JWT トークンの作成（本来は認証サーバーから取得するが、テストでは直接作成）
-        self.token_payload = {"user_id": self.user.user_id}
-        self.token = jwt.encode(self.token_payload, "test_secret", algorithm="HS256")
+        # Vault ベースの署名付き JWT を発行
+        self.token = generate_signed_jwt(self.user.user_id)
 
         self.client.cookies["access_token"] = self.token
 
