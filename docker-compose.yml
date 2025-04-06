@@ -143,7 +143,10 @@ services:
       - user_db
     env_file: ./docker_env/user.env
     volumes:
-     - user_media:/app/user_app/media/
+      - user_media:/app/user_app/media/
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
      
   user_db:
     image: postgres:15

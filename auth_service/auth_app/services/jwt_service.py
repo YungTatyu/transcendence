@@ -31,7 +31,7 @@ def generate_signed_jwt(user_id: str, expires_in: int = JWT_EXPIRATION):
         return None
     exp_time = datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in)
     jwt_payload = {
-        "userId": user_id,
+        "user_id": user_id,
         "exp": int(exp_time.timestamp()),
     }
     jwt_data = create_unsigned_jwt(JWT_HEADER, jwt_payload)
