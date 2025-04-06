@@ -17,6 +17,8 @@ export function renderMatchingRoom(users) {
     const avatarImg = document.createElement("img");
     avatarImg.src = user.avatarPath;
     avatarImg.alt = "";
+    avatarImg.classList.add("rounded-circle");
+    avatarImg.classList.add("me-2");
     div.appendChild(avatarImg);
 
     const nameText = document.createElement("p");

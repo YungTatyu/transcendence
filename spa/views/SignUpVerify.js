@@ -1,24 +1,14 @@
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
-import Form from "../components/Form.js";
 import VerifyForm from "../components/VerifyForm.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function SignUpVerify() {
-  const formHtml = VerifyForm(
+  return VerifyForm(
     true,
     "Scan this QRcode and verify OTP",
     "signUpVerifyButton",
   );
-  const updateEmailFormFields = [
-    { label: "NewEmail", type: "email", placeholder: "abc@example.com" },
-  ];
-  const updateEmailFormHtml = Form(
-    updateEmailFormFields,
-    "updateEmail",
-    "update-mail",
-  );
-  return formHtml + updateEmailFormHtml;
 }
 
 export function setupSignUpVerify() {
@@ -63,26 +53,6 @@ export function setupSignUpVerify() {
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
     sessionStorage.setItem("access_token", data.accessToken);
-
-    const updateEmailButton = document.getElementById("updateEmail");
-    updateEmailButton.addEventListener("click", async () => {
-      const email = document.getElementById("fieldNewEmail").value;
-      const { status, data } = await fetchApiWithBody(
-        "PUT",
-        config.authService,
-        "/auth/me/email",
-        { email: email },
-      );
-
-      if (status === null) {
-        errorOutput.textContent = "Error Occured!";
-        return;
-      }
-      if (status >= 400) {
-        errorOutput.textContent = JSON.stringify(data.error, null, "\n");
-        return;
-      }
-    });
     SPA.navigate("/home");
   });
 }
