@@ -1,4 +1,3 @@
-import jwt
 import pyotp
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase
@@ -7,6 +6,7 @@ from rest_framework.test import APIClient
 
 from auth_app.models import CustomUser
 from auth_app.services.jwt_service import generate_signed_jwt
+
 
 class UpdateEmailViewTest(TestCase):
     """
