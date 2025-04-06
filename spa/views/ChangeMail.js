@@ -41,7 +41,6 @@ export function setupChangeMail() {
       errorOutput.textContent = JSON.stringify(data.error, null, "\n");
       return;
     }
-    console.log(data);
     SPA.navigate("/profile");
   });
 }
