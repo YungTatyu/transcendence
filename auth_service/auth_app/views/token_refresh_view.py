@@ -21,7 +21,14 @@ class TokenRefreshView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        is_valid = jwt_service.verify_signed_jwt(refresh_token)
+        try:
+            is_valid = jwt_service.verify_signed_jwt(refresh_token)
+        except Exception as e:
+            logger.exception("Error verifying signed JWT")
+            return Response(
+                {"error": "Refresh token is missing or invalid."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
         if not is_valid:
             return Response(
                 {"error": "Refresh token is missing or invalid."},

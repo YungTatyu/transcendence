@@ -30,7 +30,7 @@ class JwtServiceTests(TestCase):
         self.assertIn(".", signed_jwt)
 
         payload = jwt.decode(signed_jwt, options={"verify_signature": False})
-        self.assertEqual(payload["userId"], "12345")
+        self.assertEqual(payload["user_id"], "12345")
 
     def test_verify_signed_jwt_success(self):
         """
