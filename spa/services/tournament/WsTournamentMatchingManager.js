@@ -4,7 +4,19 @@ import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
-import { renderMatchingInfo } from "./TournamentMatchingInfo.js";
+import { renderMatchingInfo, renderTimer } from "./TournamentMatchingInfo.js";
+import { calcRemaingTime } from "../../utils/timerHelper.js";
+
+const startTimer = (endTime) => {
+  const intervalId = setInterval(() => {
+    const remainingTime = calcRemaingTime(endTime);
+    renderTimer(remainingTime);
+    if (remainingTime <= 0) {
+      clearInterval(intervalId);
+    }
+  }, 1000); // 1秒ごとに実行
+  return intervalId;
+};
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -17,9 +29,18 @@ const wsEventHandler = {
       const userIdList = parsedMessage.wait_user_ids;
       const startTime = parsedMessage.tournament_start_time;
 
+      console.log(startTime);
+      if (startTime === "None") {
+        clearInterval(WsTournamentMatchingManager.intervalId);
+        renderTimer("-");
+      } else {
+        const endTime = Number(startTime) * 1000; // Unixタイム(秒) → ミリ秒に変換
+        WsTournamentMatchingManager.intervalId = startTimer(endTime);
+      }
+
       const playersData = await fetchPlayersData(userIdList);
       renderMatchingRoom(playersData);
-      renderMatchingInfo(userIdList.length, 16, startTime);
+      renderMatchingInfo(userIdList.length, 16);
 
       if (tournamentId === undefined) {
         return;
@@ -51,6 +72,7 @@ const wsEventHandler = {
 const WsTournamentMatchingManager = {
   socket: null,
   eventHandler: wsEventHandler,
+  intervalId: null,
 
   connect(accessToken) {
     this.socket = new WebSocket(
@@ -64,6 +86,10 @@ const WsTournamentMatchingManager = {
     if (this.socket !== null) {
       this.socket.close();
       this.socket = null;
+    }
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
     }
   },
 

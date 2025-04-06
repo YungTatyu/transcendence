@@ -11,12 +11,15 @@ export default function TournamentMatchingInfo() {
   `;
 }
 
-export function renderMatchingInfo(playerSize, maxPlayerSize, remainSec) {
+export function renderMatchingInfo(playerSize, maxPlayerSize) {
   const currentPlayers = document.getElementById("current-players");
   const maxPlayers = document.getElementById("max-players");
-  const matchingRemainSec = document.getElementById("matching-remain-sec");
 
   currentPlayers.textContent = playerSize;
   maxPlayers.textContent = maxPlayerSize;
-  matchingRemainSec.textContent = `[${remainSec}]`;
+}
+
+export function renderTimer(endTime) {
+  const matchingRemainSec = document.getElementById("matching-remain-sec");
+  matchingRemainSec.textContent = `[${endTime}]`;
 }
