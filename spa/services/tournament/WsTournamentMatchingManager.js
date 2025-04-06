@@ -4,8 +4,8 @@ import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
-import { renderMatchingInfo, renderTimer } from "./TournamentMatchingInfo.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
+import { renderMatchingInfo, renderTimer } from "./TournamentMatchingInfo.js";
 
 const startTimer = (endTime) => {
   const intervalId = setInterval(() => {
