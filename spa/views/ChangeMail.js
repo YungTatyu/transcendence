@@ -10,7 +10,7 @@ export default function ChangeMail() {
   return Form(ChangeMailFormField, "changeMail", "Submit", "Set Your Mail");
 }
 
-export function setupChageMail() {
+export function setupChangeMail() {
   const submitButton = document.getElementById("changeMail");
   submitButton.addEventListener("click", async (event) => {
     event.preventDefault();
