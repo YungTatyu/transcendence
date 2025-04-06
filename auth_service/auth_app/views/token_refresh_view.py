@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class TokenRefreshView(APIView):
-
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
