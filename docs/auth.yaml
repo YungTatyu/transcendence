@@ -366,17 +366,13 @@ paths:
         - Auth
       # accessトークンを更新するので、認証しない
       security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                refresh:
-                  type: string
-              required:
-                - refresh
+      parameters:
+        - name: refresh_token
+          in: cookie
+          required: true
+          description: "リフレッシュトークンを含むCookie"
+          schema:
+            type: string
       responses:
         "200":
           description: "New access token generated."
