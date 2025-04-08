@@ -5,7 +5,6 @@ from typing import Optional
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
-from utils.jwt_service import PublicKeyType
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +32,7 @@ class VaultClient:
         token = response.json().get("auth", {}).get("client_token")
         return token
 
-    def fetch_signature(
-        self, token: str, unsigned_jwt: bytes
-    ) -> Optional[PublicKeyType]:
+    def fetch_signature(self, token: str, unsigned_jwt: bytes):
         """トークンを用いて署名なしJWTデータから署名を作成"""
         url = f"{self.__base_url}/v1/transit/sign/jwt-key"
         headers = {"X-Vault-Token": token}  # Vaultトークンを指定するヘッダ
