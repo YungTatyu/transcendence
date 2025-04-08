@@ -33,7 +33,7 @@ export const setupMatchHistory = async () => {
 
   async function loadHistory(offset, limit) {
     // 本番用
-    userHistory = fetchApiNoBody(
+    const userHistory = await fetchApiNoBody(
       "GET",
       config.matchService,
       `/matches/histories/${myUserId}?offset=${offset}&limit=${limit}`,
@@ -53,9 +53,9 @@ export const setupMatchHistory = async () => {
     await Promise.all(
       userHistory.data.results.map(async (matchResult) => {
         const matchItem = document.createElement("div");
-        const opponent = await fetchUserNameAndAvatar(
+        const opponent = await fetchApiNoBody(
           "GET",
-          config.friendService,
+          config.userService,
           `/users?userid=${matchResult.opponents[0].id}`,
         );
         if (opponent.status === null) {
@@ -66,8 +66,8 @@ export const setupMatchHistory = async () => {
           console.error(opponent.data.error);
           return;
         }
-        const avatarImg = `${config.userService}${friend.data.avatarPath}`;
-        const score = `${matchResult.userScore} - ${matchResult.opponent[0].score}`;
+        const avatarImg = `${config.userService}${opponent.data.avatarPath}`;
+        const score = `${matchResult.userScore} - ${matchResult.opponents[0].score}`;
         const resultColor =
           matchResult.result === "win" ? "#0CC0DF" : "#FF0004";
         matchItem.innerHTML = `
@@ -75,7 +75,7 @@ export const setupMatchHistory = async () => {
           <div class="col">${matchResult.mode}</div>
           <div class="col text-center">
             <img src=${avatarImg} alt="ロゴ" class="square-img rounded-circle me-2" >
-            <span>${opponent.username}</span>
+            <span>${opponent.data.username}</span>
           </div>
           <div class="col" style="color: ${resultColor}">${matchResult.result}</div>
           <div class="col">${score}</div>
