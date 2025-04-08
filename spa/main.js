@@ -5,9 +5,13 @@ import ChangeAvatar, { setupChangeAvatar } from "./views/ChangeAvatar.js";
 import ChangeMail from "./views/ChangeMail.js";
 import ChangePassword from "./views/ChangePassword.js";
 import ChangeUsername, { setupChageUsername } from "./views/ChangeUsername.js";
+import FriendList, { setupFriendList } from "./views/FriendList.js";
 import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
+import FriendRequestList, {
+  setupFriendRequestList,
+} from "./views/FriendRequestList.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home, { setupHome } from "./views/Home.js";
@@ -27,10 +31,6 @@ import Tournament, { setupTournament } from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
 } from "./views/TournamentMatching.js";
-import FriendList, { setupFriendList } from "./views/FriendList.js";
-import FriendRequestList, {
-  setupFriendRequestList,
-} from "./views/FriendRequestList.js";
 
 SPA.route("/", Title, setupTitile);
 SPA.route("/404", NotFound);
