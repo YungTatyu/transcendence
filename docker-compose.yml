@@ -58,6 +58,8 @@ services:
       - app_network
     depends_on:
       - game_redis
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   game_redis:
     image: redis:alpine

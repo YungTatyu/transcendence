@@ -209,3 +209,5 @@ CORS_ALLOW_METHODS = [
     "PATCH",
     "OPTIONS",
 ]
+
+CA_CERT = "/certs/ca.crt"
