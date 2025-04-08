@@ -85,32 +85,6 @@ export const setupMatchHistory = async () => {
         matchHistoryTable.appendChild(matchItem);
       }),
     );
-
-    // テスト用
-    // const userHistory = testHistoryData.results.slice(offset, offset + limit);
-    // await Promise.all(
-    //   userHistory.map(async (matchResult) => {
-    //     const matchItem = document.createElement("div");
-    //     const opponent = testUserData;
-    //     const avatarImg = testUserData.avatarPath;
-    //     const score = `${matchResult.userScore} - ${matchResult.opponents[0].score}`;
-    //     const resultColor =
-    //       matchResult.result === "win" ? "#0CC0DF" : "#FF0004";
-    //     matchItem.innerHTML = `
-    //     <div class="row row-cols-5 mt-2">
-    //       <div class="col">${matchResult.mode}</div>
-    //       <div class="col text-center">
-    //         <img src=${avatarImg} alt="ロゴ" class="square-img rounded-circle me-2" >
-    //         <span>${opponent.username}</span>
-    //       </div>
-    //       <div class="col" style="color: ${resultColor}">${matchResult.result}</div>
-    //       <div class="col">${score}</div>
-    //       <div class="col">${matchResult.date}</div>
-    //       </div>
-    //     `;
-    //     matchHistoryTable.appendChild(matchItem);
-    //   }),
-    // );
     currentPage++;
   }
 
