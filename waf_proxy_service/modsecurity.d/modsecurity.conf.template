@@ -16,7 +16,7 @@ SecRuleEngine On
 # won't be able to see any POST parameters, which opens a large security
 # hole for attackers to exploit.
 #
-SecRequestBodyAccess On
+SecRequestBodyAccess Off
 
 
 # Enable XML request body parser.
