@@ -68,7 +68,7 @@ export const setupFriendList = async () => {
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
         const friend = await fetchApiNoBody(
-          "Get",
+          "GET",
           config.userService,
           `/users?userid=${friendId}`,
         );
@@ -89,13 +89,13 @@ export const setupFriendList = async () => {
         const avatarImg = `${config.userService}${friend.data.avatarPath}`;
         friendItem.classList.add("js-friend-list-item");
         friendItem.innerHTML = `
-      <div class="gap-wrap d-flex align-items-center mt-4">
-        <img src=${avatarImg} alt="avotor">
-        <div class="text-white fs-2">${friend.data.username}</div>
-        <div class="user-status">${statusResponse.data.status}</div>
-        <button type="button" class="remove-button btn btn-primary">Remove</button>
-      </div>
-      `;
+        <div class="gap-wrap d-flex align-items-center mt-4">
+          <img src=${avatarImg} alt="avotor">
+          <div class="text-white fs-2">${friend.data.username}</div>
+          <div class="user-status">${statusResponse.data.status}</div>
+          <button type="button" class="remove-button btn btn-primary">Remove</button>
+        </div>
+        `;
         friendItem
           .querySelector(".remove-button")
           .addEventListener("click", async () => {
