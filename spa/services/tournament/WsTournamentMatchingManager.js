@@ -4,7 +4,19 @@ import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
-import { renderMatchingInfo } from "./MatchingInfo.js";
+import { calcRemaingTime } from "../../utils/timerHelper.js";
+import { renderMatchingInfo, renderTimer } from "./TournamentMatchingInfo.js";
+
+const startTimer = (endTime) => {
+  const intervalId = setInterval(() => {
+    const remainingTime = calcRemaingTime(endTime);
+    renderTimer(remainingTime);
+    if (remainingTime <= 0) {
+      clearInterval(intervalId);
+    }
+  }, 1000); // 1秒ごとに実行
+  return intervalId;
+};
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -13,26 +25,39 @@ const wsEventHandler = {
   async handleMessage(message) {
     try {
       const parsedMessage = JSON.parse(message.data);
-      const matchId = parsedMessage.match_id;
-      const userIdList = parsedMessage.user_id_list;
+      const tournamentId = parsedMessage.tournament_id;
+      const userIdList = parsedMessage.wait_user_ids;
+      const roomCapacity = parsedMessage.room_capacity;
+      const startTime = parsedMessage.tournament_start_time;
+
+      // INFO startTimeがNoneならTimerをリセット
+      if (startTime === "None") {
+        clearInterval(WsTournamentMatchingManager.intervalId);
+        renderTimer("-");
+      } else {
+        const endTime = Number(startTime) * 1000; // Unixタイム(秒) → ミリ秒に変換
+        WsTournamentMatchingManager.intervalId = startTimer(endTime);
+      }
+
       const playersData = await fetchPlayersData(userIdList);
       renderMatchingRoom(playersData);
-      if (matchId === undefined) {
+      renderMatchingInfo(userIdList.length, roomCapacity);
+
+      if (tournamentId === undefined) {
         return;
       }
-      if (matchId === "None") {
-        renderMatchingInfo("Error occurred", "#FF0000");
+      if (tournamentId === "None") {
+        console.error("TournamentId is None");
         return;
       }
+
       renderWaitOrStart("START", "#ffffff");
-      renderMatchingInfo("OPPONENT FOUND.", "#0CC0DF");
-      stateManager.setState({ players: userIdList });
-      stateManager.setState({ matchId: matchId });
+      stateManager.setState({ tournamentId: tournamentId });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>
         new Promise((resolve) => setTimeout(resolve, msec));
       await sleep(1000);
-      SPA.navigate("/game");
+      SPA.navigate("/tournament");
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
     }
@@ -45,13 +70,14 @@ const wsEventHandler = {
   },
 };
 
-const WsQuickPlayMatchingManager = {
+const WsTournamentMatchingManager = {
   socket: null,
   eventHandler: wsEventHandler,
+  intervalId: null,
 
   connect(accessToken) {
     this.socket = new WebSocket(
-      `${config.matchMatchingService}/matches/ws/enter-room`,
+      `${config.tournamentMatchingService}/tournaments/ws/enter-room`,
       ["app-protocol", accessToken],
     );
     this.registerEventHandler();
@@ -61,6 +87,10 @@ const WsQuickPlayMatchingManager = {
     if (this.socket !== null) {
       this.socket.close();
       this.socket = null;
+    }
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
     }
   },
 
@@ -74,4 +104,4 @@ const WsQuickPlayMatchingManager = {
   },
 };
 
-export default WsQuickPlayMatchingManager;
+export default WsTournamentMatchingManager;

@@ -94,6 +94,8 @@ services:
     depends_on:
       - tournament_db
       - tournament_redis
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   tournament_db:
     image: postgres:15

@@ -15,6 +15,7 @@ const config = {
     realtimeGameService: "wss://game-proxy.transcen.com:8004",
     authService: "https://auth-proxy.transcen.com:8005",
     friendService: "https://friends-proxy.transcen.com:8007",
+    tournamentMatchingService: "wss://tournament-proxy.transcen.com:8006",
   },
 };
 

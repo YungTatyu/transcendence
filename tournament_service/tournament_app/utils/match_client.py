@@ -1,8 +1,10 @@
 import logging
+import ssl
 from typing import Optional
 
 import aiohttp
 import requests
+from config.settings import CA_CERT
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,12 @@ class MatchClient:
         }
 
         response = http_methods[method](
-            url, json=body, params=params, headers=headers, timeout=timeout
+            url,
+            json=body,
+            params=params,
+            headers=headers,
+            timeout=timeout,
+            verify=CA_CERT,
         )
         response.raise_for_status()
         return response
@@ -134,8 +141,11 @@ class MatchClient:
         }
 
         try:
+            ssl_context = ssl.create_default_context()
+            ssl_context.load_verify_locations(CA_CERT)
+            connector = aiohttp.TCPConnector(ssl=ssl_context)
             async with (
-                aiohttp.ClientSession() as session,
+                aiohttp.ClientSession(connector=connector) as session,
                 session.post(url, json=body, timeout=5) as response,
             ):
                 return await response.json()
