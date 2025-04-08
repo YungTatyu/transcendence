@@ -3,6 +3,12 @@ import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
 
+const handleChAvatar = () => SPA.navigate("/profile/avatar");
+const handleChUname = () => SPA.navigate("/profile/username");
+const handleChPassword = () => SPA.navigate("/profile/password");
+const handleChMail = () => SPA.navigate("/profile/mail");
+const handleMatchHistory = () => SPA.navigate("/history/match");
+
 export default function Profile() {
   function UserInfo(className, textClass, text, penClass) {
     return `
@@ -14,7 +20,6 @@ export default function Profile() {
   }
 
   function UserMatchHistory(idName) {
-    //Loadingの部分はAPIから取得した値で上書きする
     return `
       <div id="row-data " class="row row-cols-3">
           <div id="wins" class="col">loading...</div>
@@ -57,31 +62,26 @@ export default function Profile() {
     `;
 }
 
+function getElements() {
+  const changeAvatarBtn = document.querySelector(".js-pen-avatar");
+  const changeUnameBtn = document.querySelector(".js-pen-username");
+  const changePasswordBtn = document.querySelector(".js-pen-password");
+  const changeMailBtn = document.querySelector(".js-pen-mail");
+  const matchHistoryBtn = document.querySelector(".js-match-history-button");
+
+  return [
+    { btn: changeAvatarBtn, handle: handleChAvatar },
+    { btn: changeUnameBtn, handle: handleChUname },
+    { btn: changePasswordBtn, handle: handleChPassword },
+    { btn: changeMailBtn, handle: handleChMail },
+    { btn: matchHistoryBtn, handle: handleMatchHistory },
+  ];
+}
+
 export async function setupProfile() {
-  const changeAvatarButton = document.querySelector(".js-pen-avatar");
-  changeAvatarButton.addEventListener("click", () => {
-    SPA.navigate("/profile/avatar");
-  });
-
-  const changeUsernameButton = document.querySelector(".js-pen-username");
-  changeUsernameButton.addEventListener("click", () => {
-    SPA.navigate("/profile/username");
-  });
-
-  const changePasswordButton = document.querySelector(".js-pen-password");
-  changePasswordButton.addEventListener("click", () => {
-    SPA.navigate("/profile/password");
-  });
-
-  const changeMailButton = document.querySelector(".js-pen-mail");
-  changeMailButton.addEventListener("click", () => {
-    SPA.navigate("/profile/mail");
-  });
-
-  const matchHistoryButton = document.querySelector(".js-match-history-button");
-  matchHistoryButton.addEventListener("click", () => {
-    SPA.navigate("/history/match");
-  });
+  for (const { btn, handle } of getElements()) {
+    btn.addEventListener("click", handle);
+  }
 
   if (stateManager.state.username && stateManager.state.avatarUrl) {
     document.querySelector(".js-username").textContent =
@@ -129,4 +129,10 @@ export async function setupProfile() {
   wins.textContent = data.matchWinCount;
   losses.textContent = data.matchLoseCount;
   tournamentWins.textContent = data.tournamentWinnerCount;
+}
+
+export function cleanupProfile() {
+  for (const { btn, handle } of getElements()) {
+    btn.removeEventListener("click", handle);
+  }
 }

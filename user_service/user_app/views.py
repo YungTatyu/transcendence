@@ -15,6 +15,9 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 
+from user_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
+from user_app.vault_client.apikey_decorators import apikey_required
+
 from .jwt_decorators import jwt_required
 from .models import User
 from .serializers import (
@@ -40,6 +43,9 @@ def format_validation_errors(errors):
 
 
 class UserView(APIView):
+    @method_decorator(
+        apikey_required("users", VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    )
     def post(self, request):
         # リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)
