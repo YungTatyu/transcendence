@@ -144,7 +144,7 @@ CHANNEL_LAYERS = {
     },
 }
 
-MATCH_API_BASE_URL = "http://match:8003"
+MATCH_API_BASE_URL = "https://match-proxy.transcen.com:8008"
 
 CORS_ALLOWED_ORIGINS = [
     os.getenv("FRONTEND"),
@@ -160,3 +160,5 @@ CORS_ALLOW_METHODS = [
     "PATCH",
     "OPTIONS",
 ]
+
+CA_CERT = os.getenv("CA_CERT")

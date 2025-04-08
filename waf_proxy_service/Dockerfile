@@ -10,5 +10,6 @@ COPY nginx/conf.d/default.conf.template /etc/nginx/templates/conf.d/
 COPY nginx/includes/ /etc/nginx/templates/includes/
 
 COPY modsecurity.d/ /etc/nginx/templates/modsecurity.d/
+COPY ./modsecurity.d/REQUEST-911-METHOD-ENFORCEMENT.conf /etc/modsecurity.d/owasp-crs/rules/REQUEST-911-METHOD-ENFORCEMENT.conf
 
 CMD ["nginx", "-g", "daemon off;"]

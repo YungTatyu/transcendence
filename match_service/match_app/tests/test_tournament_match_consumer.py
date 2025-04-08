@@ -31,7 +31,7 @@ async def create_communicator(user_id: int, match_id: int):
     communicator = WebsocketCommunicator(
         application, PATH_WAITING_FORMAT.format(match_id)
     )
-    communicator.scope["cookies"] = {"access_token": access_token}
+    communicator.scope["subprotocols"] = ["app-protocol", access_token]
     connected, _ = await communicator.connect()
     return communicator, connected
 

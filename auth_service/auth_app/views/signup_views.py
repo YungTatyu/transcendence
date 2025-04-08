@@ -4,6 +4,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.db import transaction
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,9 +18,14 @@ from auth_app.serializers.signup_serializer import (
 from auth_app.services.jwt_service import generate_tokens
 from auth_app.services.otp_service import OTPService
 from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
     COOKIE_DOMAIN,
+    VAULT_ADDR,
 )
 from auth_app.utils.redis_handler import RedisHandler
+from auth_app.vault_client.apikey_decorators import apikey_fetcher
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +65,9 @@ class OTPVerificationView(APIView):
     サインアップ時のOTP検証
     """
 
+    @method_decorator(
+        apikey_fetcher("users", VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    )
     def post(self, request, *args, **kwargs):
         serializer = OTPVerificationSerializer(data=request.data)
         if not serializer.is_valid():
@@ -94,7 +103,7 @@ class OTPVerificationView(APIView):
 
         try:
             with transaction.atomic():
-                user_id = self.__register_user(user_data)
+                user_id = self.__register_user(user_data, request.api_key)
                 if user_id is None:
                     logger.fatal("Failed to register user.")
                     return Response(
@@ -163,7 +172,7 @@ class OTPVerificationView(APIView):
 
         return json.loads(redis_data)
 
-    def __register_user(self, user_data: dict) -> Optional[int]:
+    def __register_user(self, user_data: dict, api_key: str) -> Optional[int]:
         """
         本登録データをデータベースに保存する
         :param user_data: 仮登録データ
@@ -173,7 +182,7 @@ class OTPVerificationView(APIView):
             base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
         )
         try:
-            res = client.create_user(user_data["username"])
+            res = client.create_user(user_data["username"], api_key)
             user_id = res.json()["userId"]
 
             CustomUser.objects.create_user(

@@ -11,7 +11,6 @@ import FriendRequestForm, {
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
 import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home, { setupHome } from "./views/Home.js";
-import InitMatch, { setupInitMatch } from "./views/InitMatch.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
 import MatchHistory, { setupMatchHistory } from "./views/MatchHistory.js";
@@ -19,6 +18,7 @@ import NotFound from "./views/NotFound.js";
 import Profile, { cleanupProfile, setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
   setupQuickPlayMatching,
+  cleanupQuickPlayMatching,
 } from "./views/QuickPlayMatching.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
@@ -27,6 +27,7 @@ import Title, { setupTitile } from "./views/Title.js";
 import Tournament, { setupTournament } from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
+  cleanupTournamentMatching,
 } from "./views/TournamentMatching.js";
 import ApiData, { setupApiData } from "./views/apiPage.js";
 
@@ -48,7 +49,6 @@ SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/home", Home, setupHome);
-SPA.route("/game/setup", InitMatch, setupInitMatch);
 SPA.route("/tournament", Tournament, setupTournament);
 SPA.route("/profile", Profile, setupProfile, cleanupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
@@ -56,8 +56,18 @@ SPA.route("/profile/mail", ChangeMail);
 SPA.route("/profile/password", ChangePassword);
 SPA.route("/profile/avatar", ChangeAvatar, setupChangeAvatar);
 SPA.route("/history/match", MatchHistory, setupMatchHistory);
-SPA.route("/matching/quick-play", QuickPlayMatching, setupQuickPlayMatching);
-SPA.route("/matching/tournament", TournamentMatching, setupTournamentMatching);
+SPA.route(
+  "/matching/quick-play",
+  QuickPlayMatching,
+  setupQuickPlayMatching,
+  cleanupQuickPlayMatching,
+);
+SPA.route(
+  "/matching/tournament",
+  TournamentMatching,
+  setupTournamentMatching,
+  cleanupTournamentMatching,
+);
 
 SPA.route(
   "/friend/friend-request-form",

@@ -39,7 +39,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
         # WebSocket グループに参加
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
+
+        selected_protocol = self.scope.get("subprotocol")
+        await self.accept(subprotocol=selected_protocol)
 
         # 接続してきたClientに試合状況をSend
         event = {

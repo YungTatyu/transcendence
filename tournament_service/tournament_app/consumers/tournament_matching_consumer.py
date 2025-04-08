@@ -40,7 +40,8 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
                 await self.close(code=4400)
                 return
 
-            await self.accept()
+            selected_protocol = self.scope.get("subprotocol")
+            await self.accept(subprotocol=selected_protocol)
 
             await self.channel_layer.group_add(self.MATCHING_ROOM, self.channel_name)
             count = TournamentMatchingManager.add_user(self.user_id, self.channel_name)
@@ -93,7 +94,7 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             {
                 "type": "send.matching.room.state",
                 "tournament_start_time": str(start_time),
-                "wait_user_ids": str(wait_user_ids),
+                "wait_user_ids": wait_user_ids,
             },
         )
 
@@ -105,11 +106,14 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         4. タイマーを削除(タスクがない場合は何もしない)
         """
         tournament_id = await self.__create_tournament()
+        wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
         await self.channel_layer.group_send(
             self.MATCHING_ROOM,
             {
-                "type": "send.tournament.start.message",
+                "type": "send.matching.room.state",
                 "tournament_id": str(tournament_id),
+                "tournament_start_time": str(None),
+                "wait_user_ids": wait_user_ids,
             },
         )
         for channel_name in TournamentMatchingManager.get_waiting_users().values():
@@ -117,21 +121,14 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
         TournamentMatchingManager.clear_waiting_users()
         TournamentMatchingManager.cancel_task()
 
-    async def send_tournament_start_message(self, event):
-        tournament_id = event["tournament_id"]
-        await self.send(text_data=json.dumps({"tournament_id": tournament_id}))
-
     async def send_matching_room_state(self, event):
-        start_time = event["tournament_start_time"]
-        wait_user_ids = event["wait_user_ids"]
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "tournament_start_time": start_time,
-                    "wait_user_ids": wait_user_ids,
-                }
-            )
-        )
+        data = {}
+        if event.get("tournament_id", None) is not None:
+            data["tournament_id"] = event["tournament_id"]
+        data["tournament_start_time"] = event["tournament_start_time"]
+        data["wait_user_ids"] = event["wait_user_ids"]
+        data["room_capacity"] = TournamentMatchingConsumer.ROOM_CAPACITY
+        await self.send(text_data=json.dumps(data))
 
     @database_sync_to_async
     def __create_tournament(self) -> Optional[int]:
