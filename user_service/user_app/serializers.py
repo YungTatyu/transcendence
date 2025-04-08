@@ -96,7 +96,10 @@ class AvatarSerializer(serializers.ModelSerializer):
         既存の User インスタンスの avatar_path を更新する
         ModelSerializerでserialixer.save()を使うために必要
         """
-        if instance.avatar_path and instance.avatar_path.name != User.DEFAULT_AVATAR_PATH:
+        if (
+            instance.avatar_path
+            and instance.avatar_path.name != User.DEFAULT_AVATAR_PATH
+        ):
             old_avatar_path = instance.avatar_path.path
             if os.path.exists(old_avatar_path):
                 default_storage.delete(old_avatar_path)
