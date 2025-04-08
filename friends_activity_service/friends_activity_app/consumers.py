@@ -14,7 +14,8 @@ class LoggedInUsersConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        await self.accept()
+        selected_protocol = self.scope.get("subprotocol")
+        await self.accept(subprotocol=selected_protocol)
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.add_user_to_list()
 
