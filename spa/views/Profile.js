@@ -40,7 +40,7 @@ export default function Profile() {
     
     <div class="d-flex flex-column align-items-center">
       <div class="d-inline-flex align-items-center mt-5">
-          <img src="${config.userService}/media/images/default/default.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
+          <img src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle me-2 js-user-avatar" >
           <img src="/assets/pencil.png" class="pencil-icon align-self-start mt-n1 js-pen-avatar">
       </div>
 
