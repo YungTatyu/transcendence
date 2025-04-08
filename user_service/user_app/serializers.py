@@ -85,10 +85,7 @@ class AvatarSerializer(serializers.ModelSerializer):
         if avatar_file.size > self.MAX_FILE_SIZE:
             raise serializers.ValidationError({"error": "Invalid image format."})
 
-        # ファイルの拡張子を取得
         ext = os.path.splitext(avatar_file.name)[1].lower()
-
-        # 新しいファイル名
         new_filename = f"avatar_{user_id}{ext}"
         avatar_file.name = new_filename
 
@@ -99,13 +96,11 @@ class AvatarSerializer(serializers.ModelSerializer):
         既存の User インスタンスの avatar_path を更新する
         ModelSerializerでserialixer.save()を使うために必要
         """
-        # 同じ名前のファイルがあったら古いファイルを削除
-        if instance.avatar_path:
+        if instance.avatar_path and instance.avatar_path.name != User.DEFAULT_AVATAR_PATH:
             old_avatar_path = instance.avatar_path.path
             if os.path.exists(old_avatar_path):
                 default_storage.delete(old_avatar_path)
 
-        # 新しいファイルを保存
         instance.avatar_path = validated_data["avatar_path"]
         instance.save()
 
