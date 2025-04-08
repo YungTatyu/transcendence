@@ -2,7 +2,7 @@ import SPA from "../spa.js";
 
 export default function GameResult(params) {
   if (!params) {
-    return SPA.navigate("/", null, true);
+    return SPA.navigate("/home", null, true);
   }
   const message = params.win ? "YOU WIN" : "YOU LOSE";
   return `
@@ -26,6 +26,6 @@ export async function setupGameResult() {
     .querySelector(".game-result-button")
     ?.addEventListener("click", (event) => {
       event.preventDefault();
-      SPA.navigate("/", null, true);
+      SPA.navigate("/home", null, true);
     });
 }
