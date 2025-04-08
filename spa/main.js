@@ -22,14 +22,11 @@ import QuickPlayMatching, {
 } from "./views/QuickPlayMatching.js";
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
-import Store, { setupStore } from "./views/Store.js";
 import Title, { setupTitile } from "./views/Title.js";
 import Tournament, { setupTournament } from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
 } from "./views/TournamentMatching.js";
-import ApiData, { setupApiData } from "./views/apiPage.js";
-
 import FriendList, { setupFriendList } from "./views/FriendList.js";
 import FriendRequestList, {
   setupFriendRequestList,
@@ -37,8 +34,6 @@ import FriendRequestList, {
 
 SPA.route("/", Title, setupTitile);
 SPA.route("/404", NotFound);
-SPA.route("/store", Store, setupStore);
-SPA.route("/api", ApiData, setupApiData);
 SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
