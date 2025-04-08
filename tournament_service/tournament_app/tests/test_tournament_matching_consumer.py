@@ -4,6 +4,9 @@ import time
 import pytest
 
 from tournament_app.consumers.tournament_matching_consumer import (
+    TournamentMatchingConsumer,
+)
+from tournament_app.consumers.tournament_matching_consumer import (
     TournamentMatchingConsumer as Tmc,
 )
 from tournament_app.tests.conftest import create_communicator
@@ -19,6 +22,8 @@ async def test_enter_room_from_empty_with_one_user():
     communicator, _ = await create_communicator(10000)
     act_data = await communicator.receive_json_from()
     assert act_data["tournament_start_time"] == "None"
+    assert act_data.get("tournament_id", None) is None
+    assert act_data["room_capacity"] == TournamentMatchingConsumer.ROOM_CAPACITY
     await communicator.disconnect()
 
 
@@ -92,7 +97,10 @@ async def test_start_tournament_by_room_capacity(create_match_records_mocker):
 
     for communicator in communicators:
         data = await communicator.receive_json_from()
-        assert "tournament_id" in data
+        assert data["tournament_id"] != "None"
+        assert data["tournament_start_time"] == "None"
+        assert "wait_user_ids" in data
+        assert data["room_capacity"] == TournamentMatchingConsumer.ROOM_CAPACITY
 
     for communicator in communicators:
         await communicator.disconnect()
@@ -119,7 +127,9 @@ async def test_start_tournament_by_force_start_time(
 
     for communicator in communicators:
         data = await communicator.receive_json_from()
-        assert "tournament_id" in data
+        assert data["tournament_id"] != "None"
+        assert data["tournament_start_time"] == "None"
+        assert "wait_user_ids" in data
 
     for communicator in communicators:
         await communicator.disconnect()
@@ -265,20 +275,20 @@ async def test_receive_matching_wait_user_ids():
     communicator1, _ = await create_communicator(10000)
 
     data1 = await communicator1.receive_json_from()
-    assert data1["wait_user_ids"] == "[10000]"
+    assert data1["wait_user_ids"] == [10000]
 
     communicator2, _ = await create_communicator(20000)
 
     data2 = await communicator1.receive_json_from()
-    assert data2["wait_user_ids"] == "[10000, 20000]"
+    assert data2["wait_user_ids"] == [10000, 20000]
 
     data3 = await communicator2.receive_json_from()
-    assert data3["wait_user_ids"] == "[10000, 20000]"
+    assert data3["wait_user_ids"] == [10000, 20000]
 
     await communicator1.disconnect()
 
     data4 = await communicator2.receive_json_from()
-    assert data4["wait_user_ids"] == "[20000]"
+    assert data4["wait_user_ids"] == [20000]
 
     await communicator2.disconnect()
 

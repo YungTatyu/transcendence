@@ -10,6 +10,10 @@ services:
       - auth_db
       - auth_redis
     env_file: ./docker_env/auth.env
+    volumes:
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   auth_db:
     image: postgres:15
@@ -39,7 +43,7 @@ services:
     depends_on:
       - auth
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:8005/healthz"]
+      test: ["CMD", "curl", "-kf", "https://auth-proxy.transcen.com:8005/health"]
     volumes:
       - ./certs/auth-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/auth-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
@@ -54,8 +58,6 @@ services:
       - app_network
     depends_on:
       - game_redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
 
   game_redis:
     image: redis:alpine
@@ -76,7 +78,7 @@ services:
     depends_on:
       - game
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:8004/healthz"]
+      test: ["CMD", "curl", "-kf", "https://game-proxy.transcen.com:8004/health"]
     volumes:
       - ./certs/game-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/game-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
@@ -92,8 +94,8 @@ services:
     depends_on:
       - tournament_db
       - tournament_redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   tournament_db:
     image: postgres:15
@@ -123,7 +125,7 @@ services:
     depends_on:
       - tournament
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:8006/healthz"]
+      test: ["CMD", "curl", "-kf", "https://tournament-proxy.transcen.com:8006/health"]
     volumes:
       - ./certs/tournament-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/tournament-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
@@ -139,7 +141,10 @@ services:
       - user_db
     env_file: ./docker_env/user.env
     volumes:
-     - user_media:/app/user_app/media/
+      - user_media:/app/user_app/media/
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
      
   user_db:
     image: postgres:15
@@ -163,7 +168,7 @@ services:
     depends_on:
       - user
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:8009/healthz"]
+      test: ["CMD", "curl", "-kf", "https://user-proxy.transcen.com:8009/health"]
     volumes:
       - ./certs/user-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/user-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
@@ -175,6 +180,7 @@ services:
     container_name: friends_activity_app
     ports:
       - "10000:10000"
+    env_file: ./docker_env/friends_activity.env
     networks:
       - app_network
 
@@ -191,7 +197,7 @@ services:
     depends_on:
       - friends_activity_app
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:10001/healthz"]
+      test: ["CMD", "curl", "-kf", "https://friends-activity-proxy.transcen.com:10001/health"]
     volumes:
       - ./certs/friends-activity-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/friends-activity-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
@@ -229,7 +235,7 @@ services:
     depends_on:
       - friends
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:8007/healthz"]
+      test: ["CMD", "curl", "-kf", "https://friends-proxy.transcen.com:8007/health"]
     volumes:
       - ./certs/friends-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/friends-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
@@ -245,8 +251,8 @@ services:
     depends_on:
       - match_db
       - match_redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+    volumes:
+      - ./certs/ca.crt:/vault/certs/ca.crt:ro
 
   match_db:
     image: postgres:15
@@ -276,7 +282,7 @@ services:
     depends_on:
       - match
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:8008/healthz"]
+      test: ["CMD", "curl", "-kf", "https://match-proxy.transcen.com:8008/health"]
     volumes:
       - ./certs/match-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/match-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro

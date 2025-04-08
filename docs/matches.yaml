@@ -19,6 +19,7 @@ paths:
       operationId: SearchMatches
       tags:
         - Matches
+      security: []
       parameters:
         - name: matchId
           in: query

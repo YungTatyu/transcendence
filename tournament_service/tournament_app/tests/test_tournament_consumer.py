@@ -18,7 +18,7 @@ async def create_tournament_communicator(tournament_id: int, user_id: int):
     path = FORMAT_TOURNAMENT.format(tournament_id)
     access_token = create_jwt_for_user(user_id)
     communicator = WebsocketCommunicator(application, path)
-    communicator.scope["cookies"] = {"access_token": access_token}
+    communicator.scope["subprotocols"] = ["app-protocol", access_token]
     connected, _ = await communicator.connect()
     return communicator, connected
 

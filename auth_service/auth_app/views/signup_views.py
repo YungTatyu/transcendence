@@ -2,8 +2,9 @@ import json
 import logging
 from typing import Optional
 
-import jwt
 from django.conf import settings
+from django.db import transaction
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,9 +15,17 @@ from auth_app.serializers.signup_serializer import (
     OTPVerificationSerializer,
     SignupSerializer,
 )
+from auth_app.services.jwt_service import generate_tokens
 from auth_app.services.otp_service import OTPService
-from auth_app.settings import COOKIE_DOMAIN
+from auth_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    COOKIE_DOMAIN,
+    VAULT_ADDR,
+)
 from auth_app.utils.redis_handler import RedisHandler
+from auth_app.vault_client.apikey_decorators import apikey_fetcher
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +65,9 @@ class OTPVerificationView(APIView):
     サインアップ時のOTP検証
     """
 
+    @method_decorator(
+        apikey_fetcher("users", VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
+    )
     def post(self, request, *args, **kwargs):
         serializer = OTPVerificationSerializer(data=request.data)
         if not serializer.is_valid():
@@ -89,21 +101,29 @@ class OTPVerificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user_id = self.__register_user(user_data)
-        if user_id is None:
-            logger.fatal("Failed to register user.")
+        try:
+            with transaction.atomic():
+                user_id = self.__register_user(user_data, request.api_key)
+                if user_id is None:
+                    logger.fatal("Failed to register user.")
+                    return Response(
+                        {"error": "Failed to register user."},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+
+                tokens = generate_tokens(user_id)
+                if not tokens:
+                    logger.error("Failed to generate tokens from Vault")
+                    raise Exception("Token generation failed")
+
+        except Exception as e:
+            logger.error(f"Error during OTP verification: {e}")
             return Response(
-                {"error": "Failed to register user."},
+                {"error": "Failed to complete registration"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        self.__cleanup_pending_user(username)
 
-        # TODO 署名を組み込んだJWTの生成
-        tokens = {
-            "access": jwt.encode({"user_id": user_id}, None, algorithm=None),
-            # refresh tokenの生成方法も要検討
-            "refresh": jwt.encode({"user_id": user_id}, None, algorithm=None),
-        }
+        self.__cleanup_pending_user(username)
 
         response = Response(
             {
@@ -152,7 +172,7 @@ class OTPVerificationView(APIView):
 
         return json.loads(redis_data)
 
-    def __register_user(self, user_data: dict) -> Optional[int]:
+    def __register_user(self, user_data: dict, api_key: str) -> Optional[int]:
         """
         本登録データをデータベースに保存する
         :param user_data: 仮登録データ
@@ -162,7 +182,7 @@ class OTPVerificationView(APIView):
             base_url=settings.USER_API_BASE_URL, use_mock=settings.USER_API_USE_MOCK
         )
         try:
-            res = client.create_user(user_data["username"])
+            res = client.create_user(user_data["username"], api_key)
             user_id = res.json()["userId"]
 
             CustomUser.objects.create_user(

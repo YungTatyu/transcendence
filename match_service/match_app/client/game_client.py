@@ -1,6 +1,8 @@
 import logging
+import ssl
 
 import aiohttp
+from config.settings import CA_CERT
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +28,11 @@ class GameClient:
         }
 
         try:
+            ssl_context = ssl.create_default_context()
+            ssl_context.load_verify_locations(CA_CERT)
+            connector = aiohttp.TCPConnector(ssl=ssl_context)
             async with (
-                aiohttp.ClientSession() as session,
+                aiohttp.ClientSession(connector=connector) as session,
                 session.post(url, json=body, timeout=5) as response,
             ):
                 return await response.json()
