@@ -1,36 +1,36 @@
-import config from "../config.js"
+import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export const parseJwt = (token) => {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
 
   const jsonPayload = decodeURIComponent(
     atob(base64)
-      .split('')
-      .map(c => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-      .join('')
+      .split("")
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+      .join(""),
   );
   return JSON.parse(jsonPayload);
-}
+};
 
 const fetchAccessToken = async () => {
   const res = await fetch(`${config.authService}/auth/token/refresh`, {
     method: "POST",
     credentials: "include",
-  })
+  });
   if (res.status >= 400) {
     location.replace("/");
-    return null
+    return null;
   }
   const data = await res.json();
   const accessToken = data.accessToken;
   const payload = parseJwt(accessToken);
   const userId = payload.user_id;
-  stateManager.setState({ userId: userId })
+  stateManager.setState({ userId: userId });
   sessionStorage.setItem("access_token", accessToken);
   return payload;
-}
+};
 
 /**
  * JWTの有効期限に基づいて、期限の10分前にトークンを自動更新する処理をスケジュールします。
@@ -46,12 +46,15 @@ export const scheduleRefresh = (payload) => {
   const delayUntilRefresh = exp - tenMins - now;
   // JWTの更新タイミング：期限の10分前
   setInterval(fetchAccessToken, delayUntilRefresh);
-}
+};
 
 export const handleLoading = async () => {
   const skipPaths = ["/login", "/signup"];
   const currentPath = location.pathname;
-  if (currentPath === "/" || skipPaths.some(path => currentPath.startsWith(path))) {
+  if (
+    currentPath === "/" ||
+    skipPaths.some((path) => currentPath.startsWith(path))
+  ) {
     return;
   }
   const payload = await fetchAccessToken();
@@ -59,4 +62,4 @@ export const handleLoading = async () => {
     return;
   }
   scheduleRefresh(payload);
-}
+};
