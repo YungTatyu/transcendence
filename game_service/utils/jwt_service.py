@@ -25,15 +25,8 @@ PublicKeyType = Union[
     ed25519.Ed25519PublicKey,
     ed448.Ed448PublicKey,
 ]
-from game_app.settings import (
-    CA_CERT,
-    CLIENT_CERT,
-    CLIENT_KEY,
-    VAULT_ADDR,
-)
 
 logger = logging.getLogger(__name__)
-client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
 
 
 def base64url_encode(data):
@@ -105,13 +98,13 @@ def extract_signature_from_jwt(signed_jwt: str) -> bytes:
 
 
 def verify_signed_jwt(signed_jwt: str):
-    token = client.fetch_token()
+    token = VaultClient.fetch_token()
     if not token:
         logger.error("Failed to fetch token from Vault")
         return False
 
     extracted_signature = extract_signature_from_jwt(signed_jwt)
-    pubkey = client.fetch_pubkey(token)
+    pubkey = VaultClient.fetch_pubkey(token)
 
     if not extracted_signature or not pubkey:
         logger.error("failed to fetch extracted_signature or pubkey")
