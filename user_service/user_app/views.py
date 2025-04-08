@@ -47,7 +47,6 @@ class UserView(APIView):
         apikey_required("users", VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
     )
     def post(self, request):
-        # リクエストボディをシリアライズ
         serializer = CreateUserSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -73,7 +72,6 @@ class UserView(APIView):
         """
         user情報を取得する
         """
-        # クエリパラメーターのvalidation
         serializer = QueryParamSerializer(data=request.GET)
         if not serializer.is_valid():
             return Response(
@@ -107,7 +105,6 @@ class UsernameView(APIView):
         """
 
         user_id = request.user_id
-
         user = User.objects.get(user_id=user_id)
 
         serializer = UsernameSerializer(instance=user, data=request.data)
@@ -131,8 +128,6 @@ class AvatarView(APIView):
         すでにカスタムの場合は上書き保存する
         """
         user_id = request.user_id
-
-        # User インスタンスを取得
         user = User.objects.get(user_id=user_id)
 
         # instance=user を渡して update()を使用可能に
@@ -158,8 +153,6 @@ class AvatarView(APIView):
         """
 
         user_id = request.user_id
-
-        # User インスタンスを取得
         user = User.objects.get(user_id=user_id)
 
         # デフォルトアバターなら削除しない
