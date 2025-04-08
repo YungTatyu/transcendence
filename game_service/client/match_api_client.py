@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from game_app.settings import MATCH_SERVICE
+from game_app.settings import MATCH_SERVICE, CA_CERT
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ class MatchApiClient:
     def send_game_result(data):
         url = f"{MATCH_SERVICE}/matches/finish"
         try:
-            response = requests.post(url, json=data)
+            response = requests.post(url, json=data, verify=CA_CERT)
 
             if response.status_code >= 400:
                 error_detail = response.json()
