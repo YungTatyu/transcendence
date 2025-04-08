@@ -1,4 +1,6 @@
+import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
+import config from "../config.js";
 import stateManager from "../stateManager.js";
 
 export default function FriendList() {
@@ -15,97 +17,139 @@ export default function FriendList() {
 	`;
 }
 
-const data = {
-  friends: [
-    {
-      fromUserId: 0,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-18T10:58:38.293Z",
-      approvedAt: "2025-03-18T10:58:38.293Z",
-    },
-    {
-      fromUserId: 2,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-    {
-      fromUserId: 3,
-      toUserId: 1,
-      status: "approved",
-      requestSentAt: "2025-03-17T12:00:00.000Z",
-      approvedAt: "2025-03-18T13:00:00.000Z",
-    },
-  ],
-  total: 100,
-};
-
 export const setupFriendList = async () => {
+  let currentPage = 0;
+  const limit = 10;
   const friendsList = document.querySelector(".js-friend-list");
   friendsList.innerHTML = "";
-  async function fetchFriendUserList() {
+
+  async function fetchFriendUserList(offset, limit) {
     // friend_apiを叩く
-    // const response = await fetch("/friend?status=approved");
-    // const data = awit response.json();
+    const response = await fetchApiNoBody(
+      "GET",
+      config.friendService,
+      `/friends?status=approved&offset=${offset}&limit=${limit}`,
+    );
+    if (response.status === null) {
+      console.error("Error Occured");
+      return [];
+    }
+    if (response.status >= 400) {
+      console.error(response.data.error);
+      return [];
+    }
 
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    let userId = stateManager.state?.userId;
-    //テストのためuser_idを1にする
-    userId = 1;
-
-    //arrayまたはmap
-    const useridList = data.friends.map((friend) =>
-      friend.fromUserId === 1 ? friend.toUserId : friend.fromUserId,
+    const userId = stateManager.state?.userId;
+    const useridList = response.data.friends.map((friend) =>
+      friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
     );
     return useridList;
-  }
-
-  // 取得したしたユーザIDからUser
-  async function fetchUserNameAndAvatar(userid) {
-    // const response = await fetch("/users");
-    // const data = await response.json();
-    // return {
-    // 	username: data.username,
-    // 	avatarPath: data.avatarPath
-    // };
-    return {
-      username: "player",
-      avatarPath: "/assets/42.png",
-    };
   }
 
   async function fetchUserStatus(userId) {
     // statusを得るapiを叩く
     return {
-      status: "online",
+      status: 200, // 成功ステータス
+      data: {
+        status: "online",
+      },
     };
   }
 
-  const friendList = await fetchFriendUserList();
+  async function loadFriendList() {
+    // console.log(currentPage * limit);
+    const friendList = await fetchFriendUserList(currentPage * limit, limit);
+    if (friendList.length === 0) {
+      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
+      return;
+    }
+    await Promise.all(
+      friendList.map(async (friendId) => {
+        const friendItem = document.createElement("div");
+        const friend = await fetchApiNoBody(
+          "GET",
+          config.userService,
+          `/users?userid=${friendId}`,
+        );
+        const statusResponse = await fetchUserStatus(friendId);
 
-  await Promise.all(
-    friendList.map(async (friendId) => {
-      const friendItem = document.createElement("div");
-      const friend = await fetchUserNameAndAvatar(friendId);
-      const status = await fetchUserStatus(friendId);
-      friendItem.classList.add("js-friend-list-item");
-      friendItem.innerHTML = `
-		<div class="gap-wrap d-flex align-items-center mt-4">
-			<img src=${friend.avatarPath} alt="avotor">
-			<div class="text-white fs-2">${friend.username}</div>
-			<div class="user-status">${status.status}</div>
-			<button type="button" class="remove-button btn btn-primary">remove</button>
-		</div>
-		`;
-      friendItem
-        .querySelector(".remove-button")
-        .addEventListener("click", async () => {
-          // await fetch(`/friend/approve/${request_id}`, { method: "POST" }); // APIを叩く
-          friendItem.remove(); // 要素を削除
-        });
-      friendsList.appendChild(friendItem);
-    }),
-  );
+        if (friend.status === null || statusResponse.status === null) {
+          console.error("Error Occured!");
+          return;
+        }
+        if (friend.status >= 400) {
+          console.error(friend.data.error);
+          return;
+        }
+        if (statusResponse.status >= 400) {
+          console.error(statusResponse.data.error);
+          return;
+        }
+        const avatarImg = `${config.userService}${friend.data.avatarPath}`;
+        friendItem.classList.add("js-friend-list-item");
+        friendItem.innerHTML = `
+        <div class="gap-wrap d-flex align-items-center mt-4">
+          <img src=${avatarImg} alt="avotor">
+          <div class="text-white fs-2">${friend.data.username}</div>
+          <div class="user-status">${statusResponse.data.status}</div>
+          <button type="button" class="remove-button btn btn-primary">Remove</button>
+        </div>
+        `;
+        friendItem
+          .querySelector(".remove-button")
+          .addEventListener("click", async () => {
+            // テスト用
+            // console.log(friendId);
+            const deleteResponse = await fetchApiNoBody(
+              "DELETE",
+              config.friendService,
+              `/friends/${friendId}`,
+            );
+            if (deleteResponse.status == null) {
+              return;
+            }
+            if (deleteResponse.status >= 400) {
+              return;
+            }
+            friendItem.remove(); // 要素を削除
+          });
+        friendsList.appendChild(friendItem);
+      }),
+    );
+    currentPage++;
+  }
+
+  // 無限スクロールの実装
+  async function handleScroll() {
+    if (loading) return;
+
+    const scrollTop = window.scrollY;
+    const documentHeight = document.documentElement.scrollHeight;
+    const windowHeight = window.innerHeight;
+
+    if (scrollTop + windowHeight >= documentHeight - 10) {
+      // 誤差を考慮
+      loading = true;
+      await loadFriendList(); //スクロールした時のapiを叩く関数
+      loading = false;
+    }
+  }
+  // スクロールイベントを登録
+  let loading = false;
+
+  loadFriendList();
+
+  window.addEventListener("scroll", handleScroll);
+
+  const findButton = document.querySelector(".find-button");
+  const requestButton = document.querySelector(".request-button");
+
+  findButton.addEventListener("click", () => {
+    SPA.navigate("/friend/friend-request-form");
+  });
+
+  requestButton.addEventListener("click", () => {
+    SPA.navigate("/friend/request");
+  });
 };
