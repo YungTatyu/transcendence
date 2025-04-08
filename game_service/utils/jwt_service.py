@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.asymmetric import (
     rsa,
 )
 import jwt
+from client.valut_client import VaultClient
 
 # 公開鍵のインターフェース
 PublicKeyType = Union[
@@ -24,8 +25,15 @@ PublicKeyType = Union[
     ed25519.Ed25519PublicKey,
     ed448.Ed448PublicKey,
 ]
+from game_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    VAULT_ADDR,
+)
 
 logger = logging.getLogger(__name__)
+client = VaultClient(VAULT_ADDR, CLIENT_CERT, CLIENT_KEY, CA_CERT)
 
 
 def base64url_encode(data):
