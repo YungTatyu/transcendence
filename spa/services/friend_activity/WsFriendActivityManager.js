@@ -7,9 +7,15 @@ const wsEventHandler = {
   async handleMessage(message) {
     try {
       const parsedMessage = JSON.parse(message.data);
-      console.log(parsedMessage);
+      const onlineUserList = parsedMessage.current_users;
+      // console.log(parsedMessage);
+      // console.log(onlineUserList);
+      if (onlineUserList === undefined || onlineUserList === "None")
+        return [];
+      return onlineUserList;
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
+      return [];
     }
   },
   handleClose(message) {
