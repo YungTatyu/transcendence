@@ -294,6 +294,7 @@ services:
   vault:
     build: ./vault_service
     container_name: vault
+    hostname: vault
     ports:
       - 8200:8200
     networks:
