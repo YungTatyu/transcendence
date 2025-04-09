@@ -64,10 +64,12 @@ const wsEventHandler = {
           break;
         case "error":
           renderWaitOrStart("ERROR", "#FF0000");
+          stateManager.state.tournamentId = null;
           console.error("Tournament error");
           break;
         case "finished":
           renderWaitOrStart("FINISHED", "#FFFF00");
+          stateManager.state.tournamentId = null;
           console.log("Tournament finished");
           break;
       }
