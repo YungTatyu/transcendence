@@ -1,4 +1,6 @@
 import config from "../../config.js";
+import createTournamentData from "./createTournamentData.js";
+import { renderTournamentBracket } from "./TournamentBracket.js";
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -7,6 +9,16 @@ const wsEventHandler = {
   async handleMessage(message) {
     try {
       const parsedMessage = JSON.parse(message.data);
+      const matchesData = parsedMessage.matches_data;
+      const currentRound = parsedMessage.current_round;
+      const state = parsedMessage.state;
+
+      console.log("matchesData: ", matchesData);
+      console.log("currentRound: ", currentRound);
+      console.log("state: ", state);
+
+      const tournamentData = createTournamentData(matchesData);
+      renderTournamentBracket(tournamentData);
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
     }
