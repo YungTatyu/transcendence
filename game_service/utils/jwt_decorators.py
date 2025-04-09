@@ -2,8 +2,8 @@ import logging
 from functools import wraps
 
 import jwt
-from utils.jwt_service import verify_signed_jwt
 from rest_framework.response import Response
+from utils.jwt_service import verify_signed_jwt
 
 logger = logging.getLogger(__name__)
 
