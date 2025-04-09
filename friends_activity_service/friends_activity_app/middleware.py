@@ -5,6 +5,8 @@ from utils.jwt_service import verify_signed_jwt
 
 logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
+
 
 class JWTAuthMiddleware:
     """WebSocket のリクエストから JWT を取得し、検証する"""
@@ -37,6 +39,7 @@ class JWTAuthMiddleware:
         except Exception as e:
             logger.exception(f"JWT verification failed: {e}")
             await send({"type": "websocket.close", "code": 1008})
+            logger.warn("jwt verification failed")
             return
 
         logger.debug("jwt verification success")

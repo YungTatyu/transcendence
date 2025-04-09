@@ -1,7 +1,5 @@
 const stateManager = {
   state: {
-    count: 0,
-    items: [],
     userId: null,
     username: null,
     avatarUrl: null,
