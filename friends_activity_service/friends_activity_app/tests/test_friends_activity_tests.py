@@ -23,7 +23,7 @@ class TestLoggedInUsersConsumer(TestCase):
 
         # WebSocket接続
         communicator = WebsocketCommunicator(application, url)
-        communicator.scope["cookies"] = {"access_token": access_token}
+        communicator.scope["subprotocols"] = ["app-protocol", access_token]
 
         # WebSocket接続を試みる
         connected, subprotocol = await communicator.connect()
@@ -51,10 +51,10 @@ class TestLoggedInUsersConsumer(TestCase):
 
         # WebSocket接続
         communicator = WebsocketCommunicator(application, url)
-        communicator.scope["cookies"] = {"access_token": access_token}
+        communicator.scope["subprotocols"] = ["app-protocol", access_token]
 
         communicator_2 = WebsocketCommunicator(application, url)
-        communicator_2.scope["cookies"] = {"access_token": access_token_2}
+        communicator_2.scope["subprotocols"] = ["app-protocol", access_token_2]
 
         # WebSocket接続を試みる
         connected, _ = await communicator.connect()
@@ -105,10 +105,10 @@ class TestLoggedInUsersConsumer(TestCase):
         url = "/friends/online"
 
         communicator_1 = WebsocketCommunicator(application, url)
-        communicator_1.scope["cookies"] = {"access_token": access_token_1}
+        communicator_1.scope["subprotocols"] = ["app-protocol", access_token_1]
 
         communicator_2 = WebsocketCommunicator(application, url)
-        communicator_2.scope["cookies"] = {"access_token": access_token_2}
+        communicator_2.scope["subprotocols"] = ["app-protocol", access_token_2]
 
         connected_1, _ = await communicator_1.connect()
         connected_2, _ = await communicator_2.connect()
@@ -141,10 +141,10 @@ class TestLoggedInUsersConsumer(TestCase):
         url = "/friends/online"
 
         communicator_1 = WebsocketCommunicator(application, url)
-        communicator_1.scope["cookies"] = {"access_token": access_token}
+        communicator_1.scope["subprotocols"] = ["app-protocol", access_token]
 
         communicator_2 = WebsocketCommunicator(application, url)
-        communicator_2.scope["cookies"] = {"access_token": access_token}
+        communicator_2.scope["subprotocols"] = ["app-protocol", access_token]
 
         connected_1, _ = await communicator_1.connect()
         connected_2, _ = await communicator_2.connect()
@@ -182,7 +182,7 @@ class TestLoggedInUsersConsumer(TestCase):
         invalid_token = "invalid_token"
         url = "/friends/online"
         communicator = WebsocketCommunicator(application, url)
-        communicator.scope["cookies"] = {"access_token": invalid_token}
+        communicator.scope["subprotocols"] = ["app-protocol", invalid_token]
 
         connected, _ = await communicator.connect()
         # JWTが無効なため、接続が確立されないはず
