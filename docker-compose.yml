@@ -99,6 +99,8 @@ services:
       - tournament_db
       - tournament_redis
     volumes:
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
       - ./certs/ca.crt:/certs/ca.crt:ro
 
   tournament_db:
