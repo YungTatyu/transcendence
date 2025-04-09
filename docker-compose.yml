@@ -187,6 +187,10 @@ services:
     env_file: ./docker_env/friends_activity.env
     networks:
       - app_network
+    volumes:
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   friends_activity_proxy:
     build: ./waf_proxy_service
