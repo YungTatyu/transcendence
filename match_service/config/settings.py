@@ -161,7 +161,7 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
-TOURNAMENT_API_BASE_URL = "http://tournament-proxy.transcen.com:8006"
+TOURNAMENT_API_BASE_URL = "https://tournament-proxy.transcen.com:8006"
 GAME_API_BASE_URL = "https://game-proxy.transcen.com:8004"
 
 CA_CERT = "/vault/certs/ca.crt"
