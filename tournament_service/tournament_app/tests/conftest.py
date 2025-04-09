@@ -1,7 +1,5 @@
-from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
-import jwt
 import pytest
 import requests
 from channels.testing import WebsocketCommunicator

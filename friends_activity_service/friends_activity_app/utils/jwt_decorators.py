@@ -2,8 +2,8 @@ import logging
 from functools import wraps
 
 import jwt
-from rest_framework.response import Response
 from friends_activity_app.utils.jwt_service import verify_signed_jwt
+from rest_framework.response import Response
 
 logger = logging.getLogger(__name__)
 

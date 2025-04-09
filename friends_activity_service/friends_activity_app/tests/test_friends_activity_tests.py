@@ -1,8 +1,6 @@
 import asyncio
 import random
-from datetime import timedelta
 
-import jwt
 import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
