@@ -44,8 +44,7 @@ class TestGameConsumer:
         self.clients.remove(client)
 
     def create_jwt_for_user(self, user_id):
-        token = generate_signed_jwt(user_id)
-        return token
+        return generate_signed_jwt(user_id)
 
     def create_invalid_jwt(self, user_id):
         payload = {
@@ -348,7 +347,7 @@ class TestGameConsumer:
 
     async def test_invalid_jwt(self):
         """
-        複数の端末で接続する場合
+        不正なjwt
         """
         await self.setup(False)
         _, connected = await self.create_communicator(
