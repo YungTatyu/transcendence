@@ -27,7 +27,10 @@ import QuickPlayMatching, {
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Title, { setupTitile } from "./views/Title.js";
-import Tournament, { setupTournament } from "./views/Tournament.js";
+import Tournament, {
+  setupTournament,
+  cleanupTournament,
+} from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
   cleanupTournamentMatching,
@@ -44,7 +47,7 @@ SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/home", Home, setupHome);
-SPA.route("/tournament", Tournament, setupTournament);
+SPA.route("/tournament", Tournament, setupTournament, cleanupTournament);
 SPA.route("/profile", Profile, setupProfile, cleanupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
 SPA.route("/profile/mail", ChangeMail);
