@@ -4,16 +4,14 @@ from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-
-
-logger = logging.getLogger(__name__)
-
 from game_app.settings import (
     CA_CERT,
     CLIENT_CERT,
     CLIENT_KEY,
     VAULT_ADDR,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class VaultClient:

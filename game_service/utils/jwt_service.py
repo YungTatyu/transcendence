@@ -2,19 +2,12 @@ import datetime
 import logging
 
 import jwt
-
+from client.vault_client import VaultClient
 from utils.jwt_utils import (
     add_signature_to_jwt,
     create_unsigned_jwt,
     extract_signature_from_jwt,
     verify_jwt,
-)
-from client.vault_client import VaultClient
-from game_app.settings import (
-    CA_CERT,
-    CLIENT_CERT,
-    CLIENT_KEY,
-    VAULT_ADDR,
 )
 
 # INFO: test用に使用

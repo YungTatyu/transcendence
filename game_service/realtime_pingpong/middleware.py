@@ -1,7 +1,6 @@
 import logging
 
 import jwt
-
 from utils.jwt_service import verify_signed_jwt
 
 logger = logging.getLogger(__name__)
