@@ -10,7 +10,7 @@ from match_app.utils.task_timer import TaskTimer
 class TournamentMatchWaiter:
     __tournament_match_waiter_dict: dict[int, "TournamentMatchWaiter"] = {}
     # ユーザーの最初のアクセスから、強制的に試合を処理するまでの秒数
-    LIMIT_WAIT_SEC = 5
+    LIMIT_WAIT_SEC = 180
 
     def __init__(self, match_id: int):
         self.__match_id = match_id
