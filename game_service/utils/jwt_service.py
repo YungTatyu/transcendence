@@ -1,100 +1,63 @@
-import base64
-from datetime import date
 import datetime
-import json
 import logging
-from typing import Union
 
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import (
-    dsa,
-    ec,
-    ed448,
-    ed25519,
-    padding,
-    rsa,
-)
 import jwt
-from client.valut_client import VaultClient
 
-# 公開鍵のインターフェース
-PublicKeyType = Union[
-    rsa.RSAPublicKey,
-    dsa.DSAPublicKey,
-    ec.EllipticCurvePublicKey,
-    ed25519.Ed25519PublicKey,
-    ed448.Ed448PublicKey,
-]
+from utils.jwt_utils import (
+    add_signature_to_jwt,
+    create_unsigned_jwt,
+    extract_signature_from_jwt,
+    verify_jwt,
+)
+from client.vault_client import VaultClient
+from game_app.settings import (
+    CA_CERT,
+    CLIENT_CERT,
+    CLIENT_KEY,
+    VAULT_ADDR,
+)
+
+# INFO: test用に使用
+JWT_HEADER = {"alg": "PS256", "typ": "JWT"}
+JWT_EXPIRATION = 3600
+REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 30
 
 logger = logging.getLogger(__name__)
 
 
-def base64url_encode(data):
-    """
-    Base64Urlエンコード関数
-    JWTの仕様(RFC 7519)上、'+','/','='を使用できないため置換
-    """
-    return base64.urlsafe_b64encode(data).rstrip(b"=")
+def generate_signed_jwt(user_id: str, expires_in: int = JWT_EXPIRATION):
+    token = VaultClient.fetch_token()
+    if not token:
+        logger.error("Failed to fetch token from Vault")
+        return None
+    exp_time = datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in)
+    jwt_payload = {
+        "user_id": user_id,
+        "exp": int(exp_time.timestamp()),
+    }
+    jwt_data = create_unsigned_jwt(JWT_HEADER, jwt_payload)
+    signature = VaultClient.fetch_signature(token, jwt_data)
+    if not signature:
+        logger.error("Failed to fetch signature from Vault")
+        return None
+    signed_jwt = add_signature_to_jwt(jwt_data, signature)
+
+    return signed_jwt
 
 
-def create_unsigned_jwt(jwt_header: dict, jwt_payload: dict) -> bytes:
-    """
-    headerとpayloadをエンコードしたバイナリデータを作成
-    """
-    encoded_header = base64url_encode(json.dumps(jwt_header).encode())
-    encoded_payload = base64url_encode(json.dumps(jwt_payload).encode())
-    unsigned_jwt = encoded_header + b"." + encoded_payload
-    return unsigned_jwt
+def generate_tokens(user_id: int):
+    signed_jwt = generate_signed_jwt(str(user_id))
+    if not signed_jwt:
+        return None
+    refresh_signed_jwt = generate_signed_jwt(str(user_id), REFRESH_TOKEN_EXPIRATION)
+    if not refresh_signed_jwt:
+        return None
 
-
-def verify_jwt(pubkey: PublicKeyType, unsigned_jwt: bytes, signature: bytes) -> bool:
-    """
-    :param pubkey: 公開鍵オブジェクト
-    :param unsigned_jwt: JWTのheaderとpayloadをエンコードしたバイナリデータ
-    :param signature: JWTの署名
-
-    True if (Success Verify JWT) else False
-    """
-    try:
-        pubkey.verify(
-            signature,
-            unsigned_jwt,
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH,
-            ),
-            hashes.SHA256(),
-        )
-        return True
-    except Exception as e:
-        logger.warn(str(e))
-        return False
-
-
-def extract_signature_from_jwt(signed_jwt: str) -> bytes:
-    """
-    JWT の "header.payload.signature" 形式の文字列から署名部分を抽出し、
-    Base64 URL セーフデコードして bytes 型で返します。
-
-    Args:
-        signed_jwt (str): 完全な JWT トークン
-
-    Returns:
-        bytes: 署名部分をデコードしたバイナリデータ
-
-    Raises:
-        ValueError: JWT の形式が不正な場合
-    """
-    parts = signed_jwt.split(".")
-    if len(parts) != 3:
-        raise ValueError("Invalid JWT format. Expected 'header.payload.signature'.")
-
-    signature_b64 = parts[2]
-    missing_padding = len(signature_b64) % 4
-    if missing_padding:
-        signature_b64 += "=" * (4 - missing_padding)
-
-    return base64.urlsafe_b64decode(signature_b64)
+    tokens = {
+        "access": signed_jwt,
+        "refresh": refresh_signed_jwt,
+    }
+    return tokens
 
 
 def verify_signed_jwt(signed_jwt: str):

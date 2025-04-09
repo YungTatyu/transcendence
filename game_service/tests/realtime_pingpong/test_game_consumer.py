@@ -1,5 +1,6 @@
 import asyncio
 from datetime import timedelta
+from unittest.mock import patch
 
 import jwt
 import pytest
@@ -9,24 +10,43 @@ from core.pingpong import Player, Screen
 from game_app.asgi import application
 from realtime_pingpong.consumers import ActionHandler, GameConsumer
 from realtime_pingpong.game_controller import GameController
+from utils.jwt_service import generate_signed_jwt
 
 
 @pytest.mark.asyncio
 class TestGameConsumer:
     async def setup(self, default_player=True):
-        MatchManager.delete_all_matches()
-        self.match_id = 1
-        self.player_ids = [1, 2]
-        self.create_match(self.match_id, self.player_ids)
-        self.clients = list()
-        if default_player:
-            self.client1, self.client1_connected = await self.create_communicator(
-                self.match_id, self.player_ids[0]
-            )
-            self.client2, self.client2_connected = await self.create_communicator(
-                self.match_id, self.player_ids[1]
-            )
-        GameController.GAME_TIME_SEC = 1
+        with (
+            patch(
+                "client.vault_client.VaultClient.fetch_token",
+                return_value="mocked-token",
+            ),
+            patch(
+                "client.vault_client.VaultClient.fetch_pubkey",
+                return_value=b"mocked-pubkey",
+            ),
+            patch(
+                "client.vault_client.VaultClient.fetch_signature",
+                return_value=b"mocked-signature",
+            ),
+            patch(
+                "client.vault_client.VaultClient.fetch_api_key",
+                return_value="mocked-apikey",
+            ),
+        ):
+            MatchManager.delete_all_matches()
+            self.match_id = 1
+            self.player_ids = [1, 2]
+            self.create_match(self.match_id, self.player_ids)
+            self.clients = list()
+            if default_player:
+                self.client1, self.client1_connected = await self.create_communicator(
+                    self.match_id, self.player_ids[0]
+                )
+                self.client2, self.client2_connected = await self.create_communicator(
+                    self.match_id, self.player_ids[1]
+                )
+            GameController.GAME_TIME_SEC = 1
 
     async def teardown(self):
         for client in self.clients:
@@ -43,13 +63,7 @@ class TestGameConsumer:
         self.clients.remove(client)
 
     def create_jwt_for_user(self, user_id):
-        payload = {
-            "user_id": user_id,
-            "exp": timedelta(days=1).total_seconds(),
-            "iat": timedelta(days=0).total_seconds(),
-        }
-        secret_key = "your_secret_key"
-        token = jwt.encode(payload, secret_key, algorithm="HS256")
+        token = generate_signed_jwt(user_id)
         return token
 
     def create_match(self, match_id, users):
