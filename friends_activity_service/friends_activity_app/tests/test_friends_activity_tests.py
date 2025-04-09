@@ -7,6 +7,7 @@ import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 from friends_activity_app.asgi import application
+from friends_activity_app.utils.jwt_service import generate_signed_jwt
 
 
 @pytest.mark.asyncio
@@ -168,14 +169,7 @@ class TestLoggedInUsersConsumer(TestCase):
 
     def create_jwt_for_user(self, user_id):
         # JWTを生成するロジック
-        payload = {
-            "user_id": user_id,
-            "exp": timedelta(days=1).total_seconds(),
-            "iat": timedelta(days=0).total_seconds(),
-        }
-        secret_key = "your_secret_key"
-        token = jwt.encode(payload, secret_key, algorithm="HS256")
-        return token
+        return generate_signed_jwt(user_id)
 
     async def test_websocket_invalid_jwt(self):
         # 無効なJWTを利用して接続を試みる
