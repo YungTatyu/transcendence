@@ -5,14 +5,16 @@ import { renderPlayers } from "./TournamentInfo.js";
 import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderWaitOrStart } from "../../components/WaitOrStart.js";
 import stateManager from "../../stateManager.js";
+import WsTournamentMatchManager from "../match/WsTournamentMatchManager.js";
 
 async function handleTournament(matchesData, currentRound) {
   const participantsForRound = matchesData
     .filter((match) => match.round === currentRound)
-    .map((match) => match.participants);
-  const playersId = participantsForRound[0].map(
-    (participant) => participant.id,
-  );
+    .map((match) => match.participants)[0];
+  const matchId = matchesData
+    .filter((match) => match.round === currentRound)
+    .map((match) => match.matchId)[0];
+  const playersId = participantsForRound.map((participant) => participant.id);
 
   const playersData = await fetchPlayersData(playersId);
   if (!playersData) {
@@ -23,8 +25,22 @@ async function handleTournament(matchesData, currentRound) {
   // INFO 次の試合参加者ならSTART、そうでないならWAITを描画
   if (playersId.includes(Number(stateManager.state.userId))) {
     renderWaitOrStart("START", "#FFFFFF");
+    prepareTournamentMatch(matchId);
   } else {
     renderWaitOrStart("WAIT...", "#0ca5bf");
+  }
+}
+
+function prepareTournamentMatch(matchId) {
+  try {
+    const accessToken = sessionStorage.getItem("access_token");
+    if (!(accessToken && matchId)) {
+      console.error("Error prepareTournamentMatch");
+      return;
+    }
+    WsTournamentMatchManager.connect(accessToken, matchId);
+  } catch (error) {
+    console.error(error);
   }
 }
 
