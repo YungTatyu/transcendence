@@ -13,40 +13,45 @@ from realtime_pingpong.game_controller import GameController
 from utils.jwt_service import generate_signed_jwt
 
 
+@pytest.fixture
+def mock_vault_client():
+    with (
+        patch(
+            "client.vault_client.VaultClient.fetch_token",
+            return_value="mocked-token",
+        ),
+        patch(
+            "client.vault_client.VaultClient.fetch_pubkey",
+            return_value=b"mocked-pubkey",
+        ),
+        patch(
+            "client.vault_client.VaultClient.fetch_signature",
+            return_value=b"mocked-signature",
+        ),
+        patch(
+            "client.vault_client.VaultClient.fetch_api_key",
+            return_value="mocked-apikey",
+        ),
+    ):
+        yield  # モックが有効な間、ここで待機
+
+
 @pytest.mark.asyncio
 class TestGameConsumer:
     async def setup(self, default_player=True):
-        with (
-            patch(
-                "client.vault_client.VaultClient.fetch_token",
-                return_value="mocked-token",
-            ),
-            patch(
-                "client.vault_client.VaultClient.fetch_pubkey",
-                return_value=b"mocked-pubkey",
-            ),
-            patch(
-                "client.vault_client.VaultClient.fetch_signature",
-                return_value=b"mocked-signature",
-            ),
-            patch(
-                "client.vault_client.VaultClient.fetch_api_key",
-                return_value="mocked-apikey",
-            ),
-        ):
-            MatchManager.delete_all_matches()
-            self.match_id = 1
-            self.player_ids = [1, 2]
-            self.create_match(self.match_id, self.player_ids)
-            self.clients = list()
-            if default_player:
-                self.client1, self.client1_connected = await self.create_communicator(
-                    self.match_id, self.player_ids[0]
-                )
-                self.client2, self.client2_connected = await self.create_communicator(
-                    self.match_id, self.player_ids[1]
-                )
-            GameController.GAME_TIME_SEC = 1
+        MatchManager.delete_all_matches()
+        self.match_id = 1
+        self.player_ids = [1, 2]
+        self.create_match(self.match_id, self.player_ids)
+        self.clients = list()
+        if default_player:
+            self.client1, self.client1_connected = await self.create_communicator(
+                self.match_id, self.player_ids[0]
+            )
+            self.client2, self.client2_connected = await self.create_communicator(
+                self.match_id, self.player_ids[1]
+            )
+        GameController.GAME_TIME_SEC = 1
 
     async def teardown(self):
         for client in self.clients:
@@ -196,20 +201,20 @@ class TestGameConsumer:
             if all(actual[key] != old_values[key] for key in actual):
                 return res
 
-    async def test_establish_ws_connection(self):
+    async def test_establish_ws_connection(self, mock_vault_client):
         await self.setup()
         assert self.client1_connected is True
         assert self.client2_connected is True
         await self.teardown()
 
-    async def test_ws_open_message(self):
+    async def test_ws_open_message(self, mock_vault_client):
         await self.setup()
         for client in self.clients:
             res = await client.receive_json_from()
             self.assert_open_message(res)
         await self.teardown()
 
-    async def test_game_message(self):
+    async def test_game_message(self, mock_vault_client):
         """
         game進行中のメッセージはgameが続いている限り送られるので、1秒間テストする
         """
@@ -225,7 +230,7 @@ class TestGameConsumer:
                 self.assert_game_message(res, self.player_ids[0], self.player_ids[1])
         await self.teardown()
 
-    async def test_gameover_message(self):
+    async def test_gameover_message(self, mock_vault_client):
         """
         gameのresultメッセージとcleanup処理のテスト
         """
@@ -240,7 +245,7 @@ class TestGameConsumer:
         assert MatchManager.get_match(self.match_id) is None
         await self.teardown()
 
-    async def test_send_message(self):
+    async def test_send_message(self, mock_vault_client):
         """
         接続さえできればメッセージは送れるはず
         sendしたメッセージがちゃんと反映されているか
@@ -296,7 +301,7 @@ class TestGameConsumer:
             assert state.get("right_player").get("y") > initial_pos.get("right_player")
         await self.teardown()
 
-    async def test_send_random_message(self):
+    async def test_send_random_message(self, mock_vault_client):
         """
         適当なメッセージを送ってもcrashしない
         """
@@ -314,7 +319,7 @@ class TestGameConsumer:
         )
         await self.teardown()
 
-    async def test_reconnect(self):
+    async def test_reconnect(self, mock_vault_client):
         """
         接続してから切断する。そのあと再接続
         """
@@ -330,14 +335,14 @@ class TestGameConsumer:
 
         await self.teardown()
 
-    async def test_error_missing_jwt(self):
+    async def test_error_missing_jwt(self, mock_vault_client):
         await self.setup(default_player=False)
         communicator = WebsocketCommunicator(application, self.get_uri(self.match_id))
         connected, _ = await communicator.connect()
         assert connected is False
         await self.teardown()
 
-    async def test_error_wrong_userid(self):
+    async def test_error_wrong_userid(self, mock_vault_client):
         """
         matchの参加者でないユーザのコネクション
         """
@@ -346,7 +351,7 @@ class TestGameConsumer:
         assert connected is False
         await self.teardown()
 
-    async def test_error_multi_connections(self):
+    async def test_error_multi_connections(self, mock_vault_client):
         """
         複数の端末で接続する場合
         """
