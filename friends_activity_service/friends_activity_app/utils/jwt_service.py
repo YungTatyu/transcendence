@@ -2,8 +2,8 @@ import datetime
 import logging
 
 import jwt
-from client.vault_client import VaultClient
-from utils.jwt_utils import (
+from friends_activity_app.client.vault_client import VaultClient
+from friends_activity_app.utils.jwt_utils import (
     add_signature_to_jwt,
     create_unsigned_jwt,
     extract_signature_from_jwt,

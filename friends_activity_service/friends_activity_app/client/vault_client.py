@@ -4,7 +4,7 @@ from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from game_app.settings import (
+from friends_activity_app.settings import (
     CA_CERT,
     CLIENT_CERT,
     CLIENT_KEY,
