@@ -2,6 +2,7 @@ import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
+import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
 
 export default function FriendList() {
   return `
@@ -18,6 +19,15 @@ export default function FriendList() {
 }
 
 export const setupFriendList = async () => {
+  const accessToken = sessionStorage.getItem("access_token");
+  if (!accessToken) {
+    SPA.navigate("/");
+    return;
+  }
+  console.log(accessToken);
+
+  WsFriendActivityManager.connect(accessToken);
+
   let currentPage = 0;
   const limit = 10;
   const friendsList = document.querySelector(".js-friend-list");
