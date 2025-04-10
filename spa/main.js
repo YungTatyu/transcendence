@@ -17,7 +17,10 @@ import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home, { setupHome } from "./views/Home.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
-import MatchHistory from "./views/MatchHistory.js";
+import MatchHistory, {
+  cleanupMatchHistory,
+  setupMatchHistory,
+} from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
 import Profile, { cleanupProfile, setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
@@ -50,7 +53,12 @@ SPA.route("/profile/username", ChangeUsername, setupChageUsername);
 SPA.route("/profile/mail", ChangeMail, setupChangeMail);
 SPA.route("/profile/password", ChangePassword);
 SPA.route("/profile/avatar", ChangeAvatar, setupChangeAvatar);
-SPA.route("/history/match", MatchHistory);
+SPA.route(
+  "/history/match",
+  MatchHistory,
+  setupMatchHistory,
+  cleanupMatchHistory,
+);
 SPA.route(
   "/matching/quick-play",
   QuickPlayMatching,
