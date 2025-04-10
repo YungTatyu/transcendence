@@ -1,4 +1,3 @@
-import jwt
 import pytz
 from django.urls import reverse
 from django.utils.timezone import now

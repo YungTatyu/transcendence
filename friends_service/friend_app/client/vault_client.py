@@ -3,13 +3,13 @@ import logging
 from typing import Optional
 
 import requests
-from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from config.settings import (
     CA_CERT,
     CLIENT_CERT,
     CLIENT_KEY,
     VAULT_ADDR,
 )
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 logger = logging.getLogger(__name__)
 

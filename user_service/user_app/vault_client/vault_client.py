@@ -4,7 +4,6 @@ from typing import Optional
 
 import requests
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-
 from user_app.utils.jwt_utils import PublicKeyType
 
 logger = logging.getLogger(__name__)

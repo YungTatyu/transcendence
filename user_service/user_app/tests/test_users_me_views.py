@@ -1,6 +1,5 @@
 import io
 
-import jwt
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse

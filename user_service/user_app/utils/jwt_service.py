@@ -2,19 +2,19 @@ import datetime
 import logging
 
 import jwt
-from user_app.vault_client.vault_client import VaultClient
-from user_app.utils.jwt_utils import (
-    add_signature_to_jwt,
-    create_unsigned_jwt,
-    extract_signature_from_jwt,
-    verify_jwt,
-)
 from user_app.settings import (
     CA_CERT,
     CLIENT_CERT,
     CLIENT_KEY,
     VAULT_ADDR,
 )
+from user_app.utils.jwt_utils import (
+    add_signature_to_jwt,
+    create_unsigned_jwt,
+    extract_signature_from_jwt,
+    verify_jwt,
+)
+from user_app.vault_client.vault_client import VaultClient
 
 # INFO: test用に使用
 JWT_HEADER = {"alg": "PS256", "typ": "JWT"}
