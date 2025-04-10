@@ -52,6 +52,8 @@ const wsEventHandler = {
       }
 
       renderNeonInfo("START", "#ffffff");
+      // INFO 稼働していないintervalIdに対して実行しても問題ない
+      clearInterval(WsTournamentMatchingManager.intervalId);
       stateManager.setState({ tournamentId: tournamentId });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>
