@@ -29,8 +29,7 @@ const scrollHundler = {
   currentPage: 0,
   limit: 15,
   async loadHistory() {
-    if (this.loading)
-      return ;
+    if (this.loading) return;
     this.loading = true;
     const matchHistoryTable = document.querySelector(".match-history-table");
     const offset = this.currentPage * this.limit;
@@ -95,7 +94,7 @@ const scrollHundler = {
     const scrollTop = window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
-  
+
     if (scrollTop + windowHeight >= documentHeight - 10) {
       // 誤差を考慮
       await scrollHundler.loadHistory();
@@ -104,8 +103,8 @@ const scrollHundler = {
   destructor() {
     this.currentPage = 0;
     this.loading = false;
-  }
-}
+  },
+};
 
 export const setupMatchHistory = async () => {
   const matchHistoryTable = document.querySelector(".match-history-table");
