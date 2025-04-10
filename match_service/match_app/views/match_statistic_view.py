@@ -1,5 +1,5 @@
 from django.utils.decorators import method_decorator
-from match_app.jwt_decorators import jwt_required
+from match_app.utils.jwt_decorators import jwt_required
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import UserIdValidator
 from rest_framework.response import Response
