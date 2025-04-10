@@ -3,7 +3,6 @@ import logging
 import jwt
 from friends_activity_app.utils.jwt_service import verify_signed_jwt
 
-logger = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 
