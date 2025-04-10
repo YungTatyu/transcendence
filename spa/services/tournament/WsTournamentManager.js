@@ -1,11 +1,12 @@
 import config from "../../config.js";
 import createTournamentData from "./createTournamentData.js";
 import { renderTournamentBracket } from "./TournamentBracket.js";
-import { renderPlayers } from "./TournamentInfo.js";
+import { renderPlayers, renderWinnerPlayer } from "./TournamentInfo.js";
 import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderNeonInfo } from "../../components/NeonInfo.js";
 import stateManager from "../../stateManager.js";
 import WsTournamentMatchManager from "../match/WsTournamentMatchManager.js";
+import fetchApiNoBody from "../../api/fetchApiNoBody.js";
 
 async function handleTournament(matchesData, currentRound) {
   const participantsForRound = matchesData
@@ -44,6 +45,23 @@ function prepareTournamentMatch(matchId) {
   }
 }
 
+async function fetchWinnerPlayerName(matchesData) {
+  const winnerUserId = matchesData.reduce((latestMatch, currentMatch) => {
+    return currentMatch.round > latestMatch.round ? currentMatch : latestMatch;
+  }).winnerUserId;
+  const winnerUser = await fetchApiNoBody(
+    "GET",
+    config.userService,
+    `/users?userid=${winnerUserId}`,
+  );
+
+  // UserNameの取得に失敗したらIDを返す
+  if (winnerUser.status === null || winnerUser.status >= 400) {
+    return winnerUserId;
+  }
+  return winnerUser.data.username;
+}
+
 const wsEventHandler = {
   handleOpen(message) {
     console.log("Connected to QuickPlay matching room");
@@ -67,11 +85,14 @@ const wsEventHandler = {
           stateManager.state.tournamentId = null;
           console.error("Tournament error");
           break;
-        case "finished":
+        case "finished": {
           renderNeonInfo("FINISHED", "#FFFF00");
+          const winnerPlayerName = await fetchWinnerPlayerName(matchesData);
+          renderWinnerPlayer(winnerPlayerName);
           stateManager.state.tournamentId = null;
           console.log("Tournament finished");
           break;
+        }
       }
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
