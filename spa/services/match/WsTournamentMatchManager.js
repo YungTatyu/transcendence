@@ -17,6 +17,8 @@ const wsEventHandler = {
       const sleep = (msec) =>
         new Promise((resolve) => setTimeout(resolve, msec));
       await sleep(1000);
+      // MatchIdが取得できたらConnectionを切断
+      WsTournamentMatchManager.disconnect();
       SPA.navigate("/game");
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
