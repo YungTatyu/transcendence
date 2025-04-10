@@ -124,6 +124,7 @@ class OTPVerificationView(APIView):
             )
 
         self.__cleanup_pending_user(username)
+        self.__cleanup_pending_email(user_data["email"])
 
         response = Response(
             {
@@ -203,4 +204,12 @@ class OTPVerificationView(APIView):
         :param username: ユーザー名
         """
         redis_key = f"pending_user:{username}"
+        RedisHandler.delete(key=redis_key)
+
+    def __cleanup_pending_email(self, email: str) -> None:
+        """
+        Redisから仮登録データを削除する
+        :param email: メールアドレス
+        """
+        redis_key = f"pending_email:{email}"
         RedisHandler.delete(key=redis_key)
