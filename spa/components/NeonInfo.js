@@ -1,16 +1,16 @@
 export default function NeonInfo() {
   return `
-      <p id="wait-or-start" class="d-flex justify-content-center align-items-center">
+      <p id="neon-info" class="d-flex justify-content-center align-items-center">
       </p>
 	`;
 }
 
 export function renderNeonInfo(text, color) {
-  const waitOrStart = document.getElementById("wait-or-start");
-  waitOrStart.innerHTML = text;
-  waitOrStart.style.color = color;
-  waitOrStart.style.textShadow = "${color} 1px 0 10px";
-  waitOrStart.style.fontSize = "4rem";
-  waitOrStart.style.fontWeight = "bold";
-  waitOrStart.style.filter = "blur(1px)";
+  const neonInfo = document.getElementById("neon-info");
+  neonInfo.innerHTML = text;
+  neonInfo.style.color = color;
+  neonInfo.style.textShadow = "${color} 1px 0 10px";
+  neonInfo.style.fontSize = "4rem";
+  neonInfo.style.fontWeight = "bold";
+  neonInfo.style.filter = "blur(1px)";
 }
