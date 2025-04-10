@@ -46,9 +46,8 @@ export const setupMatchHistory = async () => {
       console.error(userHistory.data.error);
       return;
     }
-    if (userHistory.total <= offset + limit) {
+    if (userHistory.data.total <= offset + limit) {
       window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
-      // return;
     }
     await Promise.all(
       userHistory.data.results.map(async (matchResult) => {
