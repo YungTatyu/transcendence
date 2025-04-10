@@ -32,6 +32,9 @@ export function renderWinnerPlayer(winnerPlayerName) {
   matchVs.style.fontWeight = "bold";
   matchVs.style.filter = "blur(1px)";
 
+  // 描画が崩れるため、classを削除
+  matchVs.classList.remove("d-flex");
+
   // innerHTMLで生成された子要素に対してクラスを追加
   const winnerPlayer = matchVs.querySelector(".tournament-winner-player");
   winnerPlayer.classList.add("text-center", "px-5");
