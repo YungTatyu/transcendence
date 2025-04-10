@@ -7,7 +7,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://auth.transcendence.com
+  - url: https://auth.transcen.com
 
 paths:
   /auth/me/email:

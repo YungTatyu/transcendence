@@ -5,8 +5,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://matches.42.fr
-  - url: wss://matches.42.fr
+  - url: https://match.transcen.com
+  - url: wss://match.transcen.com
 
 paths:
   /matches:
