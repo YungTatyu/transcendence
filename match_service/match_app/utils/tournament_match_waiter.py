@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 
 from asgiref.sync import async_to_sync, sync_to_async
@@ -11,6 +12,9 @@ class TournamentMatchWaiter:
     __tournament_match_waiter_dict: dict[int, "TournamentMatchWaiter"] = {}
     # ユーザーの最初のアクセスから、強制的に試合を処理するまでの秒数
     LIMIT_WAIT_SEC = 180
+
+    # 非同期排他制御用のlockオブジェクト
+    __lock: Optional[asyncio.Lock] = None  # 初期化を遅延させるためNoneを設定
 
     def __init__(self, match_id: int):
         self.__match_id = match_id
@@ -170,3 +174,9 @@ class TournamentMatchWaiter:
             match_id=match, user_id=user_id
         ).exists()
         return not exist
+
+    @classmethod
+    async def get_lock(cls) -> asyncio.Lock:
+        if cls.__lock is None:
+            cls.__lock = asyncio.Lock()  # イベントループ内で初期化
+        return cls.__lock
