@@ -1,3 +1,5 @@
+import { handleLoading } from "./utils/jwtHelper.js";
+
 const SPA = (() => {
   const routes = {};
   let currentRoute = null;
@@ -6,8 +8,10 @@ const SPA = (() => {
   const init = ({ containerId }) => {
     container = document.getElementById(containerId);
     window.addEventListener("popstate", renderRoute);
-    window.addEventListener("DOMContentLoaded", renderRoute);
-    renderRoute();
+    window.addEventListener("DOMContentLoaded", async () => {
+      await handleLoading();
+      await renderRoute();
+    });
   };
 
   const route = (path, view, setup, cleanup) => {
