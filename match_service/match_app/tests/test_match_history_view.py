@@ -3,6 +3,7 @@ import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from match_app.serializers import MatchHistorySerializer
+from match_app.utils.jwt_service import generate_signed_jwt
 
 from .set_up_utils import create_query_string
 
@@ -14,8 +15,7 @@ class TestMatchHistory:
     ) -> dict:
         query_string = create_query_string(offset=offset, limit=limit)
 
-        token_payload = {"user_id": 1}
-        token = jwt.encode(token_payload, "secret_key", algorithm="HS256")
+        token = generate_signed_jwt(1)
         client.cookies["access_token"] = token
 
         response = client.get(f"/matches/histories/{user_id}{query_string}")

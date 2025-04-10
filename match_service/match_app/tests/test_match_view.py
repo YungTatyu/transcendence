@@ -4,6 +4,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchSerializer
+from match_app.utils.jwt_service import generate_signed_jwt
 
 from .set_up_utils import create_query_string
 
@@ -40,8 +41,7 @@ class TestMatchView:
         )
 
         #  Cookieに適当なuser_idのJWTを付与する
-        token_payload = {"user_id": 1}
-        token = jwt.encode(token_payload, "secret_key", algorithm="HS256")
+        token = generate_signed_jwt(1)
         client.cookies["access_token"] = token
 
         response = client.get(f"/matches{query_string}")
