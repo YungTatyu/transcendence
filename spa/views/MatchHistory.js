@@ -24,19 +24,21 @@ export default function MatchHistory() {
   `;
 }
 
-export const setupMatchHistory = async () => {
-  const matchHistoryTable = document.querySelector(".match-history-table");
-  matchHistoryTable.innerHTML = "";
-  let currentPage = 0;
-  const limit = 15;
-  const myUserId = stateManager.state?.userId;
-
-  async function loadHistory(offset, limit) {
-    // 本番用
+const scrollHundler = {
+  loading: false,
+  currentPage: 0,
+  limit: 15,
+  async loadHistory() {
+    if (this.loading)
+      return ;
+    this.loading = true;
+    const matchHistoryTable = document.querySelector(".match-history-table");
+    const offset = this.currentPage * this.limit;
+    const myUserId = stateManager.state?.userId;
     const userHistory = await fetchApiNoBody(
       "GET",
       config.matchService,
-      `/matches/histories/${myUserId}?offset=${offset}&limit=${limit}`,
+      `/matches/histories/${myUserId}?offset=${offset}&limit=${this.limit}`,
     );
     if (userHistory.status === null) {
       console.error("Error Occured");
@@ -46,8 +48,8 @@ export const setupMatchHistory = async () => {
       console.error(userHistory.data.error);
       return;
     }
-    if (userHistory.data.total <= offset + limit) {
-      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
+    if (userHistory.data.total <= offset + this.limit) {
+      window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
     }
     await Promise.all(
       userHistory.data.results.map(async (matchResult) => {
@@ -84,26 +86,37 @@ export const setupMatchHistory = async () => {
         matchHistoryTable.appendChild(matchItem);
       }),
     );
-    currentPage++;
-  }
-
-  async function handleScroll() {
-    if (loading) return;
+    this.currentPage++;
+    this.loading = false;
+  },
+  async handleScroll() {
+    console.log("scroll event");
 
     const scrollTop = window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
-
+  
     if (scrollTop + windowHeight >= documentHeight - 10) {
       // 誤差を考慮
-      loading = true;
-      await loadHistory(currentPage * limit, limit);
-      loading = false;
+      await scrollHundler.loadHistory();
     }
+  },
+  destructor() {
+    this.currentPage = 0;
+    this.loading = false;
   }
+}
 
-  let loading = true;
-  await loadHistory(currentPage * limit, limit);
-  loading = false;
-  window.addEventListener("scroll", handleScroll);
+export const setupMatchHistory = async () => {
+  const matchHistoryTable = document.querySelector(".match-history-table");
+  matchHistoryTable.innerHTML = "";
+
+  await scrollHundler.loadHistory();
+  window.addEventListener("scroll", scrollHundler.handleScroll);
+};
+
+export const cleanupMatchHistory = () => {
+  window.removeEventListener("scroll", scrollHundler.handleScroll);
+  scrollHundler.destructor();
+  console.log("Scroll event removed");
 };
