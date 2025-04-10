@@ -7,6 +7,7 @@ import { renderNeonInfo } from "../../components/NeonInfo.js";
 import stateManager from "../../stateManager.js";
 import WsTournamentMatchManager from "../match/WsTournamentMatchManager.js";
 import fetchApiNoBody from "../../api/fetchApiNoBody.js";
+import SPA from "../../spa.js";
 
 const wsEventHandler = {
   canRender: true,
@@ -34,7 +35,20 @@ const wsEventHandler = {
         console.error("Tournament error");
         break;
       case "finished": {
-        renderNeonInfo("FINISHED", "#FFFF00");
+        const oldElement = document.getElementById("neon-info");
+        const wrapper = document.createElement("div");
+        wrapper.className = "d-flex justify-content-center";
+        const newElement = document.createElement("button");
+        newElement.type = "button";
+        newElement.className = "my-5 py-3 px-5 tournament-result-button";
+        newElement.textContent = "Back To Home";
+        newElement.addEventListener("click", (event) => {
+          event.preventDefault();
+          SPA.navigate("/home", null, true);
+        });
+        wrapper.appendChild(newElement);
+        oldElement.replaceWith(wrapper);
+
         const winnerPlayerName = await fetchWinnerPlayerName(matchesData);
         renderWinnerPlayer(winnerPlayerName);
         stateManager.state.tournamentId = null;
