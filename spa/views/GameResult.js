@@ -24,8 +24,12 @@ export default function GameResult(params) {
 
 export async function setupGameResult() {
   // stateにtournamentIdがあればTournamentへ、なければHomeへ
-  const route = stateManager.state.tournamentId ? "/tournament" : "/home";
+  let route = "/home";
+
   if (stateManager.state.tournamentId) {
+    route = "/tournament";
+    const button = document.querySelector(".game-result-button");
+    button.textContent = "Back To Tournament";
   }
   document
     .querySelector(".game-result-button")
