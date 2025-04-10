@@ -19,3 +19,20 @@ export function renderPlayers(leftPlayerName, rightPlayerName) {
   leftPlayer.textContent = leftPlayerName;
   rightPlayer.textContent = rightPlayerName;
 }
+
+export function renderWinnerPlayer(winnerPlayerName) {
+  const matchVs = document.querySelector(".match-vs");
+  matchVs.innerHTML = `
+    <div class="tournament-winner-player">
+      Player ${winnerPlayerName} is a Champion
+	</div>
+	`;
+  matchVs.style.backgroundColor = "#BD3BAB";
+  matchVs.style.textShadow = "#FFFFFF 1px 0 10px";
+  matchVs.style.fontWeight = "bold";
+  matchVs.style.filter = "blur(1px)";
+
+  // innerHTMLで生成された子要素に対してクラスを追加
+  const winnerPlayer = matchVs.querySelector(".tournament-winner-player");
+  winnerPlayer.classList.add("text-center", "px-5");
+}
