@@ -15,7 +15,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 
-from .jwt_decorators import jwt_required
+from .utils.jwt_decorators import jwt_required
 from .models import Friend
 from .serializers import FriendQuerySerializer, FriendSerializer, UserIdValidator
 
