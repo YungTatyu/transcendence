@@ -4,7 +4,7 @@ import stateManager from "../../stateManager.js";
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log("Connected to QuickPlay matching room");
+    console.log("Connected to Tournament matching room");
   },
   async handleMessage(message) {
     try {
@@ -25,7 +25,7 @@ const wsEventHandler = {
     }
   },
   handleClose(message) {
-    console.log("Disconnected from server");
+    console.log("Disconnected from Tournament matching room");
   },
   handleError(message) {
     console.error("WebSocket error:", message);

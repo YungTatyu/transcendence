@@ -15,7 +15,6 @@ const wsEventHandler = {
 
   async renderTournament() {
     if (this.parsedMessageChache === null) {
-      console.log("parsedMessageChache is null");
       return;
     }
     const matchesData = this.parsedMessageChache.matches_data;
@@ -52,13 +51,12 @@ const wsEventHandler = {
         const winnerPlayerName = await fetchWinnerPlayerName(matchesData);
         renderWinnerPlayer(winnerPlayerName);
         stateManager.state.tournamentId = null;
-        console.log("Tournament finished");
         break;
       }
     }
   },
   handleOpen(message) {
-    console.log("Connected to QuickPlay matching room");
+    console.log("Connected to Tournament room");
   },
   async handleMessage(message) {
     // データをキャッシュに保存し、描画可能なら描画する
@@ -73,7 +71,7 @@ const wsEventHandler = {
     }
   },
   handleClose(message) {
-    console.log("Disconnected from server");
+    console.log("Disconnected from Tournament room");
   },
   handleError(message) {
     console.error("WebSocket error:", message);

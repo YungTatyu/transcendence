@@ -10,9 +10,7 @@ export default function TournamentBracket() {
 }
 
 export async function renderTournamentBracket(data) {
-  console.log(data);
   data.teams = await convertIdToNameInTeams(data.teams);
-  console.log(data);
   $("#bracket").bracket({
     init: data,
     skipConsolationRound: true, // 敗者復活戦をスキップ

@@ -38,7 +38,7 @@ const wsEventHandler = {
     }
   },
   handleClose(message) {
-    console.log("Disconnected from server");
+    console.log("Disconnected from QuickPlay matching room");
   },
   handleError(message) {
     console.error("WebSocket error:", message);
