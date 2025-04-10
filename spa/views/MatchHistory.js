@@ -89,7 +89,6 @@ export const setupMatchHistory = async () => {
   }
 
   async function handleScroll() {
-    console.log("handle scroll ssssssss");
     if (loading) return;
 
     const scrollTop = window.scrollY;
