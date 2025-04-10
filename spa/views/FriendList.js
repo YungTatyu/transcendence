@@ -46,9 +46,6 @@ export const setupFriendList = async () => {
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
     );
-    // console.log(userId);
-    // console.log("123");
-    // console.log(useridList);
     return useridList;
   }
 
