@@ -3,7 +3,7 @@ import createTournamentData from "./createTournamentData.js";
 import { renderTournamentBracket } from "./TournamentBracket.js";
 import { renderPlayers } from "./TournamentInfo.js";
 import fetchPlayersData from "../../api/fetchPlayersData.js";
-import { renderWaitOrStart } from "../../components/WaitOrStart.js";
+import { renderNeonInfo } from "../../components/NeonInfo.js";
 import stateManager from "../../stateManager.js";
 import WsTournamentMatchManager from "../match/WsTournamentMatchManager.js";
 
@@ -24,10 +24,10 @@ async function handleTournament(matchesData, currentRound) {
 
   // INFO 次の試合参加者ならSTART、そうでないならWAITを描画
   if (playersId.includes(Number(stateManager.state.userId))) {
-    renderWaitOrStart("START", "#FFFFFF");
+    renderNeonInfo("START", "#FFFFFF");
     prepareTournamentMatch(matchId);
   } else {
-    renderWaitOrStart("WAIT...", "#0ca5bf");
+    renderNeonInfo("WAIT...", "#0ca5bf");
   }
 }
 
@@ -63,12 +63,12 @@ const wsEventHandler = {
           handleTournament(matchesData, currentRound);
           break;
         case "error":
-          renderWaitOrStart("ERROR", "#FF0000");
+          renderNeonInfo("ERROR", "#FF0000");
           stateManager.state.tournamentId = null;
           console.error("Tournament error");
           break;
         case "finished":
-          renderWaitOrStart("FINISHED", "#FFFF00");
+          renderNeonInfo("FINISHED", "#FFFF00");
           stateManager.state.tournamentId = null;
           console.log("Tournament finished");
           break;

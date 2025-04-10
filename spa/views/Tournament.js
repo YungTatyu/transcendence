@@ -1,4 +1,4 @@
-import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
+import NeonInfo, { renderNeonInfo } from "../components/NeonInfo.js";
 import WsTournamentManager from "../services/tournament/WsTournamentManager.js";
 import stateManager from "../stateManager.js";
 import TournamentBracket from "../services/tournament/TournamentBracket.js";
@@ -8,7 +8,7 @@ export default function Tournament() {
   return `
     ${TournamentInfo()}
     ${TournamentBracket()}
-    ${WaitOrStart()}
+    ${NeonInfo()}
   `;
 }
 
@@ -20,7 +20,7 @@ export function setupTournament() {
       SPA.navigate("/");
       return;
     }
-    renderWaitOrStart("WAIT...", "#0ca5bf");
+    renderNeonInfo("WAIT...", "#0ca5bf");
     WsTournamentManager.connect(accessToken, tournamentId);
   } catch (error) {
     console.error(error);

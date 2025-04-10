@@ -1,11 +1,11 @@
-export default function WaitOrStart() {
+export default function NeonInfo() {
   return `
       <p id="wait-or-start" class="d-flex justify-content-center align-items-center">
       </p>
 	`;
 }
 
-export function renderWaitOrStart(text, color) {
+export function renderNeonInfo(text, color) {
   const waitOrStart = document.getElementById("wait-or-start");
   waitOrStart.innerHTML = text;
   waitOrStart.style.color = color;
