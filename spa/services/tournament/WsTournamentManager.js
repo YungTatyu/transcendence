@@ -51,6 +51,7 @@ const wsEventHandler = {
         const winnerPlayerName = await fetchWinnerPlayerName(matchesData);
         renderWinnerPlayer(winnerPlayerName);
         stateManager.state.tournamentId = null;
+        WsTournamentManager.disconnect();
         break;
       }
     }

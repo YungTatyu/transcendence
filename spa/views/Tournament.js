@@ -22,13 +22,13 @@ export function setupTournament() {
     }
     renderNeonInfo("WAIT...", "#0ca5bf");
 
+    WsTournamentManager.setCanRender(true);
     // INFO socketを作成していない場合のみ作成
     if (WsTournamentManager.socket === null) {
       WsTournamentManager.connect(accessToken, tournamentId);
+    } else {
+      WsTournamentManager.forceRenderTournament();
     }
-    // INFO WebSocket接続時、WebSocketからのデータの有無に関わらず、必ず描画を行う
-    WsTournamentManager.setCanRender(true);
-    WsTournamentManager.forceRenderTournament();
   } catch (error) {
     console.error(error);
   }
