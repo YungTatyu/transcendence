@@ -69,7 +69,8 @@ class TournamentMatchWaiter:
         ユーザーをTournamentMatchWaiterから削除、
         待機部屋に誰もいなくなった場合、インスタンスごと削除
         """
-        self.__connected_user_ids.remove(user_id)
+        if user_id in self.__connected_user_ids:
+            self.__connected_user_ids.remove(user_id)
         # ユーザー退出後、誰も待機中でない場合、TournamentMatchWaiterごと削除
         if len(self.__connected_user_ids) == 0:
             TournamentMatchWaiter.delete(self.__match_id)
@@ -146,8 +147,10 @@ class TournamentMatchWaiter:
     def is_invalid_match_id(match_id: int, user_id) -> bool:
         """match_idが正しいかを確認"""
         #  既に登録済みで、開始前のmatch_idは正常
-        if TournamentMatchWaiter.search(match_id):
-            return False
+        tournament_match_waiter = TournamentMatchWaiter.search(match_id)
+        if tournament_match_waiter:
+            # 登録済みのuser_idの場合は拒否
+            return user_id in tournament_match_waiter.connected_user_ids
 
         match = Match.objects.filter(match_id=match_id).first()
 
