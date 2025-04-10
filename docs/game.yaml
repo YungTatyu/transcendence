@@ -5,7 +5,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: wss://games.42.fr
+  - url: https://game.transcen.com
+  - url: wss://game.transcen.com
 
 paths:
   /games/ws/enter-room/{matchId}:

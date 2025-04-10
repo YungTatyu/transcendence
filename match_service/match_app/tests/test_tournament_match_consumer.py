@@ -1,7 +1,5 @@
 import asyncio
-from datetime import timedelta
 
-import jwt
 import pytest
 from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
@@ -9,25 +7,19 @@ from config.asgi import application
 
 from match_app.consumers.tournament_match_consumer import TournamentMatchWaiter
 from match_app.models import Match, MatchParticipant
+from match_app.utils.jwt_service import generate_signed_jwt
 
 PATH_WAITING_FORMAT = "/matches/ws/enter-room/{}"
 
 
 def create_jwt_for_user(user_id):
     # JWTを生成するロジック
-    payload = {
-        "user_id": user_id,
-        "exp": timedelta(days=1).total_seconds(),
-        "iat": timedelta(days=0).total_seconds(),
-    }
-    secret_key = "your_secret_key"
-    token = jwt.encode(payload, secret_key, algorithm="HS256")
-    return token
+    return generate_signed_jwt(user_id)
 
 
-async def create_communicator(user_id: int, match_id: int):
-    """JWTをCookieに含んでWebSocketコネクションを作成"""
-    access_token = create_jwt_for_user(user_id)
+async def create_communicator(user_id: int, match_id: int, jwt=None):
+    """JWTをsubprotocolに含んでWebSocketコネクションを作成"""
+    access_token = create_jwt_for_user(user_id) if jwt is None else jwt
     communicator = WebsocketCommunicator(
         application, PATH_WAITING_FORMAT.format(match_id)
     )
@@ -270,3 +262,17 @@ async def test_no_register_user_id():
     assert not connected
     await communicator.disconnect()
     TournamentMatchWaiter.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_invalid_jwt(mock_fetch_games_success):
+    user_id_list = [1, 2]
+    match = await insert_tournament_match(user_id_list)
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMjMsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJleHAiOjE3MTEyMzQ1MjV9.TaCmJrY97gqxHg4DkKiXFSddJhZ4K96BdK9oefaf7_8"
+
+    for user_id in user_id_list:
+        communicator, connected = await create_communicator(
+            user_id, match.match_id, token
+        )
+        assert not connected

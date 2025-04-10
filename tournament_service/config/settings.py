@@ -161,4 +161,7 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
+VAULT_ADDR = os.getenv("VAULT_ADDR")
+CLIENT_CERT = os.getenv("CLIENT_CERT")
+CLIENT_KEY = os.getenv("CLIENT_KEY")
 CA_CERT = os.getenv("CA_CERT")

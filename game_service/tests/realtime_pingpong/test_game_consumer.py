@@ -9,6 +9,7 @@ from core.pingpong import Player, Screen
 from game_app.asgi import application
 from realtime_pingpong.consumers import ActionHandler, GameConsumer
 from realtime_pingpong.game_controller import GameController
+from utils.jwt_service import generate_signed_jwt
 
 
 @pytest.mark.asyncio
@@ -43,6 +44,9 @@ class TestGameConsumer:
         self.clients.remove(client)
 
     def create_jwt_for_user(self, user_id):
+        return generate_signed_jwt(user_id)
+
+    def create_invalid_jwt(self, user_id):
         payload = {
             "user_id": user_id,
             "exp": timedelta(days=1).total_seconds(),
@@ -58,9 +62,9 @@ class TestGameConsumer:
     def get_uri(self, match_id):
         return f"/games/ws/enter-room/{match_id}"
 
-    async def create_communicator(self, match_id, user_id):
+    async def create_communicator(self, match_id, user_id, jwt=None):
         communicator = WebsocketCommunicator(application, self.get_uri(match_id))
-        access_token = self.create_jwt_for_user(user_id)
+        access_token = self.create_jwt_for_user(user_id) if jwt is None else jwt
         communicator.scope["subprotocols"] = ["app-protocol", access_token]
         connected, _ = await communicator.connect()
         if connected:
@@ -338,5 +342,18 @@ class TestGameConsumer:
         """
         await self.setup()
         _, connected = await self.create_communicator(self.match_id, self.player_ids[0])
+        assert connected is False
+        await self.teardown()
+
+    async def test_invalid_jwt(self):
+        """
+        不正なjwt
+        """
+        await self.setup(False)
+        _, connected = await self.create_communicator(
+            self.match_id,
+            self.player_ids[0],
+            self.create_invalid_jwt(self.player_ids[0]),
+        )
         assert connected is False
         await self.teardown()
