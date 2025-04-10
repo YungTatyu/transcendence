@@ -19,9 +19,9 @@ def create_jwt_for_user(user_id):
     return generate_signed_jwt(user_id)
 
 
-async def create_communicator(user_id: int):
+async def create_communicator(user_id: int, jwt=None):
     """JWTをCookieに含んでWebSocketコネクションを作成"""
-    access_token = create_jwt_for_user(user_id)
+    access_token = create_jwt_for_user(user_id) if jwt is None else jwt
     communicator = WebsocketCommunicator(application, PATH_MATCHING)
     communicator.scope["subprotocols"] = ["app-protocol", access_token]
     connected, _ = await communicator.connect()
@@ -199,3 +199,13 @@ async def test_enter_room_same_user():
 
     await communicator1.disconnect()
     QuickPlayMatchingManager.clear_waiting_users()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_invalid_jwt(mock_fetch_games_success):
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMjMsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJleHAiOjE3MTEyMzQ1MjV9.TaCmJrY97gqxHg4DkKiXFSddJhZ4K96BdK9oefaf7_8"
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
+        user_id = i + 1
+        communicator, connected = await create_communicator(user_id, token)
+        assert not connected
