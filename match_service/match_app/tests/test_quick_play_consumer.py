@@ -8,6 +8,7 @@ from config.asgi import application
 
 from match_app.consumers.quick_play_consumer import QuickPlayConsumer
 from match_app.models import MatchParticipant
+from match_app.utils.jwt_service import generate_signed_jwt
 from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 
 PATH_MATCHING = "/matches/ws/enter-room"
@@ -15,14 +16,7 @@ PATH_MATCHING = "/matches/ws/enter-room"
 
 def create_jwt_for_user(user_id):
     # JWTを生成するロジック
-    payload = {
-        "user_id": user_id,
-        "exp": timedelta(days=1).total_seconds(),
-        "iat": timedelta(days=0).total_seconds(),
-    }
-    secret_key = "your_secret_key"
-    token = jwt.encode(payload, secret_key, algorithm="HS256")
-    return token
+    return generate_signed_jwt(user_id)
 
 
 async def create_communicator(user_id: int):
