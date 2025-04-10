@@ -262,7 +262,9 @@ services:
       - match_db
       - match_redis
     volumes:
-      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   match_db:
     image: postgres:15
