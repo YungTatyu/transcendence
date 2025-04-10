@@ -4,28 +4,36 @@ import stateManager from "../../stateManager.js";
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log("Connected to Tournament matching room");
+    console.log("Connected to TournamentMatch wait room");
   },
   async handleMessage(message) {
     try {
       const parsedMessage = JSON.parse(message.data);
       const matchId = parsedMessage.match_id;
       const userIdList = parsedMessage.user_id_list;
+
+      // MatchIdが取得できたらConnectionを切断
+      WsTournamentMatchManager.disconnect();
+
+      // 不戦勝となる場合"None"が返るので、Tournamentページへ
+      if (matchId === "None") {
+        SPA.navigate("/tournament");
+        return;
+      }
+
       stateManager.setState({ players: userIdList });
       stateManager.setState({ matchId: matchId });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>
         new Promise((resolve) => setTimeout(resolve, msec));
       await sleep(1000);
-      // MatchIdが取得できたらConnectionを切断
-      WsTournamentMatchManager.disconnect();
       SPA.navigate("/game");
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
     }
   },
   handleClose(message) {
-    console.log("Disconnected from Tournament matching room");
+    console.log("Disconnected from TournamentMatch wait room");
   },
   handleError(message) {
     console.error("WebSocket error:", message);
