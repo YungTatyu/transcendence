@@ -3,7 +3,7 @@ import logging
 
 import jwt
 from user_app.vault_client.vault_client import VaultClient
-from utils.jwt_utils import (
+from user_app.utils.jwt_utils import (
     add_signature_to_jwt,
     create_unsigned_jwt,
     extract_signature_from_jwt,

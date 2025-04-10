@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 from user_app.settings import CA_CERT, CLIENT_CERT, CLIENT_KEY, VAULT_ADDR
 from user_app.vault_client.apikey_decorators import apikey_required
 
-from .jwt_decorators import jwt_required
+from .utils.jwt_decorators import jwt_required
 from .models import User
 from .serializers import (
     AvatarSerializer,
