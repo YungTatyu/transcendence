@@ -5,7 +5,7 @@ import TournamentBracket from "../services/tournament/TournamentBracket.js";
 import TournamentInfo from "../services/tournament/TournamentInfo.js";
 
 export default function Tournament() {
-  return `
+	return `
     ${TournamentInfo()}
     ${TournamentBracket()}
     ${NeonInfo()}
