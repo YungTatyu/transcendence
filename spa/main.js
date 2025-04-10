@@ -2,7 +2,7 @@ import SPA from "./spa.js";
 window.SPA = SPA;
 
 import ChangeAvatar, { setupChangeAvatar } from "./views/ChangeAvatar.js";
-import ChangeMail from "./views/ChangeMail.js";
+import ChangeMail, { setupChangeMail } from "./views/ChangeMail.js";
 import ChangePassword from "./views/ChangePassword.js";
 import ChangeUsername, { setupChageUsername } from "./views/ChangeUsername.js";
 import FriendList, { setupFriendList } from "./views/FriendList.js";
@@ -17,7 +17,10 @@ import GameResult, { setupGameResult } from "./views/GameResult.js";
 import Home, { setupHome } from "./views/Home.js";
 import Login, { setupLogin } from "./views/Login.js";
 import LoginVerify, { setupLoginVerify } from "./views/LoginVerify.js";
-import MatchHistory from "./views/MatchHistory.js";
+import MatchHistory, {
+  cleanupMatchHistory,
+  setupMatchHistory,
+} from "./views/MatchHistory.js";
 import NotFound from "./views/NotFound.js";
 import Profile, { cleanupProfile, setupProfile } from "./views/Profile.js";
 import QuickPlayMatching, {
@@ -50,10 +53,15 @@ SPA.route("/home", Home, setupHome);
 SPA.route("/tournament", Tournament, setupTournament, cleanupTournament);
 SPA.route("/profile", Profile, setupProfile, cleanupProfile);
 SPA.route("/profile/username", ChangeUsername, setupChageUsername);
-SPA.route("/profile/mail", ChangeMail);
+SPA.route("/profile/mail", ChangeMail, setupChangeMail);
 SPA.route("/profile/password", ChangePassword);
 SPA.route("/profile/avatar", ChangeAvatar, setupChangeAvatar);
-SPA.route("/history/match", MatchHistory);
+SPA.route(
+  "/history/match",
+  MatchHistory,
+  setupMatchHistory,
+  cleanupMatchHistory,
+);
 SPA.route(
   "/matching/quick-play",
   QuickPlayMatching,
