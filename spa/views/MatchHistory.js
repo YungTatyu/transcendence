@@ -46,9 +46,9 @@ export const setupMatchHistory = async () => {
       console.error(userHistory.data.error);
       return;
     }
-    if (userHistory.length === 0) {
+    if (userHistory.total <= offset + limit) {
       window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
-      return;
+      // return;
     }
     await Promise.all(
       userHistory.data.results.map(async (matchResult) => {
@@ -89,6 +89,7 @@ export const setupMatchHistory = async () => {
   }
 
   async function handleScroll() {
+    console.log("handle scroll ssssssss");
     if (loading) return;
 
     const scrollTop = window.scrollY;
@@ -103,7 +104,8 @@ export const setupMatchHistory = async () => {
     }
   }
 
-  let loading = false;
-  loadHistory(currentPage * limit, limit);
+  let loading = true;
+  await loadHistory(currentPage * limit, limit);
+  loading = false;
   window.addEventListener("scroll", handleScroll);
 };
