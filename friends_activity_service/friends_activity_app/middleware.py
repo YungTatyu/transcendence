@@ -3,6 +3,7 @@ import logging
 import jwt
 from friends_activity_app.utils.jwt_service import verify_signed_jwt
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +38,6 @@ class JWTAuthMiddleware:
         except Exception as e:
             logger.exception(f"JWT verification failed: {e}")
             await send({"type": "websocket.close", "code": 1008})
-            logger.warn("jwt verification failed")
             return
 
         logger.debug("jwt verification success")
