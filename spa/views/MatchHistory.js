@@ -24,7 +24,7 @@ export default function MatchHistory() {
   `;
 }
 
-const scrollHundler = {
+const scrollHandler = {
   loading: false,
   currentPage: 0,
   limit: 15,
@@ -97,7 +97,7 @@ const scrollHundler = {
 
     if (scrollTop + windowHeight >= documentHeight - 10) {
       // 誤差を考慮
-      await scrollHundler.loadHistory();
+      await scrollHandler.loadHistory();
     }
   },
   destructor() {
@@ -110,12 +110,12 @@ export const setupMatchHistory = async () => {
   const matchHistoryTable = document.querySelector(".match-history-table");
   matchHistoryTable.innerHTML = "";
 
-  await scrollHundler.loadHistory();
-  window.addEventListener("scroll", scrollHundler.handleScroll);
+  await scrollHandler.loadHistory();
+  window.addEventListener("scroll", scrollHandler.handleScroll);
 };
 
 export const cleanupMatchHistory = () => {
-  window.removeEventListener("scroll", scrollHundler.handleScroll);
-  scrollHundler.destructor();
+  window.removeEventListener("scroll", scrollHandler.handleScroll);
+  scrollHandler.destructor();
   console.log("Scroll event removed");
 };
