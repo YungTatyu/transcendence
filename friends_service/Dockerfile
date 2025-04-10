@@ -9,4 +9,3 @@ RUN chmod +x ./wait-for-it.sh
 COPY . .
 
 CMD ["sh", "-c", "./wait-for-it.sh friends_db:5432 -- python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:7500"]
-
