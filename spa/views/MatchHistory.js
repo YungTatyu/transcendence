@@ -89,8 +89,6 @@ const scrollHandler = {
     this.loading = false;
   },
   async handleScroll() {
-    console.log("scroll event");
-
     const scrollTop = window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
