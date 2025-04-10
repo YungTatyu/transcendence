@@ -1,21 +1,20 @@
 import config from "../../config.js";
+import stateManager from "../../stateManager.js";
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log("Connected to QuickPlay matching room");
+    console.log("Connected To Online Users List");
   },
-  async handleMessage(message) {
+  handleMessage(message) {
     try {
       const parsedMessage = JSON.parse(message.data);
       const onlineUserList = parsedMessage.current_users;
       // console.log(parsedMessage);
-      // console.log(onlineUserList);
-      if (onlineUserList === undefined || onlineUserList === "None")
-        return [];
-      return onlineUserList;
+      console.log(onlineUserList);
+      // if (onlineUserList === undefined || onlineUserList === "None")
+      stateManager.setState({ onlineUsers: onlineUserList });
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
-      return [];
     }
   },
   handleClose(message) {

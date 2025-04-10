@@ -19,15 +19,6 @@ export default function FriendList() {
 }
 
 export const setupFriendList = async () => {
-  const accessToken = sessionStorage.getItem("access_token");
-  if (!accessToken) {
-    SPA.navigate("/");
-    return;
-  }
-  console.log(accessToken);
-
-  WsFriendActivityManager.connect(accessToken);
-
   let currentPage = 0;
   const limit = 10;
   const friendsList = document.querySelector(".js-friend-list");
@@ -50,15 +41,28 @@ export const setupFriendList = async () => {
     }
 
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
+    // console.log(response.data);
     const userId = stateManager.state?.userId;
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
     );
+    // console.log(userId);
+    // console.log("123");
+    // console.log(useridList);
     return useridList;
   }
 
   async function fetchUserStatus(userId) {
     // statusを得るapiを叩く
+    const accessToken = sessionStorage.getItem("access_token");
+    if (!accessToken) {
+      SPA.navigate("/");
+      return;
+    }
+    console.log(accessToken);
+    WsFriendActivityManager.connect(accessToken);
+    console.log(stateManager.onlineUsers);
+
     return {
       status: 200, // 成功ステータス
       data: {
