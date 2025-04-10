@@ -1,6 +1,6 @@
 import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderMatchingRoom } from "../../components/MatchingRoom.js";
-import { renderWaitOrStart } from "../../components/WaitOrStart.js";
+import { renderNeonInfo} from "../../components/NeonInfo.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
@@ -51,7 +51,7 @@ const wsEventHandler = {
         return;
       }
 
-      renderWaitOrStart("START", "#ffffff");
+      renderNeonInfo("START", "#ffffff");
       stateManager.setState({ tournamentId: tournamentId });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>

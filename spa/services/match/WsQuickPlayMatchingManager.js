@@ -1,6 +1,6 @@
 import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderMatchingRoom } from "../../components/MatchingRoom.js";
-import { renderWaitOrStart } from "../../components/WaitOrStart.js";
+import { renderNeonInfo } from "../../components/NeonInfo.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
@@ -24,7 +24,7 @@ const wsEventHandler = {
         renderMatchingInfo("Error occurred", "#FF0000");
         return;
       }
-      renderWaitOrStart("START", "#ffffff");
+      renderNeonInfo("START", "#ffffff");
       renderMatchingInfo("OPPONENT FOUND.", "#0CC0DF");
       stateManager.setState({ players: userIdList });
       stateManager.setState({ matchId: matchId });
