@@ -30,6 +30,7 @@ jobs:
           ["game"]=$CHECK
           ["tournament"]=$CHECK
           ["friends"]=$CHECK
+          ["friends_activity"]=$CHECK
           ["user"]=$CHECK
           ["match"]=$CHECK
         )

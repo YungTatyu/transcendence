@@ -181,7 +181,7 @@ services:
       - user_media:/var/www/media/
       - ./user_service/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
   
-  friends_activity_app:
+  friends_activity:
     build: ./friends_activity_service
     container_name: friends_activity_app
     ports:
