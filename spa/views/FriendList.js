@@ -44,11 +44,10 @@ const scrollHandler = {
     return useridList;
   },
   async loadFriendList() {
-    if (this.loading)
-      return ;
+    if (this.loading) return;
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-list");
-    const friendList = await this.fetchFriendUserList();//ここはthisでいいのか
+    const friendList = await this.fetchFriendUserList(); //ここはthisでいいのか
     if (friendList.length === 0) {
       window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
     }
@@ -119,7 +118,7 @@ const scrollHandler = {
     this.currentPage = 0;
     this.loading = false;
   },
-}
+};
 
 export const setupFriendList = async () => {
   const friendsList = document.querySelector(".js-friend-list");

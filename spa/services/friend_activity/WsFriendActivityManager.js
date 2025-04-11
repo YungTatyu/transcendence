@@ -9,26 +9,23 @@ const wsEventHandler = {
       const parsedMessage = JSON.parse(message.data);
       const onlineUserList = parsedMessage.current_users;
 
-      console.log("test");
       console.log(onlineUserList);
       // if (onlineUserList === undefined || onlineUserList === "None")
       //   return ;
-      const dataTags = document.querySelectorAll('.js-friend-list .user-status');
-      console.log(dataTags);
-      dataTags.forEach((dataTag) => {
-        console.log(dataTag.dataset.userid); // 各 <data> タグの value 属性の値を表示
-        if (onlineUserList.includes(dataTag.dataset.userid))
-        {
-          dataTag.textContent = "online"
+      const dataTags = document.querySelectorAll(
+        ".js-friend-list .user-status",
+      );
+      // console.log(dataTags);
+      for (const dataTag of dataTags) {
+        console.log(dataTag.dataset.userid);
+        if (onlineUserList.includes(dataTag.dataset.userid)) {
+          dataTag.textContent = "online";
           dataTag.style.color = "#0CC0DF";
-        }
-        else
-        {
-          dataTag.textContent = "offline"
+        } else {
+          dataTag.textContent = "offline";
           dataTag.style.color = "#929090";
         }
-      });
-
+      }
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
     }

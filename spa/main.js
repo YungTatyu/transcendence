@@ -5,7 +5,10 @@ import ChangeAvatar, { setupChangeAvatar } from "./views/ChangeAvatar.js";
 import ChangeMail, { setupChangeMail } from "./views/ChangeMail.js";
 import ChangePassword, { setupChangePassword } from "./views/ChangePassword.js";
 import ChangeUsername, { setupChageUsername } from "./views/ChangeUsername.js";
-import FriendList, { cleanupFriendList, setupFriendList } from "./views/FriendList.js";
+import FriendList, {
+  cleanupFriendList,
+  setupFriendList,
+} from "./views/FriendList.js";
 import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
