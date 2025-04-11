@@ -161,8 +161,8 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
-TOURNAMENT_API_BASE_URL = "https://tournament-proxy.transcen.com:8006"
-GAME_API_BASE_URL = "https://game-proxy.transcen.com:8004"
+TOURNAMENT_API_BASE_URL = os.getenv("TOURNAMENT_SERVICE")
+GAME_API_BASE_URL = os.getenv("GAME_SERVICE")
 
 VAULT_ADDR = os.getenv("VAULT_ADDR")
 CLIENT_CERT = os.getenv("CLIENT_CERT")
