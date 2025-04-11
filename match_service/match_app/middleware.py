@@ -2,6 +2,8 @@ import logging
 
 import jwt
 
+from match_app.utils.jwt_service import verify_signed_jwt
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,14 +25,19 @@ class JWTAuthMiddleware:
             return
 
         try:
+            is_valid = verify_signed_jwt(token)
+            if not is_valid:
+                logger.error("invalid jwt")
+                await send({"type": "websocket.close", "code": 1008})
+                return
             decoded_token = jwt.decode(
                 token, options={"verify_signature": False}, algorithms=["HS256"]
             )
             scope["subprotocol"] = subprotocol
             scope["user_id"] = str(decoded_token.get("user_id"))
-        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, jwt.DecodeError):
+        except Exception as e:
+            logger.exception(f"JWT verification failed: {e}")
             await send({"type": "websocket.close", "code": 1008})
-            logger.warn("jwt verification failed")
             return
 
         logger.debug("jwt verification success")

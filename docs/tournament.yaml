@@ -6,8 +6,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://tournaments.42.fr
-  - url: wss://tournaments.42.fr
+  - url: https://tournament.transcen.com
+  - url: wss://tournament.transcen.com
 
 paths:
   /tournaments/ws/enter-room:

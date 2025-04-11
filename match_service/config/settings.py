@@ -164,4 +164,7 @@ CORS_ALLOW_METHODS = [
 TOURNAMENT_API_BASE_URL = "http://tournament:8002"
 GAME_API_BASE_URL = "https://game-proxy.transcen.com:8004"
 
-CA_CERT = "/vault/certs/ca.crt"
+VAULT_ADDR = os.getenv("VAULT_ADDR")
+CLIENT_CERT = os.getenv("CLIENT_CERT")
+CLIENT_KEY = os.getenv("CLIENT_KEY")
+CA_CERT = os.getenv("CA_CERT")

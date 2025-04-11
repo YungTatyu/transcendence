@@ -58,6 +58,10 @@ services:
       - app_network
     depends_on:
       - game_redis
+    volumes:
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   game_redis:
     image: redis:alpine
@@ -95,6 +99,8 @@ services:
       - tournament_db
       - tournament_redis
     volumes:
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
       - ./certs/ca.crt:/certs/ca.crt:ro
 
   tournament_db:
@@ -175,7 +181,7 @@ services:
       - user_media:/var/www/media/
       - ./user_service/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
   
-  friends_activity_app:
+  friends_activity:
     build: ./friends_activity_service
     container_name: friends_activity_app
     ports:
@@ -183,6 +189,10 @@ services:
     env_file: ./docker_env/friends_activity.env
     networks:
       - app_network
+    volumes:
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   friends_activity_proxy:
     build: ./waf_proxy_service
@@ -195,7 +205,7 @@ services:
     env_file: ./docker_env/friends_activity.env
     restart: always
     depends_on:
-      - friends_activity_app
+      - friends_activity
     healthcheck:
       test: ["CMD", "curl", "-kf", "https://friends-activity-proxy.transcen.com:10001/health"]
     volumes:
@@ -252,7 +262,9 @@ services:
       - match_db
       - match_redis
     volumes:
-      - ./certs/ca.crt:/vault/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   match_db:
     image: postgres:15
@@ -290,6 +302,7 @@ services:
   vault:
     build: ./vault_service
     container_name: vault
+    hostname: vault
     ports:
       - 8200:8200
     networks:

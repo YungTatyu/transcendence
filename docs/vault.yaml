@@ -8,7 +8,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://vault.42.fr
+  - url: https://vault.transcen.com
 
 paths:
   /v1/auth/cert/login:
