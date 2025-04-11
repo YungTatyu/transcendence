@@ -15,9 +15,8 @@ const wsEventHandler = {
       // MatchIdが取得できたらConnectionを切断
       WsTournamentMatchManager.disconnect();
 
-      // 不戦勝となる場合"None"が返るので、Tournamentページへ
+      // 不戦勝となる場合"None"が返るので、終了
       if (matchId === "None") {
-        SPA.navigate("/tournament");
         return;
       }
 
