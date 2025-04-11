@@ -5,6 +5,7 @@ import { renderPlayers, renderWinnerPlayer } from "./TournamentInfo.js";
 import { renderNeonInfo } from "../../components/NeonInfo.js";
 import stateManager from "../../stateManager.js";
 import SPA from "../../spa.js";
+import config from "../../config.js";
 
 export async function ongoingStateHandler(matchesData, currentRound) {
   const participantsForRound = matchesData
