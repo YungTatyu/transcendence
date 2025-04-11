@@ -18,11 +18,20 @@ export default function FriendList() {
 	`;
 }
 
+
 export const setupFriendList = async () => {
   let currentPage = 0;
   const limit = 10;
   const friendsList = document.querySelector(".js-friend-list");
   friendsList.innerHTML = "";
+
+  const accessToken = sessionStorage.getItem("access_token");
+  if (!accessToken) {
+    SPA.navigate("/");
+    return;
+  }
+
+  WsFriendActivityManager.connect(accessToken);
 
   async function fetchFriendUserList(offset, limit) {
     // friend_apiを叩く
@@ -39,33 +48,11 @@ export const setupFriendList = async () => {
       console.error(response.data.error);
       return [];
     }
-
-    // responseの中のユーザのうち自身以外のuserIdを取ってくる
-    // console.log(response.data);
     const userId = stateManager.state?.userId;
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
     );
     return useridList;
-  }
-
-  async function fetchUserStatus(userId) {
-    // statusを得るapiを叩く
-    const accessToken = sessionStorage.getItem("access_token");
-    if (!accessToken) {
-      SPA.navigate("/");
-      return;
-    }
-    console.log(accessToken);
-    WsFriendActivityManager.connect(accessToken);
-    console.log(stateManager.onlineUsers);
-
-    return {
-      status: 200, // 成功ステータス
-      data: {
-        status: "online",
-      },
-    };
   }
 
   async function loadFriendList() {
@@ -75,6 +62,7 @@ export const setupFriendList = async () => {
       window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
       return;
     }
+    // const onlineUserlist = stateManager.onlineUsers;
     await Promise.all(
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
@@ -83,18 +71,15 @@ export const setupFriendList = async () => {
           config.userService,
           `/users?userid=${friendId}`,
         );
-        const statusResponse = await fetchUserStatus(friendId);
-
-        if (friend.status === null || statusResponse.status === null) {
+        const status = "offline";
+        // if (onlineUserlist?.includes(friendId))
+        //   status = "online";
+        if (friend.status === null) {
           console.error("Error Occured!");
           return;
         }
         if (friend.status >= 400) {
           console.error(friend.data.error);
-          return;
-        }
-        if (statusResponse.status >= 400) {
-          console.error(statusResponse.data.error);
           return;
         }
         const avatarImg = `${config.userService}${friend.data.avatarPath}`;
@@ -103,7 +88,7 @@ export const setupFriendList = async () => {
         <div class="gap-wrap d-flex align-items-center mt-4">
           <img src=${avatarImg} alt="avotor">
           <div class="text-white fs-2">${friend.data.username}</div>
-          <div class="user-status">${statusResponse.data.status}</div>
+          <div data-userid="${friendId}" class="user-status" style="color: #929090;">${status}</div>
           <button type="button" class="remove-button btn btn-primary">Remove</button>
         </div>
         `;

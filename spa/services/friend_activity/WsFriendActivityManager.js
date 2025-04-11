@@ -1,5 +1,4 @@
 import config from "../../config.js";
-import stateManager from "../../stateManager.js";
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -9,10 +8,27 @@ const wsEventHandler = {
     try {
       const parsedMessage = JSON.parse(message.data);
       const onlineUserList = parsedMessage.current_users;
-      // console.log(parsedMessage);
+
+      console.log("test");
       console.log(onlineUserList);
       // if (onlineUserList === undefined || onlineUserList === "None")
-      stateManager.setState({ onlineUsers: onlineUserList });
+      //   return ;
+      const dataTags = document.querySelectorAll('.js-friend-list .user-status');
+      console.log(dataTags);
+      dataTags.forEach((dataTag) => {
+        console.log(dataTag.dataset.userid); // 各 <data> タグの value 属性の値を表示
+        if (onlineUserList.includes(dataTag.dataset.userid))
+        {
+          dataTag.textContent = "online"
+          dataTag.style.color = "#0CC0DF";
+        }
+        else
+        {
+          dataTag.textContent = "offline"
+          dataTag.style.color = "#929090";
+        }
+      });
+
     } catch (error) {
       console.error("Failed to parse WebSocket message:", error);
     }
