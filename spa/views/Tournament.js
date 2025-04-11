@@ -17,7 +17,7 @@ export function setupTournament() {
     const accessToken = sessionStorage.getItem("access_token");
     const tournamentId = stateManager.state.tournamentId;
     if (!(accessToken && tournamentId)) {
-      SPA.navigate("/");
+      SPA.navigate("/home");
       return;
     }
     renderNeonInfo("WAIT...", "#0ca5bf");

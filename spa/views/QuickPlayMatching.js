@@ -21,7 +21,7 @@ export function setupQuickPlayMatching() {
   try {
     const accessToken = sessionStorage.getItem("access_token");
     if (!accessToken) {
-      SPA.navigate("/");
+      SPA.navigate("/home");
       return;
     }
     renderMatchingRoom([]);
