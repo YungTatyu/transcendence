@@ -114,9 +114,9 @@ class TournamentMatchWaiter:
     async def handle_tournament_match_bye(self):
         """不戦勝となる場合、/matches/finishと同じ処理を実行"""
         results = []
-        winner_user_id = self.__connected_user_ids[0]
+        winner_user_id = int(self.__connected_user_ids[0])
         for user_id in self.__user_ids:
-            score = 1 if user_id == winner_user_id else 0
+            score = 0 if user_id == winner_user_id else -1
             results.append({"userId": user_id, "score": score})
         await sync_to_async(
             MatchFinishService.update_match_data, thread_sensitive=False
