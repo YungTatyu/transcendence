@@ -55,7 +55,10 @@ class QuickPlayConsumer(AsyncWebsocketConsumer):
                 self.MATCHING_ROOM, self.channel_name
             )
             users = QuickPlayMatchingManager.get_waiting_users()
-            if users.get(self.user_id, None) and users[self.user_id] == self.channel_name:
+            if (
+                users.get(self.user_id, None)
+                and users[self.user_id] == self.channel_name
+            ):
                 QuickPlayMatchingManager.del_user(self.user_id)
             user_ids = list(QuickPlayMatchingManager.get_waiting_users().keys())
             await self.channel_layer.group_send(
