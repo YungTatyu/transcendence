@@ -1,8 +1,8 @@
 import NeonInfo, { renderNeonInfo } from "../components/NeonInfo.js";
-import WsTournamentManager from "../services/tournament/WsTournamentManager.js";
-import stateManager from "../stateManager.js";
 import TournamentBracket from "../services/tournament/TournamentBracket.js";
 import TournamentInfo from "../services/tournament/TournamentInfo.js";
+import WsTournamentManager from "../services/tournament/WsTournamentManager.js";
+import stateManager from "../stateManager.js";
 
 export default function Tournament() {
   return `

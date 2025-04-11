@@ -1,8 +1,8 @@
 import MatchingRoom, {
   renderMatchingRoom,
 } from "../components/MatchingRoom.js";
-import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import NeonInfo, { renderNeonInfo } from "../components/NeonInfo.js";
+import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
 import MatchingInfo, {
   renderMatchingInfo,
 } from "../services/match/MatchingInfo.js";

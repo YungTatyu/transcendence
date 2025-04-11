@@ -1,13 +1,13 @@
-import config from "../../config.js";
-import createTournamentData from "./createTournamentData.js";
-import { renderTournamentBracket } from "./TournamentBracket.js";
-import { renderPlayers, renderWinnerPlayer } from "./TournamentInfo.js";
+import fetchApiNoBody from "../../api/fetchApiNoBody.js";
 import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderNeonInfo } from "../../components/NeonInfo.js";
+import config from "../../config.js";
+import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
 import WsTournamentMatchManager from "../match/WsTournamentMatchManager.js";
-import fetchApiNoBody from "../../api/fetchApiNoBody.js";
-import SPA from "../../spa.js";
+import { renderTournamentBracket } from "./TournamentBracket.js";
+import { renderPlayers, renderWinnerPlayer } from "./TournamentInfo.js";
+import createTournamentData from "./createTournamentData.js";
 
 const wsEventHandler = {
   canRender: true,
