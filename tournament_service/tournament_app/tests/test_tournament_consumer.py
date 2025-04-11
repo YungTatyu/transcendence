@@ -14,9 +14,9 @@ from tournament_app.utils.tournament_session import TournamentSession
 FORMAT_TOURNAMENT = "/tournaments/ws/enter-room/{}"
 
 
-async def create_tournament_communicator(tournament_id: int, user_id: int):
+async def create_tournament_communicator(tournament_id: int, user_id: int, jwt=None):
     path = FORMAT_TOURNAMENT.format(tournament_id)
-    access_token = create_jwt_for_user(user_id)
+    access_token = create_jwt_for_user(user_id) if jwt is None else jwt
     communicator = WebsocketCommunicator(application, path)
     communicator.scope["subprotocols"] = ["app-protocol", access_token]
     connected, _ = await communicator.connect()
@@ -340,3 +340,19 @@ async def test_no_registered_user(
     )
     assert not connected  # 接続が拒否されたかを確認
     TournamentSession.clear()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_invalid_jwt(
+    create_match_records_mocker,
+    dummy_matches_data_mocker,
+    mock_handle_tournament_match_bye,
+    setup_finished_matching,
+):
+    tournament_id, user_ids = setup_finished_matching
+    for user_id in user_ids:
+        communicator, connected = await create_tournament_communicator(
+            tournament_id, user_id, "invalid.jwt."
+        )
+        assert not connected

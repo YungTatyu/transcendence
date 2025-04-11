@@ -1,6 +1,3 @@
-from datetime import timedelta
-
-import jwt
 import pytest
 from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
@@ -8,6 +5,7 @@ from config.asgi import application
 
 from match_app.consumers.quick_play_consumer import QuickPlayConsumer
 from match_app.models import MatchParticipant
+from match_app.utils.jwt_service import generate_signed_jwt
 from match_app.utils.quick_play_matching_manager import QuickPlayMatchingManager
 
 PATH_MATCHING = "/matches/ws/enter-room"
@@ -15,19 +13,12 @@ PATH_MATCHING = "/matches/ws/enter-room"
 
 def create_jwt_for_user(user_id):
     # JWTを生成するロジック
-    payload = {
-        "user_id": user_id,
-        "exp": timedelta(days=1).total_seconds(),
-        "iat": timedelta(days=0).total_seconds(),
-    }
-    secret_key = "your_secret_key"
-    token = jwt.encode(payload, secret_key, algorithm="HS256")
-    return token
+    return generate_signed_jwt(user_id)
 
 
-async def create_communicator(user_id: int):
+async def create_communicator(user_id: int, jwt=None):
     """JWTをCookieに含んでWebSocketコネクションを作成"""
-    access_token = create_jwt_for_user(user_id)
+    access_token = create_jwt_for_user(user_id) if jwt is None else jwt
     communicator = WebsocketCommunicator(application, PATH_MATCHING)
     communicator.scope["subprotocols"] = ["app-protocol", access_token]
     connected, _ = await communicator.connect()
@@ -205,3 +196,13 @@ async def test_enter_room_same_user():
 
     await communicator1.disconnect()
     QuickPlayMatchingManager.clear_waiting_users()
+
+
+@pytest.mark.asyncio(loop_scope="function")
+@pytest.mark.django_db
+async def test_invalid_jwt(mock_fetch_games_success):
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMjMsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJleHAiOjE3MTEyMzQ1MjV9.TaCmJrY97gqxHg4DkKiXFSddJhZ4K96BdK9oefaf7_8"
+    for i in range(QuickPlayConsumer.ROOM_CAPACITY):
+        user_id = i + 1
+        communicator, connected = await create_communicator(user_id, token)
+        assert not connected

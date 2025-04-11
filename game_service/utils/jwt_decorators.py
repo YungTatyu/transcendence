@@ -1,7 +1,11 @@
+import logging
 from functools import wraps
 
 import jwt
 from rest_framework.response import Response
+from utils.jwt_service import verify_signed_jwt
+
+logger = logging.getLogger(__name__)
 
 
 def jwt_required(func):
@@ -12,10 +16,18 @@ def jwt_required(func):
             return Response({"error": "Access token missing"}, status=401)
 
         try:
-            # TODO 署名検証なしでデコード
+            is_valid = verify_signed_jwt(token)
+            if not is_valid:
+                return Response({"error": "Invalid or expired token"}, status=401)
+        except Exception:
+            logger.exception("JWT verification failed")
+            return Response({"error": "Failed to verify token"}, status=401)
+
+        try:
+            # 検証済みなので署名検証をスキップ
             decoded_token = jwt.decode(token, options={"verify_signature": False})
 
-            request.user_id = decoded_token.get("user_id")  # user_id をリクエストに保存
+            request.user_id = decoded_token.get("user_id")
             return func(request, *args, **kwargs)
 
         except jwt.ExpiredSignatureError:

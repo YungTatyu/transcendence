@@ -30,6 +30,7 @@ jobs:
           ["game"]=$CHECK
           ["tournament"]=$CHECK
           ["friends"]=$CHECK
+          ["friends_activity"]=$CHECK
           ["user"]=$CHECK
           ["match"]=$CHECK
         )
@@ -64,7 +65,7 @@ jobs:
         docker compose exec auth python manage.py test
         docker compose exec game pytest -vv -s
         docker compose exec tournament pytest
-        docker compose exec friends_activity_app pytest
+        docker compose exec friends_activity pytest
         docker compose exec friends python manage.py test
         docker compose exec match pytest
         docker compose exec user pytest
