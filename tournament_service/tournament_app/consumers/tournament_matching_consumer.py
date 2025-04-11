@@ -77,10 +77,10 @@ class TournamentMatchingConsumer(AsyncWebsocketConsumer):
             # 2 -> 1人のタイミングでトーナメント強制開始タイマーを解除
             if count == 1:
                 TournamentMatchingManager.cancel_task()
-                wait_user_ids = list(
-                    TournamentMatchingManager.get_waiting_users().keys()
-                )
-                await self.__broadcast_matching_room_state(None, wait_user_ids)
+
+            wait_user_ids = list(TournamentMatchingManager.get_waiting_users().keys())
+            execution_time = TournamentMatchingManager.get_task_execution_time()
+            await self.__broadcast_matching_room_state(execution_time, wait_user_ids)
 
     async def __broadcast_matching_room_state(
         self, start_time: Optional[float], wait_user_ids: list[int]

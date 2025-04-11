@@ -31,9 +31,11 @@ const wsEventHandler = {
       const roomCapacity = parsedMessage.room_capacity;
       const startTime = parsedMessage.tournament_start_time;
 
+      // INFO 必ずタイマーをClearする
+      clearInterval(WsTournamentMatchingManager.intervalId);
+
       // INFO startTimeがNoneならTimerをリセット
       if (startTime === "None") {
-        clearInterval(WsTournamentMatchingManager.intervalId);
         renderTimer("-");
       } else {
         const endTime = Number(startTime) * 1000; // Unixタイム(秒) → ミリ秒に変換
