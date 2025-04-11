@@ -18,19 +18,16 @@ export default function FriendList() {
 	`;
 }
 
-
-export const setupFriendList = async () => {
-  let currentPage = 0;
-  const limit = 10;
-  const friendsList = document.querySelector(".js-friend-list");
-  friendsList.innerHTML = "";
-
-  async function fetchFriendUserList(offset, limit) {
-    // friend_apiを叩く
+const scrollHandler = {
+  loading: false,
+  currentPage: 0,
+  limit: 10,
+  async fetchFriendUserList() {
+    const offset = this.currentPage * this.limit;
     const response = await fetchApiNoBody(
       "GET",
       config.friendService,
-      `/friends?status=approved&offset=${offset}&limit=${limit}`,
+      `/friends?status=approved&offset=${offset}&limit=${this.limit}`,
     );
     if (response.status === null) {
       console.error("Error Occured");
@@ -45,16 +42,16 @@ export const setupFriendList = async () => {
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
     );
     return useridList;
-  }
-
-  async function loadFriendList() {
-    // console.log(currentPage * limit);
-    const friendList = await fetchFriendUserList(currentPage * limit, limit);
+  },
+  async loadFriendList() {
+    if (this.loading)
+      return ;
+    this.loading = true;
+    const friendsList = document.querySelector(".js-friend-list");
+    const friendList = await this.fetchFriendUserList();//ここはthisでいいのか
     if (friendList.length === 0) {
       window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
-      return;
     }
-    // const onlineUserlist = stateManager.onlineUsers;
     await Promise.all(
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
@@ -105,39 +102,36 @@ export const setupFriendList = async () => {
         friendsList.appendChild(friendItem);
       }),
     );
-    currentPage++;
-  }
-
-  // 無限スクロールの実装
-  async function handleScroll() {
-    if (loading) return;
-
+    this.currentPage++;
+    this.loading = false;
+  },
+  async handleScroll() {
     const scrollTop = window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
 
     if (scrollTop + windowHeight >= documentHeight - 10) {
       // 誤差を考慮
-      loading = true;
-      await loadFriendList(); //スクロールした時のapiを叩く関数
-      loading = false;
+      await scrollHandler.loadFriendList(); //スクロールした時のapiを叩く関数
     }
-  }
-  // スクロールイベントを登録
-  let loading = false;
+  },
+  destructor() {
+    this.currentPage = 0;
+    this.loading = false;
+  },
+}
 
-  await loadFriendList();
-
-  window.addEventListener("scroll", handleScroll);
-
+export const setupFriendList = async () => {
+  const friendsList = document.querySelector(".js-friend-list");
+  friendsList.innerHTML = "";
+  await scrollHandler.loadFriendList();
+  window.addEventListener("scroll", scrollHandler.handleScroll);
   const accessToken = sessionStorage.getItem("access_token");
   if (!accessToken) {
     SPA.navigate("/");
     return;
   }
-
   WsFriendActivityManager.connect(accessToken);
-
   const findButton = document.querySelector(".find-button");
   const requestButton = document.querySelector(".request-button");
 
@@ -148,4 +142,10 @@ export const setupFriendList = async () => {
   requestButton.addEventListener("click", () => {
     SPA.navigate("/friend/request");
   });
+};
+
+export const cleanupFriendList = () => {
+  window.removeEventListener("scroll", scrollHandler.handleScroll);
+  scrollHandler.destructor();
+  console.log("Scroll event removed");
 };

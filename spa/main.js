@@ -5,7 +5,7 @@ import ChangeAvatar, { setupChangeAvatar } from "./views/ChangeAvatar.js";
 import ChangeMail, { setupChangeMail } from "./views/ChangeMail.js";
 import ChangePassword, { setupChangePassword } from "./views/ChangePassword.js";
 import ChangeUsername, { setupChageUsername } from "./views/ChangeUsername.js";
-import FriendList, { setupFriendList } from "./views/FriendList.js";
+import FriendList, { cleanupFriendList, setupFriendList } from "./views/FriendList.js";
 import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
@@ -42,7 +42,7 @@ SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
-SPA.route("/friend", FriendList, setupFriendList);
+SPA.route("/friend", FriendList, cleanupFriendList, setupFriendList);
 SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);

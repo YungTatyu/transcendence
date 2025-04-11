@@ -27,7 +27,7 @@ const fetchAccessToken = async () => {
   const accessToken = data.accessToken;
   const payload = parseJwt(accessToken);
   const userId = payload.user_id;
-  stateManager.setState({ userId: parseInt(userId) });
+  stateManager.setState({ userId: Number.parseInt(userId) });
   sessionStorage.setItem("access_token", accessToken);
   return payload;
 };
