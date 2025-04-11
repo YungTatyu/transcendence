@@ -36,6 +36,7 @@ export async function ongoingStateHandler(matchesData, currentRound) {
         console.error("Error prepareTournamentMatch");
         return;
       }
+      WsTournamentMatchManager.disconnect();
       WsTournamentMatchManager.connect(accessToken, matchId);
     } catch (error) {
       console.error(error);
