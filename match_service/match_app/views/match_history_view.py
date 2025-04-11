@@ -64,7 +64,7 @@ class MatchHistoryView(APIView):
         result = {
             "mode": match.mode,
             "result": win_or_lose,
-            "date": match.start_date,
+            "date": match.finish_date,
             "userScore": user.score,
             "opponents": opponents_data,
         }
