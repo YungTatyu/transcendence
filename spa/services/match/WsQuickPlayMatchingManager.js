@@ -28,6 +28,8 @@ const wsEventHandler = {
       renderMatchingInfo("OPPONENT FOUND.", "#0CC0DF");
       stateManager.setState({ players: userIdList });
       stateManager.setState({ matchId: matchId });
+      // INFO GameResult画面でtournamentIdの有無でルーティングするため
+      stateManager.setState({ tournamentId: null });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>
         new Promise((resolve) => setTimeout(resolve, msec));
