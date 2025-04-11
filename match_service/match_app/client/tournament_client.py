@@ -1,6 +1,7 @@
 import logging
 
 import requests
+from config.settings import CA_CERT
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,12 @@ class TournamentClient:
         }
 
         response = http_methods[method](
-            url, json=body, params=params, headers=headers, timeout=timeout
+            url,
+            json=body,
+            params=params,
+            headers=headers,
+            timeout=timeout,
+            verify=CA_CERT,
         )
         response.raise_for_status()
         return response

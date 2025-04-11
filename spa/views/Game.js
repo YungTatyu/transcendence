@@ -196,7 +196,7 @@ export const setupGame = async () => {
         stateManager.state?.matchId
       )
     ) {
-      SPA.navigate("/");
+      SPA.navigate("/home");
       return;
     }
     gameRender.renderGame();

@@ -1,8 +1,8 @@
 import MatchingRoom, {
   renderMatchingRoom,
 } from "../components/MatchingRoom.js";
+import NeonInfo, { renderNeonInfo } from "../components/NeonInfo.js";
 import TitleMatchingRoom from "../components/TitleMatchingRoom.js";
-import WaitOrStart, { renderWaitOrStart } from "../components/WaitOrStart.js";
 import MatchingInfo, {
   renderMatchingInfo,
 } from "../services/match/MatchingInfo.js";
@@ -13,7 +13,7 @@ export default function QuickPlayMatching() {
       ${TitleMatchingRoom("QUICK PLAY")}
       ${MatchingInfo()}
       ${MatchingRoom()}
-      ${WaitOrStart()}
+      ${NeonInfo()}
   `;
 }
 
@@ -21,11 +21,11 @@ export function setupQuickPlayMatching() {
   try {
     const accessToken = sessionStorage.getItem("access_token");
     if (!accessToken) {
-      SPA.navigate("/");
+      SPA.navigate("/home");
       return;
     }
     renderMatchingRoom([]);
-    renderWaitOrStart("WAIT...", "#0CC0DF");
+    renderNeonInfo("WAIT...", "#0CC0DF");
     renderMatchingInfo("LOOKING FOR AN OPPONENT.", "#7733ff");
     WsQuickPlayMatchingManager.connect(accessToken);
   } catch (error) {

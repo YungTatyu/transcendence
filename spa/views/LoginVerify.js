@@ -38,7 +38,7 @@ export function setupLoginVerify() {
       return;
     }
     if (status >= 400) {
-      errorOutput.textContent = JSON.stringify(data.error, null, "\n");
+      errorOutput.textContent = JSON.stringify(data, null, "\n");
       return;
     }
 

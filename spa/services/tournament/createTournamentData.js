@@ -1,13 +1,11 @@
-export function createTournamentData(tournamentJsonData) {
+export default function createTournamentData(matchesData) {
   // https://www.aropupu.fi/bracket/ ライブラリの入力形式のDataを作成
 
   // INFO roundが昇順になるようにソートしておく
-  const matchesData = tournamentJsonData.matches_data.sort(
-    (a, b) => a.round - b.round,
-  );
+  const sortedMatchesData = matchesData.sort((a, b) => a.round - b.round);
   return {
-    teams: createTeams(matchesData),
-    results: [createResults(matchesData)],
+    teams: createTeams(sortedMatchesData),
+    results: [createResults(sortedMatchesData)],
   };
 
   function createTeams(matchesData) {

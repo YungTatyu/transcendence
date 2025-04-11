@@ -15,7 +15,7 @@ from tournament_app.utils.tournament_tree import TournamentTree
 class TournamentSession:
     __tournament_session_dict: dict[int, "TournamentSession"] = {}
     # TODO 適切な値に戻す
-    LIMIT_TOURNAMENT_MATCH_SEC = 5
+    LIMIT_TOURNAMENT_MATCH_SEC = 300
 
     def __init__(self, tournament_id: int, user_ids: list[int]):
         """
