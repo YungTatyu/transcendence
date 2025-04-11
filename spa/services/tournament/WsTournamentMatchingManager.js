@@ -6,6 +6,7 @@ import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { renderMatchingInfo, renderTimer } from "./TournamentMatchingInfo.js";
+import WsTournamentManager from "./WsTournamentManager.js";
 
 const startTimer = (endTime) => {
   const intervalId = setInterval(() => {
@@ -54,6 +55,8 @@ const wsEventHandler = {
       renderNeonInfo("START", "#ffffff");
       // INFO 稼働していないintervalIdに対して実行しても問題ない
       clearInterval(WsTournamentMatchingManager.intervalId);
+      // INFO 古いWebSocketConnectionを削除
+      WsTournamentManager.disconnect();
       stateManager.setState({ tournamentId: tournamentId });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>
