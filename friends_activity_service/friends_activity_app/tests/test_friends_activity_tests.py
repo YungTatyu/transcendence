@@ -1,12 +1,11 @@
 import asyncio
 import random
-from datetime import timedelta
 
-import jwt
 import pytest
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 from friends_activity_app.asgi import application
+from friends_activity_app.utils.jwt_service import generate_signed_jwt
 
 
 @pytest.mark.asyncio
@@ -23,7 +22,7 @@ class TestLoggedInUsersConsumer(TestCase):
 
         # WebSocket接続
         communicator = WebsocketCommunicator(application, url)
-        communicator.scope["cookies"] = {"access_token": access_token}
+        communicator.scope["subprotocols"] = ["app-protocol", access_token]
 
         # WebSocket接続を試みる
         connected, subprotocol = await communicator.connect()
@@ -51,10 +50,10 @@ class TestLoggedInUsersConsumer(TestCase):
 
         # WebSocket接続
         communicator = WebsocketCommunicator(application, url)
-        communicator.scope["cookies"] = {"access_token": access_token}
+        communicator.scope["subprotocols"] = ["app-protocol", access_token]
 
         communicator_2 = WebsocketCommunicator(application, url)
-        communicator_2.scope["cookies"] = {"access_token": access_token_2}
+        communicator_2.scope["subprotocols"] = ["app-protocol", access_token_2]
 
         # WebSocket接続を試みる
         connected, _ = await communicator.connect()
@@ -105,10 +104,10 @@ class TestLoggedInUsersConsumer(TestCase):
         url = "/friends/online"
 
         communicator_1 = WebsocketCommunicator(application, url)
-        communicator_1.scope["cookies"] = {"access_token": access_token_1}
+        communicator_1.scope["subprotocols"] = ["app-protocol", access_token_1]
 
         communicator_2 = WebsocketCommunicator(application, url)
-        communicator_2.scope["cookies"] = {"access_token": access_token_2}
+        communicator_2.scope["subprotocols"] = ["app-protocol", access_token_2]
 
         connected_1, _ = await communicator_1.connect()
         connected_2, _ = await communicator_2.connect()
@@ -141,10 +140,10 @@ class TestLoggedInUsersConsumer(TestCase):
         url = "/friends/online"
 
         communicator_1 = WebsocketCommunicator(application, url)
-        communicator_1.scope["cookies"] = {"access_token": access_token}
+        communicator_1.scope["subprotocols"] = ["app-protocol", access_token]
 
         communicator_2 = WebsocketCommunicator(application, url)
-        communicator_2.scope["cookies"] = {"access_token": access_token}
+        communicator_2.scope["subprotocols"] = ["app-protocol", access_token]
 
         connected_1, _ = await communicator_1.connect()
         connected_2, _ = await communicator_2.connect()
@@ -168,21 +167,14 @@ class TestLoggedInUsersConsumer(TestCase):
 
     def create_jwt_for_user(self, user_id):
         # JWTを生成するロジック
-        payload = {
-            "user_id": user_id,
-            "exp": timedelta(days=1).total_seconds(),
-            "iat": timedelta(days=0).total_seconds(),
-        }
-        secret_key = "your_secret_key"
-        token = jwt.encode(payload, secret_key, algorithm="HS256")
-        return token
+        return generate_signed_jwt(user_id)
 
     async def test_websocket_invalid_jwt(self):
         # 無効なJWTを利用して接続を試みる
         invalid_token = "invalid_token"
         url = "/friends/online"
         communicator = WebsocketCommunicator(application, url)
-        communicator.scope["cookies"] = {"access_token": invalid_token}
+        communicator.scope["subprotocols"] = ["app-protocol", invalid_token]
 
         connected, _ = await communicator.connect()
         # JWTが無効なため、接続が確立されないはず

@@ -2,6 +2,7 @@ import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import VerifyForm from "../components/VerifyForm.js";
 import config from "../config.js";
 import stateManager from "../stateManager.js";
+import { parseJwt, scheduleRefresh } from "../utils/jwtHelper.js";
 
 export default function LoginVerify() {
   return VerifyForm(false, "Verify OTP", "loginVerifyButton");
@@ -41,9 +42,11 @@ export function setupLoginVerify() {
       return;
     }
 
+    const accessToken = data.accessToken;
     // INFO stateManagerにuserIdを登録
     stateManager.setState({ userId: data.userId });
-    sessionStorage.setItem("access_token", data.accessToken);
+    sessionStorage.setItem("access_token", accessToken);
+    scheduleRefresh(parseJwt(accessToken));
     SPA.navigate("/home");
   });
 }

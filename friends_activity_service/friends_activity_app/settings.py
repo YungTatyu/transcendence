@@ -34,13 +34,13 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "daphne",
     "channels",
     "rest_framework",
     "friends_activity_app",
@@ -153,3 +153,8 @@ CORS_ALLOW_METHODS = [
     "PATCH",
     "OPTIONS",
 ]
+
+VAULT_ADDR = os.getenv("VAULT_ADDR")
+CLIENT_CERT = os.getenv("CLIENT_CERT")
+CLIENT_KEY = os.getenv("CLIENT_KEY")
+CA_CERT = os.getenv("CA_CERT")
