@@ -25,14 +25,6 @@ export const setupFriendList = async () => {
   const friendsList = document.querySelector(".js-friend-list");
   friendsList.innerHTML = "";
 
-  const accessToken = sessionStorage.getItem("access_token");
-  if (!accessToken) {
-    SPA.navigate("/");
-    return;
-  }
-
-  WsFriendActivityManager.connect(accessToken);
-
   async function fetchFriendUserList(offset, limit) {
     // friend_apiを叩く
     const response = await fetchApiNoBody(
@@ -134,9 +126,17 @@ export const setupFriendList = async () => {
   // スクロールイベントを登録
   let loading = false;
 
-  loadFriendList();
+  await loadFriendList();
 
   window.addEventListener("scroll", handleScroll);
+
+  const accessToken = sessionStorage.getItem("access_token");
+  if (!accessToken) {
+    SPA.navigate("/");
+    return;
+  }
+
+  WsFriendActivityManager.connect(accessToken);
 
   const findButton = document.querySelector(".find-button");
   const requestButton = document.querySelector(".request-button");
