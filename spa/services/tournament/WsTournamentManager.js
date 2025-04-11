@@ -2,9 +2,9 @@ import config from "../../config.js";
 import { renderTournamentBracket } from "./TournamentBracket.js";
 import createTournamentData from "./createTournamentData.js";
 import {
-  ongoingStateHandler,
   errorStateHandler,
   finishedStateHandler,
+  ongoingStateHandler,
 } from "./tournamentStateHandler.js";
 
 const wsEventHandler = {

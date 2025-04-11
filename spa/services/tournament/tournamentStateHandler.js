@@ -1,11 +1,11 @@
 import fetchApiNoBody from "../../api/fetchApiNoBody.js";
 import fetchPlayersData from "../../api/fetchPlayersData.js";
+import { renderNeonInfo } from "../../components/NeonInfo.js";
+import config from "../../config.js";
+import SPA from "../../spa.js";
+import stateManager from "../../stateManager.js";
 import WsTournamentMatchManager from "../match/WsTournamentMatchManager.js";
 import { renderPlayers, renderWinnerPlayer } from "./TournamentInfo.js";
-import { renderNeonInfo } from "../../components/NeonInfo.js";
-import stateManager from "../../stateManager.js";
-import SPA from "../../spa.js";
-import config from "../../config.js";
 
 export async function ongoingStateHandler(matchesData, currentRound) {
   const participantsForRound = matchesData
