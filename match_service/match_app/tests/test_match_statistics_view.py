@@ -1,14 +1,13 @@
-import jwt
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from match_app.models import Match, MatchParticipant
+from match_app.utils.jwt_service import generate_signed_jwt
 
 
 class TestMatchStatistics:
     def request_match_statistics(self, client, status, user_id):
-        token_payload = {"user_id": 1}
-        token = jwt.encode(token_payload, "secret_key", algorithm="HS256")
+        token = generate_signed_jwt(1)
         client.cookies["access_token"] = token
 
         response = client.get(f"/matches/statistics/{user_id}")
