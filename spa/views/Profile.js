@@ -88,26 +88,25 @@ export async function setupProfile() {
       stateManager.state.username;
     document.querySelector(".js-user-avatar").src =
       stateManager.state.avatarUrl;
-    return;
+  } else {
+    const { status: uStatus, data: uData } = await fetchApiNoBody(
+      "GET",
+      config.userService,
+      `/users?userid=${stateManager.state.userId}`,
+    );
+
+    if (uStatus === null || uStatus >= 400) {
+      console.error("ユーザー情報の取得に失敗しました");
+    } else {
+      const avatarUrl = `${config.userService}${uData.avatarPath}`;
+
+      document.querySelector(".js-username").textContent = uData.username;
+      document.querySelector(".js-user-avatar").src = avatarUrl;
+
+      stateManager.setState({ username: uData.username });
+      stateManager.setState({ avatarUrl: avatarUrl });
+    }
   }
-
-  const { status: uStatus, data: uData } = await fetchApiNoBody(
-    "GET",
-    config.userService,
-    `/users?userid=${stateManager.state.userId}`,
-  );
-
-  if (uStatus === null || uStatus >= 400) {
-    console.error("ユーザー情報の取得に失敗しました");
-    return;
-  }
-  const avatarUrl = `${config.userService}${uData.avatarPath}`;
-
-  document.querySelector(".js-username").textContent = uData.username;
-  document.querySelector(".js-user-avatar").src = avatarUrl;
-
-  stateManager.setState({ username: uData.username });
-  stateManager.setState({ avatarUrl: avatarUrl });
 
   if (!stateManager.state.userId) {
     return;
