@@ -1,7 +1,9 @@
 import io
+import os
 
 import jwt
 import pytest
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils.timezone import now
@@ -117,6 +119,12 @@ class TestAvatarViewPut:
 
         assert response.status_code == status.HTTP_200_OK
         assert "avatarPath" in response.data
+
+        # デフォルト画像が削除されていないことを確認
+        default_avatar_path = os.path.join(
+            settings.MEDIA_ROOT, "images/default/default_image.png"
+        )
+        assert os.path.isfile(default_avatar_path), "デフォルト画像が削除されています"
 
     def test_put_avatar_invalid_data(self):
         """PUT: 無効なデータを送信した場合(エラー)"""
