@@ -62,7 +62,11 @@ export const handleLoading = async () => {
   if (payload === null) {
     return;
   }
-  WsFriendActivityManager.disconnect();
-  WsFriendActivityManager.connect(sessionStorage.getItem("access_token"));
+  try {
+    WsFriendActivityManager.disconnect();
+    WsFriendActivityManager.connect(sessionStorage.getItem("access_token"));
+  } catch(error) {
+    console.error(error);
+  }
   scheduleRefresh(payload);
 };
