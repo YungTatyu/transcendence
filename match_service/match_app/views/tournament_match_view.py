@@ -5,11 +5,14 @@ from match_app.serializers import TournamentMatchSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
+from match_app.utils.apikey_decorators import apikey_required
+from django.utils.decorators import method_decorator
 
 
 class TournamentMatchView(APIView):
     """トーナメント試合レコードを作成"""
 
+    @method_decorator(apikey_required("matches"))
     def post(self, request):
         serializer = TournamentMatchSerializer(data=request.data)
         if not serializer.is_valid():
