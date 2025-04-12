@@ -1,6 +1,6 @@
 import config from "../config.js";
-import stateManager from "../stateManager.js";
 import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
+import stateManager from "../stateManager.js";
 
 export const parseJwt = (token) => {
   const base64Url = token.split(".")[1];

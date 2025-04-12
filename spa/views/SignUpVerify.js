@@ -1,9 +1,9 @@
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
 import VerifyForm from "../components/VerifyForm.js";
 import config from "../config.js";
+import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
 import stateManager from "../stateManager.js";
 import { parseJwt, scheduleRefresh } from "../utils/jwtHelper.js";
-import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
 
 export default function SignUpVerify() {
   return VerifyForm(
