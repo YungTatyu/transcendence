@@ -1,7 +1,6 @@
 import io
 import os
 
-import jwt
 import pytest
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -13,9 +12,7 @@ from rest_framework.test import APIClient
 
 from user_app.models import User
 from user_app.serializers import AvatarSerializer
-
-SECRET_KEY = "test_secret"  # テスト用の秘密鍵
-ALGORITHM = "HS256"
+from user_app.utils.jwt_service import generate_signed_jwt
 
 
 @pytest.fixture(scope="function")
@@ -39,9 +36,7 @@ def setup_test(db, request):
     )
 
     # JWT トークンの作成（Cookieに設定するだけ）
-    token_payload = {"user_id": user.user_id}
-    token = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)
-
+    token = generate_signed_jwt(user.user_id)
     api_client = APIClient()
     api_client.cookies["access_token"] = token  # Cookie に JWT をセット
 

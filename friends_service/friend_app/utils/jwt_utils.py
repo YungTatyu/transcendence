@@ -65,3 +65,41 @@ def verify_jwt(pubkey: PublicKeyType, unsigned_jwt: bytes, signature: bytes) -> 
     except Exception as e:
         logger.warn(str(e))
         return False
+
+
+def add_signature_to_jwt(jwt_data: bytes, signature: bytes) -> str:
+    """
+    署名していないJWTデータ (header.payload) に署名を追加し、完全なJWTを作成する。
+
+    :param jwt_data: "header.payload" 形式の JWT データ (バイナリ)
+    :param signature: 署名 (バイナリ)
+    :return: 完全なJWT ("header.payload.signature")
+    """
+    signature_encoded = base64url_encode(signature).decode()
+    return f"{jwt_data.decode()}.{signature_encoded}"
+
+
+def extract_signature_from_jwt(signed_jwt: str) -> bytes:
+    """
+    JWT の "header.payload.signature" 形式の文字列から署名部分を抽出し、
+    Base64 URL セーフデコードして bytes 型で返します。
+
+    Args:
+        signed_jwt (str): 完全な JWT トークン
+
+    Returns:
+        bytes: 署名部分をデコードしたバイナリデータ
+
+    Raises:
+        ValueError: JWT の形式が不正な場合
+    """
+    parts = signed_jwt.split(".")
+    if len(parts) != 3:
+        raise ValueError("Invalid JWT format. Expected 'header.payload.signature'.")
+
+    signature_b64 = parts[2]
+    missing_padding = len(signature_b64) % 4
+    if missing_padding:
+        signature_b64 += "=" * (4 - missing_padding)
+
+    return base64.urlsafe_b64decode(signature_b64)

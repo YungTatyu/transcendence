@@ -1,4 +1,5 @@
 import SPA from "../spa.js";
+import stateManager from "../stateManager.js";
 
 export default function GameResult(params) {
   if (!params) {
@@ -22,10 +23,18 @@ export default function GameResult(params) {
 }
 
 export async function setupGameResult() {
+  // stateにtournamentIdがあればTournamentへ、なければHomeへ
+  let route = "/home";
+
+  if (stateManager.state.tournamentId) {
+    route = "/tournament";
+    const button = document.querySelector(".game-result-button");
+    button.textContent = "Back To Tournament";
+  }
   document
     .querySelector(".game-result-button")
     ?.addEventListener("click", (event) => {
       event.preventDefault();
-      SPA.navigate("/home", null, true);
+      SPA.navigate(route, null, true);
     });
 }

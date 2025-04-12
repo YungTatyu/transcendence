@@ -1,7 +1,7 @@
 from django.utils.decorators import method_decorator
-from match_app.jwt_decorators import jwt_required
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import MatchHistorySerializer, UserIdValidator
+from match_app.utils.jwt_decorators import jwt_required
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
@@ -64,7 +64,7 @@ class MatchHistoryView(APIView):
         result = {
             "mode": match.mode,
             "result": win_or_lose,
-            "date": match.start_date,
+            "date": match.finish_date,
             "userScore": user.score,
             "opponents": opponents_data,
         }

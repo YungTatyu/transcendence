@@ -12,7 +12,3 @@ CMD ["./wait-for-it.sh", "friends_db:5432", "--", "sh", "-c", "\
 python manage.py makemigrations && \
 python manage.py migrate && \
 gunicorn auth_app.wsgi:application --bind 0.0.0.0:7500"]
-
-
-# CMD ["sh", "-c", "./wait-for-it.sh friends_db:5432 -- python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:7500"]
-
