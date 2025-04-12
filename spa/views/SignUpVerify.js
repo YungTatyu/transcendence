@@ -57,8 +57,12 @@ export function setupSignUpVerify() {
     stateManager.setState({ userId: data.userId });
     sessionStorage.setItem("access_token", accessToken);
     scheduleRefresh(parseJwt(accessToken));
-    WsFriendActivityManager.disconnect();
-    WsFriendActivityManager.connect(accessToken);
+    try {
+      WsFriendActivityManager.disconnect();
+      WsFriendActivityManager.connect(accessToken);
+    } catch(error) {
+      console.error(error);
+    }
     SPA.navigate("/home");
   });
 }
