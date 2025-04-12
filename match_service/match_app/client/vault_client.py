@@ -103,6 +103,17 @@ class VaultClient:
         return response.json()["data"]
 
     @staticmethod
+    def fetch_api_key_not_required_token(api_key_name: str) -> Optional[str]:
+        token = VaultClient.fetch_token()
+        if token is None:
+            return None
+
+        api_keys = VaultClient.fetch_api_key(token, api_key_name)
+        if api_keys is None:
+            return None
+        return api_keys["value"]
+
+    @staticmethod
     def verify_api_key(api_key: str, api_key_name) -> Optional[bool]:
         token = VaultClient.fetch_token()
         if token is None:
