@@ -1,4 +1,5 @@
 import config from "../../config.js";
+import stateManager from "../../stateManager.js";
 
 const wsEventHandler = {
   handleOpen(message) {
@@ -9,11 +10,13 @@ const wsEventHandler = {
       const parsedMessage = JSON.parse(message.data);
       const onlineUserList = parsedMessage.current_users;
 
+      // console.log(onlineUserList);
+      stateManager.setState({ onlineUsers: onlineUserList });
       const dataTags = document.querySelectorAll(
         ".js-friend-list .user-status",
       );
       for (const dataTag of dataTags) {
-        console.log(dataTag.dataset.userid);
+        // console.log(dataTag.dataset.userid);
         if (onlineUserList.includes(dataTag.dataset.userid)) {
           dataTag.textContent = "online";
           dataTag.style.color = "#0CC0DF";
