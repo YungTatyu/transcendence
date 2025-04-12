@@ -1,11 +1,12 @@
 import fetchPlayersData from "../../api/fetchPlayersData.js";
 import { renderMatchingRoom } from "../../components/MatchingRoom.js";
-import { renderWaitOrStart } from "../../components/WaitOrStart.js";
+import { renderNeonInfo } from "../../components/NeonInfo.js";
 import config from "../../config.js";
 import SPA from "../../spa.js";
 import stateManager from "../../stateManager.js";
 import { calcRemaingTime } from "../../utils/timerHelper.js";
 import { renderMatchingInfo, renderTimer } from "./TournamentMatchingInfo.js";
+import WsTournamentManager from "./WsTournamentManager.js";
 
 const startTimer = (endTime) => {
   const intervalId = setInterval(() => {
@@ -20,7 +21,7 @@ const startTimer = (endTime) => {
 
 const wsEventHandler = {
   handleOpen(message) {
-    console.log("Connected to QuickPlay matching room");
+    console.log("Connected to Tournament matching room");
   },
   async handleMessage(message) {
     try {
@@ -30,9 +31,11 @@ const wsEventHandler = {
       const roomCapacity = parsedMessage.room_capacity;
       const startTime = parsedMessage.tournament_start_time;
 
+      // INFO 必ずタイマーをClearする
+      clearInterval(WsTournamentMatchingManager.intervalId);
+
       // INFO startTimeがNoneならTimerをリセット
       if (startTime === "None") {
-        clearInterval(WsTournamentMatchingManager.intervalId);
         renderTimer("-");
       } else {
         const endTime = Number(startTime) * 1000; // Unixタイム(秒) → ミリ秒に変換
@@ -51,7 +54,11 @@ const wsEventHandler = {
         return;
       }
 
-      renderWaitOrStart("START", "#ffffff");
+      renderNeonInfo("START", "#ffffff");
+      // INFO 稼働していないintervalIdに対して実行しても問題ない
+      clearInterval(WsTournamentMatchingManager.intervalId);
+      // INFO 古いWebSocketConnectionを削除
+      WsTournamentManager.disconnect();
       stateManager.setState({ tournamentId: tournamentId });
       // ユーザーが対戦相手を確認するためにSleepを挟む
       const sleep = (msec) =>
@@ -63,7 +70,7 @@ const wsEventHandler = {
     }
   },
   handleClose(message) {
-    console.log("Disconnected from server");
+    console.log("Disconnected from Tournament matching room");
   },
   handleError(message) {
     console.error("WebSocket error:", message);

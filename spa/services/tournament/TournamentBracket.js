@@ -1,3 +1,6 @@
+import fetchApiNoBody from "../../api/fetchApiNoBody.js";
+import config from "../../config.js";
+
 export default function TournamentBracket() {
   return `
       <div class="d-flex justify-content-center">
@@ -6,7 +9,8 @@ export default function TournamentBracket() {
 	`;
 }
 
-export function renderTournamentBracket(data) {
+export async function renderTournamentBracket(data) {
+  data.teams = await convertIdToNameInTeams(data.teams);
   $("#bracket").bracket({
     init: data,
     skipConsolationRound: true, // 敗者復活戦をスキップ
@@ -15,4 +19,26 @@ export function renderTournamentBracket(data) {
     matchMargin: 100, // 試合間隔を調整
     roundMargin: 100, // ラウンドの間隔調整
   });
+}
+
+async function convertIdToNameInTeams(teams) {
+  return Promise.all(
+    teams.map(async (team) => {
+      return Promise.all(team.map((id) => convertIdToName(id)));
+    }),
+  );
+
+  async function convertIdToName(id) {
+    const response = await fetchApiNoBody(
+      "GET",
+      config.userService,
+      `/users?userid=${id}`,
+    );
+
+    // ErrorならuserIdで描画
+    if (response.status === null || response.status >= 400) {
+      return id;
+    }
+    return response.data.username;
+  }
 }
