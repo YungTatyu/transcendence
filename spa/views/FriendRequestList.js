@@ -50,7 +50,7 @@ const scrollHandler = {
     const friendsList = document.querySelector(".js-friend-request-list");
     const friendRequestList = await this.fetchFriendUserList();
     const offset = this.currentPage * this.limit;
-    if (this.total !== null && this.total >= offset + this.limit) {
+    if (this.total !== null && this.total <= offset + this.limit) {
       window.removeEventListener("scroll", this.handleScroll);
     }
     if (friendRequestList.length === 0) return;
