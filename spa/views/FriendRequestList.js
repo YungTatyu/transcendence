@@ -46,13 +46,13 @@ const scrollHandler = {
   },
   async loadFriendRequestList() {
     if (this.loading) return;
-    if (this.total !== null && this.currentPage * this.limit >= this.total) {
-      window.removeEventListener("scroll", this.handleScroll);
-      return;
-    }
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-request-list");
     const friendRequestList = await this.fetchFriendUserList();
+    const offset = this.currentPage * this.limit;
+    if (this.total !== null && this.total >= offset + this.limit) {
+      window.removeEventListener("scroll", this.handleScroll);
+    }
     if (friendRequestList.length === 0) return;
     await Promise.all(
       friendRequestList.map(async (requestId) => {
