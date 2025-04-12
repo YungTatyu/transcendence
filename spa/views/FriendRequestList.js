@@ -81,8 +81,6 @@ const scrollHandler = {
         friendRequestItem
           .querySelector(".approved-button")
           .addEventListener("click", async () => {
-            //テスト用
-            // console.log(requestId);
             const approved = await fetchApiNoBody(
               "PATCH",
               config.friendService,
