@@ -3,6 +3,7 @@ from core.serializers import GameSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from client.vault_client import VaultClient
 
 
 class GameViewsTestCase(APITestCase):
@@ -12,7 +13,8 @@ class GameViewsTestCase(APITestCase):
         MatchManager.delete_all_matches()
 
     def create_match(self, data):
-        return self.client.post(self.url, data, format="json")
+        api_key = VaultClient.fetch_api_key_not_required_token("games")
+        return self.client.post(self.url, data, format="json", HTTP_X_API_KEY=api_key)
 
     def test_create_match_with_two_players(self):
         response = self.create_match(
