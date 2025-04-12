@@ -1,12 +1,12 @@
 from typing import Optional
 
+from django.utils.decorators import method_decorator
 from match_app.models import Match, MatchParticipant
 from match_app.serializers import TournamentMatchSerializer
+from match_app.utils.apikey_decorators import apikey_required
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
-from match_app.utils.apikey_decorators import apikey_required
-from django.utils.decorators import method_decorator
 
 
 class TournamentMatchView(APIView):

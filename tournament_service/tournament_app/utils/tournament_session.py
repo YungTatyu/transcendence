@@ -5,9 +5,9 @@ from asgiref.sync import async_to_sync, sync_to_async
 # from channels.layers import get_channel_layer
 from django.conf import settings
 from django.utils.timezone import now
+from tournament_app.client.match_client import MatchClient
 from tournament_app.consumers.tournament_state import TournamentState as State
 from tournament_app.models import Tournament
-from tournament_app.client.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
 

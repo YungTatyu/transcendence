@@ -1,9 +1,9 @@
+from client.vault_client import VaultClient
 from core.match_manager import MatchManager
 from core.serializers import GameSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from client.vault_client import VaultClient
 
 
 class GameViewsTestCase(APITestCase):

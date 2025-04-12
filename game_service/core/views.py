@@ -1,12 +1,12 @@
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from utils.apikey_decorators import apikey_required
 
 from core.match_manager import MatchManager
 from core.serializers import GameSerializer
-from utils.apikey_decorators import apikey_required
-from django.utils.decorators import method_decorator
 
 
 class GameView(APIView):

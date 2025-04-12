@@ -2,7 +2,6 @@ from functools import wraps
 
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
-
 from tournament_app.client.vault_client import VaultClient
 
 

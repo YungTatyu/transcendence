@@ -1,9 +1,8 @@
 from functools import wraps
 
+from client.vault_client import VaultClient
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_500_INTERNAL_SERVER_ERROR
-
-from client.vault_client import VaultClient
 
 
 def apikey_required(api_name: str):

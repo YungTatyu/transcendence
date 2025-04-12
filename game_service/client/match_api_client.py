@@ -1,8 +1,8 @@
 import logging
 
 import requests
-from game_app.settings import CA_CERT, MATCH_SERVICE
 from client.vault_client import VaultClient
+from game_app.settings import CA_CERT, MATCH_SERVICE
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from match_app.models import Match, MatchParticipant
 from match_app.client.vault_client import VaultClient
+from match_app.models import Match, MatchParticipant
 
 
 class TestTournamentMatch:
@@ -18,7 +18,10 @@ class TestTournamentMatch:
         api_key = VaultClient.fetch_api_key_not_required_token("matches")
 
         response = client.post(
-            "/matches/tournament-match", data=data, content_type="application/json", HTTP_X_API_KEY=api_key
+            "/matches/tournament-match",
+            data=data,
+            content_type="application/json",
+            HTTP_X_API_KEY=api_key,
         )
         assert response.status_code == status
 

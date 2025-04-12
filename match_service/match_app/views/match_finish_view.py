@@ -1,5 +1,7 @@
+from django.utils.decorators import method_decorator
 from match_app.models import Match
 from match_app.serializers import MatchFinishSerializer
+from match_app.utils.apikey_decorators import apikey_required
 from match_app.utils.match_finish_service import MatchFinishService
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -8,8 +10,6 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.views import APIView
-from match_app.utils.apikey_decorators import apikey_required
-from django.utils.decorators import method_decorator
 
 
 class MatchFinishView(APIView):

@@ -2,9 +2,9 @@ import pytest
 from django.utils.timezone import now
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
+from tournament_app.client.vault_client import VaultClient
 from tournament_app.models import Tournament
 from tournament_app.utils.tournament_session import TournamentSession
-from tournament_app.client.vault_client import VaultClient
 
 
 @pytest.fixture
@@ -32,7 +32,10 @@ class TestTournamentMatchFinish:
         api_key = VaultClient.fetch_api_key_not_required_token("tournaments")
         headers = {"X-API-KEY": api_key}
         response = client.post(
-            "/tournaments/finish-match", data=data, headers=headers, content_type="application/json"
+            "/tournaments/finish-match",
+            data=data,
+            headers=headers,
+            content_type="application/json",
         )
         assert response.status_code == status
         return response.json()
