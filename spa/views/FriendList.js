@@ -37,9 +37,9 @@ const scrollHandler = {
       console.error(response.data.error);
       return [];
     }
-    if (response.data.total <= offset + this.limits)
-      return [];
-    const userId = stateManager.state?.userId;
+    // if (response.data.total <= offset + this.limit)
+    //   return [];
+    const userId = Number(stateManager.state?.userId);
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
   );
@@ -53,6 +53,7 @@ const scrollHandler = {
     if (friendList.length === 0) {
       window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
     }
+    // console.log(friendList);
     await Promise.all(
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
@@ -61,9 +62,15 @@ const scrollHandler = {
           config.userService,
           `/users?userid=${friendId}`,
         );
-        const status = "offline";
-        // if (onlineUserlist?.includes(friendId))
-        //   status = "online";
+        let status = "offline";
+        console.log(stateManager.state.onlineUsers);
+        if (stateManager.state?.onlineUsers.includes(String(friendId)))
+        {
+          status = "online";
+          console.log(stateManager.state.onlineUsers);
+        }
+        const statusColor =
+          status === "online" ? "#0CC0DF" : "#929090";
         if (friend.status === null) {
           console.error("Error Occured!");
           return;
@@ -78,7 +85,7 @@ const scrollHandler = {
         <div class="gap-wrap d-flex align-items-center mt-4">
           <img src=${avatarImg} alt="avotor">
           <div class="text-white fs-2">${friend.data.username}</div>
-          <div data-userid="${friendId}" class="user-status" style="color: #929090;">${status}</div>
+          <div data-userid="${friendId}" class="user-status" style="color: ${statusColor}">${status}</div>
           <button type="button" class="remove-button btn btn-primary">Remove</button>
         </div>
         `;
