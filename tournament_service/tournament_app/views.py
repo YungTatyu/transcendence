@@ -10,11 +10,14 @@ from rest_framework.views import APIView
 
 from tournament_app.serializers import TournamentMatchFinishSerializer
 from tournament_app.utils.tournament_session import TournamentSession
+from tournament_app.utils.apikey_decorators import apikey_required
+from django.utils.decorators import method_decorator
 
 
 class TournamentMatchFinishView(APIView):
     """トーナメント試合終了時のroundの更新"""
 
+    @method_decorator(apikey_required("tournaments"))
     def post(self, request):
         serializer = TournamentMatchFinishSerializer(data=request.data)
         if not serializer.is_valid():
