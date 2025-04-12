@@ -244,7 +244,7 @@ def mock_fetch_matches_data(mocker):
     mock_response2 = MagicMock(spec=requests.Response)
     mock_response2.status_code = 500
     return mocker.patch(
-        "tournament_app.utils.match_client.MatchClient.fetch_matches_data",
+        "tournament_app.client.match_client.MatchClient.fetch_matches_data",
         side_effect=[mock_response1, mock_response2],
     )
 
@@ -256,7 +256,7 @@ def mock_fetch_tournament_match_finish(mocker):
     """
 
     return mocker.patch(
-        "tournament_app.utils.match_client.MatchClient.fetch_tournament_match_finish",
+        "tournament_app.client.match_client.MatchClient.fetch_tournament_match_finish",
         return_value={"error": "Internal Server Error"},
     )
 
