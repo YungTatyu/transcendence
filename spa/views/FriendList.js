@@ -49,7 +49,7 @@ const scrollHandler = {
     if (this.loading) return;
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-list");
-    const friendList = await this.fetchFriendUserList(); //ここはthisでいいのか
+    const friendList = await this.fetchFriendUserList();
     if (friendList.length === 0) {
       window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
     }
