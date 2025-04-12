@@ -45,7 +45,7 @@ SPA.route("/signup", SignUp, setupSignUp);
 SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
-SPA.route("/friend", FriendList, cleanupFriendList, setupFriendList);
+SPA.route("/friend", FriendList, setupFriendList, cleanupFriendList);
 SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);

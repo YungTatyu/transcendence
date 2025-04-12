@@ -1,5 +1,6 @@
 import config from "../config.js";
 import stateManager from "../stateManager.js";
+import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
 
 export const parseJwt = (token) => {
   const base64Url = token.split(".")[1];
@@ -61,5 +62,7 @@ export const handleLoading = async () => {
   if (payload === null) {
     return;
   }
+  WsFriendActivityManager.disconnect();
+  WsFriendActivityManager.connect(sessionStorage.getItem("access_token"));
   scheduleRefresh(payload);
 };

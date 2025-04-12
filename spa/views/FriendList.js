@@ -37,11 +37,13 @@ const scrollHandler = {
       console.error(response.data.error);
       return [];
     }
+    if (response.data.total <= offset + this.limits)
+      return [];
     const userId = stateManager.state?.userId;
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
-    );
-    return useridList;
+  );
+  return useridList;
   },
   async loadFriendList() {
     if (this.loading) return;
@@ -49,7 +51,7 @@ const scrollHandler = {
     const friendsList = document.querySelector(".js-friend-list");
     const friendList = await this.fetchFriendUserList(); //ここはthisでいいのか
     if (friendList.length === 0) {
-      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
+      window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
     }
     await Promise.all(
       friendList.map(async (friendId) => {
@@ -125,12 +127,6 @@ export const setupFriendList = async () => {
   friendsList.innerHTML = "";
   await scrollHandler.loadFriendList();
   window.addEventListener("scroll", scrollHandler.handleScroll);
-  const accessToken = sessionStorage.getItem("access_token");
-  if (!accessToken) {
-    SPA.navigate("/");
-    return;
-  }
-  WsFriendActivityManager.connect(accessToken);
   const findButton = document.querySelector(".find-button");
   const requestButton = document.querySelector(".request-button");
 
