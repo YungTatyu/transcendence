@@ -22,6 +22,7 @@ const scrollHandler = {
   loading: false,
   currentPage: 0,
   limit: 10,
+  total: null,
   async fetchFriendUserList() {
     const offset = this.currentPage * this.limit;
     const response = await fetchApiNoBody(
@@ -37,8 +38,7 @@ const scrollHandler = {
       console.error(response.data.error);
       return [];
     }
-    // if (response.data.total <= offset + this.limit)
-    //   return [];
+    this.total = response.data.total;
     const userId = Number(stateManager.state?.userId);
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
@@ -47,13 +47,14 @@ const scrollHandler = {
   },
   async loadFriendList() {
     if (this.loading) return;
+    if (this.total !== null && this.currentPage * this.limit >= this.total)
+      return;
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-list");
     const friendList = await this.fetchFriendUserList();
     if (friendList.length === 0) {
       window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
     }
-    // console.log(friendList);
     await Promise.all(
       friendList.map(async (friendId) => {
         const friendItem = document.createElement("div");
@@ -63,8 +64,11 @@ const scrollHandler = {
           `/users?userid=${friendId}`,
         );
         let status = "offline";
-        console.log(stateManager.state.onlineUsers);
-        if (stateManager.state?.onlineUsers.includes(String(friendId))) {
+        const onlineUsers = stateManager.state?.onlineUsers;
+        if (
+          Array.isArray(onlineUsers) &&
+          onlineUsers.includes(String(friendId))
+        ) {
           status = "online";
           console.log(stateManager.state.onlineUsers);
         }
@@ -90,8 +94,6 @@ const scrollHandler = {
         friendItem
           .querySelector(".remove-button")
           .addEventListener("click", async () => {
-            // テスト用
-            // console.log(friendId);
             const deleteResponse = await fetchApiNoBody(
               "DELETE",
               config.friendService,
