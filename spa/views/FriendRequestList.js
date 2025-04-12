@@ -20,6 +20,7 @@ const scrollHandler = {
   loading: false,
   currentPage: 0,
   limit: 10,
+  total: null,
   async fetchFriendUserList() {
     // friend_apiを叩く
     const offset = this.currentPage * this.limit;
@@ -37,6 +38,7 @@ const scrollHandler = {
       return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
+    this.total = requestResponse.data.total;
     const useridList = requestResponse.data.friends.map(
       (friend) => friend.fromUserId,
     );
@@ -44,13 +46,14 @@ const scrollHandler = {
   },
   async loadFriendRequestList() {
     if (this.loading) return;
+    if (this.total !== null && this.currentPage * this.limit >= this.total) {
+      window.removeEventListener("scroll", this.handleScroll);
+      return;
+    }
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-request-list");
     const friendRequestList = await this.fetchFriendUserList();
-    if (friendRequestList.length === 0) {
-      window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
-      return;
-    }
+    if (friendRequestList.length === 0) return;
     await Promise.all(
       friendRequestList.map(async (requestId) => {
         const friendRequestItem = document.createElement("div");
