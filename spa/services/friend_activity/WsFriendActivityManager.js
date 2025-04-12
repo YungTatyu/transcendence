@@ -9,13 +9,9 @@ const wsEventHandler = {
       const parsedMessage = JSON.parse(message.data);
       const onlineUserList = parsedMessage.current_users;
 
-      console.log(onlineUserList);
-      // if (onlineUserList === undefined || onlineUserList === "None")
-      //   return ;
       const dataTags = document.querySelectorAll(
         ".js-friend-list .user-status",
       );
-      // console.log(dataTags);
       for (const dataTag of dataTags) {
         console.log(dataTag.dataset.userid);
         if (onlineUserList.includes(dataTag.dataset.userid)) {
