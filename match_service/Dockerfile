@@ -10,4 +10,8 @@ RUN pip install --upgrade pip && \
 COPY . /app
 RUN chmod +x ./wait-for-it.sh
 
-CMD ["sh", "-c", "./wait-for-it.sh match_db:5432 -- python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8003"]
+# CMD ["sh", "-c", "./wait-for-it.sh match_db:5432 -- python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8003"]
+CMD ["sh", "-c", "./wait-for-it.sh match_db:5432 -- \
+python3 manage.py makemigrations && \
+python3 manage.py migrate && \
+daphne -b 0.0.0.0 -p 8003 config.asgi:application"]
