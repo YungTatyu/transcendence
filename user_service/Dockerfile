@@ -16,6 +16,3 @@ CMD ["./wait-for-it.sh", "user_db:5432", "--", "sh", "-c", "\
 python manage.py makemigrations user_app && \
 python manage.py migrate user_app && \
 gunicorn user_app.wsgi:application --bind 0.0.0.0:9000"]
-
-
-# CMD ["./wait-for-it.sh", "user_db:5432", "--", "sh", "-c", "python manage.py makemigrations user_app && python manage.py migrate user_app &&  python manage.py runserver 0.0.0.0:9000"]
