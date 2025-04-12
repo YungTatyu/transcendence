@@ -1,4 +1,5 @@
 # Create your views here.
+
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
@@ -18,7 +19,7 @@ from rest_framework.views import APIView
 from .models import Friend
 from .serializers import FriendQuerySerializer, FriendSerializer, UserIdValidator
 from .utils.jwt_decorators import jwt_required
-import sys
+
 
 class FriendListView(APIView):
     """

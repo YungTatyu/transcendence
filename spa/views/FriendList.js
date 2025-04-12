@@ -42,8 +42,8 @@ const scrollHandler = {
     const userId = Number(stateManager.state?.userId);
     const useridList = response.data.friends.map((friend) =>
       friend.fromUserId === userId ? friend.toUserId : friend.fromUserId,
-  );
-  return useridList;
+    );
+    return useridList;
   },
   async loadFriendList() {
     if (this.loading) return;
@@ -64,13 +64,11 @@ const scrollHandler = {
         );
         let status = "offline";
         console.log(stateManager.state.onlineUsers);
-        if (stateManager.state?.onlineUsers.includes(String(friendId)))
-        {
+        if (stateManager.state?.onlineUsers.includes(String(friendId))) {
           status = "online";
           console.log(stateManager.state.onlineUsers);
         }
-        const statusColor =
-          status === "online" ? "#0CC0DF" : "#929090";
+        const statusColor = status === "online" ? "#0CC0DF" : "#929090";
         if (friend.status === null) {
           console.error("Error Occured!");
           return;
