@@ -48,12 +48,12 @@ const scrollHandler = {
   async loadFriendList() {
     if (this.loading) return;
     if (this.total !== null && this.currentPage * this.limit >= this.total)
-      return;
+      window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-list");
     const friendList = await this.fetchFriendUserList();
     if (friendList.length === 0) {
-      window.removeEventListener("scroll", this.handleScroll); // スクロールイベントを削除
+      return ;
     }
     await Promise.all(
       friendList.map(async (friendId) => {
