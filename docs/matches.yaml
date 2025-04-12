@@ -113,6 +113,8 @@ paths:
       operationId: createTournamentMatch
       tags:
         - Matches
+      security:
+        - apiKeyAuth: []
       requestBody:
         description: トーナメント試合作成の基となる情報
         required: true
@@ -234,6 +236,8 @@ paths:
       operationId: finishMatch
       tags:
         - Matches
+      security:
+        - apiKeyAuth: []
       requestBody:
         description: 試合結果情報
         required: true
@@ -393,6 +397,11 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
 
   schemas:
     UnauthorizedError:
