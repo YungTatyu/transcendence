@@ -72,7 +72,6 @@ const scrollHandler = {
           onlineUsers.includes(String(friendId))
         ) {
           status = "online";
-          console.log(stateManager.state.onlineUsers);
         }
         const statusColor = status === "online" ? "#0CC0DF" : "#929090";
         if (friend.status === null) {
