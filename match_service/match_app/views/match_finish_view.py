@@ -8,11 +8,14 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from rest_framework.views import APIView
+from match_app.utils.apikey_decorators import apikey_required
+from django.utils.decorators import method_decorator
 
 
 class MatchFinishView(APIView):
     """試合終了時のトーナメントAPIへの通知とDBレコードの更新"""
 
+    @method_decorator(apikey_required("matches"))
     def post(self, request):
         serializer = MatchFinishSerializer(data=request.data)
         if not serializer.is_valid():
