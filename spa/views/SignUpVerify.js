@@ -60,7 +60,7 @@ export function setupSignUpVerify() {
     try {
       WsFriendActivityManager.disconnect();
       WsFriendActivityManager.connect(accessToken);
-    } catch(error) {
+    } catch (error) {
       console.error(error);
     }
     SPA.navigate("/home");
