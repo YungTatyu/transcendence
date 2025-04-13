@@ -16,12 +16,9 @@ class GameSerializer(serializers.Serializer):
     )
 
     def validate_matchId(self, value):  # noqa: N802
-        # TODO: match_idがmatchサービスに存在するか確認必要？
         return value
 
     def validate_userIdList(self, users):  # noqa: N802
-        # TODO: userが存在するか確認必要？
-
         # userの重複チェック
         if len(users) != len(set(users)):
             raise serializers.ValidationError("Duplicated user in a list.")

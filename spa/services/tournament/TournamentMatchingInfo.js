@@ -21,5 +21,9 @@ export function renderMatchingInfo(playerSize, maxPlayerSize) {
 
 export function renderTimer(endTime) {
   const matchingRemainSec = document.getElementById("matching-remain-sec");
-  matchingRemainSec.textContent = `[${endTime}]`;
+
+  // 描画可能な場合のみ描画
+  if (matchingRemainSec && endTime) {
+    matchingRemainSec.textContent = `[${endTime}]`;
+  }
 }

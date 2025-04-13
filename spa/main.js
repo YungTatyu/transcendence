@@ -13,6 +13,7 @@ import FriendRequestForm, {
   setupFriendRequestForm,
 } from "./views/FriendRequestForm.js";
 import FriendRequestList, {
+  cleanupFriendRequestList,
   setupFriendRequestList,
 } from "./views/FriendRequestList.js";
 import Game, { cleanupGame, setupGame } from "./views/Game.js";
@@ -33,7 +34,10 @@ import QuickPlayMatching, {
 import SignUp, { setupSignUp } from "./views/SignUp.js";
 import SignUpVerify, { setupSignUpVerify } from "./views/SignUpVerify.js";
 import Title, { setupTitile } from "./views/Title.js";
-import Tournament, { setupTournament } from "./views/Tournament.js";
+import Tournament, {
+  setupTournament,
+  cleanupTournament,
+} from "./views/Tournament.js";
 import TournamentMatching, {
   setupTournamentMatching,
   cleanupTournamentMatching,
@@ -46,11 +50,16 @@ SPA.route("/signup/verify", SignUpVerify, setupSignUpVerify);
 SPA.route("/login", Login, setupLogin);
 SPA.route("/login/verify", LoginVerify, setupLoginVerify);
 SPA.route("/friend", FriendList, setupFriendList, cleanupFriendList);
-SPA.route("/friend/request", FriendRequestList, setupFriendRequestList);
+SPA.route(
+  "/friend/request",
+  FriendRequestList,
+  setupFriendRequestList,
+  cleanupFriendRequestList,
+);
 SPA.route("/game", Game, setupGame, cleanupGame);
 SPA.route("/game/result", GameResult, setupGameResult);
 SPA.route("/home", Home, setupHome);
-SPA.route("/tournament", Tournament, setupTournament);
+SPA.route("/tournament", Tournament, setupTournament, cleanupTournament);
 SPA.route("/profile", Profile, setupProfile, cleanupProfile);
 SPA.route("/profile/avatar", ChangeAvatar, setupChangeAvatar);
 SPA.route("/profile/mail", ChangeMail, setupChangeMail);

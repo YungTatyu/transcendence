@@ -38,20 +38,23 @@ class TournamentMatchConsumer(AsyncWebsocketConsumer):
         selected_protocol = self.scope.get("subprotocol")
         await self.accept(subprotocol=selected_protocol)
 
-        # TournamentMatchWaiterを取得し、登録されていない場合、登録する
-        tournament_match_waiter = TournamentMatchWaiter.search(self.match_id)
-        if tournament_match_waiter is None:
-            tournament_match_waiter = await database_sync_to_async(
-                TournamentMatchWaiter.register
-            )(self.match_id)
+        # Lockを用いて1人ずつ処理(パフォーマンスを犠牲に整合性を保つ)
+        lock = await TournamentMatchWaiter.get_lock()
+        async with lock:
+            # TournamentMatchWaiterを取得し、登録されていない場合、登録する
+            tournament_match_waiter = TournamentMatchWaiter.search(self.match_id)
+            if tournament_match_waiter is None:
+                tournament_match_waiter = await database_sync_to_async(
+                    TournamentMatchWaiter.register
+                )(self.match_id)
 
-        tournament_match_waiter.add_user(self.user_id)
+            tournament_match_waiter.add_user(self.user_id)
 
-        # 参加者全員が揃った
-        if tournament_match_waiter.is_ready:
-            tournament_match_waiter.cancel_timer()
-            await self.start_tournament_match(self.room_group_name, self.match_id)
-            TournamentMatchWaiter.delete(self.match_id)
+            # 参加者全員が揃った
+            if tournament_match_waiter.is_ready:
+                tournament_match_waiter.cancel_timer()
+                await self.start_tournament_match(self.room_group_name, self.match_id)
+                TournamentMatchWaiter.delete(self.match_id)
 
     async def disconnect(self, _):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
