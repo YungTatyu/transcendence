@@ -25,7 +25,6 @@ JWT_EXPIRATION = 3600
 REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 30
 
 # モックモードの設定
-# TODO user api 実装後にFalseとする
 USER_API_USE_MOCK = False
 
 # Quick-start development settings - unsuitable for production
@@ -35,7 +34,7 @@ USER_API_USE_MOCK = False
 SECRET_KEY = "django-insecure-!uhu!%ckkkx)v36-@p5f_&w%eqner=wm22!9j&(k*w$#(n+2kd"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     os.getenv("PROXY"),
@@ -134,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -177,12 +176,12 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",  # ログレベルを指定
+            "level": "WARNING",  # ログレベルを指定
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
         "file": {
-            "level": "DEBUG",
+            "level": "WARNING",
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "debug.log"),  # ログファイルの出力先
             "formatter": "verbose",
@@ -191,12 +190,12 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "WARNING",
             "propagate": True,
         },
         "auth_app": {  # アプリケーション固有のロガー
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "WARNING",
             "propagate": False,
         },
     },
