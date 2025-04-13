@@ -59,6 +59,8 @@ paths:
       operationId: createGameRoom
       tags:
         - Games
+      security:
+        - apiKeyAuth: []
       requestBody:
         description: ゲームルーム作成の基となる情報
         required: true
@@ -123,6 +125,11 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
 
   schemas:
     UnauthorizedError:

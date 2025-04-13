@@ -2,6 +2,7 @@ import logging
 
 import requests
 from config.settings import CA_CERT
+from match_app.client.vault_client import VaultClient
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,11 @@ class TournamentClient:
         body = {"tournamentId": tournament_id, "round": round}
 
         try:
-            return self.__send_request("POST", endpoint, body)
+            api_key = VaultClient.fetch_api_key_not_required_token("tournaments")
+            if api_key is None:
+                raise ValueError("API key is missing")
+            headers = {"X-API-KEY": api_key}
+            return self.__send_request("POST", endpoint, body, headers=headers)
         except Exception as e:
             logger.error(
                 f"Error occurred while finishing match. "
