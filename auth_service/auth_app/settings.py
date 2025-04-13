@@ -31,7 +31,7 @@ USER_API_USE_MOCK = False
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!uhu!%ckkkx)v36-@p5f_&w%eqner=wm22!9j&(k*w$#(n+2kd"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
