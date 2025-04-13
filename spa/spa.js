@@ -36,7 +36,7 @@ const SPA = (() => {
     const path = window.location.pathname;
     const route = routes[path] || routes["/404"];
     if (route && container) {
-	  // INFO setupよりも先にcurrentRouteを更新する必要有り
+      // INFO setupよりも先にcurrentRouteを更新する必要有り
       currentRoute = route;
       container.innerHTML = route.view(params);
       if (route.setup) {
