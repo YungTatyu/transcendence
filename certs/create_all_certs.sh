@@ -18,7 +18,6 @@ main() {
     "friends-proxy.transcen.com"
     "match-proxy.transcen.com"
     "www.transcen.com"
-    "localhost" # INFO: localhostで動かす用
   )
   for service in "${services[@]}"; do
     ${CREATE_CERT} $service || err "$service cert creation failed"
