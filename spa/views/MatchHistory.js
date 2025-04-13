@@ -32,6 +32,9 @@ const scrollHandler = {
     if (this.loading) return;
     this.loading = true;
     const matchHistoryTable = document.querySelector(".match-history-table");
+    if (!matchHistoryTable) {
+      return;
+    }
     const offset = this.currentPage * this.limit;
     const myUserId = stateManager.state?.userId;
     const userHistory = await fetchApiNoBody(
@@ -82,7 +85,11 @@ const scrollHandler = {
           <div class="col">${matchResult.date}</div>
           </div>
         `;
-        matchHistoryTable.appendChild(matchItem);
+        try {
+          matchHistoryTable.appendChild(matchItem);
+        } catch (error) {
+          console.log("MatchHistory appendChild Error");
+        }
       }),
     );
     this.currentPage++;
@@ -106,6 +113,9 @@ const scrollHandler = {
 
 export const setupMatchHistory = async () => {
   const matchHistoryTable = document.querySelector(".match-history-table");
+  if (!matchHistoryTable) {
+    return;
+  }
   matchHistoryTable.innerHTML = "";
 
   await scrollHandler.loadHistory();
