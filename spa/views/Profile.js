@@ -69,6 +69,18 @@ function getElements() {
   const changeMailBtn = document.querySelector(".js-pen-mail");
   const matchHistoryBtn = document.querySelector(".js-match-history-button");
 
+  if (
+    !(
+      changeAvatarBtn &&
+      changeUnameBtn &&
+      changePasswordBtn &&
+      changeMailBtn &&
+      matchHistoryBtn
+    )
+  ) {
+    return null;
+  }
+
   return [
     { btn: changeAvatarBtn, handle: handleChAvatar },
     { btn: changeUnameBtn, handle: handleChUname },
@@ -79,15 +91,22 @@ function getElements() {
 }
 
 export async function setupProfile() {
-  for (const { btn, handle } of getElements()) {
+  const elements = getElements();
+  if (!elements) {
+    return;
+  }
+  for (const { btn, handle } of elements) {
     btn.addEventListener("click", handle);
   }
 
   if (stateManager.state.username && stateManager.state.avatarUrl) {
-    document.querySelector(".js-username").textContent =
-      stateManager.state.username;
-    document.querySelector(".js-user-avatar").src =
-      stateManager.state.avatarUrl;
+    const jsUsername = document.querySelector(".js-username");
+    const jsUserAvatar = document.querySelector(".js-user-avatar");
+    if (!(jsUsername && jsUserAvatar)) {
+      return;
+    }
+    jsUsername.textContent = stateManager.state.username;
+    jsUserAvatar.src = stateManager.state.avatarUrl;
   } else {
     const { status: uStatus, data: uData } = await fetchApiNoBody(
       "GET",
@@ -100,8 +119,13 @@ export async function setupProfile() {
     } else {
       const avatarUrl = `${config.userService}${uData.avatarPath}`;
 
-      document.querySelector(".js-username").textContent = uData.username;
-      document.querySelector(".js-user-avatar").src = avatarUrl;
+      const jsUsername = document.querySelector(".js-username");
+      const jsUserAvatar = document.querySelector(".js-user-avatar");
+      if (!(jsUsername && jsUserAvatar)) {
+        return;
+      }
+      jsUsername.textContent = uData.username;
+      jsUserAvatar.src = avatarUrl;
 
       stateManager.setState({ username: uData.username });
       stateManager.setState({ avatarUrl: avatarUrl });
@@ -125,6 +149,9 @@ export async function setupProfile() {
   const losses = document.getElementById("losses");
   const tournamentWins = document.getElementById("tournament-wins");
 
+  if (!(wins && losses && tournamentWins)) {
+    return;
+  }
   wins.textContent = data.matchWinCount;
   losses.textContent = data.matchLoseCount;
   tournamentWins.textContent = data.tournamentWinnerCount;

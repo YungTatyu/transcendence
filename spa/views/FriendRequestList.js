@@ -48,6 +48,9 @@ const scrollHandler = {
     if (this.loading) return;
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-request-list");
+    if (!friendsList) {
+      return;
+    }
     const friendRequestList = await this.fetchFriendUserList();
     const offset = this.currentPage * this.limit;
     if (this.total !== null && this.total <= offset + this.limit) {
@@ -117,7 +120,11 @@ const scrollHandler = {
             }
             friendRequestItem.remove(); // 拒否後、要素を削除
           });
-        friendsList.appendChild(friendRequestItem);
+        try {
+          friendsList.appendChild(friendRequestItem);
+        } catch (error) {
+          console.log(error);
+        }
       }),
     );
     this.currentPage++;
@@ -141,6 +148,9 @@ const scrollHandler = {
 
 export const setupFriendRequestList = async () => {
   const friendsList = document.querySelector(".js-friend-request-list");
+  if (!friendsList) {
+    return;
+  }
   friendsList.innerHTML = "";
 
   // スクロールイベントを登録
@@ -150,6 +160,10 @@ export const setupFriendRequestList = async () => {
 
   const findButton = document.querySelector(".find-button");
   const listButton = document.querySelector(".list-button");
+
+  if (!(findButton && listButton)) {
+    return;
+  }
 
   findButton.addEventListener("click", () => {
     SPA.navigate("/friend/friend-request-form");

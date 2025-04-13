@@ -1,7 +1,6 @@
 import fetchApiNoBody from "../api/fetchApiNoBody.js";
 import TitleAndHomeButton from "../components/TitleAndHomeButton.js";
 import config from "../config.js";
-import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
 import stateManager from "../stateManager.js";
 
 export default function FriendList() {
@@ -49,6 +48,9 @@ const scrollHandler = {
     if (this.loading) return;
     this.loading = true;
     const friendsList = document.querySelector(".js-friend-list");
+    if (!friendsList) {
+      return;
+    }
     const friendList = await this.fetchFriendUserList();
     const offset = this.currentPage * this.limit;
     if (this.total !== null && this.total <= offset + this.limit) {
@@ -108,7 +110,11 @@ const scrollHandler = {
             }
             friendItem.remove(); // 要素を削除
           });
-        friendsList.appendChild(friendItem);
+        try {
+          friendsList.appendChild(friendItem);
+        } catch (error) {
+          console.log(error);
+        }
       }),
     );
     this.currentPage++;
@@ -132,11 +138,18 @@ const scrollHandler = {
 
 export const setupFriendList = async () => {
   const friendsList = document.querySelector(".js-friend-list");
+  if (!friendsList) {
+    return;
+  }
   friendsList.innerHTML = "";
   await scrollHandler.loadFriendList();
   window.addEventListener("scroll", scrollHandler.handleScroll);
   const findButton = document.querySelector(".find-button");
   const requestButton = document.querySelector(".request-button");
+
+  if (!(findButton && requestButton)) {
+    return;
+  }
 
   findButton.addEventListener("click", () => {
     SPA.navigate("/friend/friend-request-form");

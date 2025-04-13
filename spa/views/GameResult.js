@@ -29,6 +29,9 @@ export async function setupGameResult() {
   if (stateManager.state.tournamentId) {
     route = "/tournament";
     const button = document.querySelector(".game-result-button");
+    if (!button) {
+      return;
+    }
     button.textContent = "Back To Tournament";
   }
   document
