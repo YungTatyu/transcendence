@@ -12,13 +12,11 @@ import os
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-
-django_asgi_app = get_asgi_application()
-
-from match_app.middleware import JWTAuthMiddleware  # noqa: E402
-from match_app.routing import websocket_urlpatterns  # noqa: E402
+from match_app.middleware import JWTAuthMiddleware
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+django_asgi_app = get_asgi_application()
+from match_app.routing import websocket_urlpatterns  # noqa: E402
 
 application = ProtocolTypeRouter(
     {
