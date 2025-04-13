@@ -23,7 +23,9 @@ def generate_signed_jwt(user_id: str, expires_in: int = JWT_EXPIRATION):
     if not token:
         logger.error("Failed to fetch token from Vault")
         return None
-    exp_time = datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in)
+    exp_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        seconds=expires_in
+    )
     jwt_payload = {
         "user_id": user_id,
         "exp": int(exp_time.timestamp()),
@@ -89,7 +91,7 @@ def verify_signed_jwt(signed_jwt: str):
             logger.error("JWT does not contain an 'exp' claim")
             return False
 
-        if datetime.datetime.utcnow().timestamp() > exp:
+        if datetime.datetime.now(datetime.timezone.utc).timestamp() > exp:
             logger.error("JWT has expired")
             return False
 
