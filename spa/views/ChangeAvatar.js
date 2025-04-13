@@ -107,6 +107,9 @@ export async function setupChangeAvatar() {
   const fileInput = document.querySelector(".js-avatar-input");
   const avatarImg = document.querySelector(".js-new-avatar");
 
+  if (!(deleteButton && editButton && fileInput && avatarImg)) {
+    return;
+  }
   // Editボタン
   editButton.addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", () =>
