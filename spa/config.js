@@ -16,6 +16,7 @@ const config = {
     authService: "https://auth-proxy.transcen.com:8005",
     friendService: "https://friends-proxy.transcen.com:8007",
     tournamentMatchingService: "wss://tournament-proxy.transcen.com:8006",
+    friendActivityService: "wss://friends-activity-proxy.transcen.com:10001",
   },
 };
 

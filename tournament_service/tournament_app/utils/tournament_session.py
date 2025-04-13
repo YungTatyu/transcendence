@@ -5,16 +5,16 @@ from asgiref.sync import async_to_sync, sync_to_async
 # from channels.layers import get_channel_layer
 from django.conf import settings
 from django.utils.timezone import now
+from tournament_app.client.match_client import MatchClient
 from tournament_app.consumers.tournament_state import TournamentState as State
 from tournament_app.models import Tournament
-from tournament_app.utils.match_client import MatchClient
 from tournament_app.utils.task_timer import TaskTimer
 from tournament_app.utils.tournament_tree import TournamentTree
 
 
 class TournamentSession:
     __tournament_session_dict: dict[int, "TournamentSession"] = {}
-    # TODO 適切な値に戻す
+    # INFO トーナメントの1試合を強制的に終了させるための時間
     LIMIT_TOURNAMENT_MATCH_SEC = 300
 
     def __init__(self, tournament_id: int, user_ids: list[int]):

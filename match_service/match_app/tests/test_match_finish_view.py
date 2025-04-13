@@ -5,6 +5,7 @@ from rest_framework.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
+from match_app.client.vault_client import VaultClient
 from match_app.models import Match, MatchParticipant
 
 from .set_up_utils import (
@@ -21,8 +22,13 @@ class TestMatchFinish:
         正常系レスポンスならMatchとMatchParticipantレコードが作成されているかを確認
         """
         data = {"matchId": match_id, "results": results}
+        api_key = VaultClient.fetch_api_key_not_required_token("matches")
+
         response = client.post(
-            "/matches/finish", data=data, content_type="application/json"
+            "/matches/finish",
+            data=data,
+            content_type="application/json",
+            HTTP_X_API_KEY=api_key,
         )
         assert response.status_code == status
 

@@ -5,6 +5,7 @@ from typing import Optional
 import aiohttp
 import requests
 from config.settings import CA_CERT
+from tournament_app.client.vault_client import VaultClient
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +68,11 @@ class MatchClient:
             "round": round,
         }
         try:
-            return self.__send_request("POST", endpoint, body=body)
+            api_key = VaultClient.fetch_api_key_not_required_token("matches")
+            if api_key is None:
+                raise ValueError("API key is missing")
+            headers = {"X-API-KEY": api_key}
+            return self.__send_request("POST", endpoint, body=body, headers=headers)
         except Exception as e:
             logger.error(
                 f"Error occurred while create tournament match. "
@@ -140,13 +145,18 @@ class MatchClient:
             "results": results,
         }
 
+        api_key = VaultClient.fetch_api_key_not_required_token("matches")
+        if api_key is None:
+            return {"error": "Internal Server Error"}
+        headers = {"X-API-KEY": api_key}
+
         try:
             ssl_context = ssl.create_default_context()
             ssl_context.load_verify_locations(CA_CERT)
             connector = aiohttp.TCPConnector(ssl=ssl_context)
             async with (
                 aiohttp.ClientSession(connector=connector) as session,
-                session.post(url, json=body, timeout=5) as response,
+                session.post(url, json=body, headers=headers, timeout=5) as response,
             ):
                 return await response.json()
         except Exception as e:

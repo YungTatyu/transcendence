@@ -1,4 +1,5 @@
 from asgiref.sync import async_to_sync
+from django.utils.decorators import method_decorator
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -9,12 +10,14 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 
 from tournament_app.serializers import TournamentMatchFinishSerializer
+from tournament_app.utils.apikey_decorators import apikey_required
 from tournament_app.utils.tournament_session import TournamentSession
 
 
 class TournamentMatchFinishView(APIView):
     """トーナメント試合終了時のroundの更新"""
 
+    @method_decorator(apikey_required("tournaments"))
     def post(self, request):
         serializer = TournamentMatchFinishSerializer(data=request.data)
         if not serializer.is_valid():

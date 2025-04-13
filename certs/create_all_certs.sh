@@ -9,13 +9,6 @@ err() {
 
 main() {
   services=(
-    "auth_app"
-    "game"
-    "tournament"
-    "user_app"
-    "friends_activity_app"
-    "friends"
-    "match"
     "vault"
     "auth-proxy.transcen.com"
     "game-proxy.transcen.com"
