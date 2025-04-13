@@ -1,4 +1,5 @@
 import config from "../config.js";
+import WsFriendActivityManager from "../services/friend_activity/WsFriendActivityManager.js";
 import stateManager from "../stateManager.js";
 
 export const parseJwt = (token) => {
@@ -27,7 +28,7 @@ const fetchAccessToken = async () => {
   const accessToken = data.accessToken;
   const payload = parseJwt(accessToken);
   const userId = payload.user_id;
-  stateManager.setState({ userId: userId });
+  stateManager.setState({ userId: Number.parseInt(userId) });
   sessionStorage.setItem("access_token", accessToken);
   return payload;
 };
@@ -60,6 +61,12 @@ export const handleLoading = async () => {
   const payload = await fetchAccessToken();
   if (payload === null) {
     return;
+  }
+  try {
+    WsFriendActivityManager.disconnect();
+    WsFriendActivityManager.connect(sessionStorage.getItem("access_token"));
+  } catch (error) {
+    console.error(error);
   }
   scheduleRefresh(payload);
 };
