@@ -16,18 +16,18 @@ export default function FriendRequestList() {
 	`;
 }
 
-export const setupFriendRequestList = async () => {
-  let currentPage = 0;
-  const limit = 10;
-  const friendsList = document.querySelector(".js-friend-request-list");
-  friendsList.innerHTML = "";
-
-  async function fetchFriendUserList(offset, limit) {
+const scrollHandler = {
+  loading: false,
+  currentPage: 0,
+  limit: 10,
+  total: null,
+  async fetchFriendUserList() {
     // friend_apiを叩く
+    const offset = this.currentPage * this.limit;
     const requestResponse = await fetchApiNoBody(
       "GET",
       config.friendService,
-      `/friends?status=pending&offset=${offset}&limit=${limit}`,
+      `/friends?status=pending&offset=${offset}&limit=${this.limit}`,
     );
     if (requestResponse.status === null) {
       console.error("Error Occured!");
@@ -38,27 +38,27 @@ export const setupFriendRequestList = async () => {
       return [];
     }
     // responseの中のユーザのうち自身以外のuserIdを取ってくる
+    this.total = requestResponse.data.total;
     const useridList = requestResponse.data.friends.map(
       (friend) => friend.fromUserId,
     );
     return useridList;
-  }
-
-  async function loadFriendRequestList() {
-    const friendRequestList = await fetchFriendUserList(
-      currentPage * limit,
-      limit,
-    );
-    if (friendRequestList.length === 0) {
-      window.removeEventListener("scroll", handleScroll); // スクロールイベントを削除
-      return;
+  },
+  async loadFriendRequestList() {
+    if (this.loading) return;
+    this.loading = true;
+    const friendsList = document.querySelector(".js-friend-request-list");
+    const friendRequestList = await this.fetchFriendUserList();
+    const offset = this.currentPage * this.limit;
+    if (this.total !== null && this.total <= offset + this.limit) {
+      window.removeEventListener("scroll", this.handleScroll);
     }
-
+    if (friendRequestList.length === 0) return;
     await Promise.all(
       friendRequestList.map(async (requestId) => {
         const friendRequestItem = document.createElement("div");
         const friend = await fetchApiNoBody(
-          "Get",
+          "GET",
           config.userService,
           `/users?userid=${requestId}`,
         );
@@ -84,21 +84,17 @@ export const setupFriendRequestList = async () => {
         friendRequestItem
           .querySelector(".approved-button")
           .addEventListener("click", async () => {
-            //テスト用
-            // console.log(requestId);
             const approved = await fetchApiNoBody(
               "PATCH",
               config.friendService,
               `/friends/requests/${requestId}`,
             );
             if (approved.status == null) {
-              // friendRequestItem.innerHTML = "";
-              // friendRequestItem.textContent = "Error Occured";
+              console.error("Error Occured!");
               return;
             }
             if (approved.status >= 400) {
-              // friendRequestItem.innerHTML = "";
-              // friendRequestItem.textContent = "Error Occured";
+              console.error(approved.data.error);
               return;
             }
             friendRequestItem.remove(); // 承認後、要素を削除
@@ -124,28 +120,33 @@ export const setupFriendRequestList = async () => {
         friendsList.appendChild(friendRequestItem);
       }),
     );
-    currentPage++;
-  }
-  async function handleScroll() {
-    if (loading) return;
-
+    this.currentPage++;
+    this.loading = false;
+  },
+  async handleScroll() {
     const scrollTop = window.scrollY;
     const documentHeight = document.documentElement.scrollHeight;
     const windowHeight = window.innerHeight;
 
     if (scrollTop + windowHeight >= documentHeight - 10) {
       // 誤差を考慮
-      loading = true;
-      await loadFriendRequestList(); //スクロールした時のapiを叩く関数
-      loading = false;
+      await scrollHandler.loadFriendRequestList(); //スクロールした時のapiを叩く関数
     }
-  }
+  },
+  destructor() {
+    this.currentPage = 0;
+    this.loading = false;
+  },
+};
+
+export const setupFriendRequestList = async () => {
+  const friendsList = document.querySelector(".js-friend-request-list");
+  friendsList.innerHTML = "";
+
   // スクロールイベントを登録
-  let loading = false;
+  await scrollHandler.loadFriendRequestList();
 
-  loadFriendRequestList();
-
-  window.addEventListener("scroll", handleScroll);
+  window.addEventListener("scroll", scrollHandler.handleScroll);
 
   const findButton = document.querySelector(".find-button");
   const listButton = document.querySelector(".list-button");
@@ -157,4 +158,10 @@ export const setupFriendRequestList = async () => {
   listButton.addEventListener("click", () => {
     SPA.navigate("/friend");
   });
+};
+
+export const cleanupFriendRequestList = () => {
+  window.removeEventListener("scroll", scrollHandler.handleScroll);
+  scrollHandler.destructor();
+  console.log("Scroll event removed");
 };
