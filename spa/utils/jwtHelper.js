@@ -32,7 +32,6 @@ const fetchAccessToken = async () => {
     stateManager.setState({ userId: Number.parseInt(userId) });
     sessionStorage.setItem("access_token", accessToken);
     return payload;
-
   } catch (error) {
     return null;
   }
