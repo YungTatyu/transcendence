@@ -31,10 +31,10 @@ USER_API_USE_MOCK = False
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!uhu!%ckkkx)v36-@p5f_&w%eqner=wm22!9j&(k*w$#(n+2kd"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     os.getenv("PROXY"),
@@ -133,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -176,12 +176,12 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",  # ログレベルを指定
+            "level": "WARNING",  # ログレベルを指定
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
         "file": {
-            "level": "DEBUG",
+            "level": "WARNING",
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "debug.log"),  # ログファイルの出力先
             "formatter": "verbose",
@@ -190,12 +190,12 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "WARNING",
             "propagate": True,
         },
         "auth_app": {  # アプリケーション固有のロガー
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "WARNING",
             "propagate": False,
         },
     },
