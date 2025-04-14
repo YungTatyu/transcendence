@@ -16,21 +16,26 @@ export const parseJwt = (token) => {
 };
 
 const fetchAccessToken = async () => {
-  const res = await fetch(`${config.authService}/auth/token/refresh`, {
-    method: "POST",
-    credentials: "include",
-  });
-  if (res.status >= 400) {
-    location.replace("/");
+  try {
+    const res = await fetch(`${config.authService}/auth/token/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (res.status >= 400) {
+      location.replace("/");
+      return null;
+    }
+    const data = await res.json();
+    const accessToken = data.accessToken;
+    const payload = parseJwt(accessToken);
+    const userId = payload.user_id;
+    stateManager.setState({ userId: Number.parseInt(userId) });
+    sessionStorage.setItem("access_token", accessToken);
+    return payload;
+
+  } catch (error) {
     return null;
   }
-  const data = await res.json();
-  const accessToken = data.accessToken;
-  const payload = parseJwt(accessToken);
-  const userId = payload.user_id;
-  stateManager.setState({ userId: Number.parseInt(userId) });
-  sessionStorage.setItem("access_token", accessToken);
-  return payload;
 };
 
 /**
