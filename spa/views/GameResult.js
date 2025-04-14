@@ -2,7 +2,8 @@ import SPA from "../spa.js";
 import stateManager from "../stateManager.js";
 
 export default function GameResult(params) {
-  if (!params) {
+  const expectedKeys = ['left', 'right', 'win'];
+  if (!params || !expectedKeys.every(key => key in params && params[key] !== undefined)) {
     return `
       <div class="game-result-container text-center vh-100">
         <button type="button" class="my-5 py-3 px-5 game-result-button">Back To Home</button>
