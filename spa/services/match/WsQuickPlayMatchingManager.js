@@ -16,14 +16,14 @@ const wsEventHandler = {
       const matchId = parsedMessage.match_id;
       const userIdList = parsedMessage.user_id_list;
       const playersData = await fetchPlayersData(userIdList);
-      renderMatchingRoom(playersData);
-      if (matchId === undefined) {
+      if (matchId === undefined || playersData === null) {
         return;
       }
       if (matchId === "None") {
         renderMatchingInfo("Error occurred", "#FF0000");
         return;
       }
+      renderMatchingRoom(playersData);
       renderNeonInfo("START", "#ffffff");
       renderMatchingInfo("OPPONENT FOUND.", "#0CC0DF");
       stateManager.setState({ players: userIdList });
