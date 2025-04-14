@@ -12,26 +12,30 @@ const wsEventHandler = {
   parsedMessageChache: null,
 
   async renderTournament() {
-    if (this.parsedMessageChache === null) {
-      return;
-    }
-    const matchesData = this.parsedMessageChache.matches_data;
-    const currentRound = this.parsedMessageChache.current_round;
-    const state = this.parsedMessageChache.state;
+    try {
+      if (this.parsedMessageChache === null) {
+        return;
+      }
+      const matchesData = this.parsedMessageChache.matches_data;
+      const currentRound = this.parsedMessageChache.current_round;
+      const state = this.parsedMessageChache.state;
 
-    const tournamentData = createTournamentData(matchesData);
-    renderTournamentBracket(tournamentData);
+      const tournamentData = createTournamentData(matchesData);
+      renderTournamentBracket(tournamentData);
 
-    switch (state) {
-      case "ongoing":
-        ongoingStateHandler(matchesData, currentRound);
-        break;
-      case "error":
-        errorStateHandler();
-        break;
-      case "finished":
-        finishedStateHandler(matchesData);
-        break;
+      switch (state) {
+        case "ongoing":
+          ongoingStateHandler(matchesData, currentRound);
+          break;
+        case "error":
+          errorStateHandler();
+          break;
+        case "finished":
+          finishedStateHandler(matchesData);
+          break;
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
   handleOpen(message) {
