@@ -3,7 +3,11 @@ import stateManager from "../stateManager.js";
 
 export default function GameResult(params) {
   if (!params) {
-    return SPA.navigate("/home", null, true);
+    return `
+      <div class="game-result-container text-center vh-100">
+        <button type="button" class="my-5 py-3 px-5 game-result-button">Back To Home</button>
+      </div>
+  `;
   }
   const message = params.win ? "YOU WIN" : "YOU LOSE";
   return `
