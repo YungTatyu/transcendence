@@ -43,6 +43,9 @@ const wsEventHandler = {
       }
 
       const playersData = await fetchPlayersData(userIdList);
+      if (playersData === null) {
+        return;
+      }
       renderMatchingRoom(playersData);
       renderMatchingInfo(userIdList.length, roomCapacity);
 

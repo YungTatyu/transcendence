@@ -16,6 +16,9 @@ const wsEventHandler = {
       const matchId = parsedMessage.match_id;
       const userIdList = parsedMessage.user_id_list;
       const playersData = await fetchPlayersData(userIdList);
+      if (playersData === null) {
+        return;
+      }
       renderMatchingRoom(playersData);
       if (matchId === undefined) {
         return;

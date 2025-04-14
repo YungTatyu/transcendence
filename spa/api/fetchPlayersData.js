@@ -14,5 +14,6 @@ export default async function fetchPlayersData(userIdList) {
     return playersData;
   } catch (error) {
     console.error(error);
+    return null;
   }
 }

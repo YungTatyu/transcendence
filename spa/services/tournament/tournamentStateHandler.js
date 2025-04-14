@@ -17,7 +17,7 @@ export async function ongoingStateHandler(matchesData, currentRound) {
   const playersId = participantsForRound.map((participant) => participant.id);
 
   const playersData = await fetchPlayersData(playersId);
-  if (!playersData) {
+  if (playersData === null) {
     return;
   }
   renderPlayers(playersData[0].name, playersData[1].name);
