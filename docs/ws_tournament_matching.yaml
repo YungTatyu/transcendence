@@ -21,8 +21,8 @@ channels:
         $ref: '#/components/messages/TournamentStartNotification'
 
 operations:
-  receiveTournamentStart:
-    action: 'receive'
+  sendTournamentStart:
+    action: 'send'
     channel:
       $ref: '#/channels/tournamentMatching'
 

@@ -21,8 +21,8 @@ channels:
         $ref: '#/components/messages/MatchStartNotification'
 
 operations:
-  receiveMatchStart:
-    action: 'receive'
+  sendMatchStart:
+    action: 'send'
     channel:
       $ref: '#/channels/quickPlayMatching'
 

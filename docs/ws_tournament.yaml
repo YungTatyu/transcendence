@@ -21,13 +21,10 @@ channels:
         $ref: '#/components/messages/TournamentInfo'
 
 operations:
-  finishTournamentMatch:
-    action: 'receive'
+  sendTournamentInfo:
+    action: 'send'
     channel:
       $ref: '#/channels/tournament'
-    summary: |
-      他のAPIサーバからのHTTPリクエストによって
-      トーナメント試合終了イベントが通知される
 
 components:
   messages:
