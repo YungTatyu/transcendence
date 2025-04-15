@@ -1,0 +1,56 @@
+asyncapi: 3.0.0
+info:
+  title: Tournament
+  version: 1.0.0
+  description: |
+    Tournament用WebSocketエンドポイント。
+    トーナメント状況を通知。
+
+servers:
+  production:
+    host: tournament.transcen.com
+    pathname: /tournaments/ws/enter-room/{tournamentId}
+    protocol: wss
+    description: tournamentサービス用APIサーバ
+
+channels:
+  tournament:
+    description: Tournamentのルーム
+    messages:
+      tournamentInfo:
+        $ref: '#/components/messages/TournamentInfo'
+
+operations:
+  finishTournamentMatch:
+    action: 'receive'
+    channel:
+      $ref: '#/channels/tournament'
+    summary: |
+      他のAPIサーバからのHTTPリクエストによって
+      トーナメント試合終了イベントが通知される
+
+components:
+  messages:
+    TournamentInfo:
+      summary: サーバからのトーナメント情報の通知
+      payload:
+        type: object
+        properties:
+          matches_data:
+            type: array
+            items: 
+              type: object
+              additionalProperties: true
+            description: |
+              トーナメントの全ての試合の情報。
+              ソートはされていない。
+          current_round:
+            type: integer
+            description: 現在のトーナメント試合のラウンド
+          state:
+            type: string
+            enum: 
+              - ongoing
+              - error
+              - finished
+            description: 現在の試合の状況
