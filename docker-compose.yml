@@ -2,8 +2,6 @@ services:
   auth:
     build: ./auth_service
     container_name: auth_app
-    ports:
-      - "8000:8000"
     networks:
       - app_network
     depends_on:
@@ -52,8 +50,6 @@ services:
     build: ./game_service
     container_name: game
     env_file: ./docker_env/game.env
-    ports:
-      - "8001:8001"
     networks:
       - app_network
     depends_on:
@@ -90,8 +86,6 @@ services:
   tournament:
     build: ./tournament_service
     container_name: tournament
-    ports:
-      - "8002:8002"
     env_file: ./docker_env/tournament.env
     networks:
       - app_network
@@ -139,8 +133,6 @@ services:
   user:
     build: ./user_service
     container_name: user_app
-    ports:
-      - "9000:9000"
     networks:
       - app_network
     depends_on:
@@ -184,8 +176,6 @@ services:
   friends_activity:
     build: ./friends_activity_service
     container_name: friends_activity_app
-    ports:
-      - "10000:10000"
     env_file: ./docker_env/friends_activity.env
     networks:
       - app_network
@@ -216,8 +206,6 @@ services:
     build: ./friends_service
     container_name: friends
     env_file: ./docker_env/friends.env
-    ports:
-      - "7500:7500"
     networks:
       - app_network
     depends_on:
@@ -257,8 +245,6 @@ services:
   match:
     build: ./match_service
     container_name: match
-    ports:
-      - "8003:8003"
     env_file: ./docker_env/match.env
     networks:
       - app_network
@@ -307,8 +293,6 @@ services:
     build: ./vault_service
     container_name: vault
     hostname: vault
-    ports:
-      - 8200:8200
     networks:
       - app_network
     env_file: ./docker_env/vault.env
