@@ -22,7 +22,7 @@ export default function Form(fields, buttonId, submitText, title = null) {
             <form>
               ${formContent}
               <div class="text-end">
-                <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">
+                <button id="${buttonId}" class="btn btn-primary btn-lg form-btn" type="button">
                   ${submitText}
                 </button>
               </div>
