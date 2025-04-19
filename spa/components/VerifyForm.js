@@ -31,7 +31,7 @@ export default function VerifyForm(useQr, message, buttonId, otpSize = 6) {
           <form onsubmit="return false;">
             ${formContent}
             <div class="text-center mt-3">
-              <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
+              <button id="${buttonId}" class="btn btn-primary btn-lg form-btn" type="button">Verify</button>
             </div>
             <div class="mt-5">
               <p id="errorOutput" class="text-center text-danger fw-bold fs-6"></p>
