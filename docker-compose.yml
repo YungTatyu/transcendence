@@ -330,6 +330,16 @@ services:
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
 
+  prometheus:
+    image: prom/prometheus:v3.3.0
+    container_name: prometheus
+    networks:
+      - app_network
+    depends_on:
+      - spa_nginx_exporter
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
 
 networks:
   app_network:
@@ -342,3 +352,4 @@ volumes:
   user_db_data:
   match_db_data:
   user_media:
+  prometheus_data:
