@@ -52,3 +52,15 @@
   font-family: "League Spartan", sans-serif;
   color: black;
 }
+
+.close-btn-wrapper {
+  position: absolute;
+  top: -30px;
+  right: -55px;
+  cursor: pointer;
+}
+
+.close-btn-img {
+  width: 40px;
+  height: 40px;
+}
