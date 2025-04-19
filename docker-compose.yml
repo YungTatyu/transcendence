@@ -341,6 +341,19 @@ services:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
 
+  grafana:
+    image: grafana/grafana:11.6.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file: ./docker_env/grafana.env
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - app_network
+    depends_on:
+      - prometheus
+
 networks:
   app_network:
     driver: bridge
@@ -353,3 +366,4 @@ volumes:
   match_db_data:
   user_media:
   prometheus_data:
+  grafana_data:
