@@ -1,0 +1,45 @@
+asyncapi: 3.0.0
+info:
+  title: Tournament Match
+  version: 1.0.0
+  description: |
+    Tournament試合待機用WebSocketエンドポイント。
+    参加者が揃い次第`match_id`が返される。
+
+servers:
+  production:
+    host: match.transcen.com
+    pathname: /matches/ws/enter-room/{tournamentId}
+    protocol: wss
+    description: matcheサービス用APIサーバ
+
+channels:
+  tournamentMatchWaitRoom:
+    description: Tournament試合の待機ルーム
+    messages:
+      tournamentInfo:
+        $ref: '#/components/messages/TournamentMatchStartNotification'
+
+operations:
+  sendTournamentMatchInfo:
+    action: 'send'
+    channel:
+      $ref: '#/channels/tournamentMatchWaitRoom'
+
+components:
+  messages:
+    TournamentMatchStartNotification:
+      summary: サーバからのトーナメント試合開始通知
+      payload:
+        type: object
+        properties:
+          match_id:
+            type: string
+            description: |
+              マッチング成功時は試合ID、
+              内部エラー時は文字列で`None`
+          user_id_list:
+            type: array
+            items:
+              type: integer
+            description: マッチングされたユーザーのIDリスト
