@@ -317,6 +317,19 @@ services:
       - ./certs/www.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/www.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
 
+  spa_nginx_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: spa_nginx_exporter
+    networks:
+      - app_network
+    depends_on:
+      - spa_nginx
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://www.transcen.com/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
 
 networks:
   app_network:
