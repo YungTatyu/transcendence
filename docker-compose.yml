@@ -330,6 +330,97 @@ services:
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
 
+  auth_proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: auth_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - auth_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://auth-proxy.transcen.com:8005/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
+  game_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: game_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - game_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://game-proxy.transcen.com:8004/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
+  tournament_proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: tournament_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - tournament_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://tournament-proxy.transcen.com:8006/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
+  user_proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: user_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - user_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://user-proxy.transcen.com:8009/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
+  friends_activity_proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: friends_activity_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - friends_activity_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://friends-activity-proxy.transcen.com:10001/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
+  friends_proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: friends_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - friends_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://friends-proxy.transcen.com:8007/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
+  match_proxy_exporter:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: match_proxy_exporter
+    networks:
+      - app_network
+    depends_on:
+      - match_proxy
+    env_file: ./docker_env/exporter.env
+    command:
+      - '--nginx.scrape-uri=https://match-proxy.transcen.com:8008/nginx_status'
+    volumes:
+      - ./certs/ca.crt:/certs/ca.crt:ro
+
   prometheus:
     image: prom/prometheus:v3.3.0
     container_name: prometheus

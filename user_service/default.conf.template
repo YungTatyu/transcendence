@@ -43,5 +43,9 @@ server {
         expires 30d;
     }
 
+	location /nginx_status {
+        stub_status;
+    }
+
     include includes/location_common.conf;
 }
