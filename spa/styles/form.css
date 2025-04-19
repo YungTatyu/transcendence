@@ -2,31 +2,42 @@
 .btn-primary {
   background-color: #0bb0cc;
   border: none;
-  color: write;
+  color: white;
 }
 
 /* フォームボタンhover時に色が変わらないように設定(bootstrapで勝手に色が変わるため) */
 .btn-primary:hover {
   background-color: #0bb0cc;
-  color: write;
+  color: white;
 }
 
 /* ボタンの角を丸く */
 .btn {
-  border-radius: 20px;
+  border-radius: 3.5rem;
   font-weight: bold;
+  font-family: "League Spartan", sans-serif;
+  font-size: 1.7rem;
+  padding: 1rem 3rem;
 }
 
-/* フォーム全体のボーダーをネオンカラーに */
-.card {
-  border: 6px solid transparent; /* ボーダーを透明にする */
-  border-image: linear-gradient(30deg, #0bb0cc, #ff44ff, #aa00ff);
-  border-image-slice: 1; /* ボーダー全体に適用 */
-  box-shadow: 0 0 15px #0bb0cc;
+/* 外枠：グラデーションボーダーを再現 */
+.gradient-border-wrapper {
+  padding: 6px;
+  background: linear-gradient(#0bb0cc, #9f2bda);
   border-radius: 20px;
+  display: inline-block;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* 内側：フォーム本体の背景や角丸 */
+.form-wrapper {
   background-color: #d9d9d9;
-  color: white;
-  padding: 40px;
+  border-radius: 17px;
+  padding: 2rem;
+  box-shadow: 0 0 15px #0bb0cc;
+  color: black;
+  width: 100%;
 }
 
 /* 入力フィールドの設定 */
@@ -36,7 +47,8 @@
 
 /* ラベルのフォントサイズと太さを変更 */
 .form-label {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: bold;
+  font-family: "League Spartan", sans-serif;
   color: black;
 }

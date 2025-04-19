@@ -9,7 +9,7 @@ export default function SignUp() {
     { label: "Password", type: "password", placeholder: "password123" },
     { label: "Mail", type: "email", placeholder: "sample@example.com" },
   ];
-  return Form(signUpFormFields, "signUpButton", "signup");
+  return Form(signUpFormFields, "signUpButton", "Signup");
 }
 
 export function setupSignUp() {

@@ -26,16 +26,18 @@ export default function VerifyForm(useQr, message, buttonId, otpSize = 6) {
 
   const formHtml = `
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-        <form class="rounded-pill" onsubmit="return false;">
-          ${formContent}
-          <div class="text-center mt-3">
-            <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
-          </div>
-          <div class="mt-5">
-            <p id="errorOutput" class="text-center text-danger fw-bold fs-6"></p>
-          </div>
-        </form>
+      <div class="gradient-border-wrapper">
+        <div class="form-wrapper">
+          <form onsubmit="return false;">
+            ${formContent}
+            <div class="text-center mt-3">
+              <button id="${buttonId}" class="btn btn-primary btn-lg" type="button">Verify</button>
+            </div>
+            <div class="mt-5">
+              <p id="errorOutput" class="text-center text-danger fw-bold fs-6"></p>
+            </div>
+          </form>
+        </div>
       </div>
     </div>`;
 
