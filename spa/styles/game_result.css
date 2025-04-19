@@ -5,36 +5,20 @@
 }
 
 .game-win-lose {
-  font-family: "Angkor", serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 400;
-  font-style: normal;
+  text-shadow: 0.05em -0.05em 0em #59e6fe, -0.05em 0.05em 0em #f21dd5;
   display: inline-block;
-  transform: rotate(-4deg); /* 文字全体を傾ける */
+  transform:translate(-50%, -50%) rotate(-4deg); /* 文字全体を傾ける */
   font-size: 20vh; /* 高さの20%をフォントサイズに */
   width: auto;
   position: absolute;
   margin: 0;
   top: 50%; /* 垂直方向中央に配置 */
-  left: 50%; /* 水平方向中央に配置 */
+  left: 50%;  /* 水平中央 ← これを追加 */
+
 }
 
-.wl-first {
-  z-index: 2;
-  transform: translate(-50%, -50%) rotate(-4deg) translate(0, 0);
-  color: #bd3bab;
-}
-
-.wl-second {
-  z-index: 3;
-  transform: translate(-50%, -50%) rotate(-4deg) translate(6px, -3px);
-  color: #0bb0cc;
-}
-
-.wl-third {
-  z-index: 1;
-  transform: translate(-50%, -50%) rotate(-4deg) translate(12px, -6px);
-  color: #59e6fe;
-}
 
 .game-result {
   font-family: "Roboto Mono", monospace;
@@ -48,20 +32,19 @@
 }
 
 .game-result-left-player-bgc {
-  background-color: rgba(11, 176, 204, 0.7);
+  background-color: rgba(11, 176, 204, 0.5);
 }
 
 .game-result-right-player-bgc {
-  background-color: rgba(159, 43, 218, 0.7);
+  background-color: rgba(159, 43, 218, 0.5);
 }
 
 .game-result-button {
-  font-size: 5vh;
+  font-size: 4rem;
+  font-weight: 500;
+  font-family: "League Spartan", sans-serif;
   color: white;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), /* 白 (少し透明) */ 0 0 4px
-    rgba(255, 255, 255, 0.4), /* 白 (さらに透明) */ 0 0 6px
-    rgba(255, 255, 0, 0.5), /* 黄色 (少し透明) */ 0 0 8px rgba(255, 255, 0, 0.3), /* 黄色 (さらに透明) */
-    0 0 10px rgba(255, 255, 0, 0.2); /* 黄色 (さらに透明) */
+  text-shadow:0 0 5px #fff, 0 0 10px #fff;
   background-color: #0bb0cc;
   border-radius: 100px;
 }
