@@ -3,24 +3,8 @@
   margin-top: 40px;
 }
 
-.find-button {
-  font-family: "League Spartan", sans-serif;
-  background-color: #0bb0cc;
-  color: white;
-  width: 300px;
-  height: 50px;
-  font-size: 30px;
-}
-
-.request-button {
-  font-family: "League Spartan", sans-serif;
-  background-color: #0bb0cc;
-  color: white;
-  width: 300px;
-  height: 50px;
-  font-size: 30px;
-}
-
+.find-button,
+.request-button,
 .list-button {
   font-family: "League Spartan", sans-serif;
   background-color: #0bb0cc;
@@ -28,6 +12,8 @@
   width: 300px;
   height: 50px;
   font-size: 30px;
+  border-radius: 3.5rem;
+  font-weight: 500;
 }
 
 .find-button:hover,
