@@ -1,6 +1,7 @@
 .pencil-icon {
   width: 20px;
   height: 20px;
+  cursor: pointer;
 }
 
 .square-img-user-avatar {
