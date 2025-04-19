@@ -16,7 +16,7 @@
   position: absolute;
   margin: 0;
   top: 50%; /* 垂直方向中央に配置 */
-  left: 50%; /* 水平中央 ← これを追加 */
+  left: 50%; /* 水平中央 */
 }
 
 .game-result {
