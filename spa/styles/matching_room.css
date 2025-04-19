@@ -38,6 +38,9 @@
 /* MatchingRoomのタイトルのスタイル */
 .title-matching-room {
   font-size: 7rem;
+  font-family: "Orbitron", sans-serif;
+  text-shadow: 0.05em -0.05em 0em #59e6fe, -0.05em 0.05em 0em #d9d9d9;
+  color: #0bafcc;
   font-weight: bold;
   position: absolute;
   left: 50%;
@@ -45,26 +48,6 @@
   transform: translate(-50%, -50%);
 }
 
-/* MatchingRoomのタイトルの1枚目（後ろ） */
-.mr-first {
-  z-index: 1;
-  transform: translate(-50%, -50%) rotate(0deg) translate(-12px, 6px);
-  color: #ffffff;
-}
-
-/* MatchingRoomのタイトルの2枚目（中間） */
-.mr-second {
-  z-index: 2;
-  transform: translate(-50%, -50%) rotate(0deg);
-  color: #59e6fe;
-}
-
-/* MatchingRoomのタイトルの3枚目（前） */
-.mr-third {
-  z-index: 3;
-  transform: translate(-50%, -50%) rotate(0deg) translate(-8px, 3px);
-  color: #0bb0cc;
-}
 
 /* MatchingRoomアバター画像のスタイル */
 .matching-room-user img {
@@ -75,6 +58,7 @@
 
 /* QuickPlayMatchingRoomのマッチング状況のスタイル */
 #matching-info {
+  font-family: "League Spartan", sans-serif;
   font-size: 5rem;
   margin-top: 10%;
 }
@@ -82,6 +66,7 @@
 /* TournamentMatchingRoomのマッチング状況のスタイル */
 #tournament-matching-info {
   color: #ffffff;
+  font-family: "League Spartan", sans-serif;
   font-size: 4rem;
   margin-top: 8%;
   margin-bottom: 2%;
@@ -90,10 +75,12 @@
 
 /* TournamentMatchingRoom内の人数のスタイル */
 #current-players {
+  font-family: "League Spartan", sans-serif;
   color: #0cc0df;
 }
 
 /* TournamentMatchingRoom内の最大人数のスタイル */
 #matching-remain-sec {
+  font-family: "League Spartan", sans-serif;
   color: #0cc0df;
 }
