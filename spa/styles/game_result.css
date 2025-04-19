@@ -10,16 +10,14 @@
   text-shadow: 0.05em -0.05em 0em #59e6fe, -0.05em 0.05em 0em #f21dd5;
   color: #0bafcc;
   display: inline-block;
-  transform:translate(-50%, -50%) rotate(-4deg); /* 文字全体を傾ける */
+  transform: translate(-50%, -50%) rotate(-4deg); /* 文字全体を傾ける */
   font-size: 20vh; /* 高さの20%をフォントサイズに */
   width: auto;
   position: absolute;
   margin: 0;
   top: 50%; /* 垂直方向中央に配置 */
-  left: 50%;  /* 水平中央 ← これを追加 */
-
+  left: 50%; /* 水平中央 ← これを追加 */
 }
-
 
 .game-result {
   font-family: "Roboto Mono", monospace;
@@ -45,7 +43,7 @@
   font-weight: 500;
   font-family: "League Spartan", sans-serif;
   color: white;
-  text-shadow:0 0 5px #fff, 0 0 10px #fff;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
   background-color: #0bb0cc;
   border-radius: 100px;
 }
