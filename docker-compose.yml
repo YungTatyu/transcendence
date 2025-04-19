@@ -347,12 +347,15 @@ services:
     ports:
       - "3000:3000"
     env_file: ./docker_env/grafana.env
-    volumes:
-      - grafana_data:/var/lib/grafana
     networks:
       - app_network
     depends_on:
       - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana.ini:/etc/grafana/grafana.ini
+      - ./certs/grafana/server.crt:/certs/server.crt:ro
+      - ./certs/grafana/server.key:/certs/server.key:ro
 
 networks:
   app_network:
