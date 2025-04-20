@@ -466,7 +466,7 @@ services:
       - ./certs/grafana/server.key:/certs/server.key:ro
       - ./monitoring/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
       - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
-      - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json:ro
+      - ./monitoring/grafana/dashboard_nginx.json:/var/lib/grafana/dashboards/dashboard_nginx.json:ro
       - ./monitoring/grafana/dashboard_postgresql.json:/var/lib/grafana/dashboards/dashboard_postgresq.json:ro
 
 networks:
