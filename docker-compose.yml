@@ -428,6 +428,13 @@ services:
       - app_network
     depends_on:
       - spa_nginx_exporter
+      - auth_proxy_exporter
+      - game_proxy_exporter
+      - tournament_proxy_exporter
+      - user_proxy_exporter
+      - friends_activity_proxy_exporter
+      - friends_proxy_exporter
+      - match_proxy_exporter
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
