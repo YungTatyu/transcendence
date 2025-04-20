@@ -502,6 +502,17 @@ services:
       - match_redis
     env_file: ./docker_env/match.env
 
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    container_name: alertmanager
+    networks:
+      - app_network
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    volumes:
+      - ./monitoring/prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./docker_env/alert.url:/etc/alertmanager/alert.url:ro
+
   prometheus:
     image: prom/prometheus:v3.3.0
     container_name: prometheus
@@ -522,9 +533,11 @@ services:
       - tournament_db_exporter
       - match_db_exporter
       - game_redis_exporter
+      - alertmanager
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
+      - ./monitoring/prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
 
   grafana:
     image: grafana/grafana:11.6.0

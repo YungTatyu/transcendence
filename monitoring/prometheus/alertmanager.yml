@@ -1,0 +1,26 @@
+global:
+  resolve_timeout: 5m  # この時間Prometheusから何も送信されなければ回復アラートを送信
+
+receivers:
+  - name: 'discord-notifications'
+    discord_configs:
+      - webhook_url_file: '/etc/alertmanager/alert.url'
+        send_resolved: true
+        http_config:
+          follow_redirects: true
+        title: '{{ .CommonLabels.alertname }}'
+        username: 'Alertmanager'
+        message: |
+          {{ range .Alerts }}
+          🔔 **アラート名**: **{{ .Labels.alertname }}**
+          📍 **ステータス**: `{{ .Status | toUpper }}`
+          🖥️ **インスタンス**: `{{ .Labels.instance }}`
+          💼 **ジョブ**: `{{ .Labels.job }}`
+          ⚠️ **重要度**: `{{ .Labels.severity }}`
+          {{ end }}
+
+route:
+  receiver: 'discord-notifications'
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 1h

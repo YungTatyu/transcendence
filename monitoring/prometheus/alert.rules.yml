@@ -1,0 +1,11 @@
+groups:
+  - name: example-alert
+    rules:
+      - alert: InstanceDown
+        expr: up == 0 # PromQL : サーバーの死活状況に関するクエリ
+        for: 30s # Duration : exprsがこの時間続いたらアラートを送信
+        labels:
+          severity: critical # アラートの重要度
+        annotations: # Alert Txt : 事象発生時のテキスト
+          firing_text: "Instance {{ $labels.instance }} down" # .CommonAnnotations.firing_textでAlert Managerから参照できる
+          resolved_text: "Instance {{ $labels.instance }} up" # 同様に.CommonAnnotations.resolved_textでAlert Managerから参照できる
