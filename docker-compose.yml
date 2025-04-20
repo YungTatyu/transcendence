@@ -430,6 +430,42 @@ services:
       - friends_db
     env_file: ./docker_env/friends.env
 
+  user_db_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: user_db_exporter
+    networks:
+      - app_network
+    depends_on:
+      - user_db
+    env_file: ./docker_env/user.env
+
+  auth_db_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: auth_db_exporter
+    networks:
+      - app_network
+    depends_on:
+      - auth_db
+    env_file: ./docker_env/auth.env
+
+  tournament_db_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: tournament_db_exporter
+    networks:
+      - app_network
+    depends_on:
+      - tournament_db
+    env_file: ./docker_env/tournament.env
+
+  match_db_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: match_db_exporter
+    networks:
+      - app_network
+    depends_on:
+      - match_db
+    env_file: ./docker_env/match.env
+
   prometheus:
     image: prom/prometheus:v3.3.0
     container_name: prometheus
@@ -445,6 +481,10 @@ services:
       - friends_proxy_exporter
       - match_proxy_exporter
       - friends_db_exporter
+      - user_db_exporter
+      - auth_db_exporter
+      - tournament_db_exporter
+      - match_db_exporter
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
