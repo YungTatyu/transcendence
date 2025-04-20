@@ -343,7 +343,7 @@ services:
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
 
-  game_exporter:
+  game_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
     container_name: game_proxy_exporter
     networks:
@@ -421,6 +421,15 @@ services:
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
 
+  friends_db_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: friends_db_exporter
+    networks:
+      - app_network
+    depends_on:
+      - friends_db
+    env_file: ./docker_env/friends.env
+
   prometheus:
     image: prom/prometheus:v3.3.0
     container_name: prometheus
@@ -435,6 +444,7 @@ services:
       - friends_activity_proxy_exporter
       - friends_proxy_exporter
       - match_proxy_exporter
+      - friends_db_exporter
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -457,6 +467,7 @@ services:
       - ./monitoring/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
       - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
       - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json:ro
+      - ./monitoring/grafana/dashboard_postgresql.json:/var/lib/grafana/dashboards/dashboard_postgresq.json:ro
 
 networks:
   app_network:
