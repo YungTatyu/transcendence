@@ -7,5 +7,13 @@ groups:
         labels:
           severity: critical # アラートの重要度
         annotations: # Alert Txt : 事象発生時のテキスト
-          firing_text: "Instance {{ $labels.instance }} down" # .CommonAnnotations.firing_textでAlert Managerから参照できる
-          resolved_text: "Instance {{ $labels.instance }} up" # 同様に.CommonAnnotations.resolved_textでAlert Managerから参照できる
+          firing_text: "Instance {{ $labels.instance }} down"
+          resolved_text: "Instance {{ $labels.instance }} up"
+      - alert: NginxRequestRateHigh
+        expr: rate(nginx_http_requests_total[30s]) > 2 # 継続的に1秒に2リクエスト以上
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "NGINX に大量のアクセス ({{ $labels.instance }})"
+          description: "リクエストが急増しています。1秒あたり {{ $value | humanize }} 件"
