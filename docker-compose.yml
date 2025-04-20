@@ -494,6 +494,7 @@ services:
       - auth_db_exporter
       - tournament_db_exporter
       - match_db_exporter
+      - game_redis_exporter
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -516,7 +517,8 @@ services:
       - ./monitoring/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
       - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
       - ./monitoring/grafana/dashboard_nginx.json:/var/lib/grafana/dashboards/dashboard_nginx.json:ro
-      - ./monitoring/grafana/dashboard_postgresql.json:/var/lib/grafana/dashboards/dashboard_postgresq.json:ro
+      - ./monitoring/grafana/dashboard_postgresql.json:/var/lib/grafana/dashboards/dashboard_postgresql.json:ro
+      - ./monitoring/grafana/dashboard_redis.json:/var/lib/grafana/dashboards/dashboard_redis.json:ro
 
 networks:
   app_network:
