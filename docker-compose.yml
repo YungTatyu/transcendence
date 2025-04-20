@@ -475,6 +475,33 @@ services:
       - game_redis
     env_file: ./docker_env/game.env
 
+  auth_redis_exporter:
+    image: oliver006/redis_exporter:v1.70.0
+    container_name: auth_redis_exporter
+    networks:
+      - app_network
+    depends_on:
+      - auth_redis
+    env_file: ./docker_env/auth.env
+
+  tournament_redis_exporter:
+    image: oliver006/redis_exporter:v1.70.0
+    container_name: tournament_redis_exporter
+    networks:
+      - app_network
+    depends_on:
+      - tournament_redis
+    env_file: ./docker_env/tournament.env
+
+  match_redis_exporter:
+    image: oliver006/redis_exporter:v1.70.0
+    container_name: match_redis_exporter
+    networks:
+      - app_network
+    depends_on:
+      - match_redis
+    env_file: ./docker_env/match.env
+
   prometheus:
     image: prom/prometheus:v3.3.0
     container_name: prometheus
