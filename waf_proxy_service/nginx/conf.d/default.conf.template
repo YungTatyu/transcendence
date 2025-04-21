@@ -37,7 +37,7 @@ server {
         include includes/proxy_backend.conf;
     }
 
-	location /nginx_status {
+    location /nginx_status {
         stub_status;
     }
 

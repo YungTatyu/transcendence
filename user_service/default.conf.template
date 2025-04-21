@@ -43,7 +43,7 @@ server {
         expires 30d;
     }
 
-	location /nginx_status {
+    location /nginx_status {
         stub_status;
     }
 
