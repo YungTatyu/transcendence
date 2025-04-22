@@ -39,17 +39,16 @@ const SPA = (() => {
       // INFO setupよりも先にcurrentRouteを更新する必要有り
       currentRoute = route;
       container.innerHTML = route.view(params);
-      cancelFormDefaultEventIfExist();
+      cancelFormDefaultEvent();
       if (route.setup) {
         await route.setup();
       }
     }
   };
 
-  const cancelFormDefaultEventIfExist = () => {
-    // WARN 1ページに複数のform要素がある場合は別途処理が必要
-    const form = document.querySelector("form");
-    if (form) {
+  const cancelFormDefaultEvent = () => {
+    const forms = document.querySelectorAll("form");
+    for (const form of forms) {
       form.addEventListener("submit", (e) => {
         e.preventDefault();
       });
