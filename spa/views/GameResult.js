@@ -7,6 +7,7 @@ export default function GameResult(params) {
     !params ||
     !expectedKeys.every((key) => key in params && params[key] !== undefined)
   ) {
+    stateManager.setState("tournamentId", null);
     return `
       <div class="game-result-container text-center vh-100">
         <button type="button" class="my-5 py-3 px-5 game-result-button">Back To Home</button>
