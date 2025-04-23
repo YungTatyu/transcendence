@@ -81,6 +81,13 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
 
+  - job_name: 'auth-service-exporter'
+    static_configs:
+      - targets: ['auth-proxy.transcen.com:8005']
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
 alerting:
   alertmanagers:
     - static_configs:

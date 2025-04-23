@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import path
+from django.urls import include, path
 
 from auth_app.views.health_check_view import HealthCheckView
 from auth_app.views.otp_login_view import OTPLoginVerificationView, OTPLoginView
@@ -41,4 +41,5 @@ urlpatterns = [
     ),
     path("auth/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("health", HealthCheckView.as_view(), name="health_check"),
+    path('', include('django_prometheus.urls')),
 ]
