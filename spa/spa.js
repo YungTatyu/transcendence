@@ -39,9 +39,19 @@ const SPA = (() => {
       // INFO setupよりも先にcurrentRouteを更新する必要有り
       currentRoute = route;
       container.innerHTML = route.view(params);
+      cancelFormDefaultEvent();
       if (route.setup) {
         await route.setup();
       }
+    }
+  };
+
+  const cancelFormDefaultEvent = () => {
+    const forms = document.querySelectorAll("form");
+    for (const form of forms) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+      });
     }
   };
 
