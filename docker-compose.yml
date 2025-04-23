@@ -538,6 +538,7 @@ services:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
       - ./monitoring/prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   grafana:
     image: grafana/grafana:11.6.0
