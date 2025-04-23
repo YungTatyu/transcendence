@@ -102,6 +102,13 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
 
+  - job_name: 'game-service-exporter'
+    static_configs:
+      - targets: ['game-proxy.transcen.com:8004']
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
 alerting:
   alertmanagers:
     - static_configs:
