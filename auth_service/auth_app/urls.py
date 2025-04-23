@@ -41,5 +41,5 @@ urlpatterns = [
     ),
     path("auth/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("health", HealthCheckView.as_view(), name="health_check"),
-    path('', include('django_prometheus.urls')),
+    path("", include("django_prometheus.urls")),
 ]

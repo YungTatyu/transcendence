@@ -26,5 +26,5 @@ urlpatterns = [
     path("users", UserView.as_view(), name="users"),
     path("users/me/username", UsernameView.as_view(), name="update-username"),
     path("users/me/avatar", AvatarView.as_view(), name="update-avatar"),
-    path('', include('django_prometheus.urls')),
+    path("", include("django_prometheus.urls")),
 ]

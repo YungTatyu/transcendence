@@ -11,5 +11,5 @@ urlpatterns = [
     ),
     path("friends/<str:friend_id>", FriendView.as_view(), name="friend"),
     path("health", health_check, name="health"),
-    path('', include('django_prometheus.urls')),
+    path("", include("django_prometheus.urls")),
 ]

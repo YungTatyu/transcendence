@@ -9,5 +9,5 @@ urlpatterns = [
         TournamentMatchFinishView.as_view(),
         name="finish_match",
     ),
-    path('', include('django_prometheus.urls')),
+    path("", include("django_prometheus.urls")),
 ]

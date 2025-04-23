@@ -5,10 +5,7 @@
   "editable": true,
   "links": [
     {
-      "tags": [
-        "django",
-        "django-mixin"
-      ],
+      "tags": ["django", "django-mixin"],
       "targetBlank": true,
       "title": "Django Dashboards",
       "type": "dashboards"
@@ -58,9 +55,7 @@
       "id": 2,
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
+          "calcs": ["lastNotNull"]
         }
       },
       "pluginVersion": "v11.4.0",
@@ -111,9 +106,7 @@
       "id": 3,
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
+          "calcs": ["lastNotNull"]
         }
       },
       "pluginVersion": "v11.4.0",
@@ -164,9 +157,7 @@
       "id": 4,
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
+          "calcs": ["lastNotNull"]
         }
       },
       "pluginVersion": "v11.4.0",
@@ -217,9 +208,7 @@
       "id": 5,
       "options": {
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
+          "calcs": ["lastNotNull"]
         }
       },
       "pluginVersion": "v11.4.0",
@@ -320,10 +309,7 @@
       "id": 7,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
@@ -561,10 +547,7 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
@@ -1029,10 +1012,7 @@
     }
   ],
   "schemaVersion": 39,
-  "tags": [
-    "django",
-    "django-mixin"
-  ],
+  "tags": ["django", "django-mixin"],
   "templating": {
     "list": [
       {
