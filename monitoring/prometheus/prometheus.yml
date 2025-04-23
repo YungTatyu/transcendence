@@ -88,6 +88,13 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
 
+  - job_name: 'friend-activity-service-exporter'
+    static_configs:
+      - targets: ['friends-activity-proxy.transcen.com:10001']
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
 alerting:
   alertmanagers:
     - static_configs:
