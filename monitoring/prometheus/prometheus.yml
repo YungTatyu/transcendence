@@ -1,0 +1,84 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'spa-nginx-exporter'
+    static_configs:
+      - targets: ['spa_nginx_exporter:9113']
+
+  - job_name: 'auth-proxy-exporter'
+    static_configs:
+      - targets: ['auth_proxy_exporter:9113']
+
+  - job_name: 'game-proxy-exporter'
+    static_configs:
+      - targets: ['game_proxy_exporter:9113']
+
+  - job_name: 'tournament-proxy-exporter'
+    static_configs:
+      - targets: ['tournament_proxy_exporter:9113']
+
+  - job_name: 'user-proxy-exporter'
+    static_configs:
+      - targets: ['user_proxy_exporter:9113']
+
+  - job_name: 'friends-activity-proxy-exporter'
+    static_configs:
+      - targets: ['friends_activity_proxy_exporter:9113']
+
+  - job_name: 'friends-proxy-exporter'
+    static_configs:
+      - targets: ['friends_proxy_exporter:9113']
+
+  - job_name: 'match-proxy-exporter'
+    static_configs:
+      - targets: ['match_proxy_exporter:9113']
+
+  - job_name: 'friends-postgres-exporter'
+    static_configs:
+      - targets: ['friends_db_exporter:9187']
+
+  - job_name: 'user-postgres-exporter'
+    static_configs:
+      - targets: ['user_db_exporter:9187']
+
+  - job_name: 'auth-postgres-exporter'
+    static_configs:
+      - targets: ['auth_db_exporter:9187']
+
+  - job_name: 'tournament-postgres-exporter'
+    static_configs:
+      - targets: ['tournament_db_exporter:9187']
+
+  - job_name: 'match-postgres-exporter'
+    static_configs:
+      - targets: ['match_db_exporter:9187']
+
+  - job_name: 'game-redis-exporter'
+    static_configs:
+      - targets: ['game_redis_exporter:9121']
+
+  - job_name: 'auth-redis-exporter'
+    static_configs:
+      - targets: ['auth_redis_exporter:9121']
+
+  - job_name: 'tournament-redis-exporter'
+    static_configs:
+      - targets: ['tournament_redis_exporter:9121']
+
+  - job_name: 'match-redis-exporter'
+    static_configs:
+      - targets: ['match_redis_exporter:9121']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+
+rule_files:
+  - "alert.rules.yml"

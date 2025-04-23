@@ -1,0 +1,47 @@
+groups:
+  - name: example-alert
+    rules:
+      - alert: ExporterDown # Exporterが30秒以上停止するケース
+        expr: up == 0 # PromQL : サーバーの死活状況に関するクエリ
+        for: 30s # Duration : exprsがこの時間続いたらアラートを送信
+        labels:
+          severity: critical # アラートの重要度
+        annotations: # Alert Txt : 事象発生時のテキスト
+          firing_text: "Instance {{ $labels.instance }} down"
+          resolved_text: "Instance {{ $labels.instance }} up"
+
+      - alert: NginxDown # NGINXが30秒以上停止するケース
+        expr: nginx_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "NGINXがダウンしています"
+          description: "{{ $labels.instance }} のNGINXが応答していません"
+
+      - alert: PostgresDown # PostgreSQLが30秒以上停止するケース
+        expr: pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQLがダウンしています"
+          description: "{{ $labels.instance }} のPostgreSQLに接続できません"
+
+      - alert: RedisDown # Redisが30秒以上停止するケース
+        expr: redis_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redisがダウンしています"
+          description: "{{ $labels.instance }} のRedisに接続できません"
+
+      - alert: NginxRequestRateHigh # NGINXで想定以上のリクエストが発生するケース
+        expr: rate(nginx_http_requests_total[30s]) > 2 # 継続的に1秒に2リクエスト以上
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "NGINX に大量のアクセス ({{ $labels.instance }})"
+          description: "リクエストが急増しています。1秒あたり {{ $value | humanize }} 件"
