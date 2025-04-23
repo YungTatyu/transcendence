@@ -109,6 +109,13 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
 
+  - job_name: 'tournament-service-exporter'
+    static_configs:
+      - targets: ['tournament-proxy.transcen.com:8006']
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
 alerting:
   alertmanagers:
     - static_configs:
