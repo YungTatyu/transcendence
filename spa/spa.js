@@ -39,10 +39,19 @@ const SPA = (() => {
       // INFO setupよりも先にcurrentRouteを更新する必要有り
       currentRoute = route;
       container.innerHTML = route.view(params);
+      applyAutofocus();
       cancelFormDefaultEvent();
       if (route.setup) {
         await route.setup();
       }
+    }
+  };
+
+  const applyAutofocus = () => {
+    // INFO input要素があれば1つ目のinputにfocusする
+    const inputs = document.querySelectorAll("input");
+    if (inputs.length > 0) {
+      inputs[0].focus();
     }
   };
 
