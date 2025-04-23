@@ -40,6 +40,7 @@ const SPA = (() => {
       currentRoute = route;
       container.innerHTML = route.view(params);
       applyAutofocus();
+      cancelFormDefaultEvent();
       if (route.setup) {
         await route.setup();
       }
@@ -51,6 +52,15 @@ const SPA = (() => {
     const inputs = document.querySelectorAll("input");
     if (inputs.length > 0) {
       inputs[0].focus();
+    }
+  };
+
+  const cancelFormDefaultEvent = () => {
+    const forms = document.querySelectorAll("form");
+    for (const form of forms) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+      });
     }
   };
 
