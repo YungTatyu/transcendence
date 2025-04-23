@@ -76,51 +76,65 @@ scrape_configs:
 
   - job_name: 'match-service-exporter'
     static_configs:
-      - targets: ['match-proxy.transcen.com:8008']
+      - targets: ['match-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
   - job_name: 'auth-service-exporter'
     static_configs:
-      - targets: ['auth-proxy.transcen.com:8005']
+      - targets: ['auth-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
   - job_name: 'friend-activity-service-exporter'
     static_configs:
-      - targets: ['friends-activity-proxy.transcen.com:10001']
+      - targets: ['friends-activity-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
   - job_name: 'friend-service-exporter'
     static_configs:
-      - targets: ['friends-proxy.transcen.com:8007']
+      - targets: ['friends-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
   - job_name: 'game-service-exporter'
     static_configs:
-      - targets: ['game-proxy.transcen.com:8004']
+      - targets: ['game-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
   - job_name: 'tournament-service-exporter'
     static_configs:
-      - targets: ['tournament-proxy.transcen.com:8006']
+      - targets: ['tournament-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
   - job_name: 'user-service-exporter'
     static_configs:
-      - targets: ['user-proxy.transcen.com:8009']
+      - targets: ['user-proxy.transcen.com:8443']
     scheme: https
     tls_config:
+      cert_file: /certs/client.crt
+      key_file: /certs/client.key
       ca_file: /certs/ca.crt
 
 alerting:

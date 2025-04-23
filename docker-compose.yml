@@ -45,6 +45,7 @@ services:
     volumes:
       - ./certs/auth-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/auth-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   game:
     build: ./game_service
@@ -82,6 +83,7 @@ services:
     volumes:
       - ./certs/game-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/game-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   tournament:
     build: ./tournament_service
@@ -129,6 +131,7 @@ services:
     volumes:
       - ./certs/tournament-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/tournament-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   user:
     build: ./user_service
@@ -172,6 +175,7 @@ services:
       - ./certs/user-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
       - user_media:/var/www/media/
       - ./user_service/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
   
   friends_activity:
     build: ./friends_activity_service
@@ -201,6 +205,7 @@ services:
     volumes:
       - ./certs/friends-activity-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/friends-activity-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   friends:
     build: ./friends_service
@@ -241,6 +246,7 @@ services:
     volumes:
       - ./certs/friends-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/friends-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   match:
     build: ./match_service
@@ -288,6 +294,7 @@ services:
     volumes:
       - ./certs/match-proxy.transcen.com/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./certs/match-proxy.transcen.com/server.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/ca.crt:/certs/ca.crt:ro
 
   vault:
     build: ./vault_service
@@ -329,6 +336,8 @@ services:
       - '--nginx.scrape-uri=https://www.transcen.com/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   auth_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -339,9 +348,11 @@ services:
       - auth_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://auth-proxy.transcen.com:8005/nginx_status'
+      - '--nginx.scrape-uri=https://auth-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   game_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -352,9 +363,11 @@ services:
       - game_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://game-proxy.transcen.com:8004/nginx_status'
+      - '--nginx.scrape-uri=https://game-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   tournament_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -365,9 +378,11 @@ services:
       - tournament_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://tournament-proxy.transcen.com:8006/nginx_status'
+      - '--nginx.scrape-uri=https://tournament-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   user_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -378,9 +393,11 @@ services:
       - user_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://user-proxy.transcen.com:8009/nginx_status'
+      - '--nginx.scrape-uri=https://user-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   friends_activity_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -391,9 +408,11 @@ services:
       - friends_activity_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://friends-activity-proxy.transcen.com:10001/nginx_status'
+      - '--nginx.scrape-uri=https://friends-activity-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   friends_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -404,9 +423,11 @@ services:
       - friends_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://friends-proxy.transcen.com:8007/nginx_status'
+      - '--nginx.scrape-uri=https://friends-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   match_proxy_exporter:
     image: nginx/nginx-prometheus-exporter:1.4
@@ -417,9 +438,11 @@ services:
       - match_proxy
     env_file: ./docker_env/exporter.env
     command:
-      - '--nginx.scrape-uri=https://match-proxy.transcen.com:8008/nginx_status'
+      - '--nginx.scrape-uri=https://match-proxy.transcen.com:8443/nginx_status'
     volumes:
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   friends_db_exporter:
     image: prometheuscommunity/postgres-exporter:v0.17.1
@@ -539,6 +562,8 @@ services:
       - prometheus_data:/prometheus
       - ./monitoring/prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml
       - ./certs/ca.crt:/certs/ca.crt:ro
+      - ./certs/client.crt:/certs/client.crt:ro
+      - ./certs/client.key:/certs/client.key:ro
 
   grafana:
     image: grafana/grafana:11.6.0
