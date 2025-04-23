@@ -95,6 +95,13 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
 
+  - job_name: 'friend-service-exporter'
+    static_configs:
+      - targets: ['friends-proxy.transcen.com:8007']
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
 alerting:
   alertmanagers:
     - static_configs:
