@@ -59,7 +59,7 @@ const wsEventHandler = {
   },
   handleError(message) {
     replaceNeonInfoToBackToHomeButton();
-    stateManager.state.tournamentId = null;
+    stateManager.setState({ tournamentId: null });
     console.error("WebSocket error:", message);
   },
 };

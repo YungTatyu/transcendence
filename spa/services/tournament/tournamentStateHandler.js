@@ -46,7 +46,7 @@ export async function ongoingStateHandler(matchesData, currentRound) {
 
 export async function errorStateHandler() {
   renderNeonInfo("ERROR", "#FF0000");
-  stateManager.state.tournamentId = null;
+  stateManager.setState({ tournamentId: null });
   console.error("Tournament error");
 }
 
@@ -54,7 +54,7 @@ export async function finishedStateHandler(matchesData) {
   replaceNeonInfoToBackToHomeButton();
   const winnerPlayerName = await fetchWinnerPlayerName(matchesData);
   renderWinnerPlayer(winnerPlayerName);
-  stateManager.state.tournamentId = null;
+  stateManager.setState({ tournamentId: null });
   WsTournamentMatchManager.disconnect();
   return;
 
