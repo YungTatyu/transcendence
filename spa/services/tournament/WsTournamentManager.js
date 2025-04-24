@@ -5,6 +5,7 @@ import {
   errorStateHandler,
   finishedStateHandler,
   ongoingStateHandler,
+  replaceNeonInfoToBackToHomeButton,
 } from "./tournamentStateHandler.js";
 
 const wsEventHandler = {
@@ -57,6 +58,8 @@ const wsEventHandler = {
     console.log("Disconnected from Tournament room");
   },
   handleError(message) {
+    replaceNeonInfoToBackToHomeButton();
+    stateManager.state.tournamentId = null;
     console.error("WebSocket error:", message);
   },
 };

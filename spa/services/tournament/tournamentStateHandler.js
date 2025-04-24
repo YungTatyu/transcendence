@@ -58,23 +58,6 @@ export async function finishedStateHandler(matchesData) {
   WsTournamentMatchManager.disconnect();
   return;
 
-  function replaceNeonInfoToBackToHomeButton() {
-    const oldElement = document.getElementById("neon-info");
-    const wrapper = document.createElement("div");
-    wrapper.className = "d-flex justify-content-center";
-
-    const newElement = document.createElement("button");
-    newElement.type = "button";
-    newElement.className = "my-5 py-3 px-5 tournament-result-button";
-    newElement.textContent = "Back To Home";
-    newElement.addEventListener("click", (event) => {
-      event.preventDefault();
-      SPA.navigate("/home", null, true);
-    });
-    wrapper.appendChild(newElement);
-    oldElement.replaceWith(wrapper);
-  }
-
   async function fetchWinnerPlayerName(matchesData) {
     const winnerUserId = matchesData.reduce((latestMatch, currentMatch) => {
       return currentMatch.round > latestMatch.round
@@ -93,4 +76,24 @@ export async function finishedStateHandler(matchesData) {
     }
     return winnerUser.data.username;
   }
+}
+
+export function replaceNeonInfoToBackToHomeButton() {
+  const oldElement = document.getElementById("neon-info");
+  if (!oldElement) {
+    return;
+  }
+  const wrapper = document.createElement("div");
+  wrapper.className = "d-flex justify-content-center";
+
+  const newElement = document.createElement("button");
+  newElement.type = "button";
+  newElement.className = "my-5 py-3 px-5 tournament-result-button";
+  newElement.textContent = "Back To Home";
+  newElement.addEventListener("click", (event) => {
+    event.preventDefault();
+    SPA.navigate("/home", null, true);
+  });
+  wrapper.appendChild(newElement);
+  oldElement.replaceWith(wrapper);
 }
