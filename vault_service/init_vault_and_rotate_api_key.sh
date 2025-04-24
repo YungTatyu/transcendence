@@ -24,29 +24,25 @@ wait_for_vault() {
 }
 
 initialize_vault() {
+	# INFO すでに初期化済みならunsealのみ実行
+
 	readonly VAULT_UNSEAL_KEY_FILE="${VAULT_UNSEAL_KEY_FILE:-/vault/keys/unseal_key}"
 	readonly VAULT_ROOT_TOKEN_FILE="${VAULT_ROOT_TOKEN_FILE:-/vault/keys/root_token}"
+	local unseal_key
+	local root_token
 
 	# すでに保存されたキーが存在するか？
 	if [[ -f "$VAULT_UNSEAL_KEY_FILE" && -f "$VAULT_ROOT_TOKEN_FILE" ]]; then
 		echo "既存のunseal keyおよびroot tokenを使用します"
-		local unseal_key
-		local root_token
-
 		unseal_key=$(<"$VAULT_UNSEAL_KEY_FILE")
 		root_token=$(<"$VAULT_ROOT_TOKEN_FILE")
-		export VAULT_TOKEN=$root_token
 	else
 		echo "Vaultを初期化します"
 		local init_output
-		local unseal_key
-		local root_token
-
 		init_output=$(vault operator init -key-shares=1 -key-threshold=1 -format=json)
 
 		unseal_key=$(echo "$init_output" | jq -r '.unseal_keys_b64[0]')
 		root_token=$(echo "$init_output" | jq -r '.root_token')
-		export VAULT_TOKEN=$root_token
 
 		# キーを保存
 		echo "$unseal_key" > "$VAULT_UNSEAL_KEY_FILE"
@@ -54,12 +50,12 @@ initialize_vault() {
 		chmod 600 "$VAULT_UNSEAL_KEY_FILE" "$VAULT_ROOT_TOKEN_FILE"
 	fi
 
+	export VAULT_TOKEN=$root_token
 	# Vaultアンシール
 	if ! vault operator unseal "$unseal_key"; then
 		print_log_and_exit "Vaultアンシールに失敗しました"
 	fi
 }
-
 
 # Vault設定: transitシークレットエンジンの有効化と署名キー作成
 enable_transit() {
@@ -158,10 +154,20 @@ update_api_keys_loop() {
 
 main() {
 	wait_for_vault
+
+	local vault_initialized
+	vault_initialized=$(vault status -format=json | jq -r '.initialized')
+
 	initialize_vault
-	enable_transit
-	enable_api_keys
-	enable_tls_auth
+
+	if [[ "$vault_initialized" == "true" ]]; then
+		# INFO 初期化済みなら詳細初期化関数を実行しない
+		echo "Vaultはすでに初期化済みです"
+	else
+		enable_transit
+		enable_api_keys
+		enable_tls_auth
+	fi
 	update_api_keys_loop
 }
 
