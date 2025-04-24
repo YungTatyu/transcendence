@@ -319,7 +319,8 @@ services:
       - ./certs/vault/server.crt:/vault/certs/server.crt:ro
       - ./certs/vault/server.key:/vault/certs/server.key:ro
       - ./certs/ca.crt:/vault/certs/ca.crt:ro
-      - vault_data:/vault/keys
+      - vault_data:/vault/data
+      - vault_keys:/vault/keys
 
   spa_nginx:
     image: nginx:alpine
@@ -613,3 +614,4 @@ volumes:
   prometheus_data:
   grafana_data:
   vault_data:
+  vault_keys:
