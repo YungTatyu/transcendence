@@ -5,7 +5,7 @@ A web-based multiplayer Pong tournament application that allows players to compe
 ### 1. Update `/etc/hosts`
 Add the following entry to your `/etc/hosts` file to map required domains:
 ```
-127.0.0.1   www.transcen.com auth-proxy.transcen.com game-proxy.transcen.com match-proxy.transcen.com friends-proxy.transcen.com friends-activity-proxy.transcen.com tournament-proxy.transcen.com user-proxy.transcen.com grafana
+127.0.0.1   www.transcen.com auth-proxy.transcen.com game-proxy.transcen.com match-proxy.transcen.com friends-proxy.transcen.com friends-activity-proxy.transcen.com tournament-proxy.transcen.com user-proxy.transcen.com
 ```
 
 ### 2. Clone and Generate Certificates
