@@ -39,3 +39,9 @@ After registering the application, note down the Client ID and Client Secret.<br
 Add the Client ID and Client Secret to the docker_env/grafana.env environment file.<br>
 Go to https://localhost:3000/login and log in with your GitHub account.<br>
 (If you want to publish grafana externally, please change localhost to your domain name.)
+
+### 6. Set Up Alerts with Prometheus(If you want to receive alerts on Discord)
+Go to the Edit Channel page in your Discord server.<br>
+Navigate to Integrations and click on Webhooks.<br>
+Create a new webhook and copy the generated URL.<br>
+Paste the copied URL into the `docker_env/alert.url` file.
