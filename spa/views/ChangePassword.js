@@ -1,5 +1,5 @@
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
-import Form from "../components/Form.js";
+import ChangeInfoForm from "../components/ChangeInfoForm.js";
 import config from "../config.js";
 import SPA from "../spa.js";
 
@@ -8,7 +8,7 @@ export default function ChangePassword() {
     { label: "CurrentPass", type: "Password", placeholder: "password123" },
     { label: "NewPass", type: "Password", placeholder: "password123" },
   ];
-  return Form(
+  return ChangeInfoForm(
     ChangePasswordFormField,
     "changePassword",
     "Submit",

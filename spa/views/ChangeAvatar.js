@@ -5,24 +5,30 @@ import stateManager from "../stateManager.js";
 
 export default function ChangeAvatar() {
   return `
-        <div class="container d-flex justify-content-center align-items-center vh-100">
-          <div class="card shadow-lg p-4 align-items-center" style="width: 100%; max-width: 400px;">
-            <form>    
-              <img src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle mb-3 js-new-avatar" >
-               
-              <!-- 隠しファイル入力 -->
-              <input type="file" class="js-avatar-input d-none" accept="image/*">
-              <div>
-                <p class="text-center text-danger fw-bold fs-6 errorOutput"></p>
-              </div>
-          
-              <div class="d-flex gap-2 mt-4">
-                <button class="btn btn-primary w-50 js-edit-avatar" type="button">Edit</button>
-                <button class="btn btn-danger w-50 js-delete-avatar" type="button">Delete</button>
-              </div>
-            </form>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+      <div class="gradient-border-wrapper">
+        <div class="form-wrapper position-relative">
+          <div class="close-btn-wrapper">
+            <img src="/assets/batsu.png" alt="batsu" class="close-btn-img" onclick="SPA.navigate('/profile')">
           </div>
+          <form>
+            <div class="text-center">    
+              <img src="${config.userService}/media/images/default/default_image.png" class="square-img-user-avatar rounded-circle mb-3 js-new-avatar" >
+            </div>
+            <!-- 隠しファイル入力 -->
+            <input type="file" class="js-avatar-input d-none" accept="image/*">
+            <div>
+              <p class="text-center text-danger fw-bold fs-6 errorOutput"></p>
+            </div>
+        
+            <div class="d-flex gap-2 mt-4">
+              <button class="btn btn-primary btn-edit w-50 js-edit-avatar" type="button">Edit</button>
+              <button class="btn btn-danger btn-delete w-50 js-delete-avatar" type="button">Delete</button>
+            </div>
+          </form>
         </div>
+      </div>
+    </div>
       `;
 }
 

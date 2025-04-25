@@ -1,5 +1,5 @@
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
-import Form from "../components/Form.js";
+import ChangeInfoForm from "../components/ChangeInfoForm.js";
 import config from "../config.js";
 import SPA from "../spa.js";
 
@@ -7,7 +7,12 @@ export default function ChangeMail() {
   const ChangeMailFormField = [
     { label: "Mail", type: "email", placeholder: "sample@example.com" },
   ];
-  return Form(ChangeMailFormField, "changeMail", "Submit", "Set Your Mail");
+  return ChangeInfoForm(
+    ChangeMailFormField,
+    "changeMail",
+    "Submit",
+    "Set Your Mail",
+  );
 }
 
 export function setupChangeMail() {

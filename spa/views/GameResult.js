@@ -7,6 +7,7 @@ export default function GameResult(params) {
     !params ||
     !expectedKeys.every((key) => key in params && params[key] !== undefined)
   ) {
+    stateManager.setState({ tournamentId: null });
     return `
       <div class="game-result-container text-center vh-100">
         <button type="button" class="my-5 py-3 px-5 game-result-button">Back To Home</button>
@@ -17,9 +18,7 @@ export default function GameResult(params) {
   return `
     <div class="game-result-container text-center vh-100">
       <div class="wl-container my-5">
-        <h1 class="game-win-lose wl-first">${message}</h1>
-        <h1 class="game-win-lose wl-second">${message}</h1>
-        <h1 class="game-win-lose wl-third">${message}</h1>
+        <h1 class="game-win-lose">${message}</h1>
       </div>
       <div class="game-result d-flex justify-content-between w-100 mb-5 py-1">
         <div class="w-50 text-end game-result-left-player-bgc px-5">${params.left}</div>

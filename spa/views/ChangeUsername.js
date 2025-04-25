@@ -1,5 +1,5 @@
 import fetchApiWithBody from "../api/fetchApiWithBody.js";
-import Form from "../components/Form.js";
+import ChangeInfoForm from "../components/ChangeInfoForm.js";
 import config from "../config.js";
 import SPA from "../spa.js";
 import stateManager from "../stateManager.js";
@@ -8,7 +8,7 @@ export default function ChangeUsername() {
   const ChangeNameFormField = [
     { label: "Username", type: "username", placeholder: "New Username" },
   ];
-  return Form(
+  return ChangeInfoForm(
     ChangeNameFormField,
     "changeUsername",
     "Submit",

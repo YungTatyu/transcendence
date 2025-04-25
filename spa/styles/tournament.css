@@ -36,10 +36,7 @@ div.jQBracket .team {
 .tournament-result-button {
   font-size: 5vh;
   color: white;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), /* 白 (少し透明) */ 0 0 4px
-    rgba(255, 255, 255, 0.4), /* 白 (さらに透明) */ 0 0 6px
-    rgba(255, 255, 0, 0.5), /* 黄色 (少し透明) */ 0 0 8px rgba(255, 255, 0, 0.3), /* 黄色 (さらに透明) */
-    0 0 10px rgba(255, 255, 0, 0.2); /* 黄色 (さらに透明) */
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
   background-color: #0bb0cc;
   border-radius: 100px;
 }
