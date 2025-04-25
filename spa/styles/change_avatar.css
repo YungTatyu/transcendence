@@ -3,3 +3,11 @@
   height: 200px; /* 正方形のサイズ */
   object-fit: cover; /* 中央を基準にトリミング */
 }
+
+.btn-edit,
+.btn-delete {
+  border-radius: 3.5rem;
+  font-weight: bold;
+  font-family: "League Spartan", sans-serif;
+  font-size: 1.7rem;
+}
