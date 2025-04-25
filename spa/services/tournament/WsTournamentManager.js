@@ -1,10 +1,12 @@
 import config from "../../config.js";
+import stateManager from "../../stateManager.js";
 import { renderTournamentBracket } from "./TournamentBracket.js";
 import createTournamentData from "./createTournamentData.js";
 import {
   errorStateHandler,
   finishedStateHandler,
   ongoingStateHandler,
+  replaceNeonInfoToBackToHomeButton,
 } from "./tournamentStateHandler.js";
 
 const wsEventHandler = {
@@ -57,6 +59,8 @@ const wsEventHandler = {
     console.log("Disconnected from Tournament room");
   },
   handleError(message) {
+    replaceNeonInfoToBackToHomeButton();
+    stateManager.setState({ tournamentId: null });
     console.error("WebSocket error:", message);
   },
 };
