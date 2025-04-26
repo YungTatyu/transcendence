@@ -18,7 +18,7 @@ main() {
     "friends-proxy.transcen.com"
     "match-proxy.transcen.com"
     "www.transcen.com"
-    "grafana"
+    "localhost"
   )
   for service in "${services[@]}"; do
     ${CREATE_CERT} $service || err "$service cert creation failed"

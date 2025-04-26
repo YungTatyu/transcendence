@@ -592,8 +592,8 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./certs/grafana/server.crt:/certs/server.crt:ro
-      - ./certs/grafana/server.key:/certs/server.key:ro
+      - ./certs/localhost/server.crt:/certs/server.crt:ro
+      - ./certs/localhost/server.key:/certs/server.key:ro
       - ./monitoring/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
       - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
       - ./monitoring/grafana/dashboard_nginx.json:/var/lib/grafana/dashboards/dashboard_nginx.json:ro
