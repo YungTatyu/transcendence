@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from .views import AvatarView, UsernameView, UserView, health_check
 
@@ -26,4 +26,5 @@ urlpatterns = [
     path("users", UserView.as_view(), name="users"),
     path("users/me/username", UsernameView.as_view(), name="update-username"),
     path("users/me/avatar", AvatarView.as_view(), name="update-avatar"),
+    path("", include("django_prometheus.urls")),
 ]

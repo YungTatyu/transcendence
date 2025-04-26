@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from .views import TournamentMatchFinishView, health_check
 
@@ -9,4 +9,5 @@ urlpatterns = [
         TournamentMatchFinishView.as_view(),
         name="finish_match",
     ),
+    path("", include("django_prometheus.urls")),
 ]

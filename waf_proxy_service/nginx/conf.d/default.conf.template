@@ -37,8 +37,48 @@ server {
         include includes/proxy_backend.conf;
     }
 
+    location = /metrics {
+        deny all;
+    }
+
+    include includes/location_common.conf;
+}
+
+# prometheus用の設定だけ別サーバブロック（クライアント認証あり）
+server {
+    listen 8443 ssl;
+
+    server_name ${SERVER_NAME};
+
+    ssl_certificate ${SSL_CERT};
+    ssl_certificate_key ${SSL_CERT_KEY};
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;
+    ssl_session_tickets off;
+
+    ssl_dhparam /etc/ssl/certs/dhparam-${SSL_DH_BITS}.pem;
+
+    ssl_protocols ${SSL_PROTOCOLS};
+    ssl_ciphers ${SSL_CIPHERS};
+    ssl_prefer_server_ciphers ${SSL_PREFER_CIPHERS};
+
+    ssl_stapling ${SSL_OCSP_STAPLING};
+    ssl_stapling_verify ${SSL_OCSP_STAPLING};
+
+    ssl_client_certificate ${CA_CERT};
+    ssl_verify_client on;
+    ssl_verify_depth ${SSL_VERIFY_DEPTH};
+
+    PROXY_SSL_CONFIG
+
     location /nginx_status {
         stub_status;
+    }
+
+    location /metrics {
+        include includes/cors.conf;
+        include includes/proxy_backend.conf;
+        error_page 495 496 497 =403;
     }
 
     include includes/location_common.conf;
